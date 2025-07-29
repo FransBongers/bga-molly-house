@@ -1,0 +1,15 @@
+.player-board-game-specific-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+
+}
+
+.moho-counters-row {
+  width: 100%;
+  display: grid;
+  grid-template: 48px auto / repeat(4, 48px);
+  justify-content: space-evenly;
+  gap: 4px;
+}

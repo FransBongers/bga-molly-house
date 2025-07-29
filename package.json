@@ -1,0 +1,23 @@
+{
+  "name": "mollyhousefrans",
+  "version": "1.0.0",
+  "description": "Molly House for BGA",
+  "main": "mollyhousefrans.js",
+  "scripts": {
+    "build:ts": "tsc",
+    "build:scss": "sass --no-source-map src/mollyhousefrans.scss mollyhousefrans.css",
+    "watch:ts": "tsc --watch",
+    "watch:scss": "sass --watch src/mollyhousefrans.scss mollyhousefrans.css",
+    "watch": "npm run watch:ts && npm run watch:scss",
+    "build": "npm run build:ts && npm run build:scss"
+  },
+  "author": "Frans Bongers",
+  "license": "MIT",
+  "dependencies": {
+    "bga-animations": "thoun/bga-animations#1.1.1"
+  },
+  "devDependencies": {
+    "sass": "^1.77.2",
+    "typescript": "^5.7.3"
+  }
+}

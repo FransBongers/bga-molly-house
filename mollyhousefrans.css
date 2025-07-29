@@ -1,0 +1,211 @@
+@charset "UTF-8";
+/*
+ *------
+ * BGA framework: Gregory Isabelli & Emmanuel Colin & BoardGameArena
+ * MollyHouse implementation : © Frans Bongers <fjmbongers@gmail.com>
+ *
+ * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
+ * See http://en.boardgamearena.com/#!doc/Studio for more information.
+ * -----
+ */
+#moho-board {
+  --boardScale: var(--leftColumnScale);
+  --tokenScale: var(--leftColumnScale);
+  position: relative;
+  background-size: 100% 100%;
+  height: calc(var(--leftColumnScale) * 759px);
+  min-height: calc(var(--leftColumnScale) * 759px);
+  width: calc(var(--leftColumnScale) * 1500px);
+}
+
+/* make space between buttons on touch devices */
+@media (hover: none) {
+  #page-title .action-button.bgabutton,
+  #page-title .bgabutton {
+    margin-bottom: 8px;
+    margin-top: 8px;
+  }
+}
+/* Hide the "You may note something for next time..." popup that would appear. */
+#turnBasedNotesIncent {
+  display: none;
+}
+
+/** Hide player is now online, player is now offline messages 
+* Note: requires setup of adding notif name as class
+* TODO: add name of function
+*/
+.notif_playerstatus {
+  display: none !important;
+}
+
+/* Prevent the game from scrolling while the game log or chat is visible on mobile. */
+body.chatbar_ontop {
+  overflow: hidden;
+}
+
+/* Add text shadows to player colors that require it */
+a[style*="color: #f9e08d"],
+a[style*="color:#f9e08d"],
+span[style*="color: #f9e08d"],
+span[style*="color:#f9e08d"],
+a[style*="color: #dbd9d6"],
+a[style*="color:#dbd9d6"],
+span[style*="color: #dbd9d6"],
+span[style*="color:#dbd9d6"],
+a[style*="color: #ffb1b9"],
+a[style*="color:#ffb1b9"],
+span[style*="color: #ffb1b9"],
+span[style*="color:#ffb1b9"],
+a[style*="color: #99dae9"],
+a[style*="color:#99dae9"],
+span[style*="color: #99dae9"],
+span[style*="color:#99dae9"],
+a[style*="color: #c7b4e1"],
+a[style*="color:#c7b4e1"],
+span[style*="color: #c7b4e1"],
+span[style*="color:#c7b4e1"],
+a[style*="color: #addb90"],
+a[style*="color:#addb90"],
+span[style*="color: #addb90"],
+span[style*="color:#addb90"] {
+  text-shadow: 1px 0 0 black, 0 1px 0 black, -1px 0 0 black, 0 -1px 0 black, 1px 1px 0 black, -1px 1px 0 black, 1px -1px 0 black, -1px -1px 0 black !important;
+}
+
+#page-title {
+  min-height: 52px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#pagemaintitle_wrap {
+  flex-grow: 1;
+}
+
+.player-board-game-specific-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.moho-counters-row {
+  width: 100%;
+  display: grid;
+  grid-template: 48px auto/repeat(4, 48px);
+  justify-content: space-evenly;
+  gap: 4px;
+}
+
+/* ------- UNDO TURN ------- */
+/* Cancelled notification messages */
+.log.cancel {
+  color: #c62828 !important;
+  text-decoration: line-through;
+}
+
+/* Desktop logs */
+.log.cancel .roundedbox {
+  background-color: rgba(240, 186, 117, 0.6) !important;
+}
+
+/* Mobile logs */
+.log.cancel.roundedbox {
+  background-color: #ef9a9a;
+}
+
+a[style*="color: #c0c0c0"],
+a[style*="color:#c0c0c0"],
+span[style*="color: #c0c0c0"],
+span[style*="color:#c0c0c0"] {
+  text-shadow: 1px 0 0 black, 0 1px 0 black, -1px 0 0 black, 0 -1px 0 black, 1px 1px 0 black, -1px 1px 0 black, 1px -1px 0 black, -1px -1px 0 black !important;
+}
+
+#logs .log.notif_newUndoableStep {
+  margin-top: 0px;
+}
+#logs .log.notif_newUndoableStep .roundedbox {
+  display: none;
+  text-align: center;
+  cursor: pointer;
+  background-color: #c4c2c2;
+  font-size: 12px;
+  padding: 2px 5px;
+}
+#logs .log.notif_newUndoableStep .roundedbox::before, #logs .log.notif_newUndoableStep .roundedbox::after {
+  content: "\f0e2";
+  font: normal normal normal 12px/1 FontAwesome;
+  margin: 0px 10px;
+}
+#logs .log.notif_newUndoableStep.selectable .roundedbox {
+  display: block;
+}
+
+.chatwindowlogs_zone .log.notif_newUndoableStep {
+  margin-bottom: -4px;
+  padding: 0px;
+  display: none !important;
+}
+.chatwindowlogs_zone .log.notif_newUndoableStep.selectable {
+  display: block !important;
+}
+.chatwindowlogs_zone .log.notif_newUndoableStep.selectable .roundedboxinner {
+  text-align: center;
+  cursor: pointer;
+  background-color: #c4c2c2;
+  font-size: 12px;
+  padding: 2px 5px;
+}
+.chatwindowlogs_zone .log.notif_newUndoableStep.selectable .roundedboxinner::before, .chatwindowlogs_zone .log.notif_newUndoableStep.selectable .roundedboxinner::after {
+  content: "\f0e2";
+  font: normal normal normal 12px/1 FontAwesome;
+  margin: 0px 10px;
+}
+.chatwindowlogs_zone .log.notif_newUndoableStep.selectable .roundedboxinner .msgtime {
+  display: none;
+}
+
+/* ------- LOG TOKENS ------- */
+.log_tooltip {
+  position: relative;
+}
+.log_tooltip .help-marker {
+  top: -11px;
+  left: auto;
+  right: -18px;
+}
+
+.log-token,
+.log_token {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  top: -3px;
+  margin-top: 3px;
+  margin-left: 1px;
+  margin-right: 1px;
+}
+
+#customActions {
+  --iconScale: 0.75;
+  --tokenScale: 0.6;
+}
+
+#pagemaintitletext,
+#gameaction_status {
+  --tokenScale: 0.6;
+  --iconScale: 0.7;
+  --cardScale: 0;
+}
+
+.log > .roundedbox,
+.log > .roundedboxinner {
+  --tokenScale: 0.6;
+  --iconScale: 0.7;
+}
+
+html {
+  background-attachment: fixed;
+}
+
+/*# sourceMappingURL=mollyhousefrans.css.map */
