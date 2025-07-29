@@ -1089,6 +1089,7 @@ var MollyHouse = (function () {
         this._notif_uid_to_mobile_log_id = {};
         this._selectableNodes = [];
         this.mobileVersion = false;
+        this.loadingComplete = false;
         this.states = {
             ConfirmPartialTurn: ConfirmPartialTurn,
             ConfirmTurn: ConfirmTurn,
@@ -1254,12 +1255,11 @@ var MollyHouse = (function () {
         var stepId = _a.stepId;
     };
     MollyHouse.prototype.updateLayout = function () {
-        var ROOT = document.documentElement;
-        var playerAreaContainer = document.getElementById('moho-play-area');
-        if (!playerAreaContainer) {
+        if (!this.loadingComplete) {
             return;
         }
-        var WIDTH = playerAreaContainer.getBoundingClientRect()['width'];
+        var ROOT = document.documentElement;
+        var WIDTH = $('moho-play-area').getBoundingClientRect()['width'] - 8;
         var LEFT_COLUMN = 1500;
         var RIGHT_COLUMN = 634;
         var LEFT_SIZE = WIDTH;
@@ -1376,6 +1376,7 @@ var MollyHouse = (function () {
         }
     };
     MollyHouse.prototype.onLoadingComplete = function () {
+        this.loadingComplete = true;
         this.updateLayout();
     };
     MollyHouse.prototype.updatePlayerOrdering = function () {
@@ -1404,7 +1405,7 @@ var Board = (function () {
     };
     Board.prototype.setup = function (gamedatas) {
         document
-            .getElementById('moho')
+            .getElementById('moho-left-column')
             .insertAdjacentHTML('afterbegin', tplBoard(gamedatas));
         this.ui = {
             containers: {
@@ -1605,4 +1606,4 @@ var StaticData = (function () {
     };
     return StaticData;
 }());
-var tplPlayArea = function () { return "\n  <div id=\"moho-play-area\">\n    <div id=\"moho\"></div>\n  </div>\n"; };
+var tplPlayArea = function () { return "\n  <div id=\"moho-play-area\">\n    <div id=\"moho-left-column\"></div>\n    <div id=\"moho-right-column\"></div>\n  </div>\n"; };

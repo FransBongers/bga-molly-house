@@ -4,10 +4,10 @@
   --boardScale: var(--leftColumnScale);
   --tokenScale: var(--leftColumnScale);
   position: relative;
-  // background-image: url('img/board.jpg');
+  background-image: url('img/board.jpg');
   background-size: 100% 100%;
-  height: calc(var(--leftColumnScale) * 759px);
-  min-height: calc(var(--leftColumnScale) * 759px);
+  height: calc(var(--leftColumnScale) * 1157px);
+  min-height: calc(var(--leftColumnScale) * 1157px);
   width: calc(var(--leftColumnScale) * 1500px);
   // width: 100%;
   // aspect-ratio: 30 / 15;

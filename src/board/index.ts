@@ -38,7 +38,7 @@ class Board {
   // Setup functions
   setup(gamedatas: GamedatasAlias) {
     document
-      .getElementById('moho')
+      .getElementById('moho-left-column')
       .insertAdjacentHTML('afterbegin', tplBoard(gamedatas));
 
     this.ui = {

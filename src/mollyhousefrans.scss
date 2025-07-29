@@ -15,8 +15,19 @@
 @use './logs/logs';
 
 html {
-  // background-image: url('img/background.jpg');
+  background-image: url('img/background.jpg');
   background-attachment: fixed;
 }
 
+#moho-play-areaa {
+  padding: 4px;
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-gap: 8px;
+}
 
+#play[data-two-columns='disabled'] {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+}

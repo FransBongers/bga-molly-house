@@ -10,7 +10,7 @@
  * mollyhousefrans.js
  *
  * MollyHouseFrans user interface script
- * 
+ *
  * In this file, you are describing the logic of your user interface, in Javascript language.
  *
  */
@@ -54,11 +54,11 @@ class MollyHouse implements Game {
   private _notif_uid_to_mobile_log_id = {};
   private _selectableNodes = []; // TODO: use to keep track of selectable classed?
   public mobileVersion: boolean = false;
+  public loadingComplete: boolean = false;
 
   private states = {
     ConfirmPartialTurn,
     ConfirmTurn,
-
   };
 
   constructor() {
@@ -95,7 +95,6 @@ class MollyHouse implements Game {
 
     debug('gamedatas', gamedatas);
     this.setupPlayerOrder(gamedatas.playerOrder);
-
 
     this._connections = [];
 
@@ -629,57 +628,53 @@ class MollyHouse implements Game {
   }
 
   public updateLayout() {
-    // console.log('updateLayout');
-    //  if (!this.settings) {
-    // 	 return;
-    //  }
-
-    //  $('play_area_container').setAttribute(
-    // 	 'data-two-columns',
-    // 	 this.settings.get({ id: 'twoColumnsLayout' })
-    //  );
-
-    const ROOT = document.documentElement;
-    const playerAreaContainer = document.getElementById('moho-play-area');
-
-    if (!playerAreaContainer) {
+    if (!this.loadingComplete) {
       return;
     }
-    let WIDTH = playerAreaContainer.getBoundingClientRect()['width'];
+    // if (!this.settings) {
+    //   return;
+    // }
+
+    // $('play_area_container').setAttribute(
+    //   'data-two-columns',
+    //   this.settings.get({ id: 'twoColumnsLayout' })
+    // );
+
+    const ROOT = document.documentElement;
+    let WIDTH = $('moho-play-area').getBoundingClientRect()['width'] - 8;
     const LEFT_COLUMN = 1500;
     const RIGHT_COLUMN = 634;
 
-    //  if (this.settings.get({ id: 'twoColumnsLayout' }) === PREF_ENABLED) {
-    // 	 WIDTH = WIDTH - 8; // grid gap + padding
-    // 	 const size = Number(this.settings.get({ id: 'columnSizes' }));
-    // 	 const proportions = [size, 100 - size];
-    // 	 const LEFT_SIZE = (proportions[0] * WIDTH) / 100;
-    // 	 const leftColumnScale = LEFT_SIZE / LEFT_COLUMN;
-    // 	 ROOT.style.setProperty('--leftColumnScale', `${leftColumnScale}`);
-    // 	 ROOT.style.setProperty('--mapSizeMultiplier', '1');
-    // 	 const RIGHT_SIZE = (proportions[1] * WIDTH) / 100;
-    // 	 const rightColumnScale = RIGHT_SIZE / RIGHT_COLUMN;
-    // 	 ROOT.style.setProperty('--rightColumnScale', `${rightColumnScale}`);
+    // if (this.settings.get({ id: 'twoColumnsLayout' }) === PREF_ENABLED) {
+    //   WIDTH = WIDTH - 8; // grid gap + padding
+    //   const size = Number(this.settings.get({ id: 'columnSizes' }));
+    //   const proportions = [size, 100 - size];
+    //   const LEFT_SIZE = (proportions[0] * WIDTH) / 100;
+    //   const leftColumnScale = LEFT_SIZE / LEFT_COLUMN;
+    //   ROOT.style.setProperty('--leftColumnScale', `${leftColumnScale}`);
+    //   ROOT.style.setProperty('--mapSizeMultiplier', '1');
+    //   const RIGHT_SIZE = (proportions[1] * WIDTH) / 100;
+    //   const rightColumnScale = RIGHT_SIZE / RIGHT_COLUMN;
+    //   ROOT.style.setProperty('--rightColumnScale', `${rightColumnScale}`);
 
-    // 	 $(
-    // 		 'play_area_container'
-    // 	 ).style.gridTemplateColumns = `${LEFT_SIZE}px ${RIGHT_SIZE}px`;
-    //  } else {
-    const LEFT_SIZE = WIDTH;
-    const leftColumnScale = LEFT_SIZE / LEFT_COLUMN;
-
-    ROOT.style.setProperty('--leftColumnScale', `${leftColumnScale}`);
-    //  ROOT.style.setProperty(
-    // 	 '--mapSizeMultiplier',
-    // 	 `${
-    // 		 Number(this.settings.get({ id: PREF_SINGLE_COLUMN_MAP_SIZE })) / 100
-    // 	 }`
-    //  );
-    const RIGHT_SIZE = WIDTH;
-    const rightColumnScale = RIGHT_SIZE / RIGHT_COLUMN;
-    ROOT.style.setProperty('--rightColumnScale', `${rightColumnScale}`);
-    //  }
-  }
+    //   $(
+    //     'play_area_container'
+    //   ).style.gridTemplateColumns = `${LEFT_SIZE}px ${RIGHT_SIZE}px`;
+    // } else {
+      const LEFT_SIZE = WIDTH;
+      const leftColumnScale = LEFT_SIZE / LEFT_COLUMN;
+      ROOT.style.setProperty('--leftColumnScale', `${leftColumnScale}`);
+      // ROOT.style.setProperty(
+      //   '--mapSizeMultiplier',
+      //   `${
+      //     Number(this.settings.get({ id: PREF_SINGLE_COLUMN_MAP_SIZE })) / 100
+      //   }`
+      // );
+      const RIGHT_SIZE = WIDTH;
+      const rightColumnScale = RIGHT_SIZE / RIGHT_COLUMN;
+      ROOT.style.setProperty('--rightColumnScale', `${rightColumnScale}`);
+    }
+  // }
 
   // .########.########.....###....##.....##.########.##......##..#######..########..##....##
   // .##.......##.....##...##.##...###...###.##.......##..##..##.##.....##.##.....##.##...##.
@@ -865,6 +860,7 @@ class MollyHouse implements Game {
   }
 
   onLoadingComplete() {
+    this.loadingComplete = true;
     // debug('Loading complete');
     //  this.cancelLogs(this.gamedatas.canceledNotifIds);
     this.updateLayout();
