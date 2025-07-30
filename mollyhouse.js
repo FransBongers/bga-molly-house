@@ -706,16 +706,56 @@ var pxNumber = function (px) {
 var DISABLED = 'disabled';
 var SELECTABLE = 'selectable';
 var SELECTED = 'selected';
+var PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY = 'confirmEndOfTurnPlayerSwitchOnly';
+var PREF_SHOW_ANIMATIONS = 'showAnimations';
+var PREF_ANIMATION_SPEED = 'animationSpeed';
+var PREF_CARD_INFO_IN_TOOLTIP = 'cardInfoInTooltip';
+var PREF_CARD_SIZE = 'cardSize';
+var PREF_CARD_SIZE_IN_LOG = 'cardSizeInLog';
+var PREF_COLUMN_SIZES = 'columnSizes';
+var PREF_DISABLED = 'disabled';
+var PREF_ENABLED = 'enabled';
+var PREF_SINGLE_COLUMN_MAP_SIZE = 'singleColumnMapSize';
+var PREF_TWO_COLUMN_LAYOUT = 'twoColumnLayout';
 define([
     'dojo',
     'dojo/_base/declare',
+    g_gamethemeurl + 'modules/js/vendor/nouislider.min.js',
     'dojo/fx',
     'dojox/fx/ext-dojo/complex',
     'ebg/core/gamegui',
     'ebg/counter',
 ], function (dojo, declare, noUiSliderDefined) {
+    if (noUiSliderDefined) {
+        noUiSlider = noUiSliderDefined;
+    }
     return declare('bgagame.mollyhouse', ebg.core.gamegui, new MollyHouse());
 });
+var InfoPanel = (function () {
+    function InfoPanel(game) {
+        this.game = game;
+        var gamedatas = game.gamedatas;
+        this.setup(gamedatas);
+    }
+    InfoPanel.create = function (game) {
+        InfoPanel.instance = new InfoPanel(game);
+    };
+    InfoPanel.getInstance = function () {
+        return InfoPanel.instance;
+    };
+    InfoPanel.prototype.clearInterface = function () { };
+    InfoPanel.prototype.updateInterface = function (gamedatas) { };
+    InfoPanel.prototype.setup = function (gamedatas) {
+        var node = document.getElementById('player_boards');
+        if (!node) {
+            return;
+        }
+        node.insertAdjacentHTML('afterbegin', tplInfoPanel());
+    };
+    return InfoPanel;
+}());
+var tplInfoPanel = function () { return "<div class='player-board' id=\"info-panel\">\n  <div id=\"info-panel-buttons\">\n    \n  </div>\n\n</div>"; };
+var tplHelpModeSwitch = function () { return "<div id=\"help-mode-switch\">\n           <input type=\"checkbox\" class=\"checkbox\" id=\"help-mode-chk\" />\n           <label class=\"label\" for=\"help-mode-chk\">\n             <div class=\"ball\"></div>\n           </label><svg aria-hidden=\"true\" focusable=\"false\" data-prefix=\"fad\" data-icon=\"question-circle\" class=\"svg-inline--fa fa-question-circle fa-w-16\" role=\"img\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512 512\"><g class=\"fa-group\"><path class=\"fa-secondary\" fill=\"currentColor\" d=\"M256 8C119 8 8 119.08 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm0 422a46 46 0 1 1 46-46 46.05 46.05 0 0 1-46 46zm40-131.33V300a12 12 0 0 1-12 12h-56a12 12 0 0 1-12-12v-4c0-41.06 31.13-57.47 54.65-70.66 20.17-11.31 32.54-19 32.54-34 0-19.82-25.27-33-45.7-33-27.19 0-39.44 13.14-57.3 35.79a12 12 0 0 1-16.67 2.13L148.82 170a12 12 0 0 1-2.71-16.26C173.4 113 208.16 90 262.66 90c56.34 0 116.53 44 116.53 102 0 77-83.19 78.21-83.19 106.67z\" opacity=\"0.4\"></path><path class=\"fa-primary\" fill=\"currentColor\" d=\"M256 338a46 46 0 1 0 46 46 46 46 0 0 0-46-46zm6.66-248c-54.5 0-89.26 23-116.55 63.76a12 12 0 0 0 2.71 16.24l34.7 26.31a12 12 0 0 0 16.67-2.13c17.86-22.65 30.11-35.79 57.3-35.79 20.43 0 45.7 13.14 45.7 33 0 15-12.37 22.66-32.54 34C247.13 238.53 216 254.94 216 296v4a12 12 0 0 0 12 12h56a12 12 0 0 0 12-12v-1.33c0-28.46 83.19-29.67 83.19-106.67 0-58-60.19-102-116.53-102z\"></path></g></svg>\n         </div>"; };
 var Interaction = (function () {
     function Interaction(game) {
         this.game = game;
@@ -874,6 +914,298 @@ var Interaction = (function () {
     };
     return Interaction;
 }());
+var Modal = (function () {
+    function Modal(id, config) {
+        var _this = this;
+        this.open = false;
+        this.container = 'ebd-body';
+        this.class = 'custom_popin';
+        this.autoShow = false;
+        this.modalTpl = "\n    <div id='popin_${id}_container' class=\"${class}_container\">\n      <div id='popin_${id}_underlay' class=\"${class}_underlay\"></div>\n      <div id='popin_${id}_wrapper' class=\"${class}_wrapper\">\n        <div id=\"popin_${id}\" class=\"${class}\">\n          ${titleTpl}\n          ${closeIconTpl}\n          ${helpIconTpl}\n          ${contentsTpl}\n        </div>\n      </div>\n    </div>\n  ";
+        this.closeIcon = 'fa-times-circle';
+        this.closeIconTpl = '<a id="popin_${id}_close" class="${class}_closeicon"><i class="fa ${closeIcon} fa-2x" aria-hidden="true"></i></a>';
+        this.closeAction = 'destroy';
+        this.closeWhenClickOnUnderlay = true;
+        this.helpIcon = null;
+        this.helpLink = '#';
+        this.helpIconTpl = '<a href="${helpLink}" target="_blank" id="popin_${id}_help" class="${class}_helpicon"><i class="fa ${helpIcon} fa-2x" aria-hidden="true"></i></a>';
+        this.title = null;
+        this.titleTpl = '<h2 id="popin_${id}_title" class="${class}_title">${title}</h2>';
+        this.contentsTpl = "\n      <div id=\"popin_${id}_contents\" class=\"${class}_contents\">\n        ${contents}\n      </div>";
+        this.contents = '';
+        this.verticalAlign = 'center';
+        this.animationDuration = 500;
+        this.fadeIn = true;
+        this.fadeOut = true;
+        this.openAnimation = false;
+        this.openAnimationTarget = null;
+        this.openAnimationDelta = 200;
+        this.onShow = null;
+        this.onHide = null;
+        this.statusElt = null;
+        this.scale = 1;
+        this.breakpoint = null;
+        if (id === undefined) {
+            console.error('You need an ID to create a modal');
+            throw 'You need an ID to create a modal';
+        }
+        this.id = id;
+        Object.entries(config).forEach(function (_a) {
+            var key = _a[0], value = _a[1];
+            if (value !== undefined) {
+                _this[key] = value;
+            }
+        });
+        this.create();
+        if (this.autoShow)
+            this.show();
+    }
+    Modal.prototype.isDisplayed = function () {
+        return this.open;
+    };
+    Modal.prototype.isCreated = function () {
+        return this.id != null;
+    };
+    Modal.prototype.create = function () {
+        var _this = this;
+        dojo.destroy('popin_' + this.id + '_container');
+        var titleTpl = this.title == null ? '' : dojo.string.substitute(this.titleTpl, this);
+        var closeIconTpl = this.closeIcon == null ? '' : dojo.string.substitute(this.closeIconTpl, this);
+        var helpIconTpl = this.helpIcon == null ? '' : dojo.string.substitute(this.helpIconTpl, this);
+        var contentsTpl = dojo.string.substitute(this.contentsTpl, this);
+        var modalTpl = dojo.string.substitute(this.modalTpl, {
+            id: this.id,
+            class: this.class,
+            titleTpl: titleTpl,
+            closeIconTpl: closeIconTpl,
+            helpIconTpl: helpIconTpl,
+            contentsTpl: contentsTpl,
+        });
+        dojo.place(modalTpl, this.container);
+        dojo.style('popin_' + this.id + '_container', {
+            display: 'none',
+            position: 'absolute',
+            left: '0px',
+            top: '0px',
+            width: '100%',
+            height: '100%',
+        });
+        dojo.style('popin_' + this.id + '_underlay', {
+            position: 'absolute',
+            left: '0px',
+            top: '0px',
+            width: '100%',
+            height: '100%',
+            zIndex: 949,
+            opacity: 0,
+            backgroundColor: 'white',
+        });
+        dojo.style('popin_' + this.id + '_wrapper', {
+            position: 'fixed',
+            left: '0px',
+            top: '0px',
+            width: 'min(100%,100vw)',
+            height: '100vh',
+            zIndex: 950,
+            opacity: 0,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: this.verticalAlign,
+            paddingTop: this.verticalAlign == 'center' ? 0 : '125px',
+            transformOrigin: 'top left',
+        });
+        this.adjustSize();
+        this.resizeListener = dojo.connect(window, 'resize', function () { return _this.adjustSize(); });
+        if (this.closeIcon != null && $('popin_' + this.id + '_close')) {
+            dojo.connect($('popin_' + this.id + '_close'), 'click', function () { return _this[_this.closeAction](); });
+        }
+        if (this.closeWhenClickOnUnderlay) {
+            dojo.connect($('popin_' + this.id + '_underlay'), 'click', function () { return _this[_this.closeAction](); });
+            dojo.connect($('popin_' + this.id + '_wrapper'), 'click', function () { return _this[_this.closeAction](); });
+            dojo.connect($('popin_' + this.id), 'click', function (evt) { return evt.stopPropagation(); });
+        }
+    };
+    Modal.prototype.updateContent = function (newContent) {
+        var contentContainerId = "popin_".concat(this.id, "_contents");
+        dojo.empty(contentContainerId);
+        dojo.place(newContent, contentContainerId);
+    };
+    Modal.prototype.adjustSize = function () {
+        var bdy = dojo.position(this.container);
+        dojo.style('popin_' + this.id + '_container', {
+            width: bdy.w + 'px',
+            height: bdy.h + 'px',
+        });
+        if (this.breakpoint != null) {
+            var newModalWidth = bdy.w * this.scale;
+            var modalScale = newModalWidth / this.breakpoint;
+            if (modalScale > 1)
+                modalScale = 1;
+            dojo.style('popin_' + this.id, {
+                transform: "scale(".concat(modalScale, ")"),
+                transformOrigin: this.verticalAlign == 'center' ? 'center center' : 'top center',
+            });
+        }
+    };
+    Modal.prototype.getOpeningTargetCenter = function () {
+        var startTop, startLeft;
+        if (this.openAnimationTarget == null) {
+            startLeft = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) / 2;
+            startTop = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) / 2;
+        }
+        else {
+            var target = dojo.position(this.openAnimationTarget);
+            startLeft = target.x + target.w / 2;
+            startTop = target.y + target.h / 2;
+        }
+        return {
+            x: startLeft,
+            y: startTop,
+        };
+    };
+    Modal.prototype.fadeInAnimation = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            var containerId = 'popin_' + _this.id + '_container';
+            if (!$(containerId))
+                reject();
+            if (_this.runningAnimation)
+                _this.runningAnimation.stop();
+            var duration = _this.fadeIn ? _this.animationDuration : 0;
+            var animations = [];
+            animations.push(dojo.fadeIn({
+                node: 'popin_' + _this.id + '_wrapper',
+                duration: duration,
+            }));
+            animations.push(dojo.animateProperty({
+                node: 'popin_' + _this.id + '_underlay',
+                duration: duration,
+                properties: { opacity: { start: 0, end: 0.7 } },
+            }));
+            if (_this.openAnimation) {
+                var pos = _this.getOpeningTargetCenter();
+                animations.push(dojo.animateProperty({
+                    node: 'popin_' + _this.id + '_wrapper',
+                    properties: {
+                        transform: { start: 'scale(0)', end: 'scale(1)' },
+                        top: { start: pos.y, end: 0 },
+                        left: { start: pos.x, end: 0 },
+                    },
+                    duration: _this.animationDuration + _this.openAnimationDelta,
+                }));
+            }
+            _this.runningAnimation = dojo.fx.combine(animations);
+            dojo.connect(_this.runningAnimation, 'onEnd', function () { return resolve(); });
+            _this.runningAnimation.play();
+            setTimeout(function () {
+                if ($('popin_' + _this.id + '_container'))
+                    dojo.style('popin_' + _this.id + '_container', 'display', 'block');
+            }, 10);
+        });
+    };
+    Modal.prototype.show = function () {
+        var _this = this;
+        if (this.isOpening || this.open)
+            return;
+        if (this.statusElt !== null) {
+            dojo.addClass(this.statusElt, 'opened');
+        }
+        this.adjustSize();
+        this.isOpening = true;
+        this.isClosing = false;
+        this.fadeInAnimation().then(function () {
+            if (!_this.isOpening)
+                return;
+            _this.isOpening = false;
+            _this.open = true;
+            if (_this.onShow !== null) {
+                _this.onShow();
+            }
+        });
+    };
+    Modal.prototype.fadeOutAnimation = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            var containerId = 'popin_' + _this.id + '_container';
+            if (!$(containerId))
+                reject();
+            if (_this.runningAnimation)
+                _this.runningAnimation.stop();
+            var duration = _this.fadeOut ? _this.animationDuration + (_this.openAnimation ? _this.openAnimationDelta : 0) : 0;
+            var animations = [];
+            animations.push(dojo.fadeOut({
+                node: 'popin_' + _this.id + '_wrapper',
+                duration: duration,
+            }));
+            animations.push(dojo.animateProperty({
+                node: 'popin_' + _this.id + '_underlay',
+                duration: duration,
+                properties: { opacity: { start: 0.7, end: 0 } },
+            }));
+            if (_this.openAnimation) {
+                var pos = _this.getOpeningTargetCenter();
+                animations.push(dojo.animateProperty({
+                    node: 'popin_' + _this.id + '_wrapper',
+                    properties: {
+                        transform: { start: 'scale(1)', end: 'scale(0)' },
+                        top: { start: 0, end: pos.y },
+                        left: { start: 0, end: pos.x },
+                    },
+                    duration: _this.animationDuration,
+                }));
+            }
+            _this.runningAnimation = dojo.fx.combine(animations);
+            dojo.connect(_this.runningAnimation, 'onEnd', function () { return resolve(); });
+            _this.runningAnimation.play();
+        });
+    };
+    Modal.prototype.hide = function () {
+        var _this = this;
+        if (this.isClosing)
+            return;
+        this.isClosing = true;
+        this.isOpening = false;
+        this.fadeOutAnimation().then(function () {
+            if (!_this.isClosing || _this.isOpening)
+                return;
+            _this.isClosing = false;
+            _this.open = false;
+            dojo.style('popin_' + _this.id + '_container', 'display', 'none');
+            if (_this.onHide !== null) {
+                _this.onHide();
+            }
+            if (_this.statusElt !== null) {
+                dojo.removeClass(_this.statusElt, 'opened');
+            }
+        });
+    };
+    Modal.prototype.destroy = function () {
+        var _this = this;
+        if (this.isClosing)
+            return;
+        this.isOpening = false;
+        this.isClosing = true;
+        this.fadeOutAnimation().then(function () {
+            if (!_this.isClosing || _this.isOpening)
+                return;
+            _this.isClosing = false;
+            _this.open = false;
+            _this.kill();
+        });
+    };
+    Modal.prototype.kill = function () {
+        if (this.runningAnimation)
+            this.runningAnimation.stop();
+        var underlayId = 'popin_' + this.id + '_container';
+        dojo.destroy(underlayId);
+        dojo.disconnect(this.resizeListener);
+        this.id = null;
+        if (this.statusElt !== null) {
+            dojo.removeClass(this.statusElt, 'opened');
+        }
+    };
+    return Modal;
+}());
 var MIN_NOTIFICATION_MS = 1200;
 var NotificationManager = (function () {
     function NotificationManager(game) {
@@ -951,6 +1283,440 @@ var NotificationManager = (function () {
     };
     return NotificationManager;
 }());
+var getSettingsConfig = function () {
+    var _a, _b;
+    return ({
+        layout: {
+            id: 'layout',
+            config: (_a = {
+                    twoColumnLayout: {
+                        id: PREF_TWO_COLUMN_LAYOUT,
+                        onChangeInSetup: true,
+                        defaultValue: 'disabled',
+                        label: _('Two column layout'),
+                        type: 'select',
+                        options: [
+                            {
+                                label: _('Enabled'),
+                                value: 'enabled',
+                            },
+                            {
+                                label: _('Disabled (single column)'),
+                                value: 'disabled',
+                            },
+                        ],
+                    },
+                    columnSizes: {
+                        id: PREF_COLUMN_SIZES,
+                        onChangeInSetup: true,
+                        label: _('Column sizes'),
+                        defaultValue: 50,
+                        visibleCondition: {
+                            id: PREF_TWO_COLUMN_LAYOUT,
+                            values: [PREF_ENABLED],
+                        },
+                        sliderConfig: {
+                            step: 5,
+                            padding: 0,
+                            range: {
+                                min: 30,
+                                max: 70,
+                            },
+                        },
+                        type: 'slider',
+                    }
+                },
+                _a[PREF_SINGLE_COLUMN_MAP_SIZE] = {
+                    id: PREF_SINGLE_COLUMN_MAP_SIZE,
+                    onChangeInSetup: true,
+                    label: _('Map size'),
+                    defaultValue: 100,
+                    visibleCondition: {
+                        id: PREF_TWO_COLUMN_LAYOUT,
+                        values: [DISABLED],
+                    },
+                    sliderConfig: {
+                        step: 5,
+                        padding: 0,
+                        range: {
+                            min: 30,
+                            max: 100,
+                        },
+                    },
+                    type: 'slider',
+                },
+                _a[PREF_CARD_SIZE] = {
+                    id: PREF_CARD_SIZE,
+                    onChangeInSetup: false,
+                    label: _("Size of cards"),
+                    defaultValue: 100,
+                    sliderConfig: {
+                        step: 5,
+                        padding: 0,
+                        range: {
+                            min: 50,
+                            max: 200,
+                        },
+                    },
+                    type: "slider",
+                },
+                _a[PREF_CARD_SIZE_IN_LOG] = {
+                    id: PREF_CARD_SIZE_IN_LOG,
+                    onChangeInSetup: true,
+                    label: _('Size of cards in log'),
+                    defaultValue: 0,
+                    sliderConfig: {
+                        step: 5,
+                        padding: 0,
+                        range: {
+                            min: 0,
+                            max: 150,
+                        },
+                    },
+                    type: 'slider',
+                },
+                _a[PREF_CARD_INFO_IN_TOOLTIP] = {
+                    id: PREF_CARD_INFO_IN_TOOLTIP,
+                    onChangeInSetup: false,
+                    defaultValue: PREF_ENABLED,
+                    label: _('Show card info in tooltip'),
+                    type: 'select',
+                    options: [
+                        {
+                            label: _('Enabled'),
+                            value: PREF_ENABLED,
+                        },
+                        {
+                            label: _('Disabled (card image only)'),
+                            value: PREF_DISABLED,
+                        },
+                    ],
+                },
+                _a),
+        },
+        gameplay: {
+            id: 'gameplay',
+            config: (_b = {},
+                _b[PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY] = {
+                    id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
+                    onChangeInSetup: false,
+                    defaultValue: DISABLED,
+                    label: _('Confirm end of turn and player switch only'),
+                    type: 'select',
+                    options: [
+                        {
+                            label: _('Enabled'),
+                            value: PREF_ENABLED,
+                        },
+                        {
+                            label: _('Disabled (confirm every move)'),
+                            value: PREF_DISABLED,
+                        },
+                    ],
+                },
+                _b[PREF_SHOW_ANIMATIONS] = {
+                    id: PREF_SHOW_ANIMATIONS,
+                    onChangeInSetup: false,
+                    defaultValue: PREF_ENABLED,
+                    label: _('Show animations'),
+                    type: 'select',
+                    options: [
+                        {
+                            label: _('Enabled'),
+                            value: PREF_ENABLED,
+                        },
+                        {
+                            label: _('Disabled'),
+                            value: PREF_DISABLED,
+                        },
+                    ],
+                },
+                _b[PREF_ANIMATION_SPEED] = {
+                    id: PREF_ANIMATION_SPEED,
+                    onChangeInSetup: false,
+                    label: _('Animation speed'),
+                    defaultValue: 1600,
+                    visibleCondition: {
+                        id: PREF_SHOW_ANIMATIONS,
+                        values: [PREF_ENABLED],
+                    },
+                    sliderConfig: {
+                        step: 100,
+                        padding: 0,
+                        range: {
+                            min: 100,
+                            max: 2000,
+                        },
+                    },
+                    type: 'slider',
+                },
+                _b),
+        },
+    });
+};
+var Settings = (function () {
+    function Settings(game) {
+        this.settings = {};
+        this.selectedTab = "layout";
+        this.tabs = [
+            {
+                id: "layout",
+                name: _("Layout"),
+            },
+            {
+                id: "gameplay",
+                name: _("Gameplay"),
+            },
+        ];
+        this.game = game;
+        var gamedatas = game.gamedatas;
+        this.setup({ gamedatas: gamedatas });
+    }
+    Settings.create = function (game) {
+        Settings.instance = new Settings(game);
+    };
+    Settings.getInstance = function () {
+        return Settings.instance;
+    };
+    Settings.prototype.clearInterface = function () { };
+    Settings.prototype.updateInterface = function (_a) {
+        var gamedatas = _a.gamedatas;
+    };
+    Settings.prototype.addButton = function (_a) {
+        var gamedatas = _a.gamedatas;
+        var configPanel = document.getElementById("info-panel-buttons");
+        if (configPanel) {
+            configPanel.insertAdjacentHTML("beforeend", tplSettingsButton());
+        }
+    };
+    Settings.prototype.setupModal = function (_a) {
+        var gamedatas = _a.gamedatas;
+        this.modal = new Modal("settings_modal", {
+            class: "settings_modal",
+            closeIcon: "fa-times",
+            titleTpl: '<h2 id="popin_${id}_title" class="${class}_title">${title}</h2>',
+            title: _("Settings"),
+            contents: tplSettingsModalContent({
+                tabs: this.tabs,
+            }),
+            closeAction: "hide",
+            verticalAlign: "flex-start",
+            breakpoint: 740,
+        });
+    };
+    Settings.prototype.setup = function (_a) {
+        var _this = this;
+        var gamedatas = _a.gamedatas;
+        this.addButton({ gamedatas: gamedatas });
+        this.setupModal({ gamedatas: gamedatas });
+        this.setupModalContent();
+        this.changeTab({ id: this.selectedTab });
+        dojo.connect($("show_settings"), "onclick", function () { return _this.open(); });
+        this.tabs.forEach(function (_a) {
+            var id = _a.id;
+            dojo.connect($("settings_modal_tab_".concat(id)), "onclick", function () {
+                return _this.changeTab({ id: id });
+            });
+        });
+    };
+    Settings.prototype.setupModalContent = function () {
+        var _this = this;
+        var config = getSettingsConfig();
+        var node = document.getElementById("setting_modal_content");
+        if (!node) {
+            return;
+        }
+        Object.entries(config).forEach(function (_a) {
+            var tabId = _a[0], tabConfig = _a[1];
+            node.insertAdjacentHTML("beforeend", tplSettingsModalTabContent({ id: tabId }));
+            var tabContentNode = document.getElementById("settings_modal_tab_content_".concat(tabId));
+            if (!tabContentNode) {
+                return;
+            }
+            Object.values(tabConfig.config).forEach(function (setting) {
+                var id = setting.id, type = setting.type, defaultValue = setting.defaultValue, visibleCondition = setting.visibleCondition;
+                var localValue = localStorage.getItem(_this.getLocalStorageKey({ id: id }));
+                _this.settings[id] = localValue || defaultValue;
+                var methodName = _this.getMethodName({ id: id });
+                if (setting.onChangeInSetup && localValue && _this[methodName]) {
+                    _this[methodName](localValue);
+                }
+                if (setting.type === "select") {
+                    var visible = !visibleCondition ||
+                        (visibleCondition &&
+                            visibleCondition.values.includes(_this.settings[visibleCondition.id]));
+                    tabContentNode.insertAdjacentHTML("beforeend", tplPlayerPrefenceSelectRow({
+                        setting: setting,
+                        currentValue: _this.settings[setting.id],
+                        visible: visible,
+                    }));
+                    var controlId_1 = "setting_".concat(setting.id);
+                    $(controlId_1).addEventListener("change", function () {
+                        var value = $(controlId_1).value;
+                        _this.changeSetting({ id: setting.id, value: value });
+                    });
+                }
+                else if (setting.type === "slider") {
+                    var visible = !visibleCondition ||
+                        (visibleCondition &&
+                            visibleCondition.values.includes(_this.settings[visibleCondition.id]));
+                    tabContentNode.insertAdjacentHTML("beforeend", tplPlayerPrefenceSliderRow({
+                        id: setting.id,
+                        label: setting.label,
+                        visible: visible,
+                    }));
+                    var sliderConfig = __assign(__assign({}, setting.sliderConfig), { start: _this.settings[setting.id] });
+                    noUiSlider.create($("setting_" + setting.id), sliderConfig);
+                    $("setting_" + setting.id).noUiSlider.on("slide", function (arg) {
+                        return _this.changeSetting({ id: setting.id, value: arg[0] });
+                    });
+                }
+            });
+        });
+    };
+    Settings.prototype.changeSetting = function (_a) {
+        var id = _a.id, value = _a.value;
+        var suffix = this.getSuffix({ id: id });
+        this.settings[id] = value;
+        localStorage.setItem(this.getLocalStorageKey({ id: id }), value);
+        var methodName = this.getMethodName({ id: id });
+        if (this[methodName]) {
+            this[methodName](value);
+        }
+    };
+    Settings.prototype.onChangeTwoColumnLayoutSetting = function (value) {
+        this.checkColumnSizesVisisble();
+        var node = document.getElementById("play-area-container");
+        if (node) {
+            node.setAttribute("data-two-columns", value);
+        }
+        this.game.updateLayout();
+    };
+    Settings.prototype.onChangeColumnSizesSetting = function (value) {
+        this.game.updateLayout();
+    };
+    Settings.prototype.onChangeSingleColumnMapSizeSetting = function (value) {
+        this.game.updateLayout();
+    };
+    Settings.prototype.onChangeCardSizeSetting = function (value) {
+    };
+    Settings.prototype.onChangeCardSizeInLogSetting = function (value) {
+        var ROOT = document.documentElement;
+        ROOT.style.setProperty("--logCardScale", "".concat(Number(value) / 100));
+    };
+    Settings.prototype.onChangeAnimationSpeedSetting = function (value) {
+        var duration = 2100 - value;
+        debug("onChangeAnimationSpeedSetting", duration);
+        this.game.animationManager.getSettings().duration = duration;
+    };
+    Settings.prototype.onChangeShowAnimationsSetting = function (value) {
+        if (value === PREF_ENABLED) {
+            this.game.animationManager.getSettings().duration = Number(this.settings[PREF_ANIMATION_SPEED]);
+        }
+        else {
+            this.game.animationManager.getSettings().duration = 0;
+        }
+        this.checkAnmimationSpeedVisisble();
+    };
+    Settings.prototype.onChangeCardInfoInTooltipSetting = function (value) {
+        this.game.updateLogTooltips();
+    };
+    Settings.prototype.changeTab = function (_a) {
+        var id = _a.id;
+        var currentTab = document.getElementById("settings_modal_tab_".concat(this.selectedTab));
+        var currentTabContent = document.getElementById("settings_modal_tab_content_".concat(this.selectedTab));
+        currentTab.removeAttribute("data-state");
+        if (currentTabContent) {
+            currentTabContent.style.display = "none";
+        }
+        this.selectedTab = id;
+        var tab = document.getElementById("settings_modal_tab_".concat(id));
+        var tabContent = document.getElementById("settings_modal_tab_content_".concat(this.selectedTab));
+        tab.setAttribute("data-state", "selected");
+        if (tabContent) {
+            tabContent.style.display = "";
+        }
+    };
+    Settings.prototype.checkAnmimationSpeedVisisble = function () {
+        var sliderNode = document.getElementById("setting_row_animationSpeed");
+        if (!sliderNode) {
+            return;
+        }
+        if (this.settings[PREF_SHOW_ANIMATIONS] === PREF_ENABLED) {
+            sliderNode.style.display = "";
+        }
+        else {
+            sliderNode.style.display = "none";
+        }
+    };
+    Settings.prototype.checkColumnSizesVisisble = function () {
+        var sliderNode = document.getElementById("setting_row_columnSizes");
+        var mapSizeSliderNode = document.getElementById("setting_row_singleColumnMapSize");
+        if (!(sliderNode && mapSizeSliderNode)) {
+            return;
+        }
+        if (this.settings["twoColumnsLayout"] === PREF_ENABLED) {
+            sliderNode.style.display = "";
+            mapSizeSliderNode.style.display = "none";
+        }
+        else {
+            sliderNode.style.display = "none";
+            mapSizeSliderNode.style.display = "";
+        }
+    };
+    Settings.prototype.getMethodName = function (_a) {
+        var id = _a.id;
+        return "onChange".concat(this.getSuffix({ id: id }), "Setting");
+    };
+    Settings.prototype.get = function (id) {
+        return this.settings[id] || null;
+    };
+    Settings.prototype.getSuffix = function (_a) {
+        var id = _a.id;
+        return id.charAt(0).toUpperCase() + id.slice(1);
+    };
+    Settings.prototype.getLocalStorageKey = function (_a) {
+        var id = _a.id;
+        return "".concat(this.game.framework().game_name, "-").concat(this.getSuffix({ id: id }));
+    };
+    Settings.prototype.open = function () {
+        this.modal.show();
+    };
+    return Settings;
+}());
+var tplSettingsButton = function () {
+    return "<div id=\"show_settings\">\n  <svg  xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 512\">\n    <g>\n      <path class=\"fa-secondary\" fill=\"currentColor\" d=\"M638.41 387a12.34 12.34 0 0 0-12.2-10.3h-16.5a86.33 86.33 0 0 0-15.9-27.4L602 335a12.42 12.42 0 0 0-2.8-15.7 110.5 110.5 0 0 0-32.1-18.6 12.36 12.36 0 0 0-15.1 5.4l-8.2 14.3a88.86 88.86 0 0 0-31.7 0l-8.2-14.3a12.36 12.36 0 0 0-15.1-5.4 111.83 111.83 0 0 0-32.1 18.6 12.3 12.3 0 0 0-2.8 15.7l8.2 14.3a86.33 86.33 0 0 0-15.9 27.4h-16.5a12.43 12.43 0 0 0-12.2 10.4 112.66 112.66 0 0 0 0 37.1 12.34 12.34 0 0 0 12.2 10.3h16.5a86.33 86.33 0 0 0 15.9 27.4l-8.2 14.3a12.42 12.42 0 0 0 2.8 15.7 110.5 110.5 0 0 0 32.1 18.6 12.36 12.36 0 0 0 15.1-5.4l8.2-14.3a88.86 88.86 0 0 0 31.7 0l8.2 14.3a12.36 12.36 0 0 0 15.1 5.4 111.83 111.83 0 0 0 32.1-18.6 12.3 12.3 0 0 0 2.8-15.7l-8.2-14.3a86.33 86.33 0 0 0 15.9-27.4h16.5a12.43 12.43 0 0 0 12.2-10.4 112.66 112.66 0 0 0 .01-37.1zm-136.8 44.9c-29.6-38.5 14.3-82.4 52.8-52.8 29.59 38.49-14.3 82.39-52.8 52.79zm136.8-343.8a12.34 12.34 0 0 0-12.2-10.3h-16.5a86.33 86.33 0 0 0-15.9-27.4l8.2-14.3a12.42 12.42 0 0 0-2.8-15.7 110.5 110.5 0 0 0-32.1-18.6A12.36 12.36 0 0 0 552 7.19l-8.2 14.3a88.86 88.86 0 0 0-31.7 0l-8.2-14.3a12.36 12.36 0 0 0-15.1-5.4 111.83 111.83 0 0 0-32.1 18.6 12.3 12.3 0 0 0-2.8 15.7l8.2 14.3a86.33 86.33 0 0 0-15.9 27.4h-16.5a12.43 12.43 0 0 0-12.2 10.4 112.66 112.66 0 0 0 0 37.1 12.34 12.34 0 0 0 12.2 10.3h16.5a86.33 86.33 0 0 0 15.9 27.4l-8.2 14.3a12.42 12.42 0 0 0 2.8 15.7 110.5 110.5 0 0 0 32.1 18.6 12.36 12.36 0 0 0 15.1-5.4l8.2-14.3a88.86 88.86 0 0 0 31.7 0l8.2 14.3a12.36 12.36 0 0 0 15.1 5.4 111.83 111.83 0 0 0 32.1-18.6 12.3 12.3 0 0 0 2.8-15.7l-8.2-14.3a86.33 86.33 0 0 0 15.9-27.4h16.5a12.43 12.43 0 0 0 12.2-10.4 112.66 112.66 0 0 0 .01-37.1zm-136.8 45c-29.6-38.5 14.3-82.5 52.8-52.8 29.59 38.49-14.3 82.39-52.8 52.79z\" opacity=\"0.4\"></path>\n      <path class=\"fa-primary\" fill=\"currentColor\" d=\"M420 303.79L386.31 287a173.78 173.78 0 0 0 0-63.5l33.7-16.8c10.1-5.9 14-18.2 10-29.1-8.9-24.2-25.9-46.4-42.1-65.8a23.93 23.93 0 0 0-30.3-5.3l-29.1 16.8a173.66 173.66 0 0 0-54.9-31.7V58a24 24 0 0 0-20-23.6 228.06 228.06 0 0 0-76 .1A23.82 23.82 0 0 0 158 58v33.7a171.78 171.78 0 0 0-54.9 31.7L74 106.59a23.91 23.91 0 0 0-30.3 5.3c-16.2 19.4-33.3 41.6-42.2 65.8a23.84 23.84 0 0 0 10.5 29l33.3 16.9a173.24 173.24 0 0 0 0 63.4L12 303.79a24.13 24.13 0 0 0-10.5 29.1c8.9 24.1 26 46.3 42.2 65.7a23.93 23.93 0 0 0 30.3 5.3l29.1-16.7a173.66 173.66 0 0 0 54.9 31.7v33.6a24 24 0 0 0 20 23.6 224.88 224.88 0 0 0 75.9 0 23.93 23.93 0 0 0 19.7-23.6v-33.6a171.78 171.78 0 0 0 54.9-31.7l29.1 16.8a23.91 23.91 0 0 0 30.3-5.3c16.2-19.4 33.7-41.6 42.6-65.8a24 24 0 0 0-10.5-29.1zm-151.3 4.3c-77 59.2-164.9-28.7-105.7-105.7 77-59.2 164.91 28.7 105.71 105.7z\"></path>\n    </g>\n  </svg>\n</div>";
+};
+var tplPlayerPrefenceSelectRow = function (_a) {
+    var setting = _a.setting, currentValue = _a.currentValue, _b = _a.visible, visible = _b === void 0 ? true : _b;
+    var values = setting.options
+        .map(function (option) {
+        return "<option value='".concat(option.value, "' ").concat(option.value === currentValue ? 'selected="selected"' : "", ">").concat(_(option.label), "</option>");
+    })
+        .join("");
+    return "\n    <div id=\"setting_row_".concat(setting.id, "\" class=\"player_preference_row\"").concat(!visible ? " style=\"display: none;\"" : '', ">\n      <div class=\"player_preference_row_label\">").concat(_(setting.label), "</div>\n      <div class=\"player_preference_row_value\">\n        <select id=\"setting_").concat(setting.id, "\" class=\"\" style=\"display: block;\">\n        ").concat(values, "\n        </select>\n      </div>\n    </div>\n  ");
+};
+var tplSettingsModalTabContent = function (_a) {
+    var id = _a.id;
+    return "\n  <div id=\"settings_modal_tab_content_".concat(id, "\" style=\"display: none;\"></div>");
+};
+var tplSettingsModalTab = function (_a) {
+    var id = _a.id, name = _a.name;
+    return "\n  <div id=\"settings_modal_tab_".concat(id, "\" class=\"settings_modal_tab\">\n    <span>").concat(_(name), "</span>\n  </div>");
+};
+var tplSettingsModalContent = function (_a) {
+    var tabs = _a.tabs;
+    return "<div id=\"setting_modal_content\">\n    <div class=\"settings_modal_tabs\">\n  ".concat(tabs
+        .map(function (_a) {
+        var id = _a.id, name = _a.name;
+        return tplSettingsModalTab({ id: id, name: name });
+    })
+        .join(""), "\n    </div>\n  </div>");
+};
+var tplPlayerPrefenceSliderRow = function (_a) {
+    var label = _a.label, id = _a.id, _b = _a.visible, visible = _b === void 0 ? true : _b;
+    return "\n  <div id=\"setting_row_".concat(id, "\" class=\"player_preference_row\"").concat(!visible ? " style=\"display: none;\"" : '', ">\n    <div class=\"player_preference_row_label\">").concat(_(label), "</div>\n    <div class=\"player_preference_row_value slider\">\n      <div id=\"setting_").concat(id, "\"></div>\n    </div>\n  </div>\n  ");
+};
 var ConfirmPartialTurn = (function () {
     function ConfirmPartialTurn(game) {
         this.game = game;
@@ -1100,7 +1866,9 @@ var MollyHouse = (function () {
         var _this = this;
         var body = document.getElementById('ebd-body');
         this.mobileVersion = body && body.classList.contains('mobile_version');
+        console.log('setup');
         dojo.place("<div id='customActions' style='display:inline-block'></div>", $('generalactions'), 'after');
+        console.log('add game_play_area');
         document
             .getElementById('game_play_area')
             .insertAdjacentHTML('afterbegin', tplPlayArea());
@@ -1111,8 +1879,13 @@ var MollyHouse = (function () {
         this.setupPlayerOrder(gamedatas.playerOrder);
         this._connections = [];
         Object.values(this.states).forEach(function (state) { return state.create(_this); });
+        InfoPanel.create(this);
+        Settings.create(this);
+        var settings = Settings.getInstance();
         this.animationManager = new AnimationManager(this, {
-            duration: 500,
+            duration: settings.get(PREF_SHOW_ANIMATIONS) === DISABLED
+                ? 0
+                : 2100 - settings.get(PREF_ANIMATION_SPEED),
         });
         StaticData.create(this);
         Interaction.create(this);
@@ -1255,19 +2028,36 @@ var MollyHouse = (function () {
         var stepId = _a.stepId;
     };
     MollyHouse.prototype.updateLayout = function () {
-        if (!this.loadingComplete) {
+        var settings = Settings.getInstance();
+        if (!Settings.getInstance()) {
             return;
         }
+        $('play-area-container').setAttribute('data-two-columns', settings.get(PREF_TWO_COLUMN_LAYOUT));
         var ROOT = document.documentElement;
-        var WIDTH = $('moho-play-area').getBoundingClientRect()['width'] - 8;
+        var WIDTH = $('play-area-container').getBoundingClientRect()['width'] - 8;
         var LEFT_COLUMN = 1500;
         var RIGHT_COLUMN = 634;
-        var LEFT_SIZE = WIDTH;
-        var leftColumnScale = LEFT_SIZE / LEFT_COLUMN;
-        ROOT.style.setProperty('--leftColumnScale', "".concat(leftColumnScale));
-        var RIGHT_SIZE = WIDTH;
-        var rightColumnScale = RIGHT_SIZE / RIGHT_COLUMN;
-        ROOT.style.setProperty('--rightColumnScale', "".concat(rightColumnScale));
+        if (settings.get(PREF_TWO_COLUMN_LAYOUT) === PREF_ENABLED) {
+            WIDTH = WIDTH - 8;
+            var size = Number(settings.get(PREF_COLUMN_SIZES));
+            var proportions = [size, 100 - size];
+            var LEFT_SIZE = (proportions[0] * WIDTH) / 100;
+            var leftColumnScale = LEFT_SIZE / LEFT_COLUMN;
+            ROOT.style.setProperty('--leftColumnScale', "".concat(leftColumnScale));
+            ROOT.style.setProperty('--mapSizeMultiplier', '1');
+            var RIGHT_SIZE = (proportions[1] * WIDTH) / 100;
+            var rightColumnScale = RIGHT_SIZE / RIGHT_COLUMN;
+            ROOT.style.setProperty('--rightColumnScale', "".concat(rightColumnScale));
+            $('play-area-container').style.gridTemplateColumns = "".concat(LEFT_SIZE, "px ").concat(RIGHT_SIZE, "px");
+        }
+        else {
+            var LEFT_SIZE = WIDTH;
+            var leftColumnScale = LEFT_SIZE / LEFT_COLUMN;
+            ROOT.style.setProperty('--leftColumnScale', "".concat(leftColumnScale));
+            var RIGHT_SIZE = WIDTH;
+            var rightColumnScale = RIGHT_SIZE / RIGHT_COLUMN;
+            ROOT.style.setProperty('--rightColumnScale', "".concat(rightColumnScale));
+        }
     };
     MollyHouse.prototype.onAddingNewUndoableStepToLog = function (notif) {
         var _this = this;
@@ -1382,10 +2172,11 @@ var MollyHouse = (function () {
     MollyHouse.prototype.updatePlayerOrdering = function () {
         this.framework().inherited(arguments);
         var container = document.getElementById('player_boards');
-        var infoPanel = document.getElementById('info_panel');
+        var infoPanel = document.getElementById('info-panel');
         if (!container) {
             return;
         }
+        container.insertAdjacentElement('afterbegin', infoPanel);
     };
     MollyHouse.prototype.actionError = function (actionName) {
         this.framework().showMessage("cannot take ".concat(actionName, " action"), 'error');
@@ -1405,7 +2196,7 @@ var Board = (function () {
     };
     Board.prototype.setup = function (gamedatas) {
         document
-            .getElementById('moho-left-column')
+            .getElementById('left-column')
             .insertAdjacentHTML('afterbegin', tplBoard(gamedatas));
         this.ui = {
             containers: {
@@ -1606,4 +2397,4 @@ var StaticData = (function () {
     };
     return StaticData;
 }());
-var tplPlayArea = function () { return "\n  <div id=\"moho-play-area\">\n    <div id=\"moho-left-column\"></div>\n    <div id=\"moho-right-column\"></div>\n  </div>\n"; };
+var tplPlayArea = function () { return "\n  <div id=\"play-area-container\">\n    <div id=\"left-column\"></div>\n    <div id=\"right-column\"></div>\n  </div>\n"; };

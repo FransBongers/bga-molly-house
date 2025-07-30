@@ -19,14 +19,15 @@ html {
   background-attachment: fixed;
 }
 
-#moho-play-areaa {
+#play-area-container {
   padding: 4px;
   display: grid;
   grid-template-columns: auto auto;
   grid-gap: 8px;
 }
 
-#play[data-two-columns='disabled'] {
+#play-area-container[data-two-columns='disabled'] {
+  // padding: 4px; // Check this?
   display: flex;
   flex-flow: column;
   align-items: center;

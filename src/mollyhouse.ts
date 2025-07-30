@@ -75,7 +75,7 @@ class MollyHouse implements Game {
   public setup(gamedatas: MollyHouseGamedatas) {
     const body = document.getElementById('ebd-body');
     this.mobileVersion = body && body.classList.contains('mobile_version');
-
+    console.log('setup');
     // Create a new div for buttons to avoid BGA auto clearing it
     dojo.place(
       "<div id='customActions' style='display:inline-block'></div>",
@@ -83,6 +83,7 @@ class MollyHouse implements Game {
       'after'
     );
 
+    console.log('add game_play_area');
     document
       .getElementById('game_play_area')
       .insertAdjacentHTML('afterbegin', tplPlayArea());
@@ -100,18 +101,20 @@ class MollyHouse implements Game {
 
     Object.values(this.states).forEach((state) => state.create(this));
 
+    InfoPanel.create(this);
+
     //  this.tooltipManager = new TooltipManager(this);
     //  this.playerManager = new PlayerManager(this);
-    //  this.infoPanel = new InfoPanel(this);
-    //  this.settings = new Settings(this);
+    Settings.create(this);
+    const settings = Settings.getInstance();
     //  this.infoPanel.setupAddCardTooltips();
     //  this.informationModal = new InformationModal(this);
 
     this.animationManager = new AnimationManager(this, {
-      duration: 500,
-      //  this.settings.get({ id: PREF_SHOW_ANIMATIONS }) === DISABLED
-      // 	 ? 0
-      // 	 : 2100 - (this.settings.get({ id: PREF_ANIMATION_SPEED }) as number),
+      duration:
+        settings.get(PREF_SHOW_ANIMATIONS) === DISABLED
+          ? 0
+          : 2100 - (settings.get(PREF_ANIMATION_SPEED) as number),
     });
 
     //  this.cardManager = new GestCardManager(this);
@@ -628,53 +631,52 @@ class MollyHouse implements Game {
   }
 
   public updateLayout() {
-    if (!this.loadingComplete) {
+    const settings = Settings.getInstance();
+
+    if (!Settings.getInstance()) {
       return;
     }
-    // if (!this.settings) {
-    //   return;
-    // }
 
-    // $('play_area_container').setAttribute(
-    //   'data-two-columns',
-    //   this.settings.get({ id: 'twoColumnsLayout' })
-    // );
+    $('play-area-container').setAttribute(
+      'data-two-columns',
+      settings.get(PREF_TWO_COLUMN_LAYOUT)
+    );
 
     const ROOT = document.documentElement;
-    let WIDTH = $('moho-play-area').getBoundingClientRect()['width'] - 8;
+    let WIDTH = $('play-area-container').getBoundingClientRect()['width'] - 8;
     const LEFT_COLUMN = 1500;
     const RIGHT_COLUMN = 634;
 
-    // if (this.settings.get({ id: 'twoColumnsLayout' }) === PREF_ENABLED) {
-    //   WIDTH = WIDTH - 8; // grid gap + padding
-    //   const size = Number(this.settings.get({ id: 'columnSizes' }));
-    //   const proportions = [size, 100 - size];
-    //   const LEFT_SIZE = (proportions[0] * WIDTH) / 100;
-    //   const leftColumnScale = LEFT_SIZE / LEFT_COLUMN;
-    //   ROOT.style.setProperty('--leftColumnScale', `${leftColumnScale}`);
-    //   ROOT.style.setProperty('--mapSizeMultiplier', '1');
-    //   const RIGHT_SIZE = (proportions[1] * WIDTH) / 100;
-    //   const rightColumnScale = RIGHT_SIZE / RIGHT_COLUMN;
-    //   ROOT.style.setProperty('--rightColumnScale', `${rightColumnScale}`);
+    if (settings.get(PREF_TWO_COLUMN_LAYOUT) === PREF_ENABLED) {
+      WIDTH = WIDTH - 8; // grid gap + padding
+      const size = Number(settings.get(PREF_COLUMN_SIZES));
+      const proportions = [size, 100 - size];
+      const LEFT_SIZE = (proportions[0] * WIDTH) / 100;
+      const leftColumnScale = LEFT_SIZE / LEFT_COLUMN;
+      ROOT.style.setProperty('--leftColumnScale', `${leftColumnScale}`);
+      ROOT.style.setProperty('--mapSizeMultiplier', '1');
+      const RIGHT_SIZE = (proportions[1] * WIDTH) / 100;
+      const rightColumnScale = RIGHT_SIZE / RIGHT_COLUMN;
+      ROOT.style.setProperty('--rightColumnScale', `${rightColumnScale}`);
 
-    //   $(
-    //     'play_area_container'
-    //   ).style.gridTemplateColumns = `${LEFT_SIZE}px ${RIGHT_SIZE}px`;
-    // } else {
+      $(
+        'play-area-container'
+      ).style.gridTemplateColumns = `${LEFT_SIZE}px ${RIGHT_SIZE}px`;
+    } else {
       const LEFT_SIZE = WIDTH;
       const leftColumnScale = LEFT_SIZE / LEFT_COLUMN;
       ROOT.style.setProperty('--leftColumnScale', `${leftColumnScale}`);
       // ROOT.style.setProperty(
       //   '--mapSizeMultiplier',
       //   `${
-      //     Number(this.settings.get({ id: PREF_SINGLE_COLUMN_MAP_SIZE })) / 100
+      //     Number(settings.get(PREF_SINGLE_COLUMN_MAP_SIZE)) / 100
       //   }`
       // );
       const RIGHT_SIZE = WIDTH;
       const rightColumnScale = RIGHT_SIZE / RIGHT_COLUMN;
       ROOT.style.setProperty('--rightColumnScale', `${rightColumnScale}`);
     }
-  // }
+  }
 
   // .########.########.....###....##.....##.########.##......##..#######..########..##....##
   // .##.......##.....##...##.##...###...###.##.......##..##..##.##.....##.##.....##.##...##.
@@ -872,18 +874,12 @@ class MollyHouse implements Game {
     this.framework().inherited(arguments);
     // TODO: Update for mobile mode
     const container = document.getElementById('player_boards');
-    const infoPanel = document.getElementById('info_panel');
+    const infoPanel = document.getElementById('info-panel');
 
     if (!container) {
       return;
     }
-    //  container.insertAdjacentElement('afterbegin', infoPanel);
-
-    //  if (this.mobileVersion) {
-    // 	 const travellersInfo = document.getElementById('travellers_info_panel');
-    // 	 console.log('travellersInfo', this.mobileVersion, travellersInfo);
-    // 	 container.insertBefore(travellersInfo, container.childNodes[2]);
-    //  }
+     container.insertAdjacentElement('afterbegin', infoPanel);
   }
 
   //  setAlwaysFixTopActions(alwaysFixed = true, maximum = 30) {

@@ -1,3 +1,7 @@
+@use './info-panel/infoPanel';
+@use 'nouislider';
+@use './settings//settingsModal';
+
 /* make space between buttons on touch devices */
 @media (hover: none) {
   #page-title .action-button.bgabutton,
