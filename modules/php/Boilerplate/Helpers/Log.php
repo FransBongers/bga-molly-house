@@ -1,12 +1,12 @@
 <?php
 
-namespace Bga\Games\MollyHouseFrans\Boilerplate\Helpers;
+namespace Bga\Games\MollyHouse\Boilerplate\Helpers;
 
-use Bga\Games\MollyHouseFrans\Game;
-use Bga\Games\MollyHouseFrans\Boilerplate\Core\Globals;
-use Bga\Games\MollyHouseFrans\Boilerplate\Core\Notifications;
-use Bga\Games\MollyHouseFrans\Boilerplate\Core\Stats;
-use Bga\Games\MollyHouseFrans\Managers\Players;
+use Bga\Games\MollyHouse\Game;
+use Bga\Games\MollyHouse\Boilerplate\Core\Globals;
+use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
+use Bga\Games\MollyHouse\Boilerplate\Core\Stats;
+use Bga\Games\MollyHouse\Managers\Players;
 
 /**
  * Class that allows to log DB change: useful for undo feature

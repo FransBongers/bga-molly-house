@@ -1,11 +1,11 @@
 <?php
-namespace Bga\Games\MollyHouseFrans\Boilerplate\Core;
-use Bga\Games\MollyHouseFrans\Game;
+namespace Bga\Games\MollyHouse\Boilerplate\Core;
+use Bga\Games\MollyHouse\Game;
 
 /*
  * User preferences
  */
-class Preferences extends \Bga\Games\MollyHouseFrans\Boilerplate\Helpers\DB_Manager
+class Preferences extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Manager
 {
   protected static $table = 'user_preferences';
   protected static $primary = 'id';

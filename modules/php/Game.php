@@ -3,7 +3,7 @@
 /**
  *------
  * BGA framework: Gregory Isabelli & Emmanuel Colin & BoardGameArena
- * MollyHouseFrans implementation : © <Your name here> <Your email address here>
+ * MollyHouse implementation : © <Your name here> <Your email address here>
  *
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
@@ -18,23 +18,23 @@
 
 declare(strict_types=1);
 
-namespace Bga\Games\MollyHouseFrans;
+namespace Bga\Games\MollyHouse;
 
 require_once(APP_GAMEMODULE_PATH . "module/table/table.game.php");
 require_once("Boilerplate/constants.inc.php");
 require_once("constants.inc.php");
 
-use Bga\Games\MollyHouseFrans\Boilerplate\Core\Engine;
-use Bga\Games\MollyHouseFrans\Boilerplate\Core\Engine\LeafNode;
-use Bga\Games\MollyHouseFrans\Boilerplate\Core\Globals;
-use Bga\Games\MollyHouseFrans\Boilerplate\Core\Stats;
-use Bga\Games\MollyHouseFrans\Managers\Players;;
+use Bga\Games\MollyHouse\Boilerplate\Core\Engine;
+use Bga\Games\MollyHouse\Boilerplate\Core\Engine\LeafNode;
+use Bga\Games\MollyHouse\Boilerplate\Core\Globals;
+use Bga\Games\MollyHouse\Boilerplate\Core\Stats;
+use Bga\Games\MollyHouse\Managers\Players;;
 
 class Game extends \Bga\GameFramework\Table
 {
-    use \Bga\Games\MollyHouseFrans\DebugTrait;
-    use \Bga\Games\MollyHouseFrans\EngineTrait;
-    use \Bga\Games\MollyHouseFrans\TurnTrait;
+    use \Bga\Games\MollyHouse\DebugTrait;
+    use \Bga\Games\MollyHouse\EngineTrait;
+    use \Bga\Games\MollyHouse\TurnTrait;
 
     /**
      * Your global variables labels:

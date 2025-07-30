@@ -1,10 +1,10 @@
 <?php
 
-namespace Bga\Games\MollyHouseFrans\Managers;
+namespace Bga\Games\MollyHouse\Managers;
 
-use Bga\Games\MollyHouseFrans\Game;
-use Bga\Games\MollyHouseFrans\Boilerplate\Core\Engine;
-use Bga\Games\MollyHouseFrans\Managers\Players;
+use Bga\Games\MollyHouse\Game;
+use Bga\Games\MollyHouse\Boilerplate\Core\Engine;
+use Bga\Games\MollyHouse\Managers\Players;
 
 class AtomicActions
 {
@@ -20,8 +20,8 @@ class AtomicActions
       // throw new \feException(print_r(Globals::getEngine()));
       throw new \BgaVisibleSystemException('Trying to get an atomic action not defined in Actions.php : ' . $actionId);
     }
-    $name = '\Bga\Games\MollyHouseFrans\Actions\\' . self::$classes[$actionId];
-    // $name = '\Bga\Games\MollyHouseFrans\Actions\\' . $actionId;
+    $name = '\Bga\Games\MollyHouse\Actions\\' . self::$classes[$actionId];
+    // $name = '\Bga\Games\MollyHouse\Actions\\' . $actionId;
     return new $name($ctx);
   }
 

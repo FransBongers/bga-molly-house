@@ -1,8 +1,8 @@
 <?php
-namespace Bga\Games\MollyHouseFrans\Boilerplate\Helpers;
+namespace Bga\Games\MollyHouse\Boilerplate\Helpers;
 
-use Bga\Games\MollyHouseFrans\Boilerplate\Core\Notifications;
-use Bga\Games\MollyHouseFrans\Game;
+use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
+use Bga\Games\MollyHouse\Game;
 
 abstract class DB_Model extends \APP_DbObject implements \JsonSerializable
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Bga\Games\MollyHouseFrans\Boilerplate\Core\Engine;
+namespace Bga\Games\MollyHouse\Boilerplate\Core\Engine;
 
 /*
  * AbstractNode: a class that represent an abstract Node
@@ -89,8 +89,8 @@ class AbstractNode
       throw new \BgaVisibleSystemException('Trying to insert a brother of the root');
     }
     // Ensure parent is a seq node
-    if (!$this->parent instanceof \Bga\Games\MollyHouseFrans\Boilerplate\Core\Engine\SeqNode) {
-      $newParent = new \Bga\Games\MollyHouseFrans\Boilerplate\Core\Engine\SeqNode([], []);
+    if (!$this->parent instanceof \Bga\Games\MollyHouse\Boilerplate\Core\Engine\SeqNode) {
+      $newParent = new \Bga\Games\MollyHouse\Boilerplate\Core\Engine\SeqNode([], []);
       $newParent = $this->parent->replaceAtPos($newParent, $index);
       $newParent->pushChild($this);
     }
@@ -108,8 +108,8 @@ class AbstractNode
       throw new \BgaVisibleSystemException('Trying to insert a brother of the root');
     }
     // Ensure parent is a seq node
-    if (!$this->parent instanceof \Bga\Games\MollyHouseFrans\Boilerplate\Core\Engine\SeqNode) {
-      $newParent = new \Bga\Games\MollyHouseFrans\Boilerplate\Core\Engine\SeqNode([], []);
+    if (!$this->parent instanceof \Bga\Games\MollyHouse\Boilerplate\Core\Engine\SeqNode) {
+      $newParent = new \Bga\Games\MollyHouse\Boilerplate\Core\Engine\SeqNode([], []);
       $newParent = $this->parent->replaceAtPos($newParent, $index);
       $newParent->pushChild($this);
     }

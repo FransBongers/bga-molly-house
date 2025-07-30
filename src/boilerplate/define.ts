@@ -11,5 +11,5 @@ define([
   // if (noUiSliderDefined) {
   //   noUiSlider = noUiSliderDefined;
   // }
-  return declare('bgagame.mollyhousefrans', ebg.core.gamegui, new MollyHouse());
+  return declare('bgagame.mollyhouse', ebg.core.gamegui, new MollyHouse());
 });

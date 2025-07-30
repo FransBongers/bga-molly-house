@@ -1,11 +1,11 @@
 <?php
 
-namespace Bga\Games\MollyHouseFrans\Managers;
+namespace Bga\Games\MollyHouse\Managers;
 
-use Bga\Games\MollyHouseFrans\Boilerplate\Core\Globals;
-use Bga\Games\MollyHouseFrans\Boilerplate\Core\Notifications;
-use Bga\Games\MollyHouseFrans\Boilerplate\Helpers\Utils;
-use Bga\Games\MollyHouseFrans\Game;
+use Bga\Games\MollyHouse\Boilerplate\Core\Globals;
+use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
+use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
+use Bga\Games\MollyHouse\Game;
 
 
 
@@ -14,13 +14,13 @@ use Bga\Games\MollyHouseFrans\Game;
  *  a player is an instance of Player class
  */
 
-class Players extends \Bga\Games\MollyHouseFrans\Boilerplate\Helpers\DB_Manager
+class Players extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Manager
 {
   protected static $table = 'player';
   protected static $primary = 'player_id';
   protected static function cast($row)
   {
-    return new \Bga\Games\MollyHouseFrans\Models\Player($row);
+    return new \Bga\Games\MollyHouse\Models\Player($row);
   }
 
 

@@ -1,11 +1,11 @@
 <?php
 
-namespace Bga\Games\MollyHouseFrans\Boilerplate\Core;
+namespace Bga\Games\MollyHouse\Boilerplate\Core;
 
-use Bga\Games\MollyHouseFrans\Game;
-use Bga\Games\MollyHouseFrans\Managers\Players;
-use Bga\Games\MollyHouseFrans\Managers\AtomicActions;
-use Bga\Games\MollyHouseFrans\Boilerplate\Helpers\Log;
+use Bga\Games\MollyHouse\Game;
+use Bga\Games\MollyHouse\Managers\Players;
+use Bga\Games\MollyHouse\Managers\AtomicActions;
+use Bga\Games\MollyHouse\Boilerplate\Helpers\Log;
 
 /*
  * Engine: a class that allows to handle complex flow
@@ -37,8 +37,8 @@ class Engine
    */
   protected static function ensureSeqRootNode()
   {
-    if (!self::$tree instanceof \Bga\Games\MollyHouseFrans\Boilerplate\Core\Engine\SeqNode) {
-      self::$tree = new \Bga\Games\MollyHouseFrans\Boilerplate\Core\Engine\SeqNode([], [self::$tree]);
+    if (!self::$tree instanceof \Bga\Games\MollyHouse\Boilerplate\Core\Engine\SeqNode) {
+      self::$tree = new \Bga\Games\MollyHouse\Boilerplate\Core\Engine\SeqNode([], [self::$tree]);
       self::save();
     }
   }
@@ -71,7 +71,7 @@ class Engine
       $children[] = self::buildTree($child);
     }
 
-    $className = '\Bga\Games\MollyHouseFrans\Boilerplate\Core\Engine\\' . ucfirst($type) . 'Node';
+    $className = '\Bga\Games\MollyHouse\Boilerplate\Core\Engine\\' . ucfirst($type) . 'Node';
     unset($t['children']);
     return new $className($t, $children);
   }

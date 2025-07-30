@@ -1,15 +1,15 @@
 /**
  *------
  * BGA framework: Gregory Isabelli & Emmanuel Colin & BoardGameArena
- * MollyHouseFrans implementation : © Frans Bongers fjmbongers@gmail.com
+ * MollyHouse implementation : © Frans Bongers fjmbongers@gmail.com
  *
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
  * -----
  *
- * mollyhousefrans.js
+ * mollyhouse.js
  *
- * MollyHouseFrans user interface script
+ * MollyHouse user interface script
  *
  * In this file, you are describing the logic of your user interface, in Javascript language.
  *

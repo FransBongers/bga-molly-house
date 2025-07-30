@@ -1,16 +1,16 @@
 <?php
 
-namespace Bga\Games\MollyHouseFrans\Boilerplate\Core;
+namespace Bga\Games\MollyHouse\Boilerplate\Core;
 
-use Bga\Games\MollyHouseFrans;
-use Bga\Games\MollyHouseFrans\Managers\Players;
+use Bga\Games\MollyHouse;
+use Bga\Games\MollyHouse\Managers\Players;
 
 
 /*
  * Globals
  */
 
-class Globals extends \Bga\Games\MollyHouseFrans\Boilerplate\Helpers\DB_Manager
+class Globals extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Manager
 {
   protected static $initialized = false;
   protected static $variables = [

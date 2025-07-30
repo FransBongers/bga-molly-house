@@ -1,5 +1,5 @@
 <?php
-namespace Bga\Games\MollyHouseFrans\Boilerplate\Helpers;
+namespace Bga\Games\MollyHouse\Boilerplate\Helpers;
 
 class QueryBuilder extends \APP_DbObject
 {

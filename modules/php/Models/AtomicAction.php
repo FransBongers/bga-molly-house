@@ -1,13 +1,13 @@
 <?php
 
-namespace Bga\Games\MollyHouseFrans\Models;
+namespace Bga\Games\MollyHouse\Models;
 
-use Bga\Games\MollyHouseFrans\Boilerplate\Core\Engine;
-use Bga\Games\MollyHouseFrans\Game;
-use Bga\Games\MollyHouseFrans\Boilerplate\Core\Globals;
-use Bga\Games\MollyHouseFrans\Boilerplate\Core\Notifications;
-use Bga\Games\MollyHouseFrans\Managers\Players;
-use Bga\Games\MollyHouseFrans\Boilerplate\Helpers\Log;
+use Bga\Games\MollyHouse\Boilerplate\Core\Engine;
+use Bga\Games\MollyHouse\Game;
+use Bga\Games\MollyHouse\Boilerplate\Core\Globals;
+use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
+use Bga\Games\MollyHouse\Managers\Players;
+use Bga\Games\MollyHouse\Boilerplate\Helpers\Log;
 
 /*
  * Action: base class to handle atomic action

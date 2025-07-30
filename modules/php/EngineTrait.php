@@ -1,15 +1,15 @@
 <?php
 
-namespace Bga\Games\MollyHouseFrans;
+namespace Bga\Games\MollyHouse;
 
-use Bga\Games\MollyHouseFrans\Boilerplate\Core\Globals;
-use Bga\Games\MollyHouseFrans\Boilerplate\Core\Engine;
-use Bga\Games\MollyHouseFrans\Managers\Players;
-use Bga\Games\MollyHouseFrans\Managers\AtomicActions;
-use Bga\Games\MollyHouseFrans\Boilerplate\Helpers\Log;
+use Bga\Games\MollyHouse\Boilerplate\Core\Globals;
+use Bga\Games\MollyHouse\Boilerplate\Core\Engine;
+use Bga\Games\MollyHouse\Managers\Players;
+use Bga\Games\MollyHouse\Managers\AtomicActions;
+use Bga\Games\MollyHouse\Boilerplate\Helpers\Log;
 use \Bga\GameFramework\Actions\Types\JsonParam;
 use Bga\GameFramework\Notify;
-use Bga\Games\MollyHouseFrans\Boilerplate\Core\Notifications;
+use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
 
 trait EngineTrait
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Bga\Games\MollyHouseFrans;
+namespace Bga\Games\MollyHouse;
 
-use Bga\Games\MollyHouseFrans\Boilerplate\Core\Notifications;
+use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
 
 class MohoUtils
 {

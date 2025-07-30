@@ -714,7 +714,7 @@ define([
     'ebg/core/gamegui',
     'ebg/counter',
 ], function (dojo, declare, noUiSliderDefined) {
-    return declare('bgagame.mollyhousefrans', ebg.core.gamegui, new MollyHouse());
+    return declare('bgagame.mollyhouse', ebg.core.gamegui, new MollyHouse());
 });
 var Interaction = (function () {
     function Interaction(game) {

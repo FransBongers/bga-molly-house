@@ -1,6 +1,6 @@
 <?php
-namespace Bga\Games\MollyHouseFrans\Boilerplate\Helpers;
-use Bga\Games\MollyHouseFrans\Game;
+namespace Bga\Games\MollyHouse\Boilerplate\Helpers;
+use Bga\Games\MollyHouse\Game;
 
 class DB_Manager extends \APP_DbObject
 {

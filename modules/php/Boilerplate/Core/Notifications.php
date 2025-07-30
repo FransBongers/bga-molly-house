@@ -1,11 +1,11 @@
 <?php
 
-namespace Bga\Games\MollyHouseFrans\Boilerplate\Core;
+namespace Bga\Games\MollyHouse\Boilerplate\Core;
 
-use Bga\Games\MollyHouseFrans\Boilerplate\Helpers\Utils;
-use Bga\Games\MollyHouseFrans\Game;
-use Bga\Games\MollyHouseFrans\Managers\Players;
-use Bga\Games\MollyHouseFrans\Managers\Regions;
+use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
+use Bga\Games\MollyHouse\Game;
+use Bga\Games\MollyHouse\Managers\Players;
+use Bga\Games\MollyHouse\Managers\Regions;
 
 class Notifications
 {

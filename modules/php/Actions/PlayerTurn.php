@@ -1,17 +1,17 @@
 <?php
 
-namespace Bga\Games\MollyHouseFrans\Actions;
+namespace Bga\Games\MollyHouse\Actions;
 
-use Bga\Games\MollyHouseFrans\Boilerplate\Core\Engine;
-use Bga\Games\MollyHouseFrans\Boilerplate\Core\Engine\LeafNode;
-use Bga\Games\MollyHouseFrans\Boilerplate\Core\Notifications;
-use Bga\Games\MollyHouseFrans\Boilerplate\Helpers\Locations;
-use Bga\Games\MollyHouseFrans\Boilerplate\Helpers\Utils;
-use Bga\Games\MollyHouseFrans\Game;
-use Bga\Games\MollyHouseFrans\Managers\AtomicActions;
+use Bga\Games\MollyHouse\Boilerplate\Core\Engine;
+use Bga\Games\MollyHouse\Boilerplate\Core\Engine\LeafNode;
+use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
+use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
+use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
+use Bga\Games\MollyHouse\Game;
+use Bga\Games\MollyHouse\Managers\AtomicActions;
 
 
-class PlayerTurn extends \Bga\Games\MollyHouseFrans\Models\AtomicAction
+class PlayerTurn extends \Bga\Games\MollyHouse\Models\AtomicAction
 {
   public function getState()
   {

@@ -1,16 +1,16 @@
 <?php
 
-namespace Bga\Games\MollyHouseFrans\Models;
+namespace Bga\Games\MollyHouse\Models;
 
-use Bga\Games\MollyHouseFrans\Boilerplate\Core\Preferences;
-use Bga\Games\MollyHouseFrans\Boilerplate\Helpers\Locations;
+use Bga\Games\MollyHouse\Boilerplate\Core\Preferences;
+use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 
 
 /*
  * Player: all utility functions concerning a player
  */
 
-class Player extends \Bga\Games\MollyHouseFrans\Boilerplate\Helpers\DB_Model
+class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
 {
   protected $id;
 

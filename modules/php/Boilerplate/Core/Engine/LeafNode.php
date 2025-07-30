@@ -1,9 +1,9 @@
 <?php
 
-namespace Bga\Games\MollyHouseFrans\Boilerplate\Core\Engine;
+namespace Bga\Games\MollyHouse\Boilerplate\Core\Engine;
 
-use  Bga\Games\MollyHouseFrans\Boilerplate\Core\Notifications;
-use  Bga\Games\MollyHouseFrans\Managers\AtomicActions;
+use  Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
+use  Bga\Games\MollyHouse\Managers\AtomicActions;
 
 /*
  * Leaf: a class that represent a Leaf
@@ -57,7 +57,7 @@ class LeafNode extends AbstractNode
       return AtomicActions::getState($this->info['action'], $this);
     }
 
-    var_dump(\Bga\Games\MollyHouseFrans\Boilerplate\Core\Engine::$tree->toArray());
+    var_dump(\Bga\Games\MollyHouse\Boilerplate\Core\Engine::$tree->toArray());
     throw new \BgaVisibleSystemException('Trying to get state on a leaf without state nor action');
   }
 }

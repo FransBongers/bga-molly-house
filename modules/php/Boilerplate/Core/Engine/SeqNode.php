@@ -1,5 +1,5 @@
 <?php
-namespace Bga\Games\MollyHouseFrans\Boilerplate\Core\Engine;
+namespace Bga\Games\MollyHouse\Boilerplate\Core\Engine;
 
 /*
  * SeqNode: a class that represent a sequence of actions

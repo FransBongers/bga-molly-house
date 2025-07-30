@@ -1,6 +1,6 @@
 <?php
 
-namespace Bga\Games\MollyHouseFrans\Boilerplate\Helpers;
+namespace Bga\Games\MollyHouse\Boilerplate\Helpers;
 
 abstract class Utils extends \APP_DbObject
 {

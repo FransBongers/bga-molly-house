@@ -1,12 +1,12 @@
 <?php
 
-namespace Bga\Games\MollyHouseFrans;
+namespace Bga\Games\MollyHouse;
 
-use Bga\Games\MollyHouseFrans\Boilerplate\Core\Engine;
-use Bga\Games\MollyHouseFrans\Boilerplate\Core\Globals;
-use Bga\Games\MollyHouseFrans\Boilerplate\Core\Notifications;
-use Bga\Games\MollyHouseFrans\Boilerplate\Helpers\Utils;
-use Bga\Games\MollyHouseFrans\Managers\Players;
+use Bga\Games\MollyHouse\Boilerplate\Core\Engine;
+use Bga\Games\MollyHouse\Boilerplate\Core\Globals;
+use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
+use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
+use Bga\Games\MollyHouse\Managers\Players;
 
 
 trait TurnTrait

@@ -1,4 +1,4 @@
 <?php
 
-namespace Bga\Games\MollyHouseFrans;
+namespace Bga\Games\MollyHouse;
 

@@ -1,13 +1,13 @@
 {
-  "name": "mollyhousefrans",
+  "name": "mollyhouse",
   "version": "1.0.0",
   "description": "Molly House for BGA",
-  "main": "mollyhousefrans.js",
+  "main": "mollyhouse.js",
   "scripts": {
     "build:ts": "tsc",
-    "build:scss": "sass --no-source-map src/mollyhousefrans.scss mollyhousefrans.css",
+    "build:scss": "sass --no-source-map src/mollyhouse.scss mollyhouse.css",
     "watch:ts": "tsc --watch",
-    "watch:scss": "sass --watch src/mollyhousefrans.scss mollyhousefrans.css",
+    "watch:scss": "sass --watch src/mollyhouse.scss mollyhouse.css",
     "watch": "npm run watch:ts && npm run watch:scss",
     "build": "npm run build:ts && npm run build:scss"
   },

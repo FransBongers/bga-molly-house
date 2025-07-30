@@ -1,6 +1,6 @@
 <?php
 
-namespace Bga\Games\MollyHouseFrans\Boilerplate\Helpers;
+namespace Bga\Games\MollyHouse\Boilerplate\Helpers;
 
 class Locations
 {
