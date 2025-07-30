@@ -83,7 +83,8 @@
     // border-top-right-radius: 8px;
     // background-color: rgb(145, 173, 186);
     color: ivory;
-    background-color: blue;// base.$player-aid-blue;
+    background-color: rgb(91, 39, 36);
+    // background-color: rgb(223, 176, 103);
   }
 
   #setting_modal_content {
@@ -97,8 +98,8 @@
       .settings_modal_tab {
         flex-grow: 1;
         width: 50%;
-        // background-color: rgb(145, 173, 186);
-        background-color: lightgrey;// base.$tab-color;
+        background-color: rgb(223, 176, 103);
+        // background-color: rgb(91, 39, 36);
         border-bottom: 1px solid black;
         border-left: 1px solid black;
         border-radius: 1px solid black;

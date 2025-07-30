@@ -11,4 +11,21 @@
   width: calc(var(--leftColumnScale) * 1500px);
   // width: 100%;
   // aspect-ratio: 30 / 15;
+  outline: 1px solid black;
+
+  #moho-playmat {
+    --boardScale: var(--leftColumnScale);
+    --tokenScale: var(--leftColumnScale);
+    position: relative;
+    background-image: url('img/playmat.jpg');
+    background-size: 100% 100%;
+    height: calc(var(--leftColumnScale) * 748px);
+    min-height: calc(var(--leftColumnScale) * 748px);
+    width: calc(var(--leftColumnScale) * 880px);
+    position: absolute;
+    left: calc(var(--leftColumnScale) * 203px);
+    top: calc(var(--leftColumnScale) * 201px);
+    border: calc(var(--leftColumnScale) * 2px) solid black;
+    border-radius: calc(var(--leftColumnScale) * 40px);
+  }
 }

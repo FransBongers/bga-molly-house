@@ -21,7 +21,7 @@ class PlayerManager {
   constructor(private game: GameAlias) {
     this.players = {};
 
-    for (const playerId in game.gamedatas.players) {
+    for (const playerId of game.gamedatas.playerOrder) {
       const player = game.gamedatas.players[playerId];
       this.players[playerId] = new MohoPlayer(this.game, player);
     }

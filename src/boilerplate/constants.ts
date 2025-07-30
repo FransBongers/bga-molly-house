@@ -20,3 +20,25 @@ const PREF_DISABLED = 'disabled';
 const PREF_ENABLED = 'enabled';
 const PREF_SINGLE_COLUMN_MAP_SIZE = 'singleColumnMapSize';
 const PREF_TWO_COLUMN_LAYOUT = 'twoColumnLayout';
+
+/**
+ * Var names
+ */
+const BOARD_SCALE = 'boardScale';
+
+/**
+ * Colors
+ */
+const BLUE = 'blue';
+const GREEN = 'green';
+const PINK = 'pink';
+const PURPLE = 'purple';
+const YELLOW = 'yellow';
+
+const HEX_COLOR_COLOR_MAP = {
+  '92a0d0': BLUE,
+  a8ad8c: GREEN,
+  ebc0ba: PINK,
+  '976b85': PURPLE,
+  fcd97f: YELLOW,
+};

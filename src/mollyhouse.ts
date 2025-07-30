@@ -36,7 +36,6 @@ class MollyHouse implements Game {
   //  public settings: Settings;
   public gameOptions: GamedatasAlias['gameOptions'];
   public notificationManager: NotificationManager;
-  //  public playerManager: PlayerManager;
   public playerOrder: number[];
   //  public tooltipManager: TooltipManager;
 
@@ -75,7 +74,7 @@ class MollyHouse implements Game {
   public setup(gamedatas: MollyHouseGamedatas) {
     const body = document.getElementById('ebd-body');
     this.mobileVersion = body && body.classList.contains('mobile_version');
-    console.log('setup');
+
     // Create a new div for buttons to avoid BGA auto clearing it
     dojo.place(
       "<div id='customActions' style='display:inline-block'></div>",
@@ -83,7 +82,6 @@ class MollyHouse implements Game {
       'after'
     );
 
-    console.log('add game_play_area');
     document
       .getElementById('game_play_area')
       .insertAdjacentHTML('afterbegin', tplPlayArea());
@@ -104,10 +102,8 @@ class MollyHouse implements Game {
     InfoPanel.create(this);
 
     //  this.tooltipManager = new TooltipManager(this);
-    //  this.playerManager = new PlayerManager(this);
     Settings.create(this);
     const settings = Settings.getInstance();
-    //  this.infoPanel.setupAddCardTooltips();
     //  this.informationModal = new InformationModal(this);
 
     this.animationManager = new AnimationManager(this, {
@@ -117,14 +113,6 @@ class MollyHouse implements Game {
           : 2100 - (settings.get(PREF_ANIMATION_SPEED) as number),
     });
 
-    //  this.cardManager = new GestCardManager(this);
-    //  this.forceManager = new ForceManager(this);
-    //  this.markerManager = new MarkerManager(this);
-    //  this.travellerManager = new TravellerManager(this);
-    //  this.travellersInfoPanel = new TravellersInfoPanel(this);
-
-    //  this.gameMap = new GameMap(this);
-    //  this.cardArea = new CardArea(this);
     StaticData.create(this);
     Interaction.create(this);
     PlayerManager.create(this);
@@ -645,7 +633,7 @@ class MollyHouse implements Game {
     const ROOT = document.documentElement;
     let WIDTH = $('play-area-container').getBoundingClientRect()['width'] - 8;
     const LEFT_COLUMN = 1500;
-    const RIGHT_COLUMN = 634;
+    const RIGHT_COLUMN = 1000;
 
     if (settings.get(PREF_TWO_COLUMN_LAYOUT) === PREF_ENABLED) {
       WIDTH = WIDTH - 8; // grid gap + padding
@@ -879,7 +867,7 @@ class MollyHouse implements Game {
     if (!container) {
       return;
     }
-     container.insertAdjacentElement('afterbegin', infoPanel);
+    container.insertAdjacentElement('afterbegin', infoPanel);
   }
 
   //  setAlwaysFixTopActions(alwaysFixed = true, maximum = 30) {

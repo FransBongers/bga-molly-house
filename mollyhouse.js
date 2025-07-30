@@ -1,236 +1,3 @@
-var _a, _b, _c;
-var BOARD_SCALE = 'boardScale';
-var PLUS = 'plus';
-var MINUS = 'minus';
-var DONE = 'done';
-var TRADE = 'trade';
-var BENYON = 'Benyon';
-var HASTINGS = 'Hastings';
-var LARKINS = 'Larkins';
-var PAXTON = 'Paxton';
-var SYKES = 'Sykes';
-var WALSH = 'Walsh';
-var CROWN = 'Crown';
-var CROWN_PLAYER_ID = 1;
-var BLUE = 'blue';
-var GRAY = 'gray';
-var GREEN = 'green';
-var PINK = 'pink';
-var PURPLE = 'purple';
-var YELLOW = 'yellow';
-var RED = 'red';
-var HEX_COLOR_COLOR_MAP = {
-    '99dae9': BLUE,
-    dbd9d6: GRAY,
-    addb90: GREEN,
-    ffb1b9: PINK,
-    c7b4e1: PURPLE,
-    f9e08d: YELLOW,
-};
-var COLOR_FAMILY_MAP = (_a = {},
-    _a[PINK] = BENYON,
-    _a[BLUE] = HASTINGS,
-    _a[YELLOW] = LARKINS,
-    _a[GRAY] = PAXTON,
-    _a[PURPLE] = SYKES,
-    _a[GREEN] = WALSH,
-    _a);
-var SETUP = 'setup';
-var LONDON_SEASON = 'londonSeason';
-var FAMILY = 'family';
-var FIRMS = 'firms';
-var HIRING = 'hiring';
-var BONUSES = 'Bonuses';
-var REVENUE = 'revenue';
-var EVENTS_IN_INDIA = 'eventsInIndia';
-var PARLIAMENT_MEETS = 'ParliamentMeets';
-var UPKEEP_AND_REFRESH = 'upkeepAndRefresh';
-var OFFICE = 'office';
-var COMPANY_SHARE = 'companyShare';
-var CASH = 'cash';
-var PRIME_MINISTER = 'primeMinister';
-var RANDOM_BLACKMAIL_CARD = 'randomBlackmailCard';
-var SHIP = 'ship';
-var LUXURY = 'Luxury';
-var WORKSHOP = 'Workshop';
-var SHIPYARD = 'Shipyard';
-var SHARE = 'Share';
-var FAMILY_MEMBERS_COUNTER = 'familyMembers';
-var CASH_COUNTER = 'cash';
-var SHIPS_COUNTER = 'ships';
-var SHARES_COUNTER = 'shares';
-var WORKSHOPS_COUNTER = 'workshops';
-var SHIPYARDS_COUNTER = 'shipyards';
-var LUXURIES_COUNTER = 'luxuries';
-var PROMISE_CUBES_COUNTER = 'promiseCubes';
-var COUNTERS = [
-    FAMILY_MEMBERS_COUNTER,
-    CASH_COUNTER,
-    SHIPS_COUNTER,
-    SHARES_COUNTER,
-    WORKSHOPS_COUNTER,
-    SHIPYARDS_COUNTER,
-    LUXURIES_COUNTER,
-];
-var CLOSED = 'closed';
-var FILLED = 'filled';
-var OPEN = 'open';
-var ORDER_PUNJAB_1 = 'Order_Punjab_1';
-var ORDER_DELHI_1 = 'Order_Delhi_1';
-var ORDER_DELHI_2 = 'Order_Delhi_2';
-var ORDER_DELHI_3 = 'Order_Delhi_3';
-var ORDER_BENGAL_1 = 'Order_Bengal_1';
-var ORDER_BENGAL_2 = 'Order_Bengal_2';
-var ORDER_BOMBAY_1 = 'Order_Bombay_1';
-var ORDER_BOMBAY_2 = 'Order_Bombay_2';
-var ORDER_BOMBAY_3 = 'Order_Bombay_3';
-var ORDER_MARATHA_1 = 'Order_Maratha_1';
-var ORDER_MARATHA_2 = 'Order_Maratha_2';
-var ORDER_MARATHA_3 = 'Order_Maratha_3';
-var ORDER_HYDERABAD_1 = 'Order_Hyderabad_1';
-var ORDER_MYSORE_1 = 'Order_Mysore_1';
-var ORDER_MYSORE_2 = 'Order_Mysore_2';
-var ORDER_MADRAS_1 = 'Order_Madras_1';
-var ORDER_MADRAS_2 = 'Order_Madras_2';
-var ORDERS = [
-    ORDER_PUNJAB_1,
-    ORDER_DELHI_1,
-    ORDER_DELHI_2,
-    ORDER_DELHI_3,
-    ORDER_BENGAL_1,
-    ORDER_BENGAL_2,
-    ORDER_BOMBAY_1,
-    ORDER_BOMBAY_2,
-    ORDER_BOMBAY_3,
-    ORDER_MARATHA_1,
-    ORDER_MARATHA_2,
-    ORDER_MARATHA_3,
-    ORDER_HYDERABAD_1,
-    ORDER_MYSORE_1,
-    ORDER_MYSORE_2,
-    ORDER_MADRAS_1,
-    ORDER_MADRAS_2,
-];
-var CHAIRMAN = 'Chairman';
-var DIRECTOR_OF_TRADE = 'DirectorOfTrade';
-var MANAGER_OF_SHIPPING = 'ManagerOfShipping';
-var MILITARY_AFFAIRS = 'MilitaryAffairs';
-var PRESIDENT_OF_BOMBAY = 'PresidentOfBombay';
-var PRESIDENT_OF_MADRAS = 'PresidentOfMadras';
-var PRESIDENT_OF_BENGAL = 'PresidentOfBengal';
-var GOVERNOR_GENERAL = 'GovernorGeneral';
-var SUPERINTENDENT_OF_TRADE_IN_CHINA = 'SuperintendentOfTradeInChina';
-var GOVERNOR_OF_BOMBAY = 'GovernorOfBombay';
-var GOVERNOR_OF_MADRAS = 'GovernorOfMadras';
-var GOVERNOR_OF_BENGAL = 'GovernorOfBengal';
-var GOVERNOR_OF_PUNJAB = 'GovernorOfPunjab';
-var GOVERNOR_OF_DELHI = 'GovernorOfDelhi';
-var GOVERNOR_OF_MARATHA = 'GovernorOfMaratha';
-var GOVERNOR_OF_HYDERABAD = 'GovernorOfHyderabad';
-var GOVERNOR_OF_MYSORE = 'GovernorOfMysore';
-var OFFICES_WITH_TREASURY = [
-    DIRECTOR_OF_TRADE,
-    MANAGER_OF_SHIPPING,
-    PRESIDENT_OF_BOMBAY,
-    PRESIDENT_OF_MADRAS,
-    PRESIDENT_OF_BENGAL,
-];
-var COMMANDER = 'Commander';
-var OFFICER = 'Officer';
-var OFFICER_IN_TRAINING = 'OfficerInTraining';
-var WRITER = 'Writer';
-var COURT_OF_DIRECTORS = 'CourtOfDirectors';
-var BENGAL_DELHI_BORDER = 'Bengal_Delhi_border';
-var BENGAL_MARATHA_BORDER = 'Bengal_Maratha_border';
-var BOMBAY_DELHI_BORDER = 'Bombay_Delhi_border';
-var BOMBAY_HYDERABAD_BORDER = 'Bombay_Hyderabad_border';
-var BOMBAY_MARATHA_BORDER = 'Bombay_Maratha_border';
-var BOMBAY_MYSORE_BORDER = 'Bombay_Mysore_border';
-var BOMBAY_PUNJAB_BORDER = 'Bombay_Punjab_border';
-var DELHI_MARATHA_BORDER = 'Delhi_Maratha_border';
-var DELHI_PUNJAB_BORDER = 'Delhi_Punjab_border';
-var HYDERABAD_MADRAS_BORDER = 'Hyderabad_Madras_border';
-var HYDERABAD_MARATHA_BORDER = 'Hyderabad_Maratha_border';
-var HYDERABAD_MYSORE_BORDER = 'Hyderabad_Mysore_border';
-var MADRAS_MYSORE_BORDER = 'Madras_Mysore_border';
-var BENGAL = 'Bengal';
-var BOMBAY = 'Bombay';
-var DELHI = 'Delhi';
-var HYDERABAD = 'Hyderabad';
-var MADRAS = 'Madras';
-var MARATHA = 'Maratha';
-var MYSORE = 'Mysore';
-var PUNJAB = 'Punjab';
-var BENGAL_PRESIDENCY = 'BengalPresidency';
-var BOMBAY_PRESIDENCY = 'BombayPresidency';
-var MADRAS_PRESIDENCY = 'MadrasPresidency';
-var PRESIDENCIES = [BENGAL_PRESIDENCY, BOMBAY_PRESIDENCY, MADRAS_PRESIDENCY];
-var BENGAL_WRITERS = 'Writers_Bengal';
-var BOMBAY_WRITERS = 'Writers_Bombay';
-var MADRAS_WRITERS = 'Writers_Madras';
-var WRITER_LOCATIONS = [BENGAL_WRITERS, BOMBAY_WRITERS, MADRAS_WRITERS];
-var BENGAL_ARMY = 'Army_Bengal';
-var BOMBAY_ARMY = 'Army_Bombay';
-var MADRAS_ARMY = 'Army_Madras';
-var ARMIES = [BENGAL_ARMY, BOMBAY_ARMY, MADRAS_ARMY];
-var ARMY_REGION_MAP = (_b = {},
-    _b[BENGAL_ARMY] = BENGAL,
-    _b[BOMBAY_ARMY] = BOMBAY,
-    _b[MADRAS_ARMY] = MADRAS,
-    _b);
-var WEST_INDIAN = 'westIndian';
-var EAST_INDIAN = 'eastIndian';
-var SOUTH_INDIAN = 'southIndian';
-var CHINA = 'china';
-var UNFITTED = 'unfitted';
-var SEA_ZONES = [WEST_INDIAN, EAST_INDIAN, SOUTH_INDIAN];
-var COMPANY_SHIP = 'CompanyShip';
-var EXTRA_SHIP = 'ExtraShip';
-var POWER_TOKEN_COMPANY_SHARE = 'companyShare';
-var POWER_TOKEN_MANUFACTURING = 'manufacturing';
-var POWER_TOKEN_SHIPPING = 'shipping';
-var POWER_TOKEN_SOCIAL = 'social';
-var SHARE_VICTORY_POINTS_TOKEN = 'shareVictoryPoints';
-var POWER_TOKENS = [
-    POWER_TOKEN_COMPANY_SHARE,
-    POWER_TOKEN_MANUFACTURING,
-    POWER_TOKEN_SHIPPING,
-    POWER_TOKEN_SOCIAL,
-];
-var POWER_TOKEN_ICON_MAP = (_c = {},
-    _c[POWER_TOKEN_COMPANY_SHARE] = SHARE,
-    _c[POWER_TOKEN_MANUFACTURING] = WORKSHOP,
-    _c[POWER_TOKEN_SHIPPING] = SHIPYARD,
-    _c[POWER_TOKEN_SOCIAL] = LUXURY,
-    _c);
-var ENLIST_WRITER = 'EnlistWriter';
-var ENLIST_OFFICER = 'EnlistOfficer';
-var PURCHASE_LUXURY = 'PurchaseLuxury';
-var PURCHASE_SHIPYARD = 'PurchaseShipyard';
-var PURCHASE_WORKSHOP = 'PurchaseWorkshop';
-var SEEK_SHARE = 'SeekShare';
-var PURCHASE_ENTERPRISE = 'PurchaseEnterprise';
-var STOCK_EXCHANGE_2 = 'StockExchange_2';
-var STOCK_EXCHANGE_3_LEFT = 'StockExchange_3_Left';
-var STOCK_EXCHANGE_3_RIGHT = 'StockExchange_3_Right';
-var STOCK_EXCHANGE_4 = 'StockExchange_4';
-var STOCK_EXCHANGE_5 = 'StockExchange_5';
-var STOCK_EXCHANGE_POSITIONS = [
-    STOCK_EXCHANGE_2,
-    STOCK_EXCHANGE_3_LEFT,
-    STOCK_EXCHANGE_3_RIGHT,
-    STOCK_EXCHANGE_4,
-    STOCK_EXCHANGE_5,
-];
-var BULL = 'Bull';
-var STAG = 'Stag';
-var LION = 'Lion';
-var BEAR = 'Bear';
-var PEACOCK = 'Peacock';
-var CROWN_CLIMATE = [BULL, STAG, LION, BEAR, PEACOCK];
-var BUY_COMPANY_SHIP = 'BUY_COMPANY_SHIP';
-var DO_NOT_BUY_COMPANY_SHIP = 'BUY_COMPANY_SHIP';
-var BUY_AS_MANY_SHIPS_AS_YOU_WISH = 'BUY_AS_MANY_SHIPS_AS_YOU_WISH';
 var BgaAnimation = (function () {
     function BgaAnimation(animationFunction, settings) {
         this.animationFunction = animationFunction;
@@ -717,6 +484,19 @@ var PREF_DISABLED = 'disabled';
 var PREF_ENABLED = 'enabled';
 var PREF_SINGLE_COLUMN_MAP_SIZE = 'singleColumnMapSize';
 var PREF_TWO_COLUMN_LAYOUT = 'twoColumnLayout';
+var BOARD_SCALE = 'boardScale';
+var BLUE = 'blue';
+var GREEN = 'green';
+var PINK = 'pink';
+var PURPLE = 'purple';
+var YELLOW = 'yellow';
+var HEX_COLOR_COLOR_MAP = {
+    '92a0d0': BLUE,
+    a8ad8c: GREEN,
+    ebc0ba: PINK,
+    '976b85': PURPLE,
+    fcd97f: YELLOW,
+};
 define([
     'dojo',
     'dojo/_base/declare',
@@ -1866,9 +1646,7 @@ var MollyHouse = (function () {
         var _this = this;
         var body = document.getElementById('ebd-body');
         this.mobileVersion = body && body.classList.contains('mobile_version');
-        console.log('setup');
         dojo.place("<div id='customActions' style='display:inline-block'></div>", $('generalactions'), 'after');
-        console.log('add game_play_area');
         document
             .getElementById('game_play_area')
             .insertAdjacentHTML('afterbegin', tplPlayArea());
@@ -2036,7 +1814,7 @@ var MollyHouse = (function () {
         var ROOT = document.documentElement;
         var WIDTH = $('play-area-container').getBoundingClientRect()['width'] - 8;
         var LEFT_COLUMN = 1500;
-        var RIGHT_COLUMN = 634;
+        var RIGHT_COLUMN = 1000;
         if (settings.get(PREF_TWO_COLUMN_LAYOUT) === PREF_ENABLED) {
             WIDTH = WIDTH - 8;
             var size = Number(settings.get(PREF_COLUMN_SIZES));
@@ -2257,7 +2035,7 @@ var Board = (function () {
     };
     return Board;
 }());
-var tplBoard = function (gamedatas) { return "<div id=\"moho-board\">\n  <div id=\"moho-select-boxes\"></div>\n</div>"; };
+var tplBoard = function (gamedatas) { return "<div id=\"moho-board\">\n<div id=\"moho-playmat\"></div>\n  <div id=\"moho-select-boxes\"></div>\n</div>"; };
 var LOG_TOKEN_BOLD_TEXT = 'boldText';
 var LOG_TOKEN_BOLD_ITALIC_TEXT = 'boldItalicText';
 var LOG_TOKEN_NEW_LINE = 'newLine';
@@ -2301,7 +2079,8 @@ var PlayerManager = (function () {
     function PlayerManager(game) {
         this.game = game;
         this.players = {};
-        for (var playerId in game.gamedatas.players) {
+        for (var _i = 0, _a = game.gamedatas.playerOrder; _i < _a.length; _i++) {
+            var playerId = _a[_i];
             var player = game.gamedatas.players[playerId];
             this.players[playerId] = new MohoPlayer(this.game, player);
         }
@@ -2355,7 +2134,20 @@ var MohoPlayer = (function () {
         this.updatePlayerPanel(gamedatas);
     };
     MohoPlayer.prototype.setupPlayer = function (gamedatas) {
+        this.setupPlayerBoard(gamedatas);
         this.setupPlayerPanel(gamedatas);
+    };
+    MohoPlayer.prototype.setupPlayerBoard = function (gamedatas) {
+        var playerGamedatas = gamedatas.players[this.playerId];
+        var node = document.getElementById('right-column');
+        if (!node) {
+            return;
+        }
+        node.insertAdjacentHTML('beforeend', tplPlayerBoard({
+            color: HEX_COLOR_COLOR_MAP[this.playerColor],
+            playerId: this.playerId,
+        }));
+        this.updatePlayerBoard(gamedatas);
     };
     MohoPlayer.prototype.setupPlayerPanel = function (gamedatas) {
         var playerGamedatas = gamedatas.players[this.playerId];
@@ -2368,6 +2160,7 @@ var MohoPlayer = (function () {
         }));
         this.updatePlayerPanel(gamedatas);
     };
+    MohoPlayer.prototype.updatePlayerBoard = function (gamedatas) { };
     MohoPlayer.prototype.updatePlayerPanel = function (gamedatas) { };
     MohoPlayer.prototype.getColor = function () {
         return this.playerColor;
@@ -2380,6 +2173,10 @@ var MohoPlayer = (function () {
     };
     return MohoPlayer;
 }());
+var tplPlayerBoard = function (_a) {
+    var playerId = _a.playerId, color = _a.color;
+    return "\n<div id=\"moho-player-row-".concat(playerId, "\" class=\"moho-player-row\">\n  <div id=\"moho-player-board-").concat(playerId, "\" class=\"moho-player-board\" data-color=\"").concat(color, "\"></div>\n</div>\n\n");
+};
 var tplPlayerCounters = function (_a) {
     var playerId = _a.playerId;
     return "\n<div id=\"moho-counters-".concat(playerId, "-row-1\" class=\"moho-counters-row\">\n\n</div>\n\n");

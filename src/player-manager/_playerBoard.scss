@@ -1,0 +1,38 @@
+@use "sass:math";
+@use "sass:map";
+
+.moho-player-row {
+  width: calc(var(--rightColumnScale) * 1000px);
+}
+
+.moho-player-board {
+  --boardScale: var(--rightColumnScale);
+  --tokenScale: var(--rightColumnScale);
+  position: relative;
+
+  background-size: 100% 100%;
+  height: calc(var(--rightColumnScale) * 300px);
+  min-height: calc(var(--rightColumnScale) * 300px);
+  width: calc(var(--rightColumnScale) * 685px);
+  outline: 1px solid black;
+  // width: 100%;
+  // aspect-ratio: 30 / 15;
+}
+
+$player-colors: (
+  1: 'blue',
+  2: 'green',
+  3: 'pink',
+  4: 'purple',
+  5: 'yellow',
+);
+
+@for $i from 1 through 5 {
+  .moho-player-board[data-color='#{map.get($player-colors,$i)}'] {
+    background-image: url('img/player_board_#{map.get($player-colors,$i)}.jpg');
+  }
+}
+
+// .moho-player-board[data-color="yellow"] {
+//   background-image: url('img/player_board_yellow.jpg');
+// }

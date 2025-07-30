@@ -50,7 +50,28 @@ class MohoPlayer {
 
   // Setup functions
   public setupPlayer(gamedatas: GamedatasAlias) {
+    this.setupPlayerBoard(gamedatas);
     this.setupPlayerPanel(gamedatas);
+  }
+
+  setupPlayerBoard(gamedatas: GamedatasAlias) {
+    const playerGamedatas = gamedatas.players[this.playerId];
+
+    const node = document.getElementById('right-column');
+
+    if (!node) {
+      return;
+    }
+
+    node.insertAdjacentHTML(
+      'beforeend',
+      tplPlayerBoard({
+        color: HEX_COLOR_COLOR_MAP[this.playerColor],
+        playerId: this.playerId,
+      })
+    );
+
+    this.updatePlayerBoard(gamedatas);
   }
 
   setupPlayerPanel(gamedatas: GamedatasAlias) {
@@ -73,6 +94,8 @@ class MohoPlayer {
 
     this.updatePlayerPanel(gamedatas);
   }
+
+  updatePlayerBoard(gamedatas: GamedatasAlias) {}
 
   updatePlayerPanel(gamedatas: GamedatasAlias) {}
 

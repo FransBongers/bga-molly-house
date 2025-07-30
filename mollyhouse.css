@@ -17,6 +17,22 @@
   height: calc(var(--leftColumnScale) * 1157px);
   min-height: calc(var(--leftColumnScale) * 1157px);
   width: calc(var(--leftColumnScale) * 1500px);
+  outline: 1px solid black;
+}
+#moho-board #moho-playmat {
+  --boardScale: var(--leftColumnScale);
+  --tokenScale: var(--leftColumnScale);
+  position: relative;
+  background-image: url("img/playmat.jpg");
+  background-size: 100% 100%;
+  height: calc(var(--leftColumnScale) * 748px);
+  min-height: calc(var(--leftColumnScale) * 748px);
+  width: calc(var(--leftColumnScale) * 880px);
+  position: absolute;
+  left: calc(var(--leftColumnScale) * 203px);
+  top: calc(var(--leftColumnScale) * 201px);
+  border: calc(var(--leftColumnScale) * 2px) solid black;
+  border-radius: calc(var(--leftColumnScale) * 40px);
 }
 
 #info-panel {
@@ -454,7 +470,7 @@
   border-bottom: 1px solid black;
   border-top-left-radius: 7px;
   color: ivory;
-  background-color: blue;
+  background-color: rgb(91, 39, 36);
 }
 .settings_modal #setting_modal_content {
   min-height: 300px;
@@ -467,7 +483,7 @@
 .settings_modal #setting_modal_content .settings_modal_tabs .settings_modal_tab {
   flex-grow: 1;
   width: 50%;
-  background-color: lightgrey;
+  background-color: rgb(223, 176, 103);
   border-bottom: 1px solid black;
   border-left: 1px solid black;
   border-radius: 1px solid black;
@@ -578,6 +594,41 @@ span[style*="color:#fcd97f"] {
 
 #pagemaintitle_wrap {
   flex-grow: 1;
+}
+
+.moho-player-row {
+  width: calc(var(--rightColumnScale) * 1000px);
+}
+
+.moho-player-board {
+  --boardScale: var(--rightColumnScale);
+  --tokenScale: var(--rightColumnScale);
+  position: relative;
+  background-size: 100% 100%;
+  height: calc(var(--rightColumnScale) * 300px);
+  min-height: calc(var(--rightColumnScale) * 300px);
+  width: calc(var(--rightColumnScale) * 685px);
+  outline: 1px solid black;
+}
+
+.moho-player-board[data-color=blue] {
+  background-image: url("img/player_board_blue.jpg");
+}
+
+.moho-player-board[data-color=green] {
+  background-image: url("img/player_board_green.jpg");
+}
+
+.moho-player-board[data-color=pink] {
+  background-image: url("img/player_board_pink.jpg");
+}
+
+.moho-player-board[data-color=purple] {
+  background-image: url("img/player_board_purple.jpg");
+}
+
+.moho-player-board[data-color=yellow] {
+  background-image: url("img/player_board_yellow.jpg");
 }
 
 .player-board-game-specific-content {
@@ -717,6 +768,12 @@ html {
   display: flex;
   flex-flow: column;
   align-items: center;
+}
+
+#right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 /*# sourceMappingURL=mollyhouse.css.map */
