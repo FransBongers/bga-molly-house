@@ -28,6 +28,8 @@ use Bga\Games\MollyHouse\Boilerplate\Core\Engine;
 use Bga\Games\MollyHouse\Boilerplate\Core\Engine\LeafNode;
 use Bga\Games\MollyHouse\Boilerplate\Core\Globals;
 use Bga\Games\MollyHouse\Boilerplate\Core\Stats;
+use Bga\Games\MollyHouse\Managers\IndictmentCards;
+use Bga\Games\MollyHouse\Managers\Items;
 use Bga\Games\MollyHouse\Managers\Players;
 use Bga\Games\MollyHouse\Managers\Sites;
 use Bga\Games\MollyHouse\Managers\ViceCards;
@@ -280,6 +282,8 @@ class Game extends \Bga\GameFramework\Table
         Players::setupNewGame($players, $options);
         ViceCards::setupNewGame($players, $options);
         Sites::setupNewGame($players, $options);
+        IndictmentCards::setupNewGame($players, $options);
+        Items::setupNewGame($players, $options);
 
         $players = Players::getAll()->toArray();
 

@@ -2,19 +2,20 @@
 
 namespace Bga\Games\MollyHouse\Models;
 
-class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
+class IndictmentCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
 {
   protected $id;
-  protected $table = 'vice_cards';
+  protected $table = 'indictment_cards';
   protected $primary = 'card_id';
   protected $location;
   protected $state;
+  protected $used;
 
+  protected $acquittedResult;
+  protected $convictedValue;
+  protected $convictedResult;
+  protected $text;
   protected $type;
-  protected $suit;
-  protected $value;
-  protected $joy;
-  protected $minPlayers = 2;
 
   protected $attributes = [
     'id' => ['card_id', 'str'],
@@ -23,11 +24,11 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   ];
 
   protected $staticAttributes = [
+    'acquittedResult',
+    'convictedValue',
+    'convictedResult',
+    'text',
     'type',
-    'suit',
-    'value',
-    'joy',
-    'minPlayers',
   ];
   public function jsonSerialize(): array
   {

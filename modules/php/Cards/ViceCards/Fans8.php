@@ -12,5 +12,6 @@ class Fans8 extends \Bga\Games\MollyHouse\Models\ViceCard
     $this->value = 8;
     $this->suit = FANS;
     $this->joy = 5;
+    $this->minPlayers = 4;
   }
 }

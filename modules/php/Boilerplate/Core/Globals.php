@@ -24,7 +24,8 @@ class Globals extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Manager
     // Game options
 
     // Other
-
+    'communityJoy' => 'int',
+    'currentWeek' => 'int',
   ];
 
   protected static $table = 'global_variables';
@@ -150,7 +151,8 @@ class Globals extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Manager
    */
   public static function setupNewGame($players, $options)
   {
-
+    self::setCommunityJoy(0);
+    self::setCurrentWeek(1);
  
   }
 

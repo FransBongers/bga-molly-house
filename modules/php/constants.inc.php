@@ -20,6 +20,10 @@ const DESIRE = 'desire';
 const THREAT = 'threat';
 const MOLLY = 'molly';
 
+const CONVICTED = 'convicted';
+const MAJOR = 'major';
+const MINOR = 'minor';
+
 /**
  * Suits
  */
@@ -27,6 +31,24 @@ const CUPS = 'cups';
 const PENTACLES = 'pentacles';
 const FANS = 'fans';
 const HEARTS = 'hearts';
+
+/**
+ * Market locations
+ */
+const MARKET_0 = 'market_0';
+const MARKET_1 = 'market_1';
+const MARKET_2 = 'market_2';
+const MARKET_3 = 'market_3';
+
+const MARKET_LOCATIONS = [
+  MARKET_0,
+  MARKET_1,
+  MARKET_2,
+  MARKET_3,
+];
+
+const GOSSIP_PILE = 'gossipPile';
+const SAFE_PILE = 'safePile';
 
 /**
  * Sites
@@ -66,4 +88,36 @@ const SITES = [
   COVENT_GARDEN_PIAZZA,
   DUKE_STREET,
   LINCOLNS_INN_BOGHOUSE,
+];
+
+const SHOP_SITES = [
+  NOBLE_STREET,
+  LEADENHALL_STREET,
+  CANNON_STREET,
+  DUKE_STREET,
+];
+
+/**
+ * Items
+ */
+const NEWSPAPER_NOTICE = 'NewspaperNotice';
+const BRIBE = 'Bribe';
+const VIOLIN = 'Violin';
+const DOMINO = 'Domino';
+const BOTTLE_OF_GIN = 'BottleOfGin';
+const DRESS_OF_CUPS = 'DressOfCups';
+const DRESS_OF_PENTACLES = 'DressOfPentacles';
+const DRESS_OF_FANS = 'DressOfFans';
+const DRESS_OF_HEARTS = 'DressOfHearts';
+
+const ITEM_DISTRIBUTIION = [
+  NEWSPAPER_NOTICE => 3,
+  BRIBE => 3,
+  VIOLIN => 3,
+  DOMINO => 3,
+  BOTTLE_OF_GIN => 4,
+  DRESS_OF_CUPS => 1,
+  DRESS_OF_PENTACLES => 1,
+  DRESS_OF_FANS => 1,
+  DRESS_OF_HEARTS => 1,
 ];

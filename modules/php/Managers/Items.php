@@ -11,11 +11,13 @@ use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 
 
 
-class ViceCards extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
+class Items extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
 {
-  protected static $table = 'vice_cards';
+  protected static $table = 'items';
   protected static $prefix = 'card_';
-  protected static $customFields = [];
+  protected static $customFields = [
+    'type'
+  ];
   protected static $autoremovePrefix = false;
   protected static $autoreshuffle = false;
   protected static $autoIncrement = false;
@@ -28,8 +30,8 @@ class ViceCards extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
   public static function getCardInstance($id, $data = null)
   {
     // $prefix = self::getClassPrefix($id);
-
-    $className = "\Bga\Games\MollyHouse\Cards\ViceCards\\$id";
+    $type = $data['type'];
+    $className = "\Bga\Games\MollyHouse\Cards\Items\\$type";
     return new $className($data);
   }
 
@@ -57,28 +59,25 @@ class ViceCards extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
   // ..######..########....##.....#######..##.......
 
 
-  private static function setupLoadCards($playerCount)
+  private static function setupLoadCards()
   {
-    // Load list of cards
-    include dirname(__FILE__) . '/../Cards/ViceCards/list.inc.php';
 
     $cards = [];
+    $index = 1;
 
-
-
-    foreach ($viceCardIds as $index => $cId) {
-      $card = self::getCardInstance($cId);
-      if ($card->getMinPlayers() > $playerCount) {
-        // Skip cards that are not valid for the current player count
-        continue;
+    foreach (ITEM_DISTRIBUTIION as $type => $count) {
+      for ($i = 0; $i < $count; $i++) {
+        $cardId = 'item_' . $index;
+        $cards[$cardId] = [
+          'id' => $cardId,
+          'location' => DECK,
+          'type' => $type,
+        ];
+        $index++;
       }
-
-      $cards[$cId] = [
-        'id' => $cId,
-        'location' => DECK,
-      ];
     }
-    Notifications::log('setupLoadCards', $viceCardIds);
+
+
     Notifications::log('cards', $cards);
 
     // Create the cards
@@ -86,18 +85,14 @@ class ViceCards extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
     self::shuffle(DECK);
   }
 
-  private static function createMarket()
-  {
-    foreach (MARKET_LOCATIONS as $location) {
-      self::pickOneForLocation(DECK, $location);
-    }
-  }
 
   /* Creation of the cards */
   public static function setupNewGame($players = null, $options = null)
   {
-    self::setupLoadCards(count($players));
-    self::createMarket();
-    self::pickOneForLocation(DECK, GOSSIP_PILE);
+    self::setupLoadCards();
+
+    foreach(SHOP_SITES as $site) {
+      self::pickOneForLocation(DECK, $site);
+    }
   }
 }

@@ -12,5 +12,6 @@ class Pentacles9 extends \Bga\Games\MollyHouse\Models\ViceCard
     $this->value = 9;
     $this->suit = PENTACLES;
     $this->joy = 5;
+    $this->minPlayers = 5;
   }
 }

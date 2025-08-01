@@ -11,9 +11,9 @@ use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 
 
 
-class ViceCards extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
+class IndictmentCards extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
 {
-  protected static $table = 'vice_cards';
+  protected static $table = 'indictment_cards';
   protected static $prefix = 'card_';
   protected static $customFields = [];
   protected static $autoremovePrefix = false;
@@ -29,7 +29,8 @@ class ViceCards extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
   {
     // $prefix = self::getClassPrefix($id);
 
-    $className = "\Bga\Games\MollyHouse\Cards\ViceCards\\$id";
+    $className = "\Bga\Games\MollyHouse\Cards\IndictmentCards\\$id";
+    Notifications::log('className', $className);
     return new $className($data);
   }
 
@@ -57,47 +58,33 @@ class ViceCards extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
   // ..######..########....##.....#######..##.......
 
 
-  private static function setupLoadCards($playerCount)
+  private static function setupLoadCards()
   {
     // Load list of cards
-    include dirname(__FILE__) . '/../Cards/ViceCards/list.inc.php';
+    include dirname(__FILE__) . '/../Cards/IndictmentCards/list.inc.php';
 
     $cards = [];
 
-
-
-    foreach ($viceCardIds as $index => $cId) {
+    foreach ($indicmentCardIds as $index => $cId) {
       $card = self::getCardInstance($cId);
-      if ($card->getMinPlayers() > $playerCount) {
-        // Skip cards that are not valid for the current player count
-        continue;
-      }
 
       $cards[$cId] = [
         'id' => $cId,
-        'location' => DECK,
+        'location' => Locations::indicmentDeck($card->getType()),
       ];
     }
-    Notifications::log('setupLoadCards', $viceCardIds);
-    Notifications::log('cards', $cards);
+
 
     // Create the cards
     self::create($cards, null);
-    self::shuffle(DECK);
+    self::shuffle(Locations::indicmentDeck(MAJOR));
+    self::shuffle(Locations::indicmentDeck(MINOR));
   }
 
-  private static function createMarket()
-  {
-    foreach (MARKET_LOCATIONS as $location) {
-      self::pickOneForLocation(DECK, $location);
-    }
-  }
 
   /* Creation of the cards */
   public static function setupNewGame($players = null, $options = null)
   {
-    self::setupLoadCards(count($players));
-    self::createMarket();
-    self::pickOneForLocation(DECK, GOSSIP_PILE);
+    self::setupLoadCards();
   }
 }

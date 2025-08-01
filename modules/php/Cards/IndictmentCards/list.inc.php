@@ -1,0 +1,19 @@
+<?php
+$indicmentCardIds = [
+  'Minor1',
+  'Minor2',
+  'Minor3',
+  'Minor4',
+  'Minor5',
+  'Minor6',
+  'Minor7',
+  'Minor8',
+  'Major1',
+  'Major2',
+  'Major3',
+  'Major4',
+  'Major5',
+  'Major6',
+  'Major7',
+  'Major8',
+];

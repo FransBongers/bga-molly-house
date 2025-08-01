@@ -12,5 +12,6 @@ class Hearts7 extends \Bga\Games\MollyHouse\Models\ViceCard
     $this->value = 7;
     $this->suit = HEARTS;
     $this->joy = 4;
+    $this->minPlayers = 3;
   }
 }
