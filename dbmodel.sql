@@ -55,3 +55,10 @@ CREATE TABLE IF NOT EXISTS `log` (
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 ALTER TABLE `gamelog`
 ADD `cancel` TINYINT(1) NOT NULL DEFAULT 0;
+
+CREATE TABLE IF NOT EXISTS `vice_cards` (
+  `card_id` varchar(100) NOT NULL,
+  `card_location` varchar(32) NOT NULL,
+  `card_state` int(10) DEFAULT 0,
+  PRIMARY KEY (`card_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;

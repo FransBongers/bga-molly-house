@@ -11,7 +11,7 @@ use Bga\Games\MollyHouse\Managers\Players;
 
 
 use Bga\Games\MollyHouse\Managers\AtomicActions;
-
+use Bga\Games\MollyHouse\Managers\ViceCards;
 
 trait DebugTrait
 {
@@ -22,6 +22,7 @@ trait DebugTrait
 
   function debug_test()
   {
+    ViceCards::setupNewGame();
     // Notifications::log('tradeRoute', TradeRoutes::getOrdersForTradeRoute(ORDER_BOMBAY_3, 16));
     
 
