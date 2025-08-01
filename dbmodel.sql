@@ -62,3 +62,9 @@ CREATE TABLE IF NOT EXISTS `vice_cards` (
   `card_state` int(10) DEFAULT 0,
   PRIMARY KEY (`card_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+CREATE TABLE IF NOT EXISTS `sites` (
+  `site_id` varchar(100) NOT NULL,
+  `site_location` varchar(32) NOT NULL,
+  `site_state` int(10) DEFAULT 0,
+  PRIMARY KEY (`site_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;

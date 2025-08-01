@@ -2,31 +2,29 @@
 
 namespace Bga\Games\MollyHouse\Models;
 
-class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
+class Site extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
 {
   protected $id;
-  protected $table = 'vice_cards';
-  protected $primary = 'card_id';
+  protected $table = 'sites';
+  protected $primary = 'site_id';
   protected $location;
   protected $state;
   protected $used;
 
-  protected $type;
-  protected $suit;
-  protected $value;
-  protected $joy;
+  protected $locationOrder;
+  protected $name;
+  protected $address = '';
 
   protected $attributes = [
-    'id' => ['card_id', 'str'],
-    'location' => 'card_location',
-    'state' => ['card_state', 'int'],
+    'id' => ['site_id', 'str'],
+    'location' => 'site_location',
+    'state' => ['site_state', 'int'],
   ];
 
   protected $staticAttributes = [
-    'type',
-    'suit',
-    'value',
-    'joy',
+    'locationOrder',
+    'name',
+    'address',
   ];
   public function jsonSerialize(): array
   {
