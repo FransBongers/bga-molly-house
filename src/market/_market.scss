@@ -1,0 +1,12 @@
+#moho-market {
+  display: flex;
+  flex-direction: row;
+  padding: calc(var(--mohoCardScale) * 16px);
+  --mohoCardScale: calc(var(--leftColumnScale) * 1.3);
+  gap: calc(var(--mohoCardScale) * 16px);
+
+  .moho-market-slot {
+    width: calc(var(--mohoCardScale) * 161px);
+    height: calc(var(--mohoCardScale) * 225px);
+  }
+}

@@ -35,10 +35,20 @@ interface MollyHouseGamedatas extends Gamedatas {
   playerOrder: number[];
   players: Record<number, MollyHousePlayerData>;
   staticData: {};
+  // Game specific
+  deckCount: number;
+  gossipPileCount: number;
+  market: ViceCard[];
 }
 
-interface MollyHousePlayerData extends BgaPlayer {}
+interface MollyHousePlayerData extends BgaPlayer {
+  hand: ViceCard[];
+}
 
 type GameAlias = MollyHouse;
 type GamedatasAlias = MollyHouseGamedatas;
 type PlayerAlias = MohoPlayer;
+
+interface ViceCard extends GamePiece {
+  
+}

@@ -55,9 +55,13 @@ class MollyHouse implements Game {
   public mobileVersion: boolean = false;
   public loadingComplete: boolean = false;
 
+  // Card managers
+  public viceCardManager: ViceCardManager;
+
   private states = {
     ConfirmPartialTurn,
     ConfirmTurn,
+    PlayerTurn,
   };
 
   constructor() {
@@ -117,7 +121,12 @@ class MollyHouse implements Game {
     Interaction.create(this);
     PlayerManager.create(this);
     NotificationManager.create(this);
+    this.viceCardManager = new ViceCardManager(this);
     Board.create(this);
+    Market.create(this);
+    if (this.playerOrder.includes(this.getPlayerId())) {
+      Hand.create(this);
+    }
 
     NotificationManager.getInstance().setupNotifications();
 

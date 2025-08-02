@@ -1,0 +1,19 @@
+@use 'sass:math';
+
+#hand {
+  position: fixed;
+  bottom: 0;
+  // left: 10%;
+  display: flex;
+  justify-content: center;
+  --mohoCardScale: 1;
+  height: calc(var(--mohoCardScale) * 180px);
+  width: 100%;
+  z-index: 2;
+
+  .moho-vice-card:hover {
+    transform: translateY(-20px) scale(1.1);
+    transition: transform 0.2s ease-in-out;
+  }
+}
+

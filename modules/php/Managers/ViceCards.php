@@ -47,6 +47,14 @@ class ViceCards extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
     return $data;
   }
 
+  public static function getMarket()
+  {
+    $pieces = self::getAll()->toArray();
+    return Utils::filter($pieces, function ($piece) {
+      return in_array($piece->getLocation(), MARKET_SPOTS);
+    });
+  }
+
 
   // ..######..########.########.##.....##.########.
   // .##....##.##..........##....##.....##.##.....##
@@ -88,8 +96,18 @@ class ViceCards extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
 
   private static function createMarket()
   {
-    foreach (MARKET_LOCATIONS as $location) {
+    foreach (MARKET_SPOTS as $location) {
       self::pickOneForLocation(DECK, $location);
+    }
+  }
+
+  private static function dealCards($playerCount)
+  {
+    $numberOfCards = $playerCount === 2 ? 5 : 4;
+    $players = Players::getAll();
+    foreach ($players as $player) {
+      $playerId = $player->getId();
+      self::pickForLocation($numberOfCards, DECK, Locations::hand($playerId));
     }
   }
 
@@ -99,5 +117,6 @@ class ViceCards extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
     self::setupLoadCards(count($players));
     self::createMarket();
     self::pickOneForLocation(DECK, GOSSIP_PILE);
+    self::dealCards(count($players));
   }
 }

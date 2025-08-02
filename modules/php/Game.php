@@ -263,7 +263,12 @@ class Game extends \Bga\GameFramework\Table
             'gameOptions' => [],
             'playerOrder' => Players::getTurnOrder($playerId),
             'players' => Players::getUiData($playerId),
-            'staticData' => []
+            'staticData' => [
+                'viceCards' => ViceCards::getStaticUiData(),
+            ],
+            'market' => ViceCards::getMarket(),
+            'deckCount' => ViceCards::countInLocation(DECK),
+            'gossipPileCount' => ViceCards::countInLocation(GOSSIP_PILE),
         ];
 
 

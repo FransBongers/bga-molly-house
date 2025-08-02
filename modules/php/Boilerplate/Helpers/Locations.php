@@ -10,4 +10,8 @@ class Locations
     return 'deck_' . $type;
   }
 
+  public static function hand($playerId)
+  {
+    return 'hand_' . $playerId;
+  }
 }

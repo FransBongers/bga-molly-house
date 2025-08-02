@@ -36,9 +36,9 @@ const PURPLE = 'purple';
 const YELLOW = 'yellow';
 
 const HEX_COLOR_COLOR_MAP = {
-  '92a0d0': BLUE,
-  a8ad8c: GREEN,
-  ebc0ba: PINK,
-  '976b85': PURPLE,
-  fcd97f: YELLOW,
+  '8393ca': BLUE,
+  a2a882: GREEN,
+  e3bcb4: PINK,
+  '7f5574': PURPLE,
+  fcd873: YELLOW,
 };

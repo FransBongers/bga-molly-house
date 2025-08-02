@@ -1,0 +1,89 @@
+@use 'sass:math';
+@use 'sass:map';
+
+.moho-vice-card {
+  width: calc(var(--mohoCardScale) * 161px);
+  height: calc(var(--mohoCardScale) * 225px);
+
+  box-sizing: border-box;
+  background-image: url('img/vice_cards.jpg');
+  background-size: 1300% 400%;
+  background-repeat: no-repeat;
+  border: calc(var(--mohoCardScale) * 1px) black solid;
+  border-radius: calc(var(--mohoCardScale) * 5px);
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: high-quality;
+  position: relative;
+}
+
+.moho-vice-card[data-card-id='back'] {
+  background-image: url('img/back.jpg');
+  background-size: 100% 100%;
+}
+
+.moho-vice-card:hover {
+  transform: scale(1.1);
+  transition: transform 0.1s ease-in-out;
+}
+
+$viceCards: (
+  1: 'Cups1',
+  2: 'Cups2',
+  3: 'Cups3',
+  4: 'Cups4',
+  5: 'Cups5',
+  6: 'Cups6',
+  7: 'Cups7',
+  8: 'Cups8',
+  9: 'Cups9',
+  10: 'CupsConstable',
+  11: 'CupsJack',
+  12: 'CupsQueen',
+  13: 'CupsRogue',
+  14: 'Fans1',
+  15: 'Fans2',
+  16: 'Fans3',
+  17: 'Fans4',
+  18: 'Fans5',
+  19: 'Fans6',
+  20: 'Fans7',
+  21: 'Fans8',
+  22: 'Fans9',
+  23: 'FansConstable',
+  24: 'FansJack',
+  25: 'FansQueen',
+  26: 'FansRogue',
+  27: 'Hearts1',
+  28: 'Hearts2',
+  29: 'Hearts3',
+  30: 'Hearts4',
+  31: 'Hearts5',
+  32: 'Hearts6',
+  33: 'Hearts7',
+  34: 'Hearts8',
+  35: 'Hearts9',
+  36: 'HeartsConstable',
+  37: 'HeartsJack',
+  38: 'HeartsQueen',
+  39: 'HeartsRogue',
+  40: 'Pentacles1',
+  41: 'Pentacles2',
+  42: 'Pentacles3',
+  43: 'Pentacles4',
+  44: 'Pentacles5',
+  45: 'Pentacles6',
+  46: 'Pentacles7',
+  47: 'Pentacles8',
+  48: 'Pentacles9',
+  49: 'PentaclesConstable',
+  50: 'PentaclesJack',
+  51: 'PentaclesQueen',
+  52: 'PentaclesRogue',
+);
+
+@for $i from 1 through 52 {
+  .moho-vice-card[data-card-id="#{map.get($viceCards,$i)}"] {
+    background-position-x: math.div((($i - 1) % 13 * 100%), 12);
+    background-position-y: math.div(math.floor(calc(($i - 1) / 13)) * 100%, 3);
+  }
+}

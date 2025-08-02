@@ -8,9 +8,251 @@
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
  * -----
  */
+body > .card {
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+}
+
+.card {
+  flex-shrink: 0;
+}
+
+.card[data-side=back] .card-sides {
+  transform: rotateY(180deg);
+}
+
+.card .card-sides {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transform-style: preserve-3d;
+  transition: transform 0.5s;
+}
+
+.card .card-sides .card-side {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transform-style: preserve-3d;
+  -webkit-backface-visibility: hidden; /* Safari */
+  backface-visibility: hidden;
+  transform-origin: center center;
+  box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.card .card-sides .card-side.front > * {
+  pointer-events: none;
+  user-select: none;
+}
+
+.card .card-sides .card-side.back {
+  transform: rotateY(180deg);
+}
+
+.card .card-sides .card-side.back > * {
+  pointer-events: none;
+  user-select: none;
+}
+
+.card-stock .card.bga-cards_selectable-card:not(.bga-cards_disabled-card) {
+  cursor: pointer;
+}
+
+.card-stock .card.bga-cards_disabled-card {
+  cursor: not-allowed;
+  filter: contrast(0.6);
+}
+
+.card-stock.line-stock {
+  display: flex;
+  gap: var(--gap);
+  flex-wrap: var(--wrap);
+  flex-direction: var(--direction);
+}
+
+.card-stock.line-stock[data-center=true] {
+  justify-content: center;
+}
+
+.card-stock.slot-stock {
+  display: flex;
+  gap: var(--gap);
+  flex-wrap: var(--wrap);
+  flex-direction: var(--direction);
+}
+
+.card-stock.slot-stock[data-center=true] {
+  justify-content: center;
+}
+
+.card-stock.scrollable-stock {
+  display: flex;
+  gap: var(--button-gap);
+}
+
+.card-stock.scrollable-stock[data-scrollbar-visible=false] {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.card-stock.scrollable-stock[data-scrollbar-visible=false]::-webkit-scrollbar {
+  display: none;
+}
+
+.card-stock.scrollable-stock .scrollable-stock-inner {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: var(--gap);
+}
+
+.card-stock.scrollable-stock .scrollable-stock-inner[data-center=true] {
+  justify-content: center;
+}
+
+.card-stock.hand-stock {
+  display: flex;
+  justify-content: center;
+}
+
+.card-stock.hand-stock .card {
+  transform: translateY(calc(var(--card-shift) * var(--hand-stock-middle-index-abs))) rotate(calc(var(--hand-stock-middle-index) * var(--card-inclination)));
+}
+
+.card-stock.hand-stock .card:not(:first-child) {
+  margin-left: calc(-1 * var(--card-overlap));
+}
+
+.card-stock.manual-position-stock {
+  position: relative;
+}
+
+.card-stock.manual-position-stock .card {
+  position: absolute;
+}
+
+.card-stock.void-stock {
+  position: relative;
+}
+
+.card-stock.void-stock .card {
+  position: absolute;
+}
+
+.card-stock.deck {
+  position: relative;
+  width: var(--width);
+  height: var(--height);
+}
+
+.card-stock.deck > .card {
+  position: absolute;
+  top: calc(var(--thickness) * var(--xShadowShift) * -1);
+  left: calc(var(--thickness) * var(--yShadowShift) * -1);
+}
+
+.card-stock.deck > .card:first-child {
+  box-shadow: calc(var(--thickness) * var(--xShadowShift)) calc(var(--thickness) * var(--yShadowShift)) 0px 0px #111, calc(var(--thickness) * var(--xShadowShift)) calc(var(--thickness) * var(--yShadowShift)) 2px 1px rgba(0, 0, 0, 0.5);
+}
+
+.card-stock.deck[data-empty=true] > .card {
+  visibility: hidden;
+}
+
+.card-stock.deck[data-empty=true] .bga-cards_deck-counter.hide-when-empty {
+  display: none;
+}
+
+.bga-cards_deck-counter {
+  --bga-cards-deck-counter-size: 20px;
+  position: absolute;
+  z-index: 2;
+  width: var(--bga-cards-deck-counter-size);
+  height: var(--bga-cards-deck-counter-size);
+  left: calc(var(--bga-cards-deck-left) - var(--bga-cards-deck-counter-size) / 2);
+  top: calc(var(--bga-cards-deck-top) - var(--bga-cards-deck-counter-size) / 2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  pointer-events: none;
+}
+
+.bga-cards_deck-counter.round {
+  color: black;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 0 2px 1px black;
+  font-size: 14px;
+}
+
+.bga-cards_deck-counter.text-shadow {
+  color: white;
+  text-shadow: 0 0 1px black, 0 0 2px black, 0 0 3px black, 0 0 4px black;
+  font-size: 20px;
+}
+
+.bga-cards_deck-counter.hidden {
+  display: none;
+}
+
+.card-stock.all-visible-deck {
+  position: absolute;
+  --tile-count: 1;
+  width: calc(var(--width) + (var(--tile-count) - 1) * var(--horizontal-shift));
+  height: calc(var(--height) + (var(--tile-count) - 1) * var(--vertical-shift));
+  transition: width 0.5s ease-in-out, height 0.5s ease-in-out, background-color 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+  opacity: var(--tile-count);
+}
+
+.card-stock.all-visible-deck > .card {
+  position: absolute;
+  margin: 0;
+  transition: left 0.5s ease-in-out, top 0.5s ease-in-out;
+  top: calc(var(--vertical-shift) * var(--order));
+  left: calc(var(--horizontal-shift) * var(--order));
+}
+
+.card-stock.all-visible-deck.vertical:hover, .card-stock.all-visible-deck.vertical:active, .card-stock.all-visible-deck.vertical.opened {
+  height: calc((var(--height) + var(--vertical-shift)) * var(--tile-count) - var(--vertical-shift));
+  z-index: 1;
+}
+
+.card-stock.all-visible-deck.vertical:hover > .card, .card-stock.all-visible-deck.vertical:active > .card, .card-stock.all-visible-deck.vertical.opened > .card {
+  top: calc((var(--height) + var(--vertical-shift)) * var(--order));
+}
+
+.card-stock.all-visible-deck.horizontal:hover, .card-stock.all-visible-deck.horizontal:active, .card-stock.all-visible-deck.horizontal.opened {
+  width: calc((var(--width) + var(--horizontal-shift)) * var(--tile-count) - var(--horizontal-shift));
+  z-index: 1;
+}
+
+.card-stock.all-visible-deck.horizontal:hover > .card, .card-stock.all-visible-deck.horizontal:active > .card, .card-stock.all-visible-deck.horizontal.opened > .card {
+  left: calc((var(--width) + var(--horizontal-shift)) * var(--order));
+}
+
+.card-stock.all-visible-deck .bga-cards_deck-counter {
+  transition: left 0.5s ease-in-out, top 0.5s ease-in-out;
+}
+
+.card-stock.all-visible-deck[data-empty=true] > .card {
+  visibility: hidden;
+}
+
+.card-stock.all-visible-deck[data-empty=true] .bga-cards_deck-counter.hide-when-empty {
+  display: none;
+}
+
 #moho-board {
   --boardScale: var(--leftColumnScale);
   --tokenScale: var(--leftColumnScale);
+  --mohoCardScale: var(--boardScale);
   position: relative;
   background-image: url("img/board.jpg");
   background-size: 100% 100%;
@@ -20,19 +262,57 @@
   outline: 1px solid black;
 }
 #moho-board #moho-playmat {
-  --boardScale: var(--leftColumnScale);
-  --tokenScale: var(--leftColumnScale);
   position: relative;
   background-image: url("img/playmat.jpg");
   background-size: 100% 100%;
-  height: calc(var(--leftColumnScale) * 748px);
-  min-height: calc(var(--leftColumnScale) * 748px);
-  width: calc(var(--leftColumnScale) * 880px);
+  height: calc(var(--boardScale) * 748px);
+  min-height: calc(var(--boardScale) * 748px);
+  width: calc(var(--boardScale) * 880px);
   position: absolute;
-  left: calc(var(--leftColumnScale) * 203px);
-  top: calc(var(--leftColumnScale) * 201px);
-  border: calc(var(--leftColumnScale) * 2px) solid black;
-  border-radius: calc(var(--leftColumnScale) * 40px);
+  left: calc(var(--boardScale) * 203px);
+  top: calc(var(--boardScale) * 201px);
+  border: calc(var(--boardScale) * 2px) solid black;
+  border-radius: calc(var(--boardScale) * 40px);
+}
+#moho-board #moho-gossip-pile {
+  position: absolute;
+  left: calc(var(--boardScale) * 1300px);
+  top: calc(var(--boardScale) * 903px);
+  width: calc(var(--boardScale) * 161px);
+  height: calc(var(--boardScale) * 225px);
+}
+
+.moho-house-raided-marker {
+  position: absolute;
+  width: calc(var(--boardScale) * 135px);
+  height: calc(var(--boardScale) * 135px);
+  background-image: url("img/house_raided_markers.png");
+  background-size: 400% 100%;
+}
+
+.moho-house-raided-marker[data-raided=false] {
+  display: none;
+}
+
+.moho-house-raided-marker[data-house=MotherClaps] {
+  background-position-x: 100%;
+  left: calc(var(--boardScale) * 0px);
+}
+
+.moho-house-raided-marker[data-house=MissMuffs] {
+  background-position-x: 33.333333%;
+  left: calc(var(--boardScale) * 1150px);
+}
+
+.moho-house-raided-marker[data-house=SukeyBevells] {
+  background-position-x: 66.666667%;
+  left: calc(var(--boardScale) * 1150px);
+  bottom: calc(var(--boardScale) * 0px);
+}
+
+.moho-house-raided-marker[data-house=JuliusCesarTaylors] {
+  background-position-x: 0%;
+  bottom: calc(var(--boardScale) * 0px);
 }
 
 #info-panel {
@@ -562,26 +842,18 @@ body.chatbar_ontop {
 }
 
 /* Add text shadows to player colors that require it */
-a[style*="color: #92a0d0"],
-a[style*="color:#92a0d0"],
-span[style*="color: #92a0d0"],
-span[style*="color:#92a0d0"],
-a[style*="color: #ebc0ba"],
-a[style*="color:#ebc0ba"],
-span[style*="color: #ebc0ba"],
-span[style*="color:#ebc0ba"],
-a[style*="color: #976b85"],
-a[style*="color:#976b85"],
-span[style*="color: #976b85"],
-span[style*="color:#976b85"],
-a[style*="color: #a8ad8c"],
-a[style*="color:#a8ad8c"],
-span[style*="color: #a8ad8c"],
-span[style*="color:#a8ad8c"],
-a[style*="color: #fcd97f"],
-a[style*="color:#fcd97f"],
-span[style*="color: #fcd97f"],
-span[style*="color:#fcd97f"] {
+a[style*="color: #e3bcb4"],
+a[style*="color:#e3bcb4"],
+span[style*="color: #e3bcb4"],
+span[style*="color:#e3bcb4"],
+a[style*="color: #a2a882"],
+a[style*="color:#a2a882"],
+span[style*="color: #a2a882"],
+span[style*="color:#a2a882"],
+a[style*="color: #fcd873"],
+a[style*="color:#fcd873"],
+span[style*="color: #fcd873"],
+span[style*="color:#fcd873"] {
   text-shadow: 1px 0 0 black, 0 1px 0 black, -1px 0 0 black, 0 -1px 0 black, 1px 1px 0 black, -1px 1px 0 black, 1px -1px 0 black, -1px -1px 0 black !important;
 }
 
@@ -594,6 +866,317 @@ span[style*="color:#fcd97f"] {
 
 #pagemaintitle_wrap {
   flex-grow: 1;
+}
+
+.moho-vice-card {
+  width: calc(var(--mohoCardScale) * 161px);
+  height: calc(var(--mohoCardScale) * 225px);
+  box-sizing: border-box;
+  background-image: url("img/vice_cards.jpg");
+  background-size: 1300% 400%;
+  background-repeat: no-repeat;
+  border: calc(var(--mohoCardScale) * 1px) black solid;
+  border-radius: calc(var(--mohoCardScale) * 5px);
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: high-quality;
+  position: relative;
+}
+
+.moho-vice-card[data-card-id=back] {
+  background-image: url("img/back.jpg");
+  background-size: 100% 100%;
+}
+
+.moho-vice-card:hover {
+  transform: scale(1.1);
+  transition: transform 0.1s ease-in-out;
+}
+
+.moho-vice-card[data-card-id=Cups1] {
+  background-position-x: 0%;
+  background-position-y: 0%;
+}
+
+.moho-vice-card[data-card-id=Cups2] {
+  background-position-x: 8.3333333333%;
+  background-position-y: 0%;
+}
+
+.moho-vice-card[data-card-id=Cups3] {
+  background-position-x: 16.6666666667%;
+  background-position-y: 0%;
+}
+
+.moho-vice-card[data-card-id=Cups4] {
+  background-position-x: 25%;
+  background-position-y: 0%;
+}
+
+.moho-vice-card[data-card-id=Cups5] {
+  background-position-x: 33.3333333333%;
+  background-position-y: 0%;
+}
+
+.moho-vice-card[data-card-id=Cups6] {
+  background-position-x: 41.6666666667%;
+  background-position-y: 0%;
+}
+
+.moho-vice-card[data-card-id=Cups7] {
+  background-position-x: 50%;
+  background-position-y: 0%;
+}
+
+.moho-vice-card[data-card-id=Cups8] {
+  background-position-x: 58.3333333333%;
+  background-position-y: 0%;
+}
+
+.moho-vice-card[data-card-id=Cups9] {
+  background-position-x: 66.6666666667%;
+  background-position-y: 0%;
+}
+
+.moho-vice-card[data-card-id=CupsConstable] {
+  background-position-x: 75%;
+  background-position-y: 0%;
+}
+
+.moho-vice-card[data-card-id=CupsJack] {
+  background-position-x: 83.3333333333%;
+  background-position-y: 0%;
+}
+
+.moho-vice-card[data-card-id=CupsQueen] {
+  background-position-x: 91.6666666667%;
+  background-position-y: 0%;
+}
+
+.moho-vice-card[data-card-id=CupsRogue] {
+  background-position-x: 100%;
+  background-position-y: 0%;
+}
+
+.moho-vice-card[data-card-id=Fans1] {
+  background-position-x: 0%;
+  background-position-y: 33.3333333333%;
+}
+
+.moho-vice-card[data-card-id=Fans2] {
+  background-position-x: 8.3333333333%;
+  background-position-y: 33.3333333333%;
+}
+
+.moho-vice-card[data-card-id=Fans3] {
+  background-position-x: 16.6666666667%;
+  background-position-y: 33.3333333333%;
+}
+
+.moho-vice-card[data-card-id=Fans4] {
+  background-position-x: 25%;
+  background-position-y: 33.3333333333%;
+}
+
+.moho-vice-card[data-card-id=Fans5] {
+  background-position-x: 33.3333333333%;
+  background-position-y: 33.3333333333%;
+}
+
+.moho-vice-card[data-card-id=Fans6] {
+  background-position-x: 41.6666666667%;
+  background-position-y: 33.3333333333%;
+}
+
+.moho-vice-card[data-card-id=Fans7] {
+  background-position-x: 50%;
+  background-position-y: 33.3333333333%;
+}
+
+.moho-vice-card[data-card-id=Fans8] {
+  background-position-x: 58.3333333333%;
+  background-position-y: 33.3333333333%;
+}
+
+.moho-vice-card[data-card-id=Fans9] {
+  background-position-x: 66.6666666667%;
+  background-position-y: 33.3333333333%;
+}
+
+.moho-vice-card[data-card-id=FansConstable] {
+  background-position-x: 75%;
+  background-position-y: 33.3333333333%;
+}
+
+.moho-vice-card[data-card-id=FansJack] {
+  background-position-x: 83.3333333333%;
+  background-position-y: 33.3333333333%;
+}
+
+.moho-vice-card[data-card-id=FansQueen] {
+  background-position-x: 91.6666666667%;
+  background-position-y: 33.3333333333%;
+}
+
+.moho-vice-card[data-card-id=FansRogue] {
+  background-position-x: 100%;
+  background-position-y: 33.3333333333%;
+}
+
+.moho-vice-card[data-card-id=Hearts1] {
+  background-position-x: 0%;
+  background-position-y: 66.6666666667%;
+}
+
+.moho-vice-card[data-card-id=Hearts2] {
+  background-position-x: 8.3333333333%;
+  background-position-y: 66.6666666667%;
+}
+
+.moho-vice-card[data-card-id=Hearts3] {
+  background-position-x: 16.6666666667%;
+  background-position-y: 66.6666666667%;
+}
+
+.moho-vice-card[data-card-id=Hearts4] {
+  background-position-x: 25%;
+  background-position-y: 66.6666666667%;
+}
+
+.moho-vice-card[data-card-id=Hearts5] {
+  background-position-x: 33.3333333333%;
+  background-position-y: 66.6666666667%;
+}
+
+.moho-vice-card[data-card-id=Hearts6] {
+  background-position-x: 41.6666666667%;
+  background-position-y: 66.6666666667%;
+}
+
+.moho-vice-card[data-card-id=Hearts7] {
+  background-position-x: 50%;
+  background-position-y: 66.6666666667%;
+}
+
+.moho-vice-card[data-card-id=Hearts8] {
+  background-position-x: 58.3333333333%;
+  background-position-y: 66.6666666667%;
+}
+
+.moho-vice-card[data-card-id=Hearts9] {
+  background-position-x: 66.6666666667%;
+  background-position-y: 66.6666666667%;
+}
+
+.moho-vice-card[data-card-id=HeartsConstable] {
+  background-position-x: 75%;
+  background-position-y: 66.6666666667%;
+}
+
+.moho-vice-card[data-card-id=HeartsJack] {
+  background-position-x: 83.3333333333%;
+  background-position-y: 66.6666666667%;
+}
+
+.moho-vice-card[data-card-id=HeartsQueen] {
+  background-position-x: 91.6666666667%;
+  background-position-y: 66.6666666667%;
+}
+
+.moho-vice-card[data-card-id=HeartsRogue] {
+  background-position-x: 100%;
+  background-position-y: 66.6666666667%;
+}
+
+.moho-vice-card[data-card-id=Pentacles1] {
+  background-position-x: 0%;
+  background-position-y: 100%;
+}
+
+.moho-vice-card[data-card-id=Pentacles2] {
+  background-position-x: 8.3333333333%;
+  background-position-y: 100%;
+}
+
+.moho-vice-card[data-card-id=Pentacles3] {
+  background-position-x: 16.6666666667%;
+  background-position-y: 100%;
+}
+
+.moho-vice-card[data-card-id=Pentacles4] {
+  background-position-x: 25%;
+  background-position-y: 100%;
+}
+
+.moho-vice-card[data-card-id=Pentacles5] {
+  background-position-x: 33.3333333333%;
+  background-position-y: 100%;
+}
+
+.moho-vice-card[data-card-id=Pentacles6] {
+  background-position-x: 41.6666666667%;
+  background-position-y: 100%;
+}
+
+.moho-vice-card[data-card-id=Pentacles7] {
+  background-position-x: 50%;
+  background-position-y: 100%;
+}
+
+.moho-vice-card[data-card-id=Pentacles8] {
+  background-position-x: 58.3333333333%;
+  background-position-y: 100%;
+}
+
+.moho-vice-card[data-card-id=Pentacles9] {
+  background-position-x: 66.6666666667%;
+  background-position-y: 100%;
+}
+
+.moho-vice-card[data-card-id=PentaclesConstable] {
+  background-position-x: 75%;
+  background-position-y: 100%;
+}
+
+.moho-vice-card[data-card-id=PentaclesJack] {
+  background-position-x: 83.3333333333%;
+  background-position-y: 100%;
+}
+
+.moho-vice-card[data-card-id=PentaclesQueen] {
+  background-position-x: 91.6666666667%;
+  background-position-y: 100%;
+}
+
+.moho-vice-card[data-card-id=PentaclesRogue] {
+  background-position-x: 100%;
+  background-position-y: 100%;
+}
+
+#hand {
+  position: fixed;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  --mohoCardScale: 1;
+  height: calc(var(--mohoCardScale) * 180px);
+  width: 100%;
+  z-index: 2;
+}
+#hand .moho-vice-card:hover {
+  transform: translateY(-20px) scale(1.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+#moho-market {
+  display: flex;
+  flex-direction: row;
+  padding: calc(var(--mohoCardScale) * 16px);
+  --mohoCardScale: calc(var(--leftColumnScale) * 1.3);
+  gap: calc(var(--mohoCardScale) * 16px);
+}
+#moho-market .moho-market-slot {
+  width: calc(var(--mohoCardScale) * 161px);
+  height: calc(var(--mohoCardScale) * 225px);
 }
 
 .moho-player-row {

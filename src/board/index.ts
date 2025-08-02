@@ -2,15 +2,20 @@ class Board {
   private static instance: Board;
   private game: GameAlias;
 
+  public gossipPile: Deck<ViceCard>;
+
   public ui: {
     containers: {
       board: HTMLElement;
+      gossipPile: HTMLElement;
+      houseRaidedMarkers: HTMLElement;
       pawns: {
         joy?: HTMLElement;
         week?: HTMLElement;
       };
       selectBoxes: HTMLElement;
     };
+    houseRaidedMarkers: Record<string, HTMLElement>;
     selectBoxes: Record<string, HTMLElement>;
   };
 
@@ -44,16 +49,47 @@ class Board {
     this.ui = {
       containers: {
         board: document.getElementById('moho-board'),
+        gossipPile: document.getElementById('moho-gossip-pile'),
         pawns: {},
         selectBoxes: document.getElementById('moho-select-boxes'),
+        houseRaidedMarkers: document.getElementById('house-raided-markers'),
       },
       selectBoxes: {},
+      houseRaidedMarkers: {},
     };
 
     this.setupPawns(gamedatas);
     this.setupSelectBoxes();
+    this.setupGossipPile(gamedatas);
+    this.setupHouseRaidedMarkers();
   }
 
+  private setupGossipPile(gamedatas: GamedatasAlias) {
+    this.gossipPile = new Deck<ViceCard>(
+      this.game.viceCardManager,
+      this.ui.containers.gossipPile,
+      {
+        cardNumber: gamedatas.gossipPileCount,
+        // thicknesses: [0, 2, 5, 10, 20, 30],
+        thicknesses: [100],
+        counter: {
+          show: true,
+          position: 'center'
+        }
+      }
+    );
+  }
+
+  private setupHouseRaidedMarkers() {
+    MOLLY_HOUSES.forEach((house) => {
+      const elt = (this.ui.houseRaidedMarkers[house] =
+        document.createElement('div'));
+      elt.classList.add('moho-house-raided-marker');
+      elt.setAttribute('data-house', house);
+      elt.setAttribute('data-raided', 'false');
+      this.ui.containers.houseRaidedMarkers.appendChild(elt);
+    });
+  }
 
   private setupPawns(gamedatas: GamedatasAlias) {
     ['joy', 'week'].forEach((pawn) => {
@@ -61,22 +97,14 @@ class Board {
         document.createElement('div'));
       elt.id = pawn;
       elt.classList.add('moho-pawn');
-      elt.setAttribute(
-        'data-type',
-        pawn
-      );
+      elt.setAttribute('data-type', pawn);
       this.ui.containers.board.appendChild(elt);
     });
 
     this.updatePawns(gamedatas);
   }
 
-
-  private setupSelectBoxes() {
-
-  }
-
-
+  private setupSelectBoxes() {}
 
   // .##.....##.########..########.....###....########.########....##.....##.####
   // .##.....##.##.....##.##.....##...##.##......##....##..........##.....##..##.
@@ -122,9 +150,6 @@ class Board {
     // this.updatePawn('balance', balance);
     // this.updatePawn('debt', debt);
   }
-
-
-
 
   //  .##.....##.########.####.##.......####.########.##....##
   //  .##.....##....##.....##..##........##.....##.....##..##.

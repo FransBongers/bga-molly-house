@@ -3,6 +3,7 @@
 #moho-board {
   --boardScale: var(--leftColumnScale);
   --tokenScale: var(--leftColumnScale);
+  --mohoCardScale: var(--boardScale);
   position: relative;
   background-image: url('img/board.jpg');
   background-size: 100% 100%;
@@ -14,18 +15,55 @@
   outline: 1px solid black;
 
   #moho-playmat {
-    --boardScale: var(--leftColumnScale);
-    --tokenScale: var(--leftColumnScale);
     position: relative;
     background-image: url('img/playmat.jpg');
     background-size: 100% 100%;
-    height: calc(var(--leftColumnScale) * 748px);
-    min-height: calc(var(--leftColumnScale) * 748px);
-    width: calc(var(--leftColumnScale) * 880px);
+    height: calc(var(--boardScale) * 748px);
+    min-height: calc(var(--boardScale) * 748px);
+    width: calc(var(--boardScale) * 880px);
     position: absolute;
-    left: calc(var(--leftColumnScale) * 203px);
-    top: calc(var(--leftColumnScale) * 201px);
-    border: calc(var(--leftColumnScale) * 2px) solid black;
-    border-radius: calc(var(--leftColumnScale) * 40px);
+    left: calc(var(--boardScale) * 203px);
+    top: calc(var(--boardScale) * 201px);
+    border: calc(var(--boardScale) * 2px) solid black;
+    border-radius: calc(var(--boardScale) * 40px);
   }
+
+  #moho-gossip-pile {
+    position: absolute;
+    left: calc(var(--boardScale) * 1300px);
+    top: calc(var(--boardScale) * 903px);
+    width: calc(var(--boardScale) * 161px);
+    height: calc(var(--boardScale) * 225px);
+    // outline: 2px yellow solid;
+  }
+}
+
+.moho-house-raided-marker {
+  position: absolute;
+  width: calc(var(--boardScale) * 135px);
+  height: calc(var(--boardScale) * 135px);
+  background-image: url('img/house_raided_markers.png');
+  background-size: 400% 100%;
+}
+
+.moho-house-raided-marker[data-raided=false] {
+  display: none ;
+}
+
+.moho-house-raided-marker[data-house='MotherClaps'] {
+  background-position-x: 100%;
+  left: calc(var(--boardScale) * 0px);
+}
+.moho-house-raided-marker[data-house='MissMuffs'] {
+  background-position-x: 33.333333%;
+  left: calc(var(--boardScale) * 1150px);
+}
+.moho-house-raided-marker[data-house='SukeyBevells'] {
+  background-position-x: 66.666667%;
+  left: calc(var(--boardScale) * 1150px);
+  bottom: calc(var(--boardScale) * 0px);
+}
+.moho-house-raided-marker[data-house='JuliusCesarTaylors'] {
+  background-position-x: 0%;
+  bottom: calc(var(--boardScale) * 0px);
 }

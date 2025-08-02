@@ -1,3 +1,91 @@
+var DESIRE = 'desire';
+var THREAT = 'threat';
+var MOLLY = 'molly';
+var CONVICTED = 'convicted';
+var MAJOR = 'major';
+var MINOR = 'minor';
+var CUPS = 'cups';
+var PENTACLES = 'pentacles';
+var FANS = 'fans';
+var HEARTS = 'hearts';
+var MARKET_0 = 'market_0';
+var MARKET_1 = 'market_1';
+var MARKET_2 = 'market_2';
+var MARKET_3 = 'market_3';
+var MARKET_SPOTS = [
+    MARKET_0,
+    MARKET_1,
+    MARKET_2,
+    MARKET_3,
+];
+var GOSSIP_PILE = 'gossipPile';
+var SAFE_PILE = 'safePile';
+var MOTHER_CLAPS = 'MotherClaps';
+var ST_PAULS_CATHEDRAL = 'StPaulsCathedral';
+var NOBLE_STREET = 'NobleStreet';
+var MOORFIELDS = 'Moorfields';
+var MISS_MUFFS = 'MissMuffs';
+var ROYAL_EXCHANGE = 'RoyalExchange';
+var LEADENHALL_STREET = 'LeadenhallStreet';
+var LONDON_BRIDGE = 'LondonBridge';
+var SUKEY_BEVELLS = 'SukeyBevells';
+var OLD_ROUND_COURT = 'OldRoundCourt';
+var CANNON_STREET = 'CannonStreet';
+var ST_JAMESS_PARK = 'StJamessPark';
+var JULIUS_CESAR_TAYLORS = 'JuliusCesarTaylors';
+var COVENT_GARDEN_PIAZZA = 'CoventGardenPiazza';
+var DUKE_STREET = 'DukeStreet';
+var LINCOLNS_INN_BOGHOUSE = 'LincolnsInnBoghouse';
+var SITES = [
+    MOTHER_CLAPS,
+    ST_PAULS_CATHEDRAL,
+    NOBLE_STREET,
+    MOORFIELDS,
+    MISS_MUFFS,
+    ROYAL_EXCHANGE,
+    LEADENHALL_STREET,
+    LONDON_BRIDGE,
+    SUKEY_BEVELLS,
+    OLD_ROUND_COURT,
+    CANNON_STREET,
+    ST_JAMESS_PARK,
+    JULIUS_CESAR_TAYLORS,
+    COVENT_GARDEN_PIAZZA,
+    DUKE_STREET,
+    LINCOLNS_INN_BOGHOUSE,
+];
+var MOLLY_HOUSES = [
+    MOTHER_CLAPS,
+    MISS_MUFFS,
+    SUKEY_BEVELLS,
+    JULIUS_CESAR_TAYLORS,
+];
+var SHOP_SITES = [
+    NOBLE_STREET,
+    LEADENHALL_STREET,
+    CANNON_STREET,
+    DUKE_STREET,
+];
+var NEWSPAPER_NOTICE = 'NewspaperNotice';
+var BRIBE = 'Bribe';
+var VIOLIN = 'Violin';
+var DOMINO = 'Domino';
+var BOTTLE_OF_GIN = 'BottleOfGin';
+var DRESS_OF_CUPS = 'DressOfCups';
+var DRESS_OF_PENTACLES = 'DressOfPentacles';
+var DRESS_OF_FANS = 'DressOfFans';
+var DRESS_OF_HEARTS = 'DressOfHearts';
+var ITEM_DISTRIBUTIION = [
+    function (NEWSPAPER_NOTICE) { return 3; },
+    function (BRIBE) { return 3; },
+    function (VIOLIN) { return 3; },
+    function (DOMINO) { return 3; },
+    function (BOTTLE_OF_GIN) { return 4; },
+    function (DRESS_OF_CUPS) { return 1; },
+    function (DRESS_OF_PENTACLES) { return 1; },
+    function (DRESS_OF_FANS) { return 1; },
+    function (DRESS_OF_HEARTS) { return 1; },
+];
 var BgaAnimation = (function () {
     function BgaAnimation(animationFunction, settings) {
         this.animationFunction = animationFunction;
@@ -429,6 +517,1039 @@ var AnimationManager = (function () {
     };
     return AnimationManager;
 }());
+var CardStock = (function () {
+    function CardStock(manager, element, settings) {
+        this.manager = manager;
+        this.element = element;
+        this.settings = settings;
+        this.cards = [];
+        this.selectedCards = [];
+        this.selectionMode = 'none';
+        manager.addStock(this);
+        element === null || element === void 0 ? void 0 : element.classList.add('card-stock');
+        this.bindClick();
+        this.sort = settings === null || settings === void 0 ? void 0 : settings.sort;
+    }
+    CardStock.prototype.remove = function () {
+        var _a;
+        this.manager.removeStock(this);
+        (_a = this.element) === null || _a === void 0 ? void 0 : _a.remove();
+    };
+    CardStock.prototype.getCards = function () {
+        return this.cards.slice();
+    };
+    CardStock.prototype.isEmpty = function () {
+        return !this.cards.length;
+    };
+    CardStock.prototype.getSelection = function () {
+        return this.selectedCards.slice();
+    };
+    CardStock.prototype.isSelected = function (card) {
+        var _this = this;
+        return this.selectedCards.some(function (c) { return _this.manager.getId(c) == _this.manager.getId(card); });
+    };
+    CardStock.prototype.contains = function (card) {
+        var _this = this;
+        return this.cards.some(function (c) { return _this.manager.getId(c) == _this.manager.getId(card); });
+    };
+    CardStock.prototype.getCardElement = function (card) {
+        return this.manager.getCardElement(card);
+    };
+    CardStock.prototype.canAddCard = function (card, settings) {
+        return !this.contains(card);
+    };
+    CardStock.prototype.addCard = function (card, animation, settings) {
+        var _this = this;
+        var _a, _b, _c, _d;
+        if (!this.canAddCard(card, settings)) {
+            return Promise.resolve(false);
+        }
+        var promise;
+        var originStock = this.manager.getCardStock(card);
+        var index = this.getNewCardIndex(card);
+        var settingsWithIndex = __assign({ index: index }, (settings !== null && settings !== void 0 ? settings : {}));
+        var updateInformations = (_a = settingsWithIndex.updateInformations) !== null && _a !== void 0 ? _a : true;
+        var needsCreation = true;
+        if (originStock === null || originStock === void 0 ? void 0 : originStock.contains(card)) {
+            var element = this.getCardElement(card);
+            if (element) {
+                promise = this.moveFromOtherStock(card, element, __assign(__assign({}, animation), { fromStock: originStock }), settingsWithIndex);
+                needsCreation = false;
+                if (!updateInformations) {
+                    element.dataset.side = ((_b = settingsWithIndex === null || settingsWithIndex === void 0 ? void 0 : settingsWithIndex.visible) !== null && _b !== void 0 ? _b : this.manager.isCardVisible(card)) ? 'front' : 'back';
+                }
+            }
+        }
+        else if ((_c = animation === null || animation === void 0 ? void 0 : animation.fromStock) === null || _c === void 0 ? void 0 : _c.contains(card)) {
+            var element = this.getCardElement(card);
+            if (element) {
+                promise = this.moveFromOtherStock(card, element, animation, settingsWithIndex);
+                needsCreation = false;
+            }
+        }
+        if (needsCreation) {
+            var element = this.manager.createCardElement(card, ((_d = settingsWithIndex === null || settingsWithIndex === void 0 ? void 0 : settingsWithIndex.visible) !== null && _d !== void 0 ? _d : this.manager.isCardVisible(card)));
+            promise = this.moveFromElement(card, element, animation, settingsWithIndex);
+        }
+        if (settingsWithIndex.index !== null && settingsWithIndex.index !== undefined) {
+            this.cards.splice(index, 0, card);
+        }
+        else {
+            this.cards.push(card);
+        }
+        if (updateInformations) {
+            this.manager.updateCardInformations(card);
+        }
+        if (!promise) {
+            console.warn("CardStock.addCard didn't return a Promise");
+            promise = Promise.resolve(false);
+        }
+        if (this.selectionMode !== 'none') {
+            promise.then(function () { var _a; return _this.setSelectableCard(card, (_a = settingsWithIndex.selectable) !== null && _a !== void 0 ? _a : true); });
+        }
+        return promise;
+    };
+    CardStock.prototype.getNewCardIndex = function (card) {
+        if (this.sort) {
+            var otherCards = this.getCards();
+            for (var i = 0; i < otherCards.length; i++) {
+                var otherCard = otherCards[i];
+                if (this.sort(card, otherCard) < 0) {
+                    return i;
+                }
+            }
+            return otherCards.length;
+        }
+        else {
+            return undefined;
+        }
+    };
+    CardStock.prototype.addCardElementToParent = function (cardElement, settings) {
+        var _a;
+        var parent = (_a = settings === null || settings === void 0 ? void 0 : settings.forceToElement) !== null && _a !== void 0 ? _a : this.element;
+        if ((settings === null || settings === void 0 ? void 0 : settings.index) === null || (settings === null || settings === void 0 ? void 0 : settings.index) === undefined || !parent.children.length || (settings === null || settings === void 0 ? void 0 : settings.index) >= parent.children.length) {
+            parent.appendChild(cardElement);
+        }
+        else {
+            parent.insertBefore(cardElement, parent.children[settings.index]);
+        }
+    };
+    CardStock.prototype.moveFromOtherStock = function (card, cardElement, animation, settings) {
+        var promise;
+        var element = animation.fromStock.contains(card) ? this.manager.getCardElement(card) : animation.fromStock.element;
+        var fromRect = element === null || element === void 0 ? void 0 : element.getBoundingClientRect();
+        this.addCardElementToParent(cardElement, settings);
+        this.removeSelectionClassesFromElement(cardElement);
+        promise = fromRect ? this.animationFromElement(cardElement, fromRect, {
+            originalSide: animation.originalSide,
+            rotationDelta: animation.rotationDelta,
+            animation: animation.animation,
+        }) : Promise.resolve(false);
+        if (animation.fromStock && animation.fromStock != this) {
+            animation.fromStock.removeCard(card);
+        }
+        if (!promise) {
+            console.warn("CardStock.moveFromOtherStock didn't return a Promise");
+            promise = Promise.resolve(false);
+        }
+        return promise;
+    };
+    CardStock.prototype.moveFromElement = function (card, cardElement, animation, settings) {
+        var promise;
+        this.addCardElementToParent(cardElement, settings);
+        if (animation) {
+            if (animation.fromStock) {
+                promise = this.animationFromElement(cardElement, animation.fromStock.element.getBoundingClientRect(), {
+                    originalSide: animation.originalSide,
+                    rotationDelta: animation.rotationDelta,
+                    animation: animation.animation,
+                });
+                animation.fromStock.removeCard(card);
+            }
+            else if (animation.fromElement) {
+                promise = this.animationFromElement(cardElement, animation.fromElement.getBoundingClientRect(), {
+                    originalSide: animation.originalSide,
+                    rotationDelta: animation.rotationDelta,
+                    animation: animation.animation,
+                });
+            }
+        }
+        else {
+            promise = Promise.resolve(false);
+        }
+        if (!promise) {
+            console.warn("CardStock.moveFromElement didn't return a Promise");
+            promise = Promise.resolve(false);
+        }
+        return promise;
+    };
+    CardStock.prototype.addCards = function (cards_1, animation_1, settings_1) {
+        return __awaiter(this, arguments, void 0, function (cards, animation, settings, shift) {
+            var promises, result, others, _loop_2, i, results;
+            var _this = this;
+            if (shift === void 0) { shift = false; }
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!this.manager.animationsActive()) {
+                            shift = false;
+                        }
+                        promises = [];
+                        if (!(shift === true)) return [3, 4];
+                        if (!cards.length) return [3, 3];
+                        return [4, this.addCard(cards[0], animation, settings)];
+                    case 1:
+                        result = _a.sent();
+                        return [4, this.addCards(cards.slice(1), animation, settings, shift)];
+                    case 2:
+                        others = _a.sent();
+                        return [2, result || others];
+                    case 3: return [3, 5];
+                    case 4:
+                        if (typeof shift === 'number') {
+                            _loop_2 = function (i) {
+                                setTimeout(function () { return promises.push(_this.addCard(cards[i], animation, settings)); }, i * shift);
+                            };
+                            for (i = 0; i < cards.length; i++) {
+                                _loop_2(i);
+                            }
+                        }
+                        else {
+                            promises = cards.map(function (card) { return _this.addCard(card, animation, settings); });
+                        }
+                        _a.label = 5;
+                    case 5: return [4, Promise.all(promises)];
+                    case 6:
+                        results = _a.sent();
+                        return [2, results.some(function (result) { return result; })];
+                }
+            });
+        });
+    };
+    CardStock.prototype.removeCard = function (card, settings) {
+        var promise;
+        if (this.contains(card) && this.element.contains(this.getCardElement(card))) {
+            promise = this.manager.removeCard(card, settings);
+        }
+        else {
+            promise = Promise.resolve(false);
+        }
+        this.cardRemoved(card, settings);
+        return promise;
+    };
+    CardStock.prototype.cardRemoved = function (card, settings) {
+        var _this = this;
+        var index = this.cards.findIndex(function (c) { return _this.manager.getId(c) == _this.manager.getId(card); });
+        if (index !== -1) {
+            this.cards.splice(index, 1);
+        }
+        if (this.selectedCards.find(function (c) { return _this.manager.getId(c) == _this.manager.getId(card); })) {
+            this.unselectCard(card);
+        }
+    };
+    CardStock.prototype.removeCards = function (cards, settings) {
+        return __awaiter(this, void 0, void 0, function () {
+            var promises, results;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        promises = cards.map(function (card) { return _this.removeCard(card, settings); });
+                        return [4, Promise.all(promises)];
+                    case 1:
+                        results = _a.sent();
+                        return [2, results.some(function (result) { return result; })];
+                }
+            });
+        });
+    };
+    CardStock.prototype.removeAll = function (settings) {
+        var _this = this;
+        var cards = this.getCards();
+        cards.forEach(function (card) { return _this.removeCard(card, settings); });
+    };
+    CardStock.prototype.setSelectionMode = function (selectionMode, selectableCards) {
+        var _this = this;
+        if (selectionMode !== this.selectionMode) {
+            this.unselectAll(true);
+        }
+        this.cards.forEach(function (card) { return _this.setSelectableCard(card, selectionMode != 'none'); });
+        this.element.classList.toggle('bga-cards_selectable-stock', selectionMode != 'none');
+        this.selectionMode = selectionMode;
+        if (selectionMode === 'none') {
+            this.getCards().forEach(function (card) { return _this.removeSelectionClasses(card); });
+        }
+        else {
+            this.setSelectableCards(selectableCards !== null && selectableCards !== void 0 ? selectableCards : this.getCards());
+        }
+    };
+    CardStock.prototype.setSelectableCard = function (card, selectable) {
+        if (this.selectionMode === 'none') {
+            return;
+        }
+        var element = this.getCardElement(card);
+        var selectableCardsClass = this.getSelectableCardClass();
+        var unselectableCardsClass = this.getUnselectableCardClass();
+        if (selectableCardsClass) {
+            element === null || element === void 0 ? void 0 : element.classList.toggle(selectableCardsClass, selectable);
+        }
+        if (unselectableCardsClass) {
+            element === null || element === void 0 ? void 0 : element.classList.toggle(unselectableCardsClass, !selectable);
+        }
+        if (!selectable && this.isSelected(card)) {
+            this.unselectCard(card, true);
+        }
+    };
+    CardStock.prototype.setSelectableCards = function (selectableCards) {
+        var _this = this;
+        if (this.selectionMode === 'none') {
+            return;
+        }
+        var selectableCardsIds = (selectableCards !== null && selectableCards !== void 0 ? selectableCards : this.getCards()).map(function (card) { return _this.manager.getId(card); });
+        this.cards.forEach(function (card) {
+            return _this.setSelectableCard(card, selectableCardsIds.includes(_this.manager.getId(card)));
+        });
+    };
+    CardStock.prototype.selectCard = function (card, silent) {
+        var _this = this;
+        var _a;
+        if (silent === void 0) { silent = false; }
+        if (this.selectionMode == 'none') {
+            return;
+        }
+        var element = this.getCardElement(card);
+        var selectableCardsClass = this.getSelectableCardClass();
+        if (!element || !element.classList.contains(selectableCardsClass)) {
+            return;
+        }
+        if (this.selectionMode === 'single') {
+            this.cards.filter(function (c) { return _this.manager.getId(c) != _this.manager.getId(card); }).forEach(function (c) { return _this.unselectCard(c, true); });
+        }
+        var selectedCardsClass = this.getSelectedCardClass();
+        element.classList.add(selectedCardsClass);
+        this.selectedCards.push(card);
+        if (!silent) {
+            (_a = this.onSelectionChange) === null || _a === void 0 ? void 0 : _a.call(this, this.selectedCards.slice(), card);
+        }
+    };
+    CardStock.prototype.unselectCard = function (card, silent) {
+        var _this = this;
+        var _a;
+        if (silent === void 0) { silent = false; }
+        var element = this.getCardElement(card);
+        var selectedCardsClass = this.getSelectedCardClass();
+        element === null || element === void 0 ? void 0 : element.classList.remove(selectedCardsClass);
+        var index = this.selectedCards.findIndex(function (c) { return _this.manager.getId(c) == _this.manager.getId(card); });
+        if (index !== -1) {
+            this.selectedCards.splice(index, 1);
+        }
+        if (!silent) {
+            (_a = this.onSelectionChange) === null || _a === void 0 ? void 0 : _a.call(this, this.selectedCards.slice(), card);
+        }
+    };
+    CardStock.prototype.selectAll = function (silent) {
+        var _this = this;
+        var _a;
+        if (silent === void 0) { silent = false; }
+        if (this.selectionMode == 'none') {
+            return;
+        }
+        this.cards.forEach(function (c) { return _this.selectCard(c, true); });
+        if (!silent) {
+            (_a = this.onSelectionChange) === null || _a === void 0 ? void 0 : _a.call(this, this.selectedCards.slice(), null);
+        }
+    };
+    CardStock.prototype.unselectAll = function (silent) {
+        var _this = this;
+        var _a;
+        if (silent === void 0) { silent = false; }
+        var cards = this.getCards();
+        cards.forEach(function (c) { return _this.unselectCard(c, true); });
+        if (!silent) {
+            (_a = this.onSelectionChange) === null || _a === void 0 ? void 0 : _a.call(this, this.selectedCards.slice(), null);
+        }
+    };
+    CardStock.prototype.bindClick = function () {
+        var _this = this;
+        var _a;
+        (_a = this.element) === null || _a === void 0 ? void 0 : _a.addEventListener('click', function (event) {
+            var cardDiv = event.target.closest('.card');
+            if (!cardDiv) {
+                return;
+            }
+            var card = _this.cards.find(function (c) { return _this.manager.getId(c) == cardDiv.id; });
+            if (!card) {
+                return;
+            }
+            _this.cardClick(card);
+        });
+    };
+    CardStock.prototype.cardClick = function (card) {
+        var _this = this;
+        var _a;
+        if (this.selectionMode != 'none') {
+            var alreadySelected = this.selectedCards.some(function (c) { return _this.manager.getId(c) == _this.manager.getId(card); });
+            if (alreadySelected) {
+                this.unselectCard(card);
+            }
+            else {
+                this.selectCard(card);
+            }
+        }
+        (_a = this.onCardClick) === null || _a === void 0 ? void 0 : _a.call(this, card);
+    };
+    CardStock.prototype.animationFromElement = function (element, fromRect, settings) {
+        return __awaiter(this, void 0, void 0, function () {
+            var side, cardSides_1, animation, result;
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        side = element.dataset.side;
+                        if (settings.originalSide && settings.originalSide != side) {
+                            cardSides_1 = element.getElementsByClassName('card-sides')[0];
+                            cardSides_1.style.transition = 'none';
+                            element.dataset.side = settings.originalSide;
+                            setTimeout(function () {
+                                cardSides_1.style.transition = null;
+                                element.dataset.side = side;
+                            });
+                        }
+                        animation = settings.animation;
+                        if (animation) {
+                            animation.settings.element = element;
+                            animation.settings.fromRect = fromRect;
+                        }
+                        else {
+                            animation = new BgaSlideAnimation({ element: element, fromRect: fromRect });
+                        }
+                        return [4, this.manager.animationManager.play(animation)];
+                    case 1:
+                        result = _b.sent();
+                        return [2, (_a = result === null || result === void 0 ? void 0 : result.played) !== null && _a !== void 0 ? _a : false];
+                }
+            });
+        });
+    };
+    CardStock.prototype.setCardVisible = function (card, visible, settings) {
+        this.manager.setCardVisible(card, visible, settings);
+    };
+    CardStock.prototype.flipCard = function (card, settings) {
+        this.manager.flipCard(card, settings);
+    };
+    CardStock.prototype.getSelectableCardClass = function () {
+        var _a, _b;
+        return ((_a = this.settings) === null || _a === void 0 ? void 0 : _a.selectableCardClass) === undefined ? this.manager.getSelectableCardClass() : (_b = this.settings) === null || _b === void 0 ? void 0 : _b.selectableCardClass;
+    };
+    CardStock.prototype.getUnselectableCardClass = function () {
+        var _a, _b;
+        return ((_a = this.settings) === null || _a === void 0 ? void 0 : _a.unselectableCardClass) === undefined ? this.manager.getUnselectableCardClass() : (_b = this.settings) === null || _b === void 0 ? void 0 : _b.unselectableCardClass;
+    };
+    CardStock.prototype.getSelectedCardClass = function () {
+        var _a, _b;
+        return ((_a = this.settings) === null || _a === void 0 ? void 0 : _a.selectedCardClass) === undefined ? this.manager.getSelectedCardClass() : (_b = this.settings) === null || _b === void 0 ? void 0 : _b.selectedCardClass;
+    };
+    CardStock.prototype.removeSelectionClasses = function (card) {
+        this.removeSelectionClassesFromElement(this.getCardElement(card));
+    };
+    CardStock.prototype.removeSelectionClassesFromElement = function (cardElement) {
+        var selectableCardsClass = this.getSelectableCardClass();
+        var unselectableCardsClass = this.getUnselectableCardClass();
+        var selectedCardsClass = this.getSelectedCardClass();
+        cardElement === null || cardElement === void 0 ? void 0 : cardElement.classList.remove(selectableCardsClass, unselectableCardsClass, selectedCardsClass);
+    };
+    return CardStock;
+}());
+var SlideAndBackAnimation = (function (_super) {
+    __extends(SlideAndBackAnimation, _super);
+    function SlideAndBackAnimation(manager, element, tempElement) {
+        var distance = (manager.getCardWidth() + manager.getCardHeight()) / 2;
+        var angle = Math.random() * Math.PI * 2;
+        var fromDelta = {
+            x: distance * Math.cos(angle),
+            y: distance * Math.sin(angle),
+        };
+        return _super.call(this, {
+            animations: [
+                new BgaSlideToAnimation({ element: element, fromDelta: fromDelta, duration: 250 }),
+                new BgaSlideAnimation({ element: element, fromDelta: fromDelta, duration: 250, animationEnd: tempElement ? (function () { return element.remove(); }) : undefined }),
+            ]
+        }) || this;
+    }
+    return SlideAndBackAnimation;
+}(BgaCumulatedAnimation));
+var Deck = (function (_super) {
+    __extends(Deck, _super);
+    function Deck(manager, element, settings) {
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+        var _this = _super.call(this, manager, element) || this;
+        _this.manager = manager;
+        _this.element = element;
+        element.classList.add('deck');
+        var cardWidth = _this.manager.getCardWidth();
+        var cardHeight = _this.manager.getCardHeight();
+        if (cardWidth && cardHeight) {
+            _this.element.style.setProperty('--width', "".concat(cardWidth, "px"));
+            _this.element.style.setProperty('--height', "".concat(cardHeight, "px"));
+        }
+        else {
+            throw new Error("You need to set cardWidth and cardHeight in the card manager to use Deck.");
+        }
+        _this.fakeCardGenerator = (_a = settings === null || settings === void 0 ? void 0 : settings.fakeCardGenerator) !== null && _a !== void 0 ? _a : manager.getFakeCardGenerator();
+        _this.thicknesses = (_b = settings.thicknesses) !== null && _b !== void 0 ? _b : [0, 2, 5, 10, 20, 30];
+        _this.setCardNumber((_c = settings.cardNumber) !== null && _c !== void 0 ? _c : 0);
+        _this.autoUpdateCardNumber = (_d = settings.autoUpdateCardNumber) !== null && _d !== void 0 ? _d : true;
+        _this.autoRemovePreviousCards = (_e = settings.autoRemovePreviousCards) !== null && _e !== void 0 ? _e : true;
+        var shadowDirection = (_f = settings.shadowDirection) !== null && _f !== void 0 ? _f : 'bottom-right';
+        var shadowDirectionSplit = shadowDirection.split('-');
+        var xShadowShift = shadowDirectionSplit.includes('right') ? 1 : (shadowDirectionSplit.includes('left') ? -1 : 0);
+        var yShadowShift = shadowDirectionSplit.includes('bottom') ? 1 : (shadowDirectionSplit.includes('top') ? -1 : 0);
+        _this.element.style.setProperty('--xShadowShift', '' + xShadowShift);
+        _this.element.style.setProperty('--yShadowShift', '' + yShadowShift);
+        if (settings.topCard) {
+            _this.addCard(settings.topCard);
+        }
+        else if (settings.cardNumber > 0) {
+            _this.addCard(_this.getFakeCard());
+        }
+        if (settings.counter && ((_g = settings.counter.show) !== null && _g !== void 0 ? _g : true)) {
+            if (settings.cardNumber === null || settings.cardNumber === undefined) {
+                console.warn("Deck card counter created without a cardNumber");
+            }
+            _this.createCounter((_h = settings.counter.position) !== null && _h !== void 0 ? _h : 'bottom', (_j = settings.counter.extraClasses) !== null && _j !== void 0 ? _j : 'round', settings.counter.counterId);
+            if ((_k = settings.counter) === null || _k === void 0 ? void 0 : _k.hideWhenEmpty) {
+                _this.element.querySelector('.bga-cards_deck-counter').classList.add('hide-when-empty');
+            }
+        }
+        _this.setCardNumber((_l = settings.cardNumber) !== null && _l !== void 0 ? _l : 0);
+        return _this;
+    }
+    Deck.prototype.createCounter = function (counterPosition, extraClasses, counterId) {
+        var left = counterPosition.includes('right') ? 100 : (counterPosition.includes('left') ? 0 : 50);
+        var top = counterPosition.includes('bottom') ? 100 : (counterPosition.includes('top') ? 0 : 50);
+        this.element.style.setProperty('--bga-cards-deck-left', "".concat(left, "%"));
+        this.element.style.setProperty('--bga-cards-deck-top', "".concat(top, "%"));
+        this.element.insertAdjacentHTML('beforeend', "\n            <div ".concat(counterId ? "id=\"".concat(counterId, "\"") : '', " class=\"bga-cards_deck-counter ").concat(extraClasses, "\"></div>\n        "));
+    };
+    Deck.prototype.getCardNumber = function () {
+        return this.cardNumber;
+    };
+    Deck.prototype.setCardNumber = function (cardNumber, topCard) {
+        var _this = this;
+        if (topCard === void 0) { topCard = undefined; }
+        var promise = topCard === null || cardNumber == 0 ?
+            Promise.resolve(false) :
+            _super.prototype.addCard.call(this, topCard || this.getFakeCard(), undefined, { autoUpdateCardNumber: false });
+        this.cardNumber = cardNumber;
+        this.element.dataset.empty = (this.cardNumber == 0).toString();
+        var thickness = 0;
+        this.thicknesses.forEach(function (threshold, index) {
+            if (_this.cardNumber >= threshold) {
+                thickness = index;
+            }
+        });
+        this.element.style.setProperty('--thickness', "".concat(thickness, "px"));
+        var counterDiv = this.element.querySelector('.bga-cards_deck-counter');
+        if (counterDiv) {
+            counterDiv.innerHTML = "".concat(cardNumber);
+        }
+        return promise;
+    };
+    Deck.prototype.addCard = function (card, animation, settings) {
+        var _this = this;
+        var _a, _b;
+        if ((_a = settings === null || settings === void 0 ? void 0 : settings.autoUpdateCardNumber) !== null && _a !== void 0 ? _a : this.autoUpdateCardNumber) {
+            this.setCardNumber(this.cardNumber + 1, null);
+        }
+        var promise = _super.prototype.addCard.call(this, card, animation, settings);
+        if ((_b = settings === null || settings === void 0 ? void 0 : settings.autoRemovePreviousCards) !== null && _b !== void 0 ? _b : this.autoRemovePreviousCards) {
+            promise.then(function () {
+                var previousCards = _this.getCards().slice(0, -1);
+                _this.removeCards(previousCards, { autoUpdateCardNumber: false });
+            });
+        }
+        return promise;
+    };
+    Deck.prototype.cardRemoved = function (card, settings) {
+        var _a;
+        if ((_a = settings === null || settings === void 0 ? void 0 : settings.autoUpdateCardNumber) !== null && _a !== void 0 ? _a : this.autoUpdateCardNumber) {
+            this.setCardNumber(this.cardNumber - 1);
+        }
+        _super.prototype.cardRemoved.call(this, card, settings);
+    };
+    Deck.prototype.getTopCard = function () {
+        var cards = this.getCards();
+        return cards.length ? cards[cards.length - 1] : null;
+    };
+    Deck.prototype.shuffle = function (settings) {
+        return __awaiter(this, void 0, void 0, function () {
+            var animatedCardsMax, animatedCards, elements, getFakeCard, uid, i, newCard, newElement, pauseDelayAfterAnimation;
+            var _this = this;
+            var _a, _b, _c;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0:
+                        animatedCardsMax = (_a = settings === null || settings === void 0 ? void 0 : settings.animatedCardsMax) !== null && _a !== void 0 ? _a : 10;
+                        this.addCard((_b = settings === null || settings === void 0 ? void 0 : settings.newTopCard) !== null && _b !== void 0 ? _b : this.getFakeCard(), undefined, { autoUpdateCardNumber: false });
+                        if (!this.manager.animationsActive()) {
+                            return [2, Promise.resolve(false)];
+                        }
+                        animatedCards = Math.min(10, animatedCardsMax, this.getCardNumber());
+                        if (!(animatedCards > 1)) return [3, 4];
+                        elements = [this.getCardElement(this.getTopCard())];
+                        getFakeCard = function (uid) {
+                            var newCard;
+                            if (settings === null || settings === void 0 ? void 0 : settings.fakeCardSetter) {
+                                newCard = {};
+                                settings === null || settings === void 0 ? void 0 : settings.fakeCardSetter(newCard, uid);
+                            }
+                            else {
+                                newCard = _this.fakeCardGenerator("".concat(_this.element.id, "-shuffle-").concat(uid));
+                            }
+                            return newCard;
+                        };
+                        uid = 0;
+                        for (i = elements.length; i <= animatedCards; i++) {
+                            newCard = void 0;
+                            do {
+                                newCard = getFakeCard(uid++);
+                            } while (this.manager.getCardElement(newCard));
+                            newElement = this.manager.createCardElement(newCard, false);
+                            newElement.dataset.tempCardForShuffleAnimation = 'true';
+                            this.element.prepend(newElement);
+                            elements.push(newElement);
+                        }
+                        return [4, this.manager.animationManager.playWithDelay(elements.map(function (element) { return new SlideAndBackAnimation(_this.manager, element, element.dataset.tempCardForShuffleAnimation == 'true'); }), 50)];
+                    case 1:
+                        _d.sent();
+                        pauseDelayAfterAnimation = (_c = settings === null || settings === void 0 ? void 0 : settings.pauseDelayAfterAnimation) !== null && _c !== void 0 ? _c : 500;
+                        if (!(pauseDelayAfterAnimation > 0)) return [3, 3];
+                        return [4, this.manager.animationManager.play(new BgaPauseAnimation({ duration: pauseDelayAfterAnimation }))];
+                    case 2:
+                        _d.sent();
+                        _d.label = 3;
+                    case 3: return [2, true];
+                    case 4: return [2, Promise.resolve(false)];
+                }
+            });
+        });
+    };
+    Deck.prototype.getFakeCard = function () {
+        return this.fakeCardGenerator(this.element.id);
+    };
+    return Deck;
+}(CardStock));
+var HandStock = (function (_super) {
+    __extends(HandStock, _super);
+    function HandStock(manager, element, settings) {
+        var _a, _b, _c, _d;
+        var _this = _super.call(this, manager, element, settings) || this;
+        _this.manager = manager;
+        _this.element = element;
+        element.classList.add('hand-stock');
+        element.style.setProperty('--card-overlap', (_a = settings.cardOverlap) !== null && _a !== void 0 ? _a : '60px');
+        element.style.setProperty('--card-shift', (_b = settings.cardShift) !== null && _b !== void 0 ? _b : '15px');
+        element.style.setProperty('--card-inclination', "".concat((_c = settings.inclination) !== null && _c !== void 0 ? _c : 12, "deg"));
+        _this.inclination = (_d = settings.inclination) !== null && _d !== void 0 ? _d : 4;
+        return _this;
+    }
+    HandStock.prototype.addCard = function (card, animation, settings) {
+        var promise = _super.prototype.addCard.call(this, card, animation, settings);
+        this.updateAngles();
+        return promise;
+    };
+    HandStock.prototype.cardRemoved = function (card, settings) {
+        _super.prototype.cardRemoved.call(this, card, settings);
+        this.updateAngles();
+    };
+    HandStock.prototype.updateAngles = function () {
+        var _this = this;
+        var middle = (this.cards.length - 1) / 2;
+        this.cards.forEach(function (card, index) {
+            var middleIndex = index - middle;
+            var cardElement = _this.getCardElement(card);
+            cardElement.style.setProperty('--hand-stock-middle-index', "".concat(middleIndex));
+            cardElement.style.setProperty('--hand-stock-middle-index-abs', "".concat(Math.abs(middleIndex)));
+        });
+    };
+    return HandStock;
+}(CardStock));
+var LineStock = (function (_super) {
+    __extends(LineStock, _super);
+    function LineStock(manager, element, settings) {
+        var _a, _b, _c, _d;
+        var _this = _super.call(this, manager, element, settings) || this;
+        _this.manager = manager;
+        _this.element = element;
+        element.classList.add('line-stock');
+        element.dataset.center = ((_a = settings === null || settings === void 0 ? void 0 : settings.center) !== null && _a !== void 0 ? _a : true).toString();
+        element.style.setProperty('--wrap', (_b = settings === null || settings === void 0 ? void 0 : settings.wrap) !== null && _b !== void 0 ? _b : 'wrap');
+        element.style.setProperty('--direction', (_c = settings === null || settings === void 0 ? void 0 : settings.direction) !== null && _c !== void 0 ? _c : 'row');
+        element.style.setProperty('--gap', (_d = settings === null || settings === void 0 ? void 0 : settings.gap) !== null && _d !== void 0 ? _d : '8px');
+        return _this;
+    }
+    return LineStock;
+}(CardStock));
+var ManualPositionStock = (function (_super) {
+    __extends(ManualPositionStock, _super);
+    function ManualPositionStock(manager, element, settings, updateDisplay) {
+        var _this = _super.call(this, manager, element, settings) || this;
+        _this.manager = manager;
+        _this.element = element;
+        _this.updateDisplay = updateDisplay;
+        element.classList.add('manual-position-stock');
+        return _this;
+    }
+    ManualPositionStock.prototype.addCard = function (card, animation, settings) {
+        var promise = _super.prototype.addCard.call(this, card, animation, settings);
+        this.updateDisplay(this.element, this.getCards(), card, this);
+        return promise;
+    };
+    ManualPositionStock.prototype.cardRemoved = function (card, settings) {
+        _super.prototype.cardRemoved.call(this, card, settings);
+        this.updateDisplay(this.element, this.getCards(), card, this);
+    };
+    return ManualPositionStock;
+}(CardStock));
+var SlotStock = (function (_super) {
+    __extends(SlotStock, _super);
+    function SlotStock(manager, element, settings) {
+        var _a, _b;
+        var _this = _super.call(this, manager, element, settings) || this;
+        _this.manager = manager;
+        _this.element = element;
+        _this.slotsIds = [];
+        _this.slots = [];
+        element.classList.add('slot-stock');
+        _this.mapCardToSlot = settings.mapCardToSlot;
+        _this.slotsIds = (_a = settings.slotsIds) !== null && _a !== void 0 ? _a : [];
+        _this.slotClasses = (_b = settings.slotClasses) !== null && _b !== void 0 ? _b : [];
+        _this.slotsIds.forEach(function (slotId) {
+            _this.createSlot(slotId);
+        });
+        return _this;
+    }
+    SlotStock.prototype.createSlot = function (slotId) {
+        var _a;
+        this.slots[slotId] = document.createElement("div");
+        this.slots[slotId].dataset.slotId = slotId;
+        this.element.appendChild(this.slots[slotId]);
+        (_a = this.slots[slotId].classList).add.apply(_a, __spreadArray(['slot'], this.slotClasses, true));
+    };
+    SlotStock.prototype.addCard = function (card, animation, settings) {
+        var _a, _b;
+        var slotId = (_a = settings === null || settings === void 0 ? void 0 : settings.slot) !== null && _a !== void 0 ? _a : (_b = this.mapCardToSlot) === null || _b === void 0 ? void 0 : _b.call(this, card);
+        if (slotId === undefined) {
+            throw new Error("Impossible to add card to slot : no SlotId. Add slotId to settings or set mapCardToSlot to SlotCard constructor.");
+        }
+        if (!this.slots[slotId]) {
+            throw new Error("Impossible to add card to slot \"".concat(slotId, "\" : slot \"").concat(slotId, "\" doesn't exists."));
+        }
+        var newSettings = __assign(__assign({}, settings), { forceToElement: this.slots[slotId] });
+        return _super.prototype.addCard.call(this, card, animation, newSettings);
+    };
+    SlotStock.prototype.setSlotsIds = function (slotsIds) {
+        var _this = this;
+        if (slotsIds.length == this.slotsIds.length && slotsIds.every(function (slotId, index) { return _this.slotsIds[index] === slotId; })) {
+            return;
+        }
+        this.removeAll();
+        this.element.innerHTML = '';
+        this.slotsIds = slotsIds !== null && slotsIds !== void 0 ? slotsIds : [];
+        this.slotsIds.forEach(function (slotId) {
+            _this.createSlot(slotId);
+        });
+    };
+    SlotStock.prototype.addSlotsIds = function (newSlotsIds) {
+        var _a;
+        var _this = this;
+        if (newSlotsIds.length == 0) {
+            return;
+        }
+        (_a = this.slotsIds).push.apply(_a, newSlotsIds);
+        newSlotsIds.forEach(function (slotId) {
+            _this.createSlot(slotId);
+        });
+    };
+    SlotStock.prototype.canAddCard = function (card, settings) {
+        var _a, _b;
+        if (!this.contains(card)) {
+            return true;
+        }
+        else {
+            var currentCardSlot = this.getCardElement(card).closest('.slot').dataset.slotId;
+            var slotId = (_a = settings === null || settings === void 0 ? void 0 : settings.slot) !== null && _a !== void 0 ? _a : (_b = this.mapCardToSlot) === null || _b === void 0 ? void 0 : _b.call(this, card);
+            return currentCardSlot != slotId;
+        }
+    };
+    SlotStock.prototype.swapCards = function (cards, settings) {
+        var _this = this;
+        if (!this.mapCardToSlot) {
+            throw new Error('You need to define SlotStock.mapCardToSlot to use SlotStock.swapCards');
+        }
+        var promises = [];
+        var elements = cards.map(function (card) { return _this.manager.getCardElement(card); });
+        var elementsRects = elements.map(function (element) { return element.getBoundingClientRect(); });
+        var cssPositions = elements.map(function (element) { return element.style.position; });
+        elements.forEach(function (element) { return element.style.position = 'absolute'; });
+        cards.forEach(function (card, index) {
+            var _a, _b;
+            var cardElement = elements[index];
+            var promise;
+            var slotId = (_a = _this.mapCardToSlot) === null || _a === void 0 ? void 0 : _a.call(_this, card);
+            _this.slots[slotId].appendChild(cardElement);
+            cardElement.style.position = cssPositions[index];
+            var cardIndex = _this.cards.findIndex(function (c) { return _this.manager.getId(c) == _this.manager.getId(card); });
+            if (cardIndex !== -1) {
+                _this.cards.splice(cardIndex, 1, card);
+            }
+            if ((_b = settings === null || settings === void 0 ? void 0 : settings.updateInformations) !== null && _b !== void 0 ? _b : true) {
+                _this.manager.updateCardInformations(card);
+            }
+            _this.removeSelectionClassesFromElement(cardElement);
+            promise = _this.animationFromElement(cardElement, elementsRects[index], {});
+            if (!promise) {
+                console.warn("CardStock.animationFromElement didn't return a Promise");
+                promise = Promise.resolve(false);
+            }
+            promise.then(function () { var _a; return _this.setSelectableCard(card, (_a = settings === null || settings === void 0 ? void 0 : settings.selectable) !== null && _a !== void 0 ? _a : true); });
+            promises.push(promise);
+        });
+        return Promise.all(promises);
+    };
+    return SlotStock;
+}(LineStock));
+var VoidStock = (function (_super) {
+    __extends(VoidStock, _super);
+    function VoidStock(manager, element) {
+        var _this = _super.call(this, manager, element) || this;
+        _this.manager = manager;
+        _this.element = element;
+        element.classList.add('void-stock');
+        return _this;
+    }
+    VoidStock.prototype.addCard = function (card, animation, settings) {
+        var _this = this;
+        var _a;
+        var promise = _super.prototype.addCard.call(this, card, animation, settings);
+        var cardElement = this.getCardElement(card);
+        var originalLeft = cardElement.style.left;
+        var originalTop = cardElement.style.top;
+        cardElement.style.left = "".concat((this.element.clientWidth - cardElement.clientWidth) / 2, "px");
+        cardElement.style.top = "".concat((this.element.clientHeight - cardElement.clientHeight) / 2, "px");
+        if (!promise) {
+            console.warn("VoidStock.addCard didn't return a Promise");
+            promise = Promise.resolve(false);
+        }
+        if ((_a = settings === null || settings === void 0 ? void 0 : settings.remove) !== null && _a !== void 0 ? _a : true) {
+            return promise.then(function () {
+                return _this.removeCard(card);
+            });
+        }
+        else {
+            cardElement.style.left = originalLeft;
+            cardElement.style.top = originalTop;
+            return promise;
+        }
+    };
+    return VoidStock;
+}(CardStock));
+function sortFunction() {
+    var sortedFields = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        sortedFields[_i] = arguments[_i];
+    }
+    return function (a, b) {
+        for (var i = 0; i < sortedFields.length; i++) {
+            var direction = 1;
+            var field = sortedFields[i];
+            if (field[0] == '-') {
+                direction = -1;
+                field = field.substring(1);
+            }
+            else if (field[0] == '+') {
+                field = field.substring(1);
+            }
+            var type = typeof a[field];
+            if (type === 'string') {
+                var compare = a[field].localeCompare(b[field]);
+                if (compare !== 0) {
+                    return compare;
+                }
+            }
+            else if (type === 'number') {
+                var compare = (a[field] - b[field]) * direction;
+                if (compare !== 0) {
+                    return compare * direction;
+                }
+            }
+        }
+        return 0;
+    };
+}
+var CardManager = (function () {
+    function CardManager(game, settings) {
+        var _a;
+        this.game = game;
+        this.settings = settings;
+        this.stocks = [];
+        this.updateMainTimeoutId = [];
+        this.updateFrontTimeoutId = [];
+        this.updateBackTimeoutId = [];
+        this.animationManager = (_a = settings.animationManager) !== null && _a !== void 0 ? _a : new AnimationManager(game);
+    }
+    CardManager.prototype.animationsActive = function () {
+        return this.animationManager.animationsActive();
+    };
+    CardManager.prototype.addStock = function (stock) {
+        this.stocks.push(stock);
+    };
+    CardManager.prototype.removeStock = function (stock) {
+        var index = this.stocks.indexOf(stock);
+        if (index !== -1) {
+            this.stocks.splice(index, 1);
+        }
+    };
+    CardManager.prototype.getId = function (card) {
+        var _a, _b, _c;
+        return (_c = (_b = (_a = this.settings).getId) === null || _b === void 0 ? void 0 : _b.call(_a, card)) !== null && _c !== void 0 ? _c : "card-".concat(card.id);
+    };
+    CardManager.prototype.createCardElement = function (card, visible) {
+        var _a, _b, _c, _d, _e, _f;
+        if (visible === void 0) { visible = true; }
+        var id = this.getId(card);
+        var side = visible ? 'front' : 'back';
+        if (this.getCardElement(card)) {
+            throw new Error('This card already exists ' + JSON.stringify(card));
+        }
+        var element = document.createElement("div");
+        element.id = id;
+        element.dataset.side = '' + side;
+        element.innerHTML = "\n            <div class=\"card-sides\">\n                <div id=\"".concat(id, "-front\" class=\"card-side front\">\n                </div>\n                <div id=\"").concat(id, "-back\" class=\"card-side back\">\n                </div>\n            </div>\n        ");
+        element.classList.add('card');
+        document.body.appendChild(element);
+        (_b = (_a = this.settings).setupDiv) === null || _b === void 0 ? void 0 : _b.call(_a, card, element);
+        (_d = (_c = this.settings).setupFrontDiv) === null || _d === void 0 ? void 0 : _d.call(_c, card, element.getElementsByClassName('front')[0]);
+        (_f = (_e = this.settings).setupBackDiv) === null || _f === void 0 ? void 0 : _f.call(_e, card, element.getElementsByClassName('back')[0]);
+        document.body.removeChild(element);
+        return element;
+    };
+    CardManager.prototype.getCardElement = function (card) {
+        return document.getElementById(this.getId(card));
+    };
+    CardManager.prototype.removeCard = function (card, settings) {
+        var _a;
+        var id = this.getId(card);
+        var div = document.getElementById(id);
+        if (!div) {
+            return Promise.resolve(false);
+        }
+        div.id = "deleted".concat(id);
+        div.remove();
+        (_a = this.getCardStock(card)) === null || _a === void 0 ? void 0 : _a.cardRemoved(card, settings);
+        return Promise.resolve(true);
+    };
+    CardManager.prototype.getCardStock = function (card) {
+        return this.stocks.find(function (stock) { return stock.contains(card); });
+    };
+    CardManager.prototype.isCardVisible = function (card) {
+        var _a, _b, _c, _d;
+        return (_c = (_b = (_a = this.settings).isCardVisible) === null || _b === void 0 ? void 0 : _b.call(_a, card)) !== null && _c !== void 0 ? _c : ((_d = card.type) !== null && _d !== void 0 ? _d : false);
+    };
+    CardManager.prototype.setCardVisible = function (card, visible, settings) {
+        var _this = this;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
+        var element = this.getCardElement(card);
+        if (!element) {
+            return;
+        }
+        var isVisible = visible !== null && visible !== void 0 ? visible : this.isCardVisible(card);
+        element.dataset.side = isVisible ? 'front' : 'back';
+        var stringId = JSON.stringify(this.getId(card));
+        if ((_a = settings === null || settings === void 0 ? void 0 : settings.updateMain) !== null && _a !== void 0 ? _a : false) {
+            if (this.updateMainTimeoutId[stringId]) {
+                clearTimeout(this.updateMainTimeoutId[stringId]);
+                delete this.updateMainTimeoutId[stringId];
+            }
+            var updateMainDelay = (_b = settings === null || settings === void 0 ? void 0 : settings.updateMainDelay) !== null && _b !== void 0 ? _b : 0;
+            if (isVisible && updateMainDelay > 0 && this.animationsActive()) {
+                this.updateMainTimeoutId[stringId] = setTimeout(function () { var _a, _b; return (_b = (_a = _this.settings).setupDiv) === null || _b === void 0 ? void 0 : _b.call(_a, card, element); }, updateMainDelay);
+            }
+            else {
+                (_d = (_c = this.settings).setupDiv) === null || _d === void 0 ? void 0 : _d.call(_c, card, element);
+            }
+        }
+        if ((_e = settings === null || settings === void 0 ? void 0 : settings.updateFront) !== null && _e !== void 0 ? _e : true) {
+            if (this.updateFrontTimeoutId[stringId]) {
+                clearTimeout(this.updateFrontTimeoutId[stringId]);
+                delete this.updateFrontTimeoutId[stringId];
+            }
+            var updateFrontDelay = (_f = settings === null || settings === void 0 ? void 0 : settings.updateFrontDelay) !== null && _f !== void 0 ? _f : 500;
+            if (!isVisible && updateFrontDelay > 0 && this.animationsActive()) {
+                this.updateFrontTimeoutId[stringId] = setTimeout(function () { var _a, _b; return (_b = (_a = _this.settings).setupFrontDiv) === null || _b === void 0 ? void 0 : _b.call(_a, card, element.getElementsByClassName('front')[0]); }, updateFrontDelay);
+            }
+            else {
+                (_h = (_g = this.settings).setupFrontDiv) === null || _h === void 0 ? void 0 : _h.call(_g, card, element.getElementsByClassName('front')[0]);
+            }
+        }
+        if ((_j = settings === null || settings === void 0 ? void 0 : settings.updateBack) !== null && _j !== void 0 ? _j : false) {
+            if (this.updateBackTimeoutId[stringId]) {
+                clearTimeout(this.updateBackTimeoutId[stringId]);
+                delete this.updateBackTimeoutId[stringId];
+            }
+            var updateBackDelay = (_k = settings === null || settings === void 0 ? void 0 : settings.updateBackDelay) !== null && _k !== void 0 ? _k : 0;
+            if (isVisible && updateBackDelay > 0 && this.animationsActive()) {
+                this.updateBackTimeoutId[stringId] = setTimeout(function () { var _a, _b; return (_b = (_a = _this.settings).setupBackDiv) === null || _b === void 0 ? void 0 : _b.call(_a, card, element.getElementsByClassName('back')[0]); }, updateBackDelay);
+            }
+            else {
+                (_m = (_l = this.settings).setupBackDiv) === null || _m === void 0 ? void 0 : _m.call(_l, card, element.getElementsByClassName('back')[0]);
+            }
+        }
+        if ((_o = settings === null || settings === void 0 ? void 0 : settings.updateData) !== null && _o !== void 0 ? _o : true) {
+            var stock = this.getCardStock(card);
+            var cards = stock.getCards();
+            var cardIndex = cards.findIndex(function (c) { return _this.getId(c) === _this.getId(card); });
+            if (cardIndex !== -1) {
+                stock.cards.splice(cardIndex, 1, card);
+            }
+        }
+    };
+    CardManager.prototype.flipCard = function (card, settings) {
+        var element = this.getCardElement(card);
+        var currentlyVisible = element.dataset.side === 'front';
+        this.setCardVisible(card, !currentlyVisible, settings);
+    };
+    CardManager.prototype.updateCardInformations = function (card, settings) {
+        var newSettings = __assign(__assign({}, (settings !== null && settings !== void 0 ? settings : {})), { updateData: true });
+        this.setCardVisible(card, undefined, newSettings);
+    };
+    CardManager.prototype.getCardWidth = function () {
+        var _a;
+        return (_a = this.settings) === null || _a === void 0 ? void 0 : _a.cardWidth;
+    };
+    CardManager.prototype.getCardHeight = function () {
+        var _a;
+        return (_a = this.settings) === null || _a === void 0 ? void 0 : _a.cardHeight;
+    };
+    CardManager.prototype.getSelectableCardClass = function () {
+        var _a, _b;
+        return ((_a = this.settings) === null || _a === void 0 ? void 0 : _a.selectableCardClass) === undefined ? 'bga-cards_selectable-card' : (_b = this.settings) === null || _b === void 0 ? void 0 : _b.selectableCardClass;
+    };
+    CardManager.prototype.getUnselectableCardClass = function () {
+        var _a, _b;
+        return ((_a = this.settings) === null || _a === void 0 ? void 0 : _a.unselectableCardClass) === undefined ? 'bga-cards_disabled-card' : (_b = this.settings) === null || _b === void 0 ? void 0 : _b.unselectableCardClass;
+    };
+    CardManager.prototype.getSelectedCardClass = function () {
+        var _a, _b;
+        return ((_a = this.settings) === null || _a === void 0 ? void 0 : _a.selectedCardClass) === undefined ? 'bga-cards_selected-card' : (_b = this.settings) === null || _b === void 0 ? void 0 : _b.selectedCardClass;
+    };
+    CardManager.prototype.getFakeCardGenerator = function () {
+        var _this = this;
+        var _a, _b;
+        return (_b = (_a = this.settings) === null || _a === void 0 ? void 0 : _a.fakeCardGenerator) !== null && _b !== void 0 ? _b : (function (deckId) { return ({ id: _this.getId({ id: "".concat(deckId, "-fake-top-card") }) }); });
+    };
+    return CardManager;
+}());
 var _this = this;
 var moveToAnimation = function (_a) { return __awaiter(_this, [_a], void 0, function (_b) {
     var toElement, fromRect, toRect, top, left, originalPositionStyle;
@@ -491,11 +1612,11 @@ var PINK = 'pink';
 var PURPLE = 'purple';
 var YELLOW = 'yellow';
 var HEX_COLOR_COLOR_MAP = {
-    '92a0d0': BLUE,
-    a8ad8c: GREEN,
-    ebc0ba: PINK,
-    '976b85': PURPLE,
-    fcd97f: YELLOW,
+    '8393ca': BLUE,
+    a2a882: GREEN,
+    e3bcb4: PINK,
+    '7f5574': PURPLE,
+    fcd873: YELLOW,
 };
 define([
     'dojo',
@@ -1639,6 +2760,7 @@ var MollyHouse = (function () {
         this.states = {
             ConfirmPartialTurn: ConfirmPartialTurn,
             ConfirmTurn: ConfirmTurn,
+            PlayerTurn: PlayerTurn,
         };
         console.log('MollyHouse constructor');
     }
@@ -1669,7 +2791,12 @@ var MollyHouse = (function () {
         Interaction.create(this);
         PlayerManager.create(this);
         NotificationManager.create(this);
+        this.viceCardManager = new ViceCardManager(this);
         Board.create(this);
+        Market.create(this);
+        if (this.playerOrder.includes(this.getPlayerId())) {
+            Hand.create(this);
+        }
         NotificationManager.getInstance().setupNotifications();
         debug('Ending game setup');
     };
@@ -1979,13 +3106,39 @@ var Board = (function () {
         this.ui = {
             containers: {
                 board: document.getElementById('moho-board'),
+                gossipPile: document.getElementById('moho-gossip-pile'),
                 pawns: {},
                 selectBoxes: document.getElementById('moho-select-boxes'),
+                houseRaidedMarkers: document.getElementById('house-raided-markers'),
             },
             selectBoxes: {},
+            houseRaidedMarkers: {},
         };
         this.setupPawns(gamedatas);
         this.setupSelectBoxes();
+        this.setupGossipPile(gamedatas);
+        this.setupHouseRaidedMarkers();
+    };
+    Board.prototype.setupGossipPile = function (gamedatas) {
+        this.gossipPile = new Deck(this.game.viceCardManager, this.ui.containers.gossipPile, {
+            cardNumber: gamedatas.gossipPileCount,
+            thicknesses: [100],
+            counter: {
+                show: true,
+                position: 'center'
+            }
+        });
+    };
+    Board.prototype.setupHouseRaidedMarkers = function () {
+        var _this = this;
+        MOLLY_HOUSES.forEach(function (house) {
+            var elt = (_this.ui.houseRaidedMarkers[house] =
+                document.createElement('div'));
+            elt.classList.add('moho-house-raided-marker');
+            elt.setAttribute('data-house', house);
+            elt.setAttribute('data-raided', 'false');
+            _this.ui.containers.houseRaidedMarkers.appendChild(elt);
+        });
     };
     Board.prototype.setupPawns = function (gamedatas) {
         var _this = this;
@@ -1999,8 +3152,7 @@ var Board = (function () {
         });
         this.updatePawns(gamedatas);
     };
-    Board.prototype.setupSelectBoxes = function () {
-    };
+    Board.prototype.setupSelectBoxes = function () { };
     Board.prototype.movePawn = function (type, value) {
         return __awaiter(this, void 0, void 0, function () {
             var fromRect;
@@ -2035,7 +3187,132 @@ var Board = (function () {
     };
     return Board;
 }());
-var tplBoard = function (gamedatas) { return "<div id=\"moho-board\">\n<div id=\"moho-playmat\"></div>\n  <div id=\"moho-select-boxes\"></div>\n</div>"; };
+var tplBoard = function (gamedatas) { return "<div id=\"moho-board\">\n<div id=\"moho-playmat\"></div>\n  <div id=\"house-raided-markers\"></div>\n  <div id=\"moho-select-boxes\"></div>\n  <div id=\"moho-gossip-pile\"></div>\n</div>"; };
+var ViceCardManager = (function (_super) {
+    __extends(ViceCardManager, _super);
+    function ViceCardManager(game) {
+        var _this = _super.call(this, game, {
+            getId: function (card) { return card.id; },
+            setupDiv: function (card, div) { return _this.setupDiv(card, div); },
+            setupFrontDiv: function (card, div) { return _this.setupFrontDiv(card, div); },
+            setupBackDiv: function (card, div) { return _this.setupBackDiv(card, div); },
+            isCardVisible: function (card) { return _this.isCardVisible(card); },
+            fakeCardGenerator: function (deckId) { return ({
+                id: "fake-card-".concat(deckId),
+                location: deckId,
+            }); },
+            animationManager: game.animationManager,
+            cardHeight: 225,
+            cardWidth: 161,
+        }) || this;
+        _this.game = game;
+        return _this;
+    }
+    ViceCardManager.prototype.clearInterface = function () { };
+    ViceCardManager.prototype.setupDiv = function (card, div) {
+        div.style.position = 'relative';
+        div.classList.add('moho-vice-card-container');
+    };
+    ViceCardManager.prototype.setupFrontDiv = function (card, div) {
+        div.classList.add('moho-vice-card');
+        div.setAttribute('data-card-id', card.id);
+    };
+    ViceCardManager.prototype.setupBackDiv = function (card, div) {
+        div.classList.add('moho-vice-card');
+        div.setAttribute('data-card-id', 'back');
+    };
+    ViceCardManager.prototype.isCardVisible = function (card) {
+        if (card.location === GOSSIP_PILE || card.id.startsWith('fake')) {
+            return false;
+        }
+        return true;
+    };
+    return ViceCardManager;
+}(CardManager));
+var Hand = (function () {
+    function Hand(game) {
+        this.game = game;
+        this.setupHand();
+    }
+    Hand.create = function (game) {
+        Hand.instance = new Hand(game);
+    };
+    Hand.getInstance = function () {
+        return Hand.instance;
+    };
+    Hand.prototype.clearInterface = function () {
+        this.hand.removeAll();
+    };
+    Hand.prototype.updateHand = function () { };
+    Hand.prototype.setupHand = function () {
+        var node = $('game_play_area');
+        node.insertAdjacentHTML('beforeend', tplHand());
+        this.handStock = new HandStock(this.game.viceCardManager, document.getElementById('hand'), {
+            cardOverlap: 'calc(var(--mohoCardScale) * -80px)',
+            cardShift: 'calc(var(--mohoCardScale) * 15px)',
+        });
+        var cards = this.game.gamedatas.players[this.game.getPlayerId()].hand;
+        console.log('cards', cards);
+        this.handStock.addCards(cards);
+    };
+    Hand.prototype.updateFloatingHandScale = function () {
+        var WIDTH = $('game_play_area').getBoundingClientRect()['width'];
+        var wrapperNode = document.getElementById('floating_hand_wrapper');
+        var MIN_WIDTH_THREE_CARDS = 800;
+        if (WIDTH <= MIN_WIDTH_THREE_CARDS) {
+            var handScale = WIDTH / MIN_WIDTH_THREE_CARDS;
+            wrapperNode.style.setProperty('--handScale', "".concat(handScale));
+        }
+        else {
+            wrapperNode.style.setProperty('--handScale', '1');
+        }
+    };
+    Hand.prototype.addCard = function (card) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, this.hand.addCard(card)];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    Hand.prototype.removeCard = function (card) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, this.hand.removeCard(card)];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    Hand.prototype.getCards = function () {
+        return this.hand.getCards();
+    };
+    Hand.prototype.getStock = function () {
+        return this.hand;
+    };
+    Hand.prototype.open = function () {
+        var handWrapper = $('floating_hand_wrapper');
+        if (handWrapper) {
+            handWrapper.dataset.open = 'hand';
+        }
+    };
+    Hand.prototype.updateCardTooltips = function () {
+        var cards = this.hand.getCards();
+        cards.forEach(function (card) {
+        });
+    };
+    return Hand;
+}());
+var tplHand = function () {
+    return "<div id=\"hand\"></div\n  ";
+};
 var LOG_TOKEN_BOLD_TEXT = 'boldText';
 var LOG_TOKEN_BOLD_ITALIC_TEXT = 'boldItalicText';
 var LOG_TOKEN_NEW_LINE = 'newLine';
@@ -2075,6 +3352,56 @@ var tplLogTokenPlayerName = function (_a) {
     var name = _a.name, color = _a.color;
     return "<span class=\"playername\" style=\"color:#".concat(color, ";\">").concat(name, "</span>");
 };
+var Market = (function () {
+    function Market(game) {
+        this.game = game;
+        this.setup(game.gamedatas);
+    }
+    Market.create = function (game) {
+        Market.instance = new Market(game);
+    };
+    Market.getInstance = function () {
+        return Market.instance;
+    };
+    Market.prototype.setup = function (gamedatas) {
+        document
+            .getElementById('left-column')
+            .insertAdjacentHTML('afterbegin', tplMarket(gamedatas));
+        this.ui = {
+            container: document.getElementById('moho-market'),
+            safePile: document.getElementById('moho-safe-pile'),
+            deck: document.getElementById('moho-deck'),
+        };
+        this.setupDeck(gamedatas);
+        this.setupSlotStock(gamedatas);
+    };
+    Market.prototype.setupDeck = function (gamedatas) {
+        this.deck = new Deck(this.game.viceCardManager, this.ui.deck, {
+            cardNumber: gamedatas.deckCount,
+            thicknesses: [100],
+            counter: {
+                show: true,
+                position: 'center'
+            }
+        });
+    };
+    Market.prototype.setupSlotStock = function (gamedatas) {
+        this.stock = new SlotStock(this.game.viceCardManager, document.getElementById('moho-market-slots'), {
+            slotsIds: MARKET_SPOTS,
+            slotClasses: ['moho-market-slot'],
+            mapCardToSlot: function (card) {
+                return card.location;
+            },
+            gap: 'calc(var(--mohoCardScale) * 16px)',
+        });
+        this.updateMarket(gamedatas);
+    };
+    Market.prototype.updateMarket = function (gamedatas) {
+        this.stock.addCards(gamedatas.market);
+    };
+    return Market;
+}());
+var tplMarket = function (gamedatas) { return "<div id=\"moho-market\">\n<div id=\"moho-safe-pile\" class=\"moho-market-slot\"></div>\n  <div id=\"moho-deck\" class=\"moho-market-slot\"></div>\n  <div id=\"moho-market-slots\"></div>\n\n</div>"; };
 var PlayerManager = (function () {
     function PlayerManager(game) {
         this.game = game;
@@ -2181,6 +3508,56 @@ var tplPlayerCounters = function (_a) {
     var playerId = _a.playerId;
     return "\n<div id=\"moho-counters-".concat(playerId, "-row-1\" class=\"moho-counters-row\">\n\n</div>\n\n");
 };
+var PlayerTurn = (function () {
+    function PlayerTurn(game) {
+        this.game = game;
+    }
+    PlayerTurn.create = function (game) {
+        PlayerTurn.instance = new PlayerTurn(game);
+    };
+    PlayerTurn.getInstance = function () {
+        return PlayerTurn.instance;
+    };
+    PlayerTurn.prototype.onEnteringState = function (args) {
+        debug('Entering PlayerTurn state');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    PlayerTurn.prototype.onLeavingState = function () {
+        debug('Leaving PlayerTurn state');
+    };
+    PlayerTurn.prototype.setDescription = function (activePlayerIds, args) { };
+    PlayerTurn.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        updatePageTitle(_('${you} may perform an action'), {});
+        addPrimaryActionButton({
+            id: 'continue_btn',
+            text: _('Shuffle'),
+            callback: function () { return __awaiter(_this, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            console.log('Shuffling gossip pile');
+                            return [4, Board.getInstance().gossipPile.shuffle()];
+                        case 1:
+                            _a.sent();
+                            console.log('After shuffling gossip pile');
+                            return [2];
+                    }
+                });
+            }); },
+        });
+    };
+    PlayerTurn.prototype.updateInterfaceConfirm = function () {
+        clearPossible();
+        updatePageTitle(_('Confirm ship placement'));
+        addConfirmButton(function () {
+            performAction('actPlayerTurn', {});
+        });
+    };
+    return PlayerTurn;
+}());
 var StaticData = (function () {
     function StaticData(game) {
         this.game = game;

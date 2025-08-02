@@ -4,7 +4,7 @@ namespace Bga\Games\MollyHouse\Models;
 
 use Bga\Games\MollyHouse\Boilerplate\Core\Preferences;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
-
+use Bga\Games\MollyHouse\Managers\ViceCards;
 
 /*
  * Player: all utility functions concerning a player
@@ -43,7 +43,9 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
 
     return array_merge(
       $data,
-      [],
+      [
+        'hand' => $isCurrentPlayer ? ViceCards::getInLocation(Locations::hand($currentPlayerId))->toArray() : [],
+      ],
     );
   }
 

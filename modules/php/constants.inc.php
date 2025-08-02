@@ -40,7 +40,7 @@ const MARKET_1 = 'market_1';
 const MARKET_2 = 'market_2';
 const MARKET_3 = 'market_3';
 
-const MARKET_LOCATIONS = [
+const MARKET_SPOTS = [
   MARKET_0,
   MARKET_1,
   MARKET_2,
@@ -88,6 +88,13 @@ const SITES = [
   COVENT_GARDEN_PIAZZA,
   DUKE_STREET,
   LINCOLNS_INN_BOGHOUSE,
+];
+
+const MOLLY_HOUSES = [
+  MOTHER_CLAPS,
+  MISS_MUFFS,
+  SUKEY_BEVELLS,
+  JULIUS_CESAR_TAYLORS,
 ];
 
 const SHOP_SITES = [
