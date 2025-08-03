@@ -9,7 +9,7 @@ class FansConstable extends \Bga\Games\MollyHouse\Models\ViceCard
     parent::__construct($row);
     $this->id = 'FansConstable';
     $this->type = THREAT;
-    $this->value = 0;
+    $this->value = 'C';
     $this->suit = FANS;
     $this->joy = 0;
   }

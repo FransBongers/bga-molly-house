@@ -11,6 +11,7 @@ class MohoPlayer {
   protected playerId: number;
   private playerName: string;
   public counters: Record<string, Counter> = {};
+  public reputation: LineStock<ViceCard>;
 
   public ui: Record<string, HTMLElement> = {};
 
@@ -71,7 +72,15 @@ class MohoPlayer {
       })
     );
 
-    this.updatePlayerBoard(gamedatas);
+    this.reputation = new LineStock<ViceCard>(
+      this.game.viceCardManager,
+      document.getElementById(`moho-reputation-${this.playerId}`),
+      {
+        gap: '0px'
+      }
+    );
+
+    this.updatePlayerBoard(playerGamedatas);
   }
 
   setupPlayerPanel(gamedatas: GamedatasAlias) {
@@ -95,7 +104,9 @@ class MohoPlayer {
     this.updatePlayerPanel(gamedatas);
   }
 
-  updatePlayerBoard(gamedatas: GamedatasAlias) {}
+  updatePlayerBoard(playerGamedatas: PlayerDataAlias) {
+    this.reputation.addCards(playerGamedatas.reputation);
+  }
 
   updatePlayerPanel(gamedatas: GamedatasAlias) {}
 

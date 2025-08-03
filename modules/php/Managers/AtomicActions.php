@@ -10,6 +10,7 @@ class AtomicActions
 {
   // Mapping of actionId and corresponding class
   static $classes = [
+    PLAYER_SETUP_CHOOSE_CARD => PLAYER_SETUP_CHOOSE_CARD,
     PLAYER_TURN => PLAYER_TURN,
   ];
 

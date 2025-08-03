@@ -252,7 +252,7 @@ body > .card {
 #moho-board {
   --boardScale: var(--leftColumnScale);
   --tokenScale: var(--leftColumnScale);
-  --mohoCardScale: var(--boardScale);
+  --cardScale: var(--boardScale);
   position: relative;
   background-image: url("img/board.jpg");
   background-size: 100% 100%;
@@ -869,14 +869,14 @@ span[style*="color:#fcd873"] {
 }
 
 .moho-vice-card {
-  width: calc(var(--mohoCardScale) * 161px);
-  height: calc(var(--mohoCardScale) * 225px);
+  width: calc(var(--cardScale) * 161px);
+  height: calc(var(--cardScale) * 225px);
   box-sizing: border-box;
   background-image: url("img/vice_cards.jpg");
   background-size: 1300% 400%;
   background-repeat: no-repeat;
-  border: calc(var(--mohoCardScale) * 1px) black solid;
-  border-radius: calc(var(--mohoCardScale) * 5px);
+  border: calc(var(--cardScale) * 1px) black solid;
+  border-radius: calc(var(--cardScale) * 5px);
   image-rendering: -webkit-optimize-contrast;
   image-rendering: high-quality;
   position: relative;
@@ -1152,13 +1152,33 @@ span[style*="color:#fcd873"] {
   background-position-y: 100%;
 }
 
+.card-sides {
+  position: relative !important;
+}
+
+.card.selectable {
+  cursor: pointer !important;
+}
+.card.selectable .card-sides .card-side {
+  box-shadow: 0px 0px 0px calc(var(--cardScale) * 4px) yellow !important;
+}
+
+.card.selectable:hover,
+.card.selected {
+  cursor: pointer !important;
+}
+.card.selectable:hover .card-sides .card-side,
+.card.selected .card-sides .card-side {
+  box-shadow: 0px 0px 0px calc(var(--cardScale) * 4px) blue !important;
+}
+
 #hand {
   position: fixed;
   bottom: 0;
   display: flex;
   justify-content: center;
-  --mohoCardScale: 1;
-  height: calc(var(--mohoCardScale) * 180px);
+  --cardScale: 1;
+  height: calc(var(--cardScale) * 180px);
   width: 100%;
   z-index: 2;
 }
@@ -1170,17 +1190,20 @@ span[style*="color:#fcd873"] {
 #moho-market {
   display: flex;
   flex-direction: row;
-  padding: calc(var(--mohoCardScale) * 16px);
-  --mohoCardScale: calc(var(--leftColumnScale) * 1.3);
-  gap: calc(var(--mohoCardScale) * 16px);
+  padding: calc(var(--cardScale) * 16px);
+  --cardScale: calc(var(--leftColumnScale) * 1.3);
+  gap: calc(var(--cardScale) * 16px);
 }
 #moho-market .moho-market-slot {
-  width: calc(var(--mohoCardScale) * 161px);
-  height: calc(var(--mohoCardScale) * 225px);
+  width: calc(var(--cardScale) * 161px);
+  height: calc(var(--cardScale) * 225px);
 }
 
 .moho-player-row {
   width: calc(var(--rightColumnScale) * 1000px);
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
 }
 
 .moho-player-board {
@@ -1192,6 +1215,18 @@ span[style*="color:#fcd873"] {
   min-height: calc(var(--rightColumnScale) * 300px);
   width: calc(var(--rightColumnScale) * 685px);
   outline: 1px solid black;
+}
+
+.moho-reputation {
+  position: relative;
+  display: flex;
+  --cardScale: var(--rightColumnScale);
+  flex-direction: row-reverse !important;
+  margin-left: auto;
+  align-items: center;
+}
+.moho-reputation .moho-vice-card-container {
+  margin-right: calc(var(--rightColumnScale) * -100px);
 }
 
 .moho-player-board[data-color=blue] {
@@ -1328,11 +1363,45 @@ span[style*="color:#c0c0c0"] {
   --iconScale: 0.7;
   --cardScale: 0;
 }
+#pagemaintitletext .moho-suit,
+#gameaction_status .moho-suit {
+  --iconScale: 0.8;
+}
 
 .log > .roundedbox,
 .log > .roundedboxinner {
   --tokenScale: 0.6;
   --iconScale: 0.7;
+}
+.log > .roundedbox .moho-vice-card,
+.log > .roundedboxinner .moho-vice-card {
+  display: block;
+  margin-top: calc(var(--logCardScale) * 6px);
+  --cardScale: var(--logCardScale);
+}
+
+.moho-suit {
+  width: calc(var(--iconScale) * 50px);
+  height: calc(var(--iconScale) * 50px);
+  background-image: url("img/suits.png");
+  background-size: 400% 100%;
+  background-repeat: no-repeat;
+}
+
+.moho-suit[data-suit=cups] {
+  background-position-x: 0%;
+}
+
+.moho-suit[data-suit=fans] {
+  background-position-x: 33.3333333333%;
+}
+
+.moho-suit[data-suit=hearts] {
+  background-position-x: 66.6666666667%;
+}
+
+.moho-suit[data-suit=pentacles] {
+  background-position-x: 100%;
 }
 
 html {

@@ -1,5 +1,27 @@
 @use './vice-cards/vice-cards';
+@use '../base';
 
-// .card-sides {
-//   position: relative !important;
-// }
+.card-sides {
+  position: relative !important;
+}
+
+.card.selectable {
+  cursor: pointer !important;
+  .card-sides {
+    .card-side {
+      box-shadow: 0px 0px 0px calc(var(--cardScale) * 4px)
+        base.$selectable-color !important;
+    }
+  }
+}
+
+.card.selectable:hover,
+.card.selected {
+  cursor: pointer !important;
+  .card-sides {
+    .card-side {
+      box-shadow: 0px 0px 0px calc(var(--cardScale) * 4px)
+        base.$selected-color !important;
+    }
+  }
+}

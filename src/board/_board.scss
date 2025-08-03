@@ -3,7 +3,7 @@
 #moho-board {
   --boardScale: var(--leftColumnScale);
   --tokenScale: var(--leftColumnScale);
-  --mohoCardScale: var(--boardScale);
+  --cardScale: var(--boardScale);
   position: relative;
   background-image: url('img/board.jpg');
   background-size: 100% 100%;

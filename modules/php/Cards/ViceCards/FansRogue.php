@@ -9,7 +9,7 @@ class FansRogue extends \Bga\Games\MollyHouse\Models\ViceCard
     parent::__construct($row);
     $this->id = 'FansRogue';
     $this->type = THREAT;
-    $this->value = 0;
+    $this->value = 'R';
     $this->suit = FANS;
     $this->joy = 0;
   }

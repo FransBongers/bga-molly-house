@@ -62,6 +62,7 @@ class MollyHouse implements Game {
     ConfirmPartialTurn,
     ConfirmTurn,
     PlayerTurn,
+    PlayerSetupChooseCard,
   };
 
   constructor() {
@@ -118,10 +119,11 @@ class MollyHouse implements Game {
     });
 
     StaticData.create(this);
+    this.viceCardManager = new ViceCardManager(this);
     Interaction.create(this);
     PlayerManager.create(this);
     NotificationManager.create(this);
-    this.viceCardManager = new ViceCardManager(this);
+    
     Board.create(this);
     Market.create(this);
     if (this.playerOrder.includes(this.getPlayerId())) {

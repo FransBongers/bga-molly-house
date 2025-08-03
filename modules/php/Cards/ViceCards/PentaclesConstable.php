@@ -9,7 +9,7 @@ class PentaclesConstable extends \Bga\Games\MollyHouse\Models\ViceCard
     parent::__construct($row);
     $this->id = 'PentaclesConstable';
     $this->type = THREAT;
-    $this->value = 0;
+    $this->value = 'C';
     $this->suit = PENTACLES;
     $this->joy = 0;
   }

@@ -34,7 +34,9 @@ interface MollyHouseGamedatas extends Gamedatas {
   gameOptions: {};
   playerOrder: number[];
   players: Record<number, MollyHousePlayerData>;
-  staticData: {};
+  staticData: {
+    viceCards: Record<string, ViceCardStaticData>;
+  };
   // Game specific
   deckCount: number;
   gossipPileCount: number;
@@ -43,12 +45,26 @@ interface MollyHouseGamedatas extends Gamedatas {
 
 interface MollyHousePlayerData extends BgaPlayer {
   hand: ViceCard[];
+  reputation: ViceCard[];
 }
 
 type GameAlias = MollyHouse;
 type GamedatasAlias = MollyHouseGamedatas;
 type PlayerAlias = MohoPlayer;
+type PlayerDataAlias = MollyHousePlayerData;
 
-interface ViceCard extends GamePiece {
-  
+type ViceCardType = 'desire' | 'treat' | 'molly';
+type Suit = 'hearts' | 'cups' | 'fans' | 'pentacles';
+
+interface ViceCardBase extends GamePiece {
+  hidden: boolean;
 }
+
+interface ViceCardStaticData {
+  type: ViceCardType;
+  value: number | string;
+  suit: Suit;
+  joy: number;
+}
+
+type ViceCard = ViceCardBase & ViceCardStaticData;

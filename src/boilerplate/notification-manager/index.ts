@@ -60,6 +60,10 @@ class NotificationManager {
       // Boilerplate
       'log',
       'message',
+      // Game specific
+      'setupChooseCardPrivate',
+      'setupChooseCard',
+      'setupRevealCard',
     ];
 
     // example: https://github.com/thoun/knarr/blob/main/src/knarr.ts
@@ -105,7 +109,7 @@ class NotificationManager {
       this.game.framework().notifqueue.setSynchronous(notifName, undefined);
 
       // Setup notifs that need to be ignored
-      [].forEach((notifId) => {
+      ['setupChooseCard'].forEach((notifId) => {
         this.game
           .framework()
           .notifqueue.setIgnoreNotificationCheck(
@@ -148,5 +152,22 @@ class NotificationManager {
 
   async notif_message(notif: Notif<unknown>) {
     // Only here so messages get displayed in title bar
+  }
+
+  async notif_setupChooseCard(notif: Notif<NotifSetupChooseCard>) {
+    const { playerId, card } = notif.args;
+    await this.getPlayer(playerId).reputation.addCard(card as ViceCard);
+  }
+
+  async notif_setupChooseCardPrivate(
+    notif: Notif<NotifSetupChooseCardPrivate>
+  ) {
+    const { playerId, card } = notif.args;
+    await this.getPlayer(playerId).reputation.addCard(getViceCard(card));
+  }
+
+  async notif_setupRevealCard(notif: Notif<NotifSetupRevealCard>) {
+    const { playerId, card } = notif.args;
+    this.game.viceCardManager.updateCardInformations(getViceCard(card));
   }
 }

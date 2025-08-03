@@ -11,22 +11,45 @@ use Bga\Games\MollyHouse\Managers\Players;
 
 trait TurnTrait
 {
-  /**
-   * State function when starting a turn useful to intercept
-   * for some cards that happens at that moment
-   */
-  function stBeforeStartOfTurn()
+
+  function stStartGameEngine()
   {
-    // TODO: check end callback
-    $this->initCustomDefaultTurnOrder('default', \ST_TURNACTION, ST_BEFORE_START_OF_TURN, true);
+    $node = [
+      'children' => [
+        [
+          'action' => PLAYER_SETUP_CHOOSE_CARD,
+          'playerId' => 'all',
+        ],
+      ],
+    ];
+
+    // Inserting leaf Action card
+    Engine::setup($node, ['method' => 'stNextPlayer']);
+    Engine::proceed();
+  }
+
+  function stNextPlayer()
+  {
+    $player = Players::getActive();
+    self::giveExtraTime($player->getId());
+
+    $node = [
+      'children' => [
+        [
+          'action' => PLAYER_TURN,
+          'playerId' => $player->getId(),
+        ],
+      ],
+    ];
+
+    Engine::setup($node, ['method' => 'stNextPlayer']);
+    Engine::proceed();
   }
 
 
 
 
-
-
-  function setupGameTurn() {}
+  function setupPlayerTurn() {}
 
   /**
    * Activate next player

@@ -9,7 +9,7 @@ class CupsQueen extends \Bga\Games\MollyHouse\Models\ViceCard
     parent::__construct($row);
     $this->id = 'CupsQueen';
     $this->type = MOLLY;
-    $this->value = 0;
+    $this->value = 'Q';
     $this->suit = CUPS;
     $this->joy = 4;
   }

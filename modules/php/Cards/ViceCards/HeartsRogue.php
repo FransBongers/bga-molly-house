@@ -9,7 +9,7 @@ class HeartsRogue extends \Bga\Games\MollyHouse\Models\ViceCard
     parent::__construct($row);
     $this->id = 'HeartsRogue';
     $this->type = THREAT;
-    $this->value = 0;
+    $this->value = 'R';
     $this->suit = HEARTS;
     $this->joy = 0;
   }

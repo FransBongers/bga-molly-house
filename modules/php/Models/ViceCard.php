@@ -9,6 +9,7 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   protected $primary = 'card_id';
   protected $location;
   protected $state;
+  protected $hidden;
 
   protected $type;
   protected $suit;
@@ -20,6 +21,7 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     'id' => ['card_id', 'str'],
     'location' => 'card_location',
     'state' => ['card_state', 'int'],
+    'hidden' => ['hidden', 'int'],
   ];
 
   protected $staticAttributes = [
@@ -32,7 +34,9 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   public function jsonSerialize(): array
   {
     $data = parent::jsonSerialize();
-    return $data;
+    return array_merge($data, [
+      'hidden' => $this->hidden === 1,
+    ]);
   }
 
   public function getUiData()
@@ -41,4 +45,13 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     return $this->jsonSerialize(); // Static datas are already in js file
   }
 
+  // public function getSuit()
+  // {
+  //   return $this->suit;
+  // }
+
+  public function isHidden()
+  {
+    return $this->hidden === 1;
+  }
 }

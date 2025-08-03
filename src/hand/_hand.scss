@@ -6,8 +6,8 @@
   // left: 10%;
   display: flex;
   justify-content: center;
-  --mohoCardScale: 1;
-  height: calc(var(--mohoCardScale) * 180px);
+  --cardScale: 1;
+  height: calc(var(--cardScale) * 180px);
   width: 100%;
   z-index: 2;
 

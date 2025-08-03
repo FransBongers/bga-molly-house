@@ -8,9 +8,16 @@ const DECK = 'deck';
 const DISCARD = 'discard';
 
 
-const ST_PLAYER_TURN = 2;
+/**
+ * Game states
+ */
+const ST_PLAYER_SETUP_CHOOSE_CARD = 3;
+const ST_PLAYER_TURN = 4;
 
-
+/**
+ * Game state names
+ */
+const PLAYER_SETUP_CHOOSE_CARD = 'PlayerSetupChooseCard';
 const PLAYER_TURN = 'PlayerTurn';
 
 /**

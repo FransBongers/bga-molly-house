@@ -2,15 +2,15 @@
 @use 'sass:map';
 
 .moho-vice-card {
-  width: calc(var(--mohoCardScale) * 161px);
-  height: calc(var(--mohoCardScale) * 225px);
+  width: calc(var(--cardScale) * 161px);
+  height: calc(var(--cardScale) * 225px);
 
   box-sizing: border-box;
   background-image: url('img/vice_cards.jpg');
   background-size: 1300% 400%;
   background-repeat: no-repeat;
-  border: calc(var(--mohoCardScale) * 1px) black solid;
-  border-radius: calc(var(--mohoCardScale) * 5px);
+  border: calc(var(--cardScale) * 1px) black solid;
+  border-radius: calc(var(--cardScale) * 5px);
   image-rendering: -webkit-optimize-contrast;
   image-rendering: high-quality;
   position: relative;

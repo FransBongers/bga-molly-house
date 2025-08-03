@@ -14,4 +14,9 @@ class Locations
   {
     return 'hand_' . $playerId;
   }
+
+  public static function reputation($playerId)
+  {
+    return 'reputation_' . $playerId;
+  }
 }

@@ -39,8 +39,8 @@ class Hand {
       this.game.viceCardManager,
       document.getElementById('hand'),
       {
-        cardOverlap: 'calc(var(--mohoCardScale) * -80px)',
-        cardShift: 'calc(var(--mohoCardScale) * 15px)',
+        cardOverlap: 'calc(var(--cardScale) * 80px)',
+        cardShift: 'calc(var(--cardScale) * 15px)',
       }
     );
     const cards = this.game.gamedatas.players[this.game.getPlayerId()].hand;
@@ -64,7 +64,7 @@ class Hand {
   }
 
   public async addCard(card: ViceCard): Promise<void> {
-    await this.hand.addCard(card);
+    await this.handStock.addCard(card);
   }
 
   public async removeCard(card: ViceCard): Promise<void> {

@@ -12,3 +12,18 @@ interface NotifWithPlayerArgs {
   playerId: number;
   player_name: string;
 }
+
+interface NotifSetupChooseCard extends NotifWithPlayerArgs {
+  card: {
+    id: string;
+    hidden: boolean;
+  }
+}
+
+interface NotifSetupChooseCardPrivate extends NotifWithPlayerArgs {
+  card: ViceCardBase;
+}
+
+interface NotifSetupRevealCard extends NotifWithPlayerArgs {
+  card: ViceCardBase;
+}

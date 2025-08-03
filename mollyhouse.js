@@ -2128,6 +2128,9 @@ var NotificationManager = (function () {
         var notifs = [
             'log',
             'message',
+            'setupChooseCardPrivate',
+            'setupChooseCard',
+            'setupRevealCard',
         ];
         notifs.forEach(function (notifName) {
             _this.subscriptions.push(dojo.subscribe(notifName, _this, function (notifDetails) {
@@ -2152,7 +2155,7 @@ var NotificationManager = (function () {
                 }
             }));
             _this.game.framework().notifqueue.setSynchronous(notifName, undefined);
-            [].forEach(function (notifId) {
+            ['setupChooseCard'].forEach(function (notifId) {
                 _this.game
                     .framework()
                     .notifqueue.setIgnoreNotificationCheck(notifId, function (notif) {
@@ -2178,6 +2181,46 @@ var NotificationManager = (function () {
     NotificationManager.prototype.notif_message = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
+                return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_setupChooseCard = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, playerId, card;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = notif.args, playerId = _a.playerId, card = _a.card;
+                        return [4, this.getPlayer(playerId).reputation.addCard(card)];
+                    case 1:
+                        _b.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_setupChooseCardPrivate = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, playerId, card;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = notif.args, playerId = _a.playerId, card = _a.card;
+                        return [4, this.getPlayer(playerId).reputation.addCard(getViceCard(card))];
+                    case 1:
+                        _b.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_setupRevealCard = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, playerId, card;
+            return __generator(this, function (_b) {
+                _a = notif.args, playerId = _a.playerId, card = _a.card;
+                this.game.viceCardManager.updateCardInformations(getViceCard(card));
                 return [2];
             });
         });
@@ -2271,7 +2314,7 @@ var getSettingsConfig = function () {
                         padding: 0,
                         range: {
                             min: 0,
-                            max: 150,
+                            max: 140,
                         },
                     },
                     type: 'slider',
@@ -2761,6 +2804,7 @@ var MollyHouse = (function () {
             ConfirmPartialTurn: ConfirmPartialTurn,
             ConfirmTurn: ConfirmTurn,
             PlayerTurn: PlayerTurn,
+            PlayerSetupChooseCard: PlayerSetupChooseCard,
         };
         console.log('MollyHouse constructor');
     }
@@ -2788,10 +2832,10 @@ var MollyHouse = (function () {
                 : 2100 - settings.get(PREF_ANIMATION_SPEED),
         });
         StaticData.create(this);
+        this.viceCardManager = new ViceCardManager(this);
         Interaction.create(this);
         PlayerManager.create(this);
         NotificationManager.create(this);
-        this.viceCardManager = new ViceCardManager(this);
         Board.create(this);
         Market.create(this);
         if (this.playerOrder.includes(this.getPlayerId())) {
@@ -3212,17 +3256,23 @@ var ViceCardManager = (function (_super) {
     ViceCardManager.prototype.setupDiv = function (card, div) {
         div.style.position = 'relative';
         div.classList.add('moho-vice-card-container');
+        div.style.height = 'calc(var(--cardScale) * 225px)';
+        div.style.width = 'calc(var(--cardScale) * 161px)';
     };
     ViceCardManager.prototype.setupFrontDiv = function (card, div) {
         div.classList.add('moho-vice-card');
         div.setAttribute('data-card-id', card.id);
+        div.style.height = 'calc(var(--cardScale) * 225px)';
+        div.style.width = 'calc(var(--cardScale) * 161px)';
     };
     ViceCardManager.prototype.setupBackDiv = function (card, div) {
         div.classList.add('moho-vice-card');
         div.setAttribute('data-card-id', 'back');
+        div.style.height = 'calc(var(--cardScale) * 225px)';
+        div.style.width = 'calc(var(--cardScale) * 161px)';
     };
     ViceCardManager.prototype.isCardVisible = function (card) {
-        if (card.location === GOSSIP_PILE || card.id.startsWith('fake')) {
+        if (card.hidden || card.location === GOSSIP_PILE || card.id.startsWith('fake')) {
             return false;
         }
         return true;
@@ -3248,8 +3298,8 @@ var Hand = (function () {
         var node = $('game_play_area');
         node.insertAdjacentHTML('beforeend', tplHand());
         this.handStock = new HandStock(this.game.viceCardManager, document.getElementById('hand'), {
-            cardOverlap: 'calc(var(--mohoCardScale) * -80px)',
-            cardShift: 'calc(var(--mohoCardScale) * 15px)',
+            cardOverlap: 'calc(var(--cardScale) * 80px)',
+            cardShift: 'calc(var(--cardScale) * 15px)',
         });
         var cards = this.game.gamedatas.players[this.game.getPlayerId()].hand;
         console.log('cards', cards);
@@ -3271,7 +3321,7 @@ var Hand = (function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4, this.hand.addCard(card)];
+                    case 0: return [4, this.handStock.addCard(card)];
                     case 1:
                         _a.sent();
                         return [2];
@@ -3317,6 +3367,8 @@ var LOG_TOKEN_BOLD_TEXT = 'boldText';
 var LOG_TOKEN_BOLD_ITALIC_TEXT = 'boldItalicText';
 var LOG_TOKEN_NEW_LINE = 'newLine';
 var LOG_TOKEN_PLAYER_NAME = 'playerName';
+var LOG_TOKEN_SUIT = 'suit';
+var LOG_TOKEN_VICE_CARD = 'viceCard';
 var CLASS_LOG_TOKEN = 'log-token';
 var tooltipIdCounter = 0;
 var getTokenDiv = function (_a) {
@@ -3340,6 +3392,10 @@ var getTokenDiv = function (_a) {
                     color: player.getColor(),
                 })
                 : value;
+        case LOG_TOKEN_SUIT:
+            return tplLogTokenSuit(value);
+        case LOG_TOKEN_VICE_CARD:
+            return tplLogTokenViceCard(value);
         default:
             return value;
     }
@@ -3351,6 +3407,12 @@ var tlpLogTokenText = function (_a) {
 var tplLogTokenPlayerName = function (_a) {
     var name = _a.name, color = _a.color;
     return "<span class=\"playername\" style=\"color:#".concat(color, ";\">").concat(name, "</span>");
+};
+var tplLogTokenSuit = function (suit) {
+    return "<div class=\"log-token moho-suit\" data-suit=\"".concat(suit, "\"></div>");
+};
+var tplLogTokenViceCard = function (cardId) {
+    return "<div class=\"log-token moho-vice-card\" data-card-id=\"".concat(cardId, "\"></div>");
 };
 var Market = (function () {
     function Market(game) {
@@ -3392,7 +3454,7 @@ var Market = (function () {
             mapCardToSlot: function (card) {
                 return card.location;
             },
-            gap: 'calc(var(--mohoCardScale) * 16px)',
+            gap: 'calc(var(--cardScale) * 16px)',
         });
         this.updateMarket(gamedatas);
     };
@@ -3474,7 +3536,10 @@ var MohoPlayer = (function () {
             color: HEX_COLOR_COLOR_MAP[this.playerColor],
             playerId: this.playerId,
         }));
-        this.updatePlayerBoard(gamedatas);
+        this.reputation = new LineStock(this.game.viceCardManager, document.getElementById("moho-reputation-".concat(this.playerId)), {
+            gap: '0px'
+        });
+        this.updatePlayerBoard(playerGamedatas);
     };
     MohoPlayer.prototype.setupPlayerPanel = function (gamedatas) {
         var playerGamedatas = gamedatas.players[this.playerId];
@@ -3487,7 +3552,9 @@ var MohoPlayer = (function () {
         }));
         this.updatePlayerPanel(gamedatas);
     };
-    MohoPlayer.prototype.updatePlayerBoard = function (gamedatas) { };
+    MohoPlayer.prototype.updatePlayerBoard = function (playerGamedatas) {
+        this.reputation.addCards(playerGamedatas.reputation);
+    };
     MohoPlayer.prototype.updatePlayerPanel = function (gamedatas) { };
     MohoPlayer.prototype.getColor = function () {
         return this.playerColor;
@@ -3502,7 +3569,7 @@ var MohoPlayer = (function () {
 }());
 var tplPlayerBoard = function (_a) {
     var playerId = _a.playerId, color = _a.color;
-    return "\n<div id=\"moho-player-row-".concat(playerId, "\" class=\"moho-player-row\">\n  <div id=\"moho-player-board-").concat(playerId, "\" class=\"moho-player-board\" data-color=\"").concat(color, "\"></div>\n</div>\n\n");
+    return "\n<div id=\"moho-player-row-".concat(playerId, "\" class=\"moho-player-row\">\n  <div id=\"moho-reputation-").concat(playerId, "\" class=\"moho-reputation\"></div>\n  <div id=\"moho-player-board-").concat(playerId, "\" class=\"moho-player-board\" data-color=\"").concat(color, "\"></div>\n</div>\n\n");
 };
 var tplPlayerCounters = function (_a) {
     var playerId = _a.playerId;
@@ -3528,26 +3595,8 @@ var PlayerTurn = (function () {
     };
     PlayerTurn.prototype.setDescription = function (activePlayerIds, args) { };
     PlayerTurn.prototype.updateInterfaceInitialStep = function () {
-        var _this = this;
         this.game.clearPossible();
         updatePageTitle(_('${you} may perform an action'), {});
-        addPrimaryActionButton({
-            id: 'continue_btn',
-            text: _('Shuffle'),
-            callback: function () { return __awaiter(_this, void 0, void 0, function () {
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            console.log('Shuffling gossip pile');
-                            return [4, Board.getInstance().gossipPile.shuffle()];
-                        case 1:
-                            _a.sent();
-                            console.log('After shuffling gossip pile');
-                            return [2];
-                    }
-                });
-            }); },
-        });
     };
     PlayerTurn.prototype.updateInterfaceConfirm = function () {
         clearPossible();
@@ -3557,6 +3606,50 @@ var PlayerTurn = (function () {
         });
     };
     return PlayerTurn;
+}());
+var PlayerSetupChooseCard = (function () {
+    function PlayerSetupChooseCard(game) {
+        this.game = game;
+    }
+    PlayerSetupChooseCard.create = function (game) {
+        PlayerSetupChooseCard.instance = new PlayerSetupChooseCard(game);
+    };
+    PlayerSetupChooseCard.getInstance = function () {
+        return PlayerSetupChooseCard.instance;
+    };
+    PlayerSetupChooseCard.prototype.onEnteringState = function (args) {
+        debug('Entering PlayerSetupChooseCard state');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    PlayerSetupChooseCard.prototype.onLeavingState = function () {
+        debug('Leaving PlayerSetupChooseCard state');
+    };
+    PlayerSetupChooseCard.prototype.setDescription = function (activePlayerIds, args) { };
+    PlayerSetupChooseCard.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        updatePageTitle(_('${you} must select a card to place in your reputation'), {});
+        this.args._private.forEach(function (card) {
+            onClick(document.getElementById(card.id), function () { return _this.updateInterfaceConfirm(card); });
+        });
+    };
+    PlayerSetupChooseCard.prototype.updateInterfaceConfirm = function (card) {
+        clearPossible();
+        setSelected(card.id);
+        var _a = getViceCard(card), value = _a.value, suit = _a.suit;
+        updatePageTitle(_('Place ${value} of ${tkn_suit} in your reputation?'), {
+            value: getViceCardValueText(value),
+            tkn_suit: suit,
+        });
+        addConfirmButton(function () {
+            performAction('actPlayerSetupChooseCard', {
+                cardId: card.id,
+            });
+        });
+        addCancelButton();
+    };
+    return PlayerSetupChooseCard;
 }());
 var StaticData = (function () {
     function StaticData(game) {
@@ -3569,6 +3662,30 @@ var StaticData = (function () {
     StaticData.get = function () {
         return StaticData.instance;
     };
+    StaticData.prototype.viceCard = function (id) {
+        var data = this.staticData.viceCards[id];
+        if (!data) {
+            throw new Error('FE_ERROR_001');
+        }
+        return data;
+    };
     return StaticData;
 }());
 var tplPlayArea = function () { return "\n  <div id=\"play-area-container\">\n    <div id=\"left-column\"></div>\n    <div id=\"right-column\"></div>\n  </div>\n"; };
+var getViceCard = function (base) {
+    return __assign(__assign({}, base), StaticData.get().viceCard(base.id));
+};
+var getViceCardValueText = function (value) {
+    switch (value) {
+        case 'Q':
+            return _('Queen');
+        case 'J':
+            return _('Jack');
+        case 'R':
+            return _('Rogue');
+        case 'C':
+            return _('Constable');
+        default:
+            return String(value);
+    }
+};

@@ -3,6 +3,9 @@
 
 .moho-player-row {
   width: calc(var(--rightColumnScale) * 1000px);
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
 }
 
 .moho-player-board {
@@ -17,6 +20,26 @@
   outline: 1px solid black;
   // width: 100%;
   // aspect-ratio: 30 / 15;
+}
+
+.moho-reputation {
+  position: relative;
+  display: flex;
+  --cardScale: var(--rightColumnScale);
+  flex-direction: row-reverse !important;
+  // flex-grow: 1;
+  margin-left: auto;
+  // width: calc(var(--rightColumnScale) * 315px);
+  // min-width: calc(var(--rightColumnScale) * 315px);
+  // background-color: yellow;
+  // flex-direction: row-reverse !important;
+  // align-items: center;
+  align-items: center;
+
+  .moho-vice-card-container {
+    margin-right: calc(var(--rightColumnScale) * -100px);
+
+  }
 }
 
 $player-colors: (

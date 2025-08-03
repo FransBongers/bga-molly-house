@@ -78,7 +78,7 @@ class Market {
           // Map the card to a slot based on its location
           return card.location;
         },
-        gap: 'calc(var(--mohoCardScale) * 16px)',
+        gap: 'calc(var(--cardScale) * 16px)',
       }
     );
     // this.gossipPile = new Deck<ViceCard>(

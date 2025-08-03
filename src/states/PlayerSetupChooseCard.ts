@@ -1,31 +1,33 @@
-interface OnEnteringPlayerTurnArgs extends CommonStateArgs {}
+interface OnEnteringPlayerSetupChooseCardArgs extends CommonStateArgs {
+  _private: ViceCardBase[]
+}
 
-class PlayerTurn implements State {
-  private static instance: PlayerTurn;
-  private args: OnEnteringPlayerTurnArgs;
+class PlayerSetupChooseCard implements State {
+  private static instance: PlayerSetupChooseCard;
+  private args: OnEnteringPlayerSetupChooseCardArgs;
 
   constructor(private game: GameAlias) {}
 
   public static create(game: GameAlias) {
-    PlayerTurn.instance = new PlayerTurn(game);
+    PlayerSetupChooseCard.instance = new PlayerSetupChooseCard(game);
   }
 
   public static getInstance() {
-    return PlayerTurn.instance;
+    return PlayerSetupChooseCard.instance;
   }
 
-  onEnteringState(args: OnEnteringPlayerTurnArgs) {
-    debug('Entering PlayerTurn state');
+  onEnteringState(args: OnEnteringPlayerSetupChooseCardArgs) {
+    debug('Entering PlayerSetupChooseCard state');
     this.args = args;
 
     this.updateInterfaceInitialStep();
   }
 
   onLeavingState() {
-    debug('Leaving PlayerTurn state');
+    debug('Leaving PlayerSetupChooseCard state');
   }
 
-  setDescription(activePlayerIds: number, args: OnEnteringPlayerTurnArgs) {}
+  setDescription(activePlayerIds: number, args: OnEnteringPlayerSetupChooseCardArgs) {}
 
   //  .####.##....##.########.########.########..########....###.....######..########
   //  ..##..###...##....##....##.......##.....##.##.........##.##...##....##.##......
@@ -46,27 +48,31 @@ class PlayerTurn implements State {
   private updateInterfaceInitialStep() {
     this.game.clearPossible();
 
-    updatePageTitle(_('${you} may perform an action'), {});
+    updatePageTitle(_('${you} must select a card to place in your reputation'), {});
 
-    // addPrimaryActionButton({
-    //   id: 'continue_btn',
-    //   text: _('Shuffle'),
-    //   callback: async () => {
-    //     console.log('Shuffling gossip pile');
-    //     await Hand.getInstance().addCard(this.game.gamedatas.market[0]);
-    //     console.log('After shuffling gossip pile');
-    //   },
-    // });
+    this.args._private.forEach((card) => {
+      onClick(document.getElementById(card.id),() => this.updateInterfaceConfirm(card))
+    })
   }
 
-  private updateInterfaceConfirm() {
+  private updateInterfaceConfirm(card: ViceCardBase) {
     clearPossible();
+    setSelected(card.id);
 
-    updatePageTitle(_('Confirm ship placement'));
+    const {value, suit} = getViceCard(card)
+
+    updatePageTitle(_('Place ${value} of ${tkn_suit} in your reputation?'),{
+      value: getViceCardValueText(value),
+      tkn_suit: suit,
+    });
 
     addConfirmButton(() => {
-      performAction('actPlayerTurn', {});
+      performAction('actPlayerSetupChooseCard', {
+        cardId: card.id,
+      });
     });
+
+    addCancelButton();
   }
 
   //  .##.....##.########.####.##.......####.########.##....##

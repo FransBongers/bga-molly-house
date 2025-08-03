@@ -132,7 +132,26 @@ class Notifications
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
+  protected static function tknViceCard($card)
+  {
+    return $card->getId();
+  }
 
+  protected static function viceCardValueText($value)
+  {
+    switch ($value) {
+      case 'Q':
+        return clienttranslate('Queen');
+      case 'J':
+        return clienttranslate('Jack');
+      case 'R':
+        return clienttranslate('Rogue');
+      case 'C':
+        return clienttranslate('Constable');
+      default:
+        return $value;
+    }
+  }
 
   // ..######......###....##.....##.########
   // .##....##....##.##...###...###.##......
@@ -150,4 +169,41 @@ class Notifications
   // .##...###.##.....##....##.....##..##.......##....##
   // .##....##..#######.....##....####.##........######.
 
+  public static function setupChooseCard($player, $selectedCard)
+  {
+    self::notify($player, 'setupChooseCardPrivate', clienttranslate('${player_name} selects ${tkn_boldText_cardValue} of ${tkn_suit}${tkn_viceCard} '), [
+      'player' => $player,
+      'card' => $selectedCard,
+      'tkn_viceCard' => self::tknViceCard($selectedCard),
+      'tkn_boldText_cardValue' => self::viceCardValueText($selectedCard->getValue()),
+      'tkn_suit' => $selectedCard->getSuit(),
+      'you' => '${you}',
+      'i18n' => ['tkn_boldText_cardValue'],
+    ]);
+
+    self::notifyAll('setupChooseCard', clienttranslate('${player_name} select a card to put in their reputation'), [
+      'player' => $player,
+      'card' => [
+        'id' => $selectedCard->getId(),
+        'hidden' => $selectedCard->isHidden(),
+      ],
+      'preserve' => ['playerId'],
+    ]);
+  }
+
+  public static function setupRevealCard($player, $card)
+  {
+    self::notifyAll('setupRevealCard', clienttranslate('${player_name} reveals ${tkn_boldText_cardValue} of ${tkn_suit}${tkn_viceCard} '), [
+      'player' => $player,
+      'card' => $card,
+      'tkn_viceCard' => self::tknViceCard($card),
+      'tkn_boldText_cardValue' => self::viceCardValueText($card->getValue()),
+      'tkn_suit' => $card->getSuit(),
+      'you' => '${you}',
+      'i18n' => ['tkn_boldText_cardValue'],
+    ]);
+
+
+  }
+  
 }

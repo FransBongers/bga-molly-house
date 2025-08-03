@@ -24,5 +24,11 @@ class StaticData {
   // .##....##.##..........##....##.....##.##.......
   // ..######..########....##.....#######..##.......
 
-
+  public viceCard(id: string): ViceCardStaticData {
+    const data = this.staticData.viceCards[id];
+    if (!data) {
+      throw new Error('FE_ERROR_001');
+    }
+    return data;
+  }
 }

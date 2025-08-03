@@ -24,3 +24,9 @@ const tplLogTokenPlayerName = ({
 }) => `<span class="playername" style="color:#${color};">${name}</span>`;
 
 /* ------- GAME SPECIFIC LOG TOKENS ------- */
+
+const tplLogTokenSuit = (suit: Suit) =>
+  `<div class="log-token moho-suit" data-suit="${suit}"></div>`;
+
+const tplLogTokenViceCard = (cardId: string) =>
+  `<div class="log-token moho-vice-card" data-card-id="${cardId}"></div>`;

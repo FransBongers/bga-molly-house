@@ -21,12 +21,15 @@ class ViceCardManager extends CardManager<ViceCard> {
   setupDiv(card: ViceCard, div: HTMLElement) {
     div.style.position = 'relative';
     div.classList.add('moho-vice-card-container');
+    div.style.height = 'calc(var(--cardScale) * 225px)';
+    div.style.width = 'calc(var(--cardScale) * 161px)';
   }
 
   setupFrontDiv(card: ViceCard, div: HTMLElement) {
     div.classList.add('moho-vice-card');
     div.setAttribute('data-card-id', card.id);
-
+    div.style.height = 'calc(var(--cardScale) * 225px)';
+    div.style.width = 'calc(var(--cardScale) * 161px)';
 
     // this.game.tooltipManager.addCardTooltip({ nodeId: card.id, cardId: card.id });
   }
@@ -34,10 +37,12 @@ class ViceCardManager extends CardManager<ViceCard> {
   setupBackDiv(card: ViceCard, div: HTMLElement) {
     div.classList.add('moho-vice-card');
     div.setAttribute('data-card-id', 'back');
+    div.style.height = 'calc(var(--cardScale) * 225px)';
+    div.style.width = 'calc(var(--cardScale) * 161px)';
   }
 
   isCardVisible(card: ViceCard) {
-    if (card.location === GOSSIP_PILE || card.id.startsWith('fake')) {
+    if (card.hidden || card.location === GOSSIP_PILE || card.id.startsWith('fake')) {
       return false;
     }
     return true;

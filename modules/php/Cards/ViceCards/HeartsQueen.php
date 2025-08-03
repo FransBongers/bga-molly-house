@@ -9,7 +9,7 @@ class HeartsQueen extends \Bga\Games\MollyHouse\Models\ViceCard
     parent::__construct($row);
     $this->id = 'HeartsQueen';
     $this->type = MOLLY;
-    $this->value = 0;
+    $this->value = 'Q';
     $this->suit = HEARTS;
     $this->joy = 4;
   }

@@ -45,6 +45,7 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
       $data,
       [
         'hand' => $isCurrentPlayer ? ViceCards::getInLocation(Locations::hand($currentPlayerId))->toArray() : [],
+        'reputation' => ViceCards::getInLocationOrdered(Locations::reputation($this->getId()))->toArray(),
       ],
     );
   }
@@ -52,5 +53,15 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   public function getId()
   {
     return (int) parent::getId();
+  }
+
+  public function getHand()
+  {
+    return ViceCards::getInLocation(Locations::hand($this->getId()))->toArray();
+  }
+
+  public function getReputation()
+  {
+    return ViceCards::getInLocation(Locations::reputation($this->getId()))->toArray();
   }
 }

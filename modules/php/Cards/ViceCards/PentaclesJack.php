@@ -9,7 +9,7 @@ class PentaclesJack extends \Bga\Games\MollyHouse\Models\ViceCard
     parent::__construct($row);
     $this->id = 'PentaclesJack';
     $this->type = MOLLY;
-    $this->value = 0;
+    $this->value = 'J';
     $this->suit = PENTACLES;
     $this->joy = 4;
   }

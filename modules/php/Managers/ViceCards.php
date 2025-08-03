@@ -15,7 +15,9 @@ class ViceCards extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
 {
   protected static $table = 'vice_cards';
   protected static $prefix = 'card_';
-  protected static $customFields = [];
+  protected static $customFields = [
+    'hidden'
+  ];
   protected static $autoremovePrefix = false;
   protected static $autoreshuffle = false;
   protected static $autoIncrement = false;

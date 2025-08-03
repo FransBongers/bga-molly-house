@@ -9,7 +9,7 @@ class FansJack extends \Bga\Games\MollyHouse\Models\ViceCard
     parent::__construct($row);
     $this->id = 'FansJack';
     $this->type = MOLLY;
-    $this->value = 0;
+    $this->value = 'J';
     $this->suit = FANS;
     $this->joy = 4;
   }
