@@ -82,3 +82,9 @@ CREATE TABLE IF NOT EXISTS `sites` (
   `site_state` int(10) DEFAULT 0,
   PRIMARY KEY (`site_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+CREATE TABLE IF NOT EXISTS `pawns` (
+  `pawn_id` varchar(32) NOT NULL,
+  `pawn_location` varchar(32) NOT NULL,
+  `pawn_state` int(10) DEFAULT 0,
+  PRIMARY KEY (`pawn_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;

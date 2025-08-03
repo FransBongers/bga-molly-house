@@ -31,6 +31,7 @@ class Players extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Manager
     // Create players
     $gameInfos = Game::get()->getGameinfos();
     $colors = $gameInfos['player_colors'];
+    shuffle($colors);
     $query = self::DB()->multipleInsert([
       'player_id',
       'player_color',

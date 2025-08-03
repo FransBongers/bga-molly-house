@@ -103,7 +103,6 @@ span[style*='color:#c0c0c0'] {
 #customActions {
   --iconScale: 0.75;
   --tokenScale: 0.6;
-
 }
 
 #pagemaintitletext,
@@ -115,18 +114,24 @@ span[style*='color:#c0c0c0'] {
   .moho-suit {
     --iconScale: 0.8;
   }
+
+  .moho-pawn {
+    --iconScale: 0.4;
+  }
 }
 
 .log > .roundedbox,
 .log > .roundedboxinner {
   --tokenScale: 0.6;
   --iconScale: 0.7;
-  
+
   .moho-vice-card {
     display: block;
     margin-top: calc(var(--logCardScale) * 6px);
     --cardScale: var(--logCardScale);
   }
 
+  .moho-pawn {
+    --iconScale: 0.4;
+  }
 }
-

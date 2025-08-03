@@ -5,8 +5,8 @@ namespace Bga\Games\MollyHouse\Models;
 class Item extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
 {
   protected $id;
-  protected $table = 'vice_cards';
-  protected $primary = 'card_id';
+  protected $table = 'items';
+  protected $primary = 'item_id';
   protected $location;
   protected $state;
   protected $type;
@@ -15,10 +15,10 @@ class Item extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   protected $text;
 
   protected $attributes = [
-    'id' => ['card_id', 'str'],
-    'location' => 'card_location',
-    'state' => ['card_state', 'int'],
-    'type' => ['type', 'str'], // Added for Item association
+    'id' => ['item_id', 'str'],
+    'location' => 'item_location',
+    'state' => ['item_state', 'int'],
+    'type' => ['type', 'str'],
   ];
 
   protected $staticAttributes = [

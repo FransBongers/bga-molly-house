@@ -14,6 +14,7 @@ class Site extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   protected $locationOrder;
   protected $name;
   protected $address = '';
+  protected $suit;
 
   protected $attributes = [
     'id' => ['site_id', 'str'],
@@ -25,6 +26,7 @@ class Site extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     'locationOrder',
     'name',
     'address',
+    'suit',
   ];
   public function jsonSerialize(): array
   {
@@ -38,4 +40,5 @@ class Site extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     return $this->jsonSerialize(); // Static datas are already in js file
   }
 
+  
 }

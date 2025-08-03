@@ -4,6 +4,7 @@ namespace Bga\Games\MollyHouse\Models;
 
 use Bga\Games\MollyHouse\Boilerplate\Core\Preferences;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
+use Bga\Games\MollyHouse\Managers\Pawns;
 use Bga\Games\MollyHouse\Managers\ViceCards;
 
 /*
@@ -21,11 +22,19 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     'no' => ['player_no', 'int'],
     'avatar' => 'player_avatar',
     'name' => 'player_name',
-    'color' => 'player_color',
+    'hexColor' => 'player_color',
     'eliminated' => 'player_eliminated',
     'score' => ['player_score', 'int'],
     'scoreAux' => ['player_score_aux', 'int'],
     'zombie' => 'player_zombie',
+  ];
+
+  protected $hexColorMap = [
+    '8393ca' => BLUE,
+    'a2a882' => GREEN,
+    'e3bcb4' => PINK,
+    '7f5574' => PURPLE,
+    'fcd873' => YELLOW,
   ];
 
   /*
@@ -46,6 +55,7 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
       [
         'hand' => $isCurrentPlayer ? ViceCards::getInLocation(Locations::hand($currentPlayerId))->toArray() : [],
         'reputation' => ViceCards::getInLocationOrdered(Locations::reputation($this->getId()))->toArray(),
+        // 'pawn' => Pawns::getPlayerPawn($this),
       ],
     );
   }
@@ -63,5 +73,15 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   public function getReputation()
   {
     return ViceCards::getInLocation(Locations::reputation($this->getId()))->toArray();
+  }
+
+  public function getPawn()
+  {
+    return Pawns::getPlayerPawn($this);
+  }
+
+  public function getColor()
+  {
+    return $this->hexColorMap[$this->getHexColor()];
   }
 }

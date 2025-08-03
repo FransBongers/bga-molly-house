@@ -253,6 +253,7 @@ body > .card {
   --boardScale: var(--leftColumnScale);
   --tokenScale: var(--leftColumnScale);
   --cardScale: var(--boardScale);
+  --iconScale: var(--boardScale);
   position: relative;
   background-image: url("img/board.jpg");
   background-size: 100% 100%;
@@ -280,6 +281,9 @@ body > .card {
   top: calc(var(--boardScale) * 903px);
   width: calc(var(--boardScale) * 161px);
   height: calc(var(--boardScale) * 225px);
+}
+#moho-board .moho-pawn {
+  position: absolute;
 }
 
 .moho-house-raided-marker {
@@ -1367,6 +1371,10 @@ span[style*="color:#c0c0c0"] {
 #gameaction_status .moho-suit {
   --iconScale: 0.8;
 }
+#pagemaintitletext .moho-pawn,
+#gameaction_status .moho-pawn {
+  --iconScale: 0.4;
+}
 
 .log > .roundedbox,
 .log > .roundedboxinner {
@@ -1378,6 +1386,10 @@ span[style*="color:#c0c0c0"] {
   display: block;
   margin-top: calc(var(--logCardScale) * 6px);
   --cardScale: var(--logCardScale);
+}
+.log > .roundedbox .moho-pawn,
+.log > .roundedboxinner .moho-pawn {
+  --iconScale: 0.4;
 }
 
 .moho-suit {
@@ -1401,6 +1413,34 @@ span[style*="color:#c0c0c0"] {
 }
 
 .moho-suit[data-suit=pentacles] {
+  background-position-x: 100%;
+}
+
+.moho-pawn {
+  width: calc(var(--iconScale) * 64px);
+  height: calc(var(--iconScale) * 101px);
+  background-image: url("img/pawns.png");
+  background-size: 500% 100%;
+  background-repeat: no-repeat;
+}
+
+.moho-pawn[data-color=blue] {
+  background-position-x: 0%;
+}
+
+.moho-pawn[data-color=green] {
+  background-position-x: 25%;
+}
+
+.moho-pawn[data-color=pink] {
+  background-position-x: 50%;
+}
+
+.moho-pawn[data-color=purple] {
+  background-position-x: 75%;
+}
+
+.moho-pawn[data-color=yellow] {
   background-position-x: 100%;
 }
 

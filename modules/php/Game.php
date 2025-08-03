@@ -30,6 +30,7 @@ use Bga\Games\MollyHouse\Boilerplate\Core\Globals;
 use Bga\Games\MollyHouse\Boilerplate\Core\Stats;
 use Bga\Games\MollyHouse\Managers\IndictmentCards;
 use Bga\Games\MollyHouse\Managers\Items;
+use Bga\Games\MollyHouse\Managers\Pawns;
 use Bga\Games\MollyHouse\Managers\Players;
 use Bga\Games\MollyHouse\Managers\Sites;
 use Bga\Games\MollyHouse\Managers\ViceCards;
@@ -266,9 +267,11 @@ class Game extends \Bga\GameFramework\Table
             'staticData' => [
                 'viceCards' => ViceCards::getStaticUiData(),
             ],
-            'market' => ViceCards::getMarket(),
             'deckCount' => ViceCards::countInLocation(DECK),
             'gossipPileCount' => ViceCards::countInLocation(GOSSIP_PILE),
+            'market' => ViceCards::getMarket(),
+            'pawns' => Pawns::getAll(),
+            
         ];
 
 
@@ -286,9 +289,10 @@ class Game extends \Bga\GameFramework\Table
 
         Players::setupNewGame($players, $options);
         ViceCards::setupNewGame($players, $options);
+        Pawns::setupNewGame($players, $options);
         Sites::setupNewGame($players, $options);
-        IndictmentCards::setupNewGame($players, $options);
-        Items::setupNewGame($players, $options);
+        // IndictmentCards::setupNewGame($players, $options);
+        // Items::setupNewGame($players, $options);
 
         $players = Players::getAll()->toArray();
 

@@ -1,3 +1,4 @@
+var _a;
 var DESIRE = 'desire';
 var THREAT = 'threat';
 var MOLLY = 'molly';
@@ -75,17 +76,17 @@ var DRESS_OF_CUPS = 'DressOfCups';
 var DRESS_OF_PENTACLES = 'DressOfPentacles';
 var DRESS_OF_FANS = 'DressOfFans';
 var DRESS_OF_HEARTS = 'DressOfHearts';
-var ITEM_DISTRIBUTIION = [
-    function (NEWSPAPER_NOTICE) { return 3; },
-    function (BRIBE) { return 3; },
-    function (VIOLIN) { return 3; },
-    function (DOMINO) { return 3; },
-    function (BOTTLE_OF_GIN) { return 4; },
-    function (DRESS_OF_CUPS) { return 1; },
-    function (DRESS_OF_PENTACLES) { return 1; },
-    function (DRESS_OF_FANS) { return 1; },
-    function (DRESS_OF_HEARTS) { return 1; },
-];
+var ITEM_DISTRIBUTIION = (_a = {},
+    _a[NEWSPAPER_NOTICE] = 3,
+    _a[BRIBE] = 3,
+    _a[VIOLIN] = 3,
+    _a[DOMINO] = 3,
+    _a[BOTTLE_OF_GIN] = 4,
+    _a[DRESS_OF_CUPS] = 1,
+    _a[DRESS_OF_PENTACLES] = 1,
+    _a[DRESS_OF_FANS] = 1,
+    _a[DRESS_OF_HEARTS] = 1,
+    _a);
 var BgaAnimation = (function () {
     function BgaAnimation(animationFunction, settings) {
         this.animationFunction = animationFunction;
@@ -2128,6 +2129,8 @@ var NotificationManager = (function () {
         var notifs = [
             'log',
             'message',
+            'movePawn',
+            'placePawn',
             'setupChooseCardPrivate',
             'setupChooseCard',
             'setupRevealCard',
@@ -2185,6 +2188,32 @@ var NotificationManager = (function () {
             });
         });
     };
+    NotificationManager.prototype.notif_movePawn = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, playerId, pawn;
+            return __generator(this, function (_b) {
+                _a = notif.args, playerId = _a.playerId, pawn = _a.pawn;
+                return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_placePawn = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, playerId, pawn, board, player;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = notif.args, playerId = _a.playerId, pawn = _a.pawn;
+                        board = Board.getInstance();
+                        player = this.getPlayer(playerId);
+                        return [4, board.placePawn(pawn, document.getElementById("player_board_".concat(playerId)))];
+                    case 1:
+                        _b.sent();
+                        return [2];
+                }
+            });
+        });
+    };
     NotificationManager.prototype.notif_setupChooseCard = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
             var _a, playerId, card;
@@ -2192,7 +2221,9 @@ var NotificationManager = (function () {
                 switch (_b.label) {
                     case 0:
                         _a = notif.args, playerId = _a.playerId, card = _a.card;
-                        return [4, this.getPlayer(playerId).reputation.addCard(card)];
+                        return [4, this.getPlayer(playerId).reputation.addCard(card, {
+                                fromElement: document.getElementById("player_board_".concat(playerId)),
+                            })];
                     case 1:
                         _b.sent();
                         return [2];
@@ -3132,8 +3163,46 @@ var MollyHouse = (function () {
     };
     return MollyHouse;
 }());
+var _a;
+var getGroupPosition = function (top, left, index, rowSize) {
+    var row = Math.floor(index / rowSize);
+    var column = index % 4;
+    return {
+        top: top + 105 * row,
+        left: left + 70 * column,
+    };
+};
+var SITE_POSITIONS = (_a = {},
+    _a[MOTHER_CLAPS] = { top: 98, left: 123 },
+    _a[ST_PAULS_CATHEDRAL] = { top: 98, left: 363 },
+    _a[NOBLE_STREET] = { top: 98, left: 557 },
+    _a[MOORFIELDS] = { top: 98, left: 752 },
+    _a[MISS_MUFFS] = { top: 98, left: 948 },
+    _a[ROYAL_EXCHANGE] = { top: 291, left: 1088 },
+    _a[LEADENHALL_STREET] = { top: 487, left: 1088 },
+    _a[LONDON_BRIDGE] = { top: 678, left: 1088 },
+    _a[SUKEY_BEVELLS] = { top: 991, left: 937 },
+    _a[OLD_ROUND_COURT] = { top: 991, left: 732 },
+    _a[CANNON_STREET] = { top: 991, left: 539 },
+    _a[ST_JAMESS_PARK] = { top: 991, left: 345 },
+    _a[JULIUS_CESAR_TAYLORS] = { top: 991, left: 119 },
+    _a[COVENT_GARDEN_PIAZZA] = { top: 680, left: 83 },
+    _a[DUKE_STREET] = { top: 486, left: 83 },
+    _a[LINCOLNS_INN_BOGHOUSE] = { top: 288, left: 83 },
+    _a);
+var getPawnPosition = function (location, index) {
+    var position = { top: 0, left: 0 };
+    var _a = SITE_POSITIONS[location] || { top: 0, left: 0 }, top = _a.top, left = _a.left;
+    switch (location) {
+        default:
+            position = getGroupPosition(top, left, index, 5);
+            break;
+    }
+    return position;
+};
 var Board = (function () {
     function Board(game) {
+        this.sites = {};
         this.game = game;
         this.setup(game.gamedatas);
     }
@@ -3151,17 +3220,21 @@ var Board = (function () {
             containers: {
                 board: document.getElementById('moho-board'),
                 gossipPile: document.getElementById('moho-gossip-pile'),
-                pawns: {},
+                pawns: document.getElementById('moho-pawns'),
+                tokens: {},
                 selectBoxes: document.getElementById('moho-select-boxes'),
                 houseRaidedMarkers: document.getElementById('house-raided-markers'),
             },
-            selectBoxes: {},
             houseRaidedMarkers: {},
+            pawns: {},
+            selectBoxes: {},
         };
-        this.setupPawns(gamedatas);
-        this.setupSelectBoxes();
         this.setupGossipPile(gamedatas);
         this.setupHouseRaidedMarkers();
+        this.setupSelectBoxes();
+        this.setupSites();
+        this.setupPawns(gamedatas);
+        this.setupTokens(gamedatas);
     };
     Board.prototype.setupGossipPile = function (gamedatas) {
         this.gossipPile = new Deck(this.game.viceCardManager, this.ui.containers.gossipPile, {
@@ -3169,8 +3242,8 @@ var Board = (function () {
             thicknesses: [100],
             counter: {
                 show: true,
-                position: 'center'
-            }
+                position: 'center',
+            },
         });
     };
     Board.prototype.setupHouseRaidedMarkers = function () {
@@ -3186,25 +3259,41 @@ var Board = (function () {
     };
     Board.prototype.setupPawns = function (gamedatas) {
         var _this = this;
+        var pawns = Object.values(gamedatas.pawns);
+        pawns.forEach(function (_a) {
+            var id = _a.id, color = _a.color;
+            var elt = (_this.ui.pawns[id] = document.createElement('div'));
+            elt.classList.add('moho-pawn');
+            elt.setAttribute('data-color', color);
+        });
+        this.updatePawns(pawns);
+    };
+    Board.prototype.setupTokens = function (gamedatas) {
+        var _this = this;
         ['joy', 'week'].forEach(function (pawn) {
             var elt = (_this.ui.containers.pawns[pawn] =
                 document.createElement('div'));
             elt.id = pawn;
-            elt.classList.add('moho-pawn');
+            elt.classList.add('moho-token');
             elt.setAttribute('data-type', pawn);
             _this.ui.containers.board.appendChild(elt);
         });
-        this.updatePawns(gamedatas);
+    };
+    Board.prototype.setupSites = function () {
+        var _this = this;
+        SITES.forEach(function (site) {
+            _this.sites[site] = [];
+        });
     };
     Board.prototype.setupSelectBoxes = function () { };
-    Board.prototype.movePawn = function (type, value) {
+    Board.prototype.moveToken = function (type, value) {
         return __awaiter(this, void 0, void 0, function () {
             var fromRect;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        fromRect = this.ui.containers.pawns[type].getBoundingClientRect();
-                        this.updatePawn(type, value);
+                        fromRect = this.ui.containers.tokens[type].getBoundingClientRect();
+                        this.updateToken(type, value);
                         return [4, this.game.animationManager.play(new BgaSlideAnimation({
                                 element: this.ui.containers.pawns[type],
                                 transitionTimingFunction: 'ease-in-out',
@@ -3217,7 +3306,34 @@ var Board = (function () {
             });
         });
     };
-    Board.prototype.updatePawn = function (type, value) {
+    Board.prototype.movePawn = function (_a) {
+        return __awaiter(this, arguments, void 0, function (_b) {
+            var fromRect, fromIndex;
+            var pawn = _b.pawn, _c = _b.index, index = _c === void 0 ? 0 : _c, from = _b.from;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
+                    case 0: return [4, Interaction.use().wait(index * 200)];
+                    case 1:
+                        _d.sent();
+                        fromRect = this.ui.pawns[pawn.id].getBoundingClientRect();
+                        fromIndex = this.sites[from].findIndex(function (pawnInOldZone) { return (pawnInOldZone === null || pawnInOldZone === void 0 ? void 0 : pawnInOldZone.id) === pawn.id; });
+                        this.placePawn(pawn);
+                        if (fromIndex >= 0) {
+                            this.sites[from][fromIndex] = null;
+                        }
+                        return [4, this.game.animationManager.play(new BgaSlideAnimation({
+                                element: this.ui.pawns[pawn.id],
+                                transitionTimingFunction: 'ease-in-out',
+                                fromRect: fromRect,
+                            }))];
+                    case 2:
+                        _d.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    Board.prototype.updateToken = function (type, value) {
         var position;
         switch (type) {
             case 'week':
@@ -3227,11 +3343,51 @@ var Board = (function () {
         }
         setAbsolutePosition(this.ui.containers.pawns[type], BOARD_SCALE, position);
     };
-    Board.prototype.updatePawns = function (gamedatas) {
+    Board.prototype.updatePawns = function (pawns) {
+        var _this = this;
+        pawns.forEach(function (pawn) {
+            _this.placePawn(pawn);
+        });
+    };
+    Board.prototype.pawnAlreadyOnSite = function (pawnId, location) {
+        return this.sites[location].some(function (pawn) { return (pawn === null || pawn === void 0 ? void 0 : pawn.id) === pawnId; });
+    };
+    Board.prototype.placePawn = function (pawn, fromElement) {
+        return __awaiter(this, void 0, void 0, function () {
+            var id, location, nullIndex, pawnIndex, position;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        console.log('Placing pawn', pawn);
+                        id = pawn.id, location = pawn.location;
+                        if (pawn.location === 'supply' || this.pawnAlreadyOnSite(id, location)) {
+                            return [2];
+                        }
+                        if (!this.ui.pawns[id].parentElement) {
+                            this.ui.containers.pawns.appendChild(this.ui.pawns[id]);
+                        }
+                        nullIndex = this.sites[location].findIndex(function (pos) { return pos === null; });
+                        pawnIndex = nullIndex >= 0 ? nullIndex : this.sites[location].length;
+                        position = getPawnPosition(location, pawnIndex);
+                        this.sites[location][pawnIndex] = pawn;
+                        setAbsolutePosition(this.ui.pawns[id], BOARD_SCALE, position);
+                        if (!fromElement) return [3, 2];
+                        return [4, this.game.animationManager.play(new BgaSlideAnimation({
+                                element: this.ui.pawns[id],
+                                transitionTimingFunction: 'ease-in-out',
+                                fromRect: fromElement.getBoundingClientRect(),
+                            }))];
+                    case 1:
+                        _a.sent();
+                        _a.label = 2;
+                    case 2: return [2];
+                }
+            });
+        });
     };
     return Board;
 }());
-var tplBoard = function (gamedatas) { return "<div id=\"moho-board\">\n<div id=\"moho-playmat\"></div>\n  <div id=\"house-raided-markers\"></div>\n  <div id=\"moho-select-boxes\"></div>\n  <div id=\"moho-gossip-pile\"></div>\n</div>"; };
+var tplBoard = function (gamedatas) { return "<div id=\"moho-board\">\n<div id=\"moho-playmat\"></div>\n  <div id=\"house-raided-markers\"></div>\n  <div id=\"moho-select-boxes\"></div>\n  <div id=\"moho-pawns\"></div>\n  <div id=\"moho-gossip-pile\"></div>\n</div>"; };
 var ViceCardManager = (function (_super) {
     __extends(ViceCardManager, _super);
     function ViceCardManager(game) {
@@ -3367,6 +3523,7 @@ var LOG_TOKEN_BOLD_TEXT = 'boldText';
 var LOG_TOKEN_BOLD_ITALIC_TEXT = 'boldItalicText';
 var LOG_TOKEN_NEW_LINE = 'newLine';
 var LOG_TOKEN_PLAYER_NAME = 'playerName';
+var LOG_TOKEN_PAWN = 'pawn';
 var LOG_TOKEN_SUIT = 'suit';
 var LOG_TOKEN_VICE_CARD = 'viceCard';
 var CLASS_LOG_TOKEN = 'log-token';
@@ -3382,6 +3539,8 @@ var getTokenDiv = function (_a) {
             return tlpLogTokenText({ text: value, italic: true });
         case LOG_TOKEN_NEW_LINE:
             return '<br class="moho-new-line">';
+        case LOG_TOKEN_PAWN:
+            return tplLogTokenPawn(value.split(':')[0]);
         case LOG_TOKEN_PLAYER_NAME:
             var player = PlayerManager.getInstance()
                 .getPlayers()
@@ -3407,6 +3566,9 @@ var tlpLogTokenText = function (_a) {
 var tplLogTokenPlayerName = function (_a) {
     var name = _a.name, color = _a.color;
     return "<span class=\"playername\" style=\"color:#".concat(color, ";\">").concat(name, "</span>");
+};
+var tplLogTokenPawn = function (color) {
+    return "<div class=\"log-token moho-pawn\" data-color=\"".concat(color, "\"></div>");
 };
 var tplLogTokenSuit = function (suit) {
     return "<div class=\"log-token moho-suit\" data-suit=\"".concat(suit, "\"></div>");

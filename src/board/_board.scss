@@ -4,6 +4,7 @@
   --boardScale: var(--leftColumnScale);
   --tokenScale: var(--leftColumnScale);
   --cardScale: var(--boardScale);
+  --iconScale: var(--boardScale);
   position: relative;
   background-image: url('img/board.jpg');
   background-size: 100% 100%;
@@ -35,6 +36,10 @@
     width: calc(var(--boardScale) * 161px);
     height: calc(var(--boardScale) * 225px);
     // outline: 2px yellow solid;
+  }
+
+  .moho-pawn {
+    position: absolute;
   }
 }
 

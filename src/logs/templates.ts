@@ -25,6 +25,9 @@ const tplLogTokenPlayerName = ({
 
 /* ------- GAME SPECIFIC LOG TOKENS ------- */
 
+const tplLogTokenPawn = (color: string) =>
+  `<div class="log-token moho-pawn" data-color="${color}"></div>`;
+
 const tplLogTokenSuit = (suit: Suit) =>
   `<div class="log-token moho-suit" data-suit="${suit}"></div>`;
 

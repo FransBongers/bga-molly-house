@@ -41,6 +41,7 @@ interface MollyHouseGamedatas extends Gamedatas {
   deckCount: number;
   gossipPileCount: number;
   market: ViceCard[];
+  pawns: Record<string,MohoPawn>;
 }
 
 interface MollyHousePlayerData extends BgaPlayer {
@@ -52,6 +53,10 @@ type GameAlias = MollyHouse;
 type GamedatasAlias = MollyHouseGamedatas;
 type PlayerAlias = MohoPlayer;
 type PlayerDataAlias = MollyHousePlayerData;
+
+interface MohoPawn extends GamePiece {
+  color: string;
+}
 
 type ViceCardType = 'desire' | 'treat' | 'molly';
 type Suit = 'hearts' | 'cups' | 'fans' | 'pentacles';

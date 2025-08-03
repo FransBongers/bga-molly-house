@@ -5,7 +5,7 @@ namespace Bga\Games\MollyHouse\Boilerplate\Core;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 use Bga\Games\MollyHouse\Game;
 use Bga\Games\MollyHouse\Managers\Players;
-use Bga\Games\MollyHouse\Managers\Regions;
+use Bga\Games\MollyHouse\Managers\Sites;
 
 class Notifications
 {
@@ -132,6 +132,11 @@ class Notifications
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
+  protected static function tknPawn($pawn)
+  {
+    return implode(':',[$pawn->getColor(), PAWN]);
+  }
+  
   protected static function tknViceCard($card)
   {
     return $card->getId();
@@ -169,6 +174,28 @@ class Notifications
   // .##...###.##.....##....##.....##..##.......##....##
   // .##....##..#######.....##....####.##........######.
 
+  public static function movePawn($player, $pawn)
+  {
+    self::notifyAll('movePawn', clienttranslate('${player_name} moves ${tkn_pawn} to ${tkn_boldText_location}'), [
+      'player' => $player,
+      'pawn' => $pawn,
+      'tkn_pawn' => self::tknPawn($player),
+      'tkn_boldText_location' => Sites::get($pawn->getLocation())->getName(),
+      'i18n' => ['tkn_boldText_location'],
+    ]);
+  }
+
+  public static function placePawn($player, $pawn)
+  {
+    self::notifyAll('placePawn', clienttranslate('${player_name} places ${tkn_pawn} on ${tkn_boldText_location}'), [
+      'player' => $player,
+      'pawn' => $pawn,
+      'tkn_pawn' => self::tknPawn($player),
+      'tkn_boldText_location' => Sites::get($pawn->getLocation())->getName(),
+      'i18n' => ['tkn_boldText_location'],
+    ]);
+  }
+
   public static function setupChooseCard($player, $selectedCard)
   {
     self::notify($player, 'setupChooseCardPrivate', clienttranslate('${player_name} selects ${tkn_boldText_cardValue} of ${tkn_suit}${tkn_viceCard} '), [
@@ -177,11 +204,10 @@ class Notifications
       'tkn_viceCard' => self::tknViceCard($selectedCard),
       'tkn_boldText_cardValue' => self::viceCardValueText($selectedCard->getValue()),
       'tkn_suit' => $selectedCard->getSuit(),
-      'you' => '${you}',
       'i18n' => ['tkn_boldText_cardValue'],
     ]);
 
-    self::notifyAll('setupChooseCard', clienttranslate('${player_name} select a card to put in their reputation'), [
+    self::notifyAll('setupChooseCard', clienttranslate('${player_name} selects a card to put in their reputation'), [
       'player' => $player,
       'card' => [
         'id' => $selectedCard->getId(),
@@ -202,8 +228,5 @@ class Notifications
       'you' => '${you}',
       'i18n' => ['tkn_boldText_cardValue'],
     ]);
-
-
   }
-  
 }

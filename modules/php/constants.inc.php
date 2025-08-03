@@ -6,7 +6,9 @@ require_once 'gameoptions.inc.php';
  */
 const DECK = 'deck';
 const DISCARD = 'discard';
+const SUPPLY = 'supply';
 
+const PAWN = 'pawn';
 
 /**
  * Game states
@@ -102,6 +104,13 @@ const MOLLY_HOUSES = [
   MISS_MUFFS,
   SUKEY_BEVELLS,
   JULIUS_CESAR_TAYLORS,
+];
+
+const SUIT_MOLLY_HOUSE_MAP = [
+  PENTACLES => MOTHER_CLAPS,
+  FANS => MISS_MUFFS,
+  HEARTS => SUKEY_BEVELLS,
+  CUPS => JULIUS_CESAR_TAYLORS,
 ];
 
 const SHOP_SITES = [

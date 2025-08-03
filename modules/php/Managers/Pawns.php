@@ -8,34 +8,28 @@ use Bga\Games\MollyHouse\Boilerplate\Core\Globals;
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
+use Bga\Games\MollyHouse\Models\Player;
 
-class Items extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
+class Pawns extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
 {
-  protected static $table = 'items';
-  protected static $prefix = 'item_';
-  protected static $customFields = [
-    'type'
-  ];
+  protected static $table = 'pawns';
+  protected static $prefix = 'pawn_';
+  protected static $customFields = [];
   protected static $autoremovePrefix = false;
   protected static $autoreshuffle = false;
   protected static $autoIncrement = false;
 
-  protected static function cast($card)
+  protected static function cast($pawn)
   {
-    return self::getCardInstance($card['item_id'], $card);
+    return self::getCardInstance($pawn['pawn_id'], $pawn);
   }
 
   public static function getCardInstance($id, $data = null)
   {
-    // $prefix = self::getClassPrefix($id);
-    $type = $data['type'];
-    $className = "\Bga\Games\MollyHouse\Cards\Items\\$type";
+    $className = "\Bga\Games\MollyHouse\Models\Pawn";
     return new $className($data);
   }
 
-  /**
-   * getStaticUiData : return static data
-   */
   public static function getStaticUiData()
   {
     $pieces = self::getAll()->toArray();
@@ -47,6 +41,11 @@ class Items extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
     return $data;
   }
 
+  public static function getPlayerPawn(Player $player)
+  {
+    $pawnId = 'pawn_' . $player->getColor();
+    return self::get($pawnId);
+  }
 
   // ..######..########.########.##.....##.########.
   // .##....##.##..........##....##.....##.##.....##
@@ -56,41 +55,25 @@ class Items extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
   // .##....##.##..........##....##.....##.##.......
   // ..######..########....##.....#######..##.......
 
-
-  private static function setupLoadCards()
+  private static function setupLoadPawns()
   {
+    $pawns = [];
 
-    $cards = [];
-    $index = 1;
+    $players = Players::getAll();
 
-    foreach (ITEM_DISTRIBUTIION as $type => $count) {
-      for ($i = 0; $i < $count; $i++) {
-        $cardId = 'item_' . $index;
-        $cards[$cardId] = [
-          'id' => $cardId,
-          'location' => DECK,
-          'type' => $type,
-        ];
-        $index++;
-      }
+    foreach ($players as $playerId => $player) {
+      $pawnId = 'pawn_' . $player->getColor();
+      $pawns[$pawnId] = [
+        'id' => $pawnId,
+        'location' => SUPPLY,
+      ];
     }
 
-
-    Notifications::log('cards', $cards);
-
-    // Create the cards
-    self::create($cards, null);
-    self::shuffle(DECK);
+    self::create($pawns, null);
   }
 
-
-  /* Creation of the cards */
   public static function setupNewGame($players = null, $options = null)
   {
-    self::setupLoadCards();
-
-    foreach(SHOP_SITES as $site) {
-      self::pickOneForLocation(DECK, $site);
-    }
+    self::setupLoadPawns();
   }
 }

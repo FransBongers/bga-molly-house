@@ -61,6 +61,8 @@ class NotificationManager {
       'log',
       'message',
       // Game specific
+      'movePawn',
+      'placePawn',
       'setupChooseCardPrivate',
       'setupChooseCard',
       'setupRevealCard',
@@ -154,9 +156,25 @@ class NotificationManager {
     // Only here so messages get displayed in title bar
   }
 
+  async notif_movePawn(notif: Notif<NotifMovePawn>) {
+    const { playerId, pawn } = notif.args;
+  }
+
+  async notif_placePawn(notif: Notif<NotifPlacePawn>) {
+    const { playerId, pawn } = notif.args;
+
+    const board = Board.getInstance();
+
+    const player = this.getPlayer(playerId);
+
+    await board.placePawn(pawn, document.getElementById(`player_board_${playerId}`));
+  }
+
   async notif_setupChooseCard(notif: Notif<NotifSetupChooseCard>) {
     const { playerId, card } = notif.args;
-    await this.getPlayer(playerId).reputation.addCard(card as ViceCard);
+    await this.getPlayer(playerId).reputation.addCard(card as ViceCard, {
+      fromElement: document.getElementById(`player_board_${playerId}`),
+    });
   }
 
   async notif_setupChooseCardPrivate(

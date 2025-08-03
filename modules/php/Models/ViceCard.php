@@ -54,4 +54,29 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   {
     return $this->hidden === 1;
   }
+
+  public function isDesire()
+  {
+    return $this->type === DESIRE;
+  }
+
+  public function isMolly()
+  {
+    return $this->type === MOLLY;
+  }
+
+  public function isThreat()
+  {
+    return $this->type === THREAT;
+  }
+
+  public function addToGossip($player)
+  {
+
+  }
+
+  public function addToSafePile($player)
+  {
+
+  }
 }

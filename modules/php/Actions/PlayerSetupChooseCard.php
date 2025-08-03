@@ -96,8 +96,11 @@ class PlayerSetupChooseCard extends \Bga\Games\MollyHouse\Models\AtomicAction
       return;
     }
 
-
-    $this->resolveSetup();
+    // All players have chosen their card, reveal them
+    $players = Players::getAll();
+    foreach ($players as $player) {
+      $this->resolveSetup($player);
+    }
 
     $this->resolveAction([], true);
   }
@@ -110,17 +113,21 @@ class PlayerSetupChooseCard extends \Bga\Games\MollyHouse\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-  private function resolveSetup()
+  private function resolveSetup($player)
   {
-    // All players have chosen their card, reveal them
+    $reputationCards = $player->getReputation();
+    $card = $reputationCards[0];
+    $card->setHidden(0);
 
-    $players = Players::getAll();
-    foreach ($players as $player) {
-      $reputationCards = $player->getReputation();
-      foreach ($reputationCards as $card) {
-        $card->setHidden(0);
-      }
-      Notifications::setupRevealCard($player, $card);
+    Notifications::setupRevealCard($player, $card);
+
+    $pawn = $player->getPawn();
+    $pawn->place($player, SUIT_MOLLY_HOUSE_MAP[$card->getSuit()]);
+
+    if ($card->isDesire()) {
+    }
+
+    if ($card->isThreat()) {
     }
   }
 }

@@ -103,14 +103,14 @@ const DRESS_OF_PENTACLES = 'DressOfPentacles';
 const DRESS_OF_FANS = 'DressOfFans';
 const DRESS_OF_HEARTS = 'DressOfHearts';
 
-const ITEM_DISTRIBUTIION = [
-  NEWSPAPER_NOTICE => 3,
-  BRIBE => 3,
-  VIOLIN => 3,
-  DOMINO => 3,
-  BOTTLE_OF_GIN => 4,
-  DRESS_OF_CUPS => 1,
-  DRESS_OF_PENTACLES => 1,
-  DRESS_OF_FANS => 1,
-  DRESS_OF_HEARTS => 1,
-];
+const ITEM_DISTRIBUTIION = {
+  [NEWSPAPER_NOTICE]: 3,
+  [BRIBE]: 3,
+  [VIOLIN]: 3,
+  [DOMINO]: 3,
+  [BOTTLE_OF_GIN]: 4,
+  [DRESS_OF_CUPS]: 1,
+  [DRESS_OF_PENTACLES]: 1,
+  [DRESS_OF_FANS]: 1,
+  [DRESS_OF_HEARTS]: 1,
+};

@@ -13,6 +13,14 @@ interface NotifWithPlayerArgs {
   player_name: string;
 }
 
+interface NotifMovePawn extends NotifWithPlayerArgs {
+  pawn: MohoPawn;
+}
+
+interface NotifPlacePawn extends NotifWithPlayerArgs {
+  pawn: MohoPawn;
+}
+
 interface NotifSetupChooseCard extends NotifWithPlayerArgs {
   card: {
     id: string;

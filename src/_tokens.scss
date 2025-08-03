@@ -20,3 +20,27 @@
 .moho-suit[data-suit='pentacles'] {
   background-position-x: 100%;
 }
+
+.moho-pawn {
+  width: calc(var(--iconScale) * 64px);
+  height: calc(var(--iconScale) * 101px);
+  background-image: url('img/pawns.png');
+  background-size: 500% 100%;
+  background-repeat: no-repeat;
+}
+
+.moho-pawn[data-color='blue'] {
+  background-position-x: 0%;
+}
+.moho-pawn[data-color='green'] {
+  background-position-x: 25%;
+}
+.moho-pawn[data-color='pink'] {
+  background-position-x: 50%;
+}
+.moho-pawn[data-color='purple'] {
+  background-position-x: 75%;
+}
+.moho-pawn[data-color='yellow'] {
+  background-position-x: 100%;
+}

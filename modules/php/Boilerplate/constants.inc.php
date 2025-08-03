@@ -33,3 +33,12 @@ const RESOLVE_STACK = 'resolveStack';
 const START_GAME_ENGINE = 'StartGameEngine';
 const CONFIRM_TURN = 'ConfirmTurn';
 const CONFIRM_PARTIAL_TURN = 'ConfirmPartialTurn';
+
+/**
+ * Colors
+ */
+const BLUE = 'blue';
+const GREEN = 'green';
+const PINK = 'pink';
+const PURPLE = 'purple';
+const YELLOW = 'yellow';

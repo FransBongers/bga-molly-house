@@ -9,15 +9,18 @@ class Board {
       board: HTMLElement;
       gossipPile: HTMLElement;
       houseRaidedMarkers: HTMLElement;
-      pawns: {
+      pawns: HTMLElement;
+      tokens: {
         joy?: HTMLElement;
         week?: HTMLElement;
       };
       selectBoxes: HTMLElement;
     };
     houseRaidedMarkers: Record<string, HTMLElement>;
+    pawns: Record<string, HTMLElement>;
     selectBoxes: Record<string, HTMLElement>;
   };
+  public sites: Record<string, MohoPawn[]> = {};
 
   constructor(game: GameAlias) {
     this.game = game;
@@ -50,18 +53,24 @@ class Board {
       containers: {
         board: document.getElementById('moho-board'),
         gossipPile: document.getElementById('moho-gossip-pile'),
-        pawns: {},
+        pawns: document.getElementById('moho-pawns'),
+        tokens: {},
         selectBoxes: document.getElementById('moho-select-boxes'),
         houseRaidedMarkers: document.getElementById('house-raided-markers'),
       },
-      selectBoxes: {},
       houseRaidedMarkers: {},
+      pawns: {},
+      selectBoxes: {},
     };
 
-    this.setupPawns(gamedatas);
-    this.setupSelectBoxes();
     this.setupGossipPile(gamedatas);
     this.setupHouseRaidedMarkers();
+    
+    this.setupSelectBoxes();
+    this.setupSites();
+    // Needs to happen aftert setupSites, as it uses the sites
+    this.setupPawns(gamedatas);
+    this.setupTokens(gamedatas);
   }
 
   private setupGossipPile(gamedatas: GamedatasAlias) {
@@ -74,8 +83,8 @@ class Board {
         thicknesses: [100],
         counter: {
           show: true,
-          position: 'center'
-        }
+          position: 'center',
+        },
       }
     );
   }
@@ -92,16 +101,32 @@ class Board {
   }
 
   private setupPawns(gamedatas: GamedatasAlias) {
+    const pawns = Object.values(gamedatas.pawns);
+    pawns.forEach(({ id, color }) => {
+      const elt = (this.ui.pawns[id] = document.createElement('div'));
+      elt.classList.add('moho-pawn');
+      elt.setAttribute('data-color', color);
+    });
+    this.updatePawns(pawns);
+  }
+
+  private setupTokens(gamedatas: GamedatasAlias) {
     ['joy', 'week'].forEach((pawn) => {
       const elt = (this.ui.containers.pawns[pawn] =
         document.createElement('div'));
       elt.id = pawn;
-      elt.classList.add('moho-pawn');
+      elt.classList.add('moho-token');
       elt.setAttribute('data-type', pawn);
       this.ui.containers.board.appendChild(elt);
     });
 
-    this.updatePawns(gamedatas);
+    // this.updateTokens(gamedatas);
+  }
+
+  private setupSites() {
+    SITES.forEach((site) => {
+      this.sites[site] = [];
+    });
   }
 
   private setupSelectBoxes() {}
@@ -114,12 +139,12 @@ class Board {
   // .##.....##.##........##.....##.##.....##....##....##..........##.....##..##.
   // ..#######..##........########..##.....##....##....########.....#######..####
 
-  async movePawn(
-    type: keyof typeof this.ui.containers.pawns,
+  async moveToken(
+    type: keyof typeof this.ui.containers.tokens,
     value: string | number
   ) {
-    const fromRect = this.ui.containers.pawns[type].getBoundingClientRect();
-    this.updatePawn(type, value);
+    const fromRect = this.ui.containers.tokens[type].getBoundingClientRect();
+    this.updateToken(type, value);
     await this.game.animationManager.play(
       new BgaSlideAnimation({
         element: this.ui.containers.pawns[type],
@@ -129,8 +154,35 @@ class Board {
     );
   }
 
-  updatePawn(
-    type: keyof typeof this.ui.containers.pawns,
+  public async movePawn({
+    pawn,
+    index = 0,
+    from,
+  }: {
+    pawn: MohoPawn;
+    from?: string;
+    index?: number;
+  }) {
+    await Interaction.use().wait(index * 200);
+    const fromRect = this.ui.pawns[pawn.id].getBoundingClientRect();
+    const fromIndex = this.sites[from].findIndex(
+      (pawnInOldZone: MohoPawn | null) => pawnInOldZone?.id === pawn.id
+    );
+    this.placePawn(pawn);
+    if (fromIndex >= 0) {
+      this.sites[from][fromIndex] = null;
+    }
+    await this.game.animationManager.play(
+      new BgaSlideAnimation({
+        element: this.ui.pawns[pawn.id],
+        transitionTimingFunction: 'ease-in-out',
+        fromRect,
+      })
+    );
+  }
+
+  updateToken(
+    type: keyof typeof this.ui.containers.tokens,
     value: string | number
   ) {
     let position: AbsolutePosition;
@@ -145,10 +197,10 @@ class Board {
     setAbsolutePosition(this.ui.containers.pawns[type], BOARD_SCALE, position);
   }
 
-  updatePawns(gamedatas: GamedatasAlias) {
-    // const { balance, debt, standing } = gamedatas.company;
-    // this.updatePawn('balance', balance);
-    // this.updatePawn('debt', debt);
+  updatePawns(pawns: MohoPawn[]) {
+    pawns.forEach((pawn) => {
+      this.placePawn(pawn);
+    });
   }
 
   //  .##.....##.########.####.##.......####.########.##....##
@@ -158,4 +210,41 @@ class Board {
   //  .##.....##....##.....##..##........##.....##.......##...
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
+
+  public pawnAlreadyOnSite(pawnId: string, location: string) {
+    return this.sites[location].some(
+      (pawn: MohoPawn | null) => pawn?.id === pawnId
+    );
+  }
+
+  public async placePawn(pawn: MohoPawn, fromElement?: HTMLElement) {
+    console.log('Placing pawn', pawn);
+    const { id, location } = pawn;
+    if (pawn.location === 'supply' || this.pawnAlreadyOnSite(id, location)) {
+      return;
+    }
+    if (!this.ui.pawns[id].parentElement) {
+      this.ui.containers.pawns.appendChild(this.ui.pawns[id]);
+    }
+
+    const nullIndex = (this.sites[location] as MohoPawn[]).findIndex(
+      (pos) => pos === null
+    );
+
+    const pawnIndex = nullIndex >= 0 ? nullIndex : this.sites[location].length;
+
+    const position = getPawnPosition(location, pawnIndex);
+    this.sites[location][pawnIndex] = pawn;
+    setAbsolutePosition(this.ui.pawns[id], BOARD_SCALE, position);
+
+    if (fromElement) {
+      await this.game.animationManager.play(
+        new BgaSlideAnimation({
+          element: this.ui.pawns[id],
+          transitionTimingFunction: 'ease-in-out',
+          fromRect: fromElement.getBoundingClientRect(),
+        })
+      );
+    }
+  }
 }
