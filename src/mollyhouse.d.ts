@@ -42,6 +42,7 @@ interface MollyHouseGamedatas extends Gamedatas {
   gossipPileCount: number;
   market: ViceCard[];
   pawns: Record<string,MohoPawn>;
+  safePile: ViceCardBase[]
 }
 
 interface MollyHousePlayerData extends BgaPlayer {

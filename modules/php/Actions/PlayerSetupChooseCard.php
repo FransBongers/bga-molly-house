@@ -125,9 +125,11 @@ class PlayerSetupChooseCard extends \Bga\Games\MollyHouse\Models\AtomicAction
     $pawn->place($player, SUIT_MOLLY_HOUSE_MAP[$card->getSuit()]);
 
     if ($card->isDesire()) {
+      $card->scoreJoy($player);
     }
 
     if ($card->isThreat()) {
+      $card->addToSafePile($player);
     }
   }
 }

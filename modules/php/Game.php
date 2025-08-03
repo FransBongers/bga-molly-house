@@ -271,7 +271,7 @@ class Game extends \Bga\GameFramework\Table
             'gossipPileCount' => ViceCards::countInLocation(GOSSIP_PILE),
             'market' => ViceCards::getMarket(),
             'pawns' => Pawns::getAll(),
-            
+            'safePile' => ViceCards::getInLocation(SAFE_PILE),
         ];
 
 

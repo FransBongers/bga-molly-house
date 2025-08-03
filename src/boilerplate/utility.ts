@@ -71,6 +71,10 @@ const updatePageTitle = (
     nonActivePlayers
   );
 
+const incScore = (playerId: number, value: number) => {
+  Interaction.use().game.framework().scoreCtrl[playerId].incValue(value);
+}
+
 const formatStringRecursive = (
   log: string,
   args: Record<string, unknown>

@@ -1,6 +1,6 @@
 class Interaction {
   private static instance: Interaction;
-  private game: GameAlias;
+  public game: GameAlias;
   private subscriptions: unknown[];
   private id: string;
 

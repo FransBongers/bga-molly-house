@@ -134,9 +134,9 @@ class Notifications
 
   protected static function tknPawn($pawn)
   {
-    return implode(':',[$pawn->getColor(), PAWN]);
+    return implode(':', [$pawn->getColor(), PAWN]);
   }
-  
+
   protected static function tknViceCard($card)
   {
     return $card->getId();
@@ -174,6 +174,19 @@ class Notifications
   // .##...###.##.....##....##.....##..##.......##....##
   // .##....##..#######.....##....####.##........######.
 
+
+  public static function addCardToSafePile($player, $card)
+  {
+    self::notifyAll('addCardToSafePile', clienttranslate('${player_name} adds ${tkn_boldText_cardValue} of ${tkn_suit} to the safe pile ${tkn_viceCard} '), [
+      'player' => $player,
+      'card' => $card,
+      'tkn_viceCard' => self::tknViceCard($card),
+      'tkn_boldText_cardValue' => self::viceCardValueText($card->getValue()),
+      'tkn_suit' => $card->getSuit(),
+      'i18n' => ['tkn_boldText_cardValue'],
+    ]);
+  }
+
   public static function movePawn($player, $pawn)
   {
     self::notifyAll('movePawn', clienttranslate('${player_name} moves ${tkn_pawn} to ${tkn_boldText_location}'), [
@@ -193,6 +206,16 @@ class Notifications
       'tkn_pawn' => self::tknPawn($player),
       'tkn_boldText_location' => Sites::get($pawn->getLocation())->getName(),
       'i18n' => ['tkn_boldText_location'],
+    ]);
+  }
+
+  public static function scoreJoy($player, $amount)
+  {
+    self::notifyAll('scoreJoy', clienttranslate('${player_name} scores ${tkn_boldText_amount} joy!'), [
+      'player' => $player,
+      'amount' => $amount,
+      'tkn_boldText_amount' => $amount,
+      'i18n' => ['tkn_boldText_amount'],
     ]);
   }
 

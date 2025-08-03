@@ -2,6 +2,9 @@
 
 namespace Bga\Games\MollyHouse\Models;
 
+use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
+use Bga\Games\MollyHouse\Managers\ViceCards;
+
 class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
 {
   protected $id;
@@ -75,8 +78,19 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
 
   }
 
-  public function addToSafePile($player)
+  public function addToSafePile($player, $notify = true)
   {
+    $state = ViceCards::insertOnTop($this->getId(), SAFE_PILE);
+    $this->location = SAFE_PILE;
+    $this->state = $state;
+    if (!$notify) {
+      return;
+    }
+    Notifications::addCardToSafePile($player, $this);
+  }
 
+  public function scoreJoy($player)
+  {
+    return;
   }
 }

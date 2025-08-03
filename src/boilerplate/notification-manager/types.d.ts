@@ -13,6 +13,10 @@ interface NotifWithPlayerArgs {
   player_name: string;
 }
 
+interface NotifAddCardToSafePile extends NotifWithPlayerArgs {
+  card: ViceCardBase;
+}
+
 interface NotifMovePawn extends NotifWithPlayerArgs {
   pawn: MohoPawn;
 }
@@ -21,11 +25,15 @@ interface NotifPlacePawn extends NotifWithPlayerArgs {
   pawn: MohoPawn;
 }
 
+interface NotifScoreJoy extends NotifWithPlayerArgs {
+  amount: number;
+}
+
 interface NotifSetupChooseCard extends NotifWithPlayerArgs {
   card: {
     id: string;
     hidden: boolean;
-  }
+  };
 }
 
 interface NotifSetupChooseCardPrivate extends NotifWithPlayerArgs {

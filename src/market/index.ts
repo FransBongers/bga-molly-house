@@ -4,6 +4,7 @@ class Market {
 
   public stock: SlotStock<ViceCard>;
   public deck: Deck<ViceCard>;
+  public safePile: Deck<ViceCard>;
 
   public ui: {
     container: HTMLElement;
@@ -52,11 +53,11 @@ class Market {
       // market_3: document.getElementById('moho-market-3'),
     };
 
-    this.setupDeck(gamedatas);
+    this.setupDecks(gamedatas);
     this.setupSlotStock(gamedatas);
   }
 
-  private setupDeck(gamedatas: GamedatasAlias) {
+  private setupDecks(gamedatas: GamedatasAlias) {
     this.deck = new Deck<ViceCard>(this.game.viceCardManager, this.ui.deck, {
       cardNumber: gamedatas.deckCount,
       thicknesses: [100],
@@ -65,6 +66,15 @@ class Market {
         position: 'center'
       }
     });
+    this.safePile = new Deck<ViceCard>(this.game.viceCardManager, this.ui.safePile, {
+      cardNumber: 0,
+      thicknesses: [100],
+      counter: {
+        show: true,
+        position: 'center'
+      }
+    });
+    this.updateSafePile(gamedatas);
   }
 
   private setupSlotStock(gamedatas: GamedatasAlias) {
@@ -99,6 +109,10 @@ class Market {
 
   private updateMarket(gamedatas: GamedatasAlias) {
     this.stock.addCards(gamedatas.market);
+  }
+
+  private updateSafePile(gamedatas: GamedatasAlias) {
+    this.safePile.addCards(Object.values(gamedatas.safePile).map((card) => getViceCard(card)));
   }
 
   //  .##.....##.########.####.##.......####.########.##....##

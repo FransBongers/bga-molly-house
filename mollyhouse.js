@@ -2129,8 +2129,10 @@ var NotificationManager = (function () {
         var notifs = [
             'log',
             'message',
+            'addCardToSafePile',
             'movePawn',
             'placePawn',
+            'scoreJoy',
             'setupChooseCardPrivate',
             'setupChooseCard',
             'setupRevealCard',
@@ -2188,6 +2190,22 @@ var NotificationManager = (function () {
             });
         });
     };
+    NotificationManager.prototype.notif_addCardToSafePile = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var card, market;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        card = notif.args.card;
+                        market = Market.getInstance();
+                        return [4, market.safePile.addCard(getViceCard(card))];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
     NotificationManager.prototype.notif_movePawn = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
             var _a, playerId, pawn;
@@ -2211,6 +2229,16 @@ var NotificationManager = (function () {
                         _b.sent();
                         return [2];
                 }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_scoreJoy = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, playerId, amount;
+            return __generator(this, function (_b) {
+                _a = notif.args, playerId = _a.playerId, amount = _a.amount;
+                incScore(playerId, amount);
+                return [2];
             });
         });
     };
@@ -2791,6 +2819,9 @@ var updatePageTitle = function (text, args, nonActivePlayers) {
     if (args === void 0) { args = {}; }
     if (nonActivePlayers === void 0) { nonActivePlayers = false; }
     return Interaction.use().clientUpdatePageTitle(text, Object.assign(args, { you: '${you}' }), nonActivePlayers);
+};
+var incScore = function (playerId, value) {
+    Interaction.use().game.framework().scoreCtrl[playerId].incValue(value);
 };
 var formatStringRecursive = function (log, args) {
     return Interaction.use().formatStringRecursive(log, args);
@@ -3596,10 +3627,10 @@ var Market = (function () {
             safePile: document.getElementById('moho-safe-pile'),
             deck: document.getElementById('moho-deck'),
         };
-        this.setupDeck(gamedatas);
+        this.setupDecks(gamedatas);
         this.setupSlotStock(gamedatas);
     };
-    Market.prototype.setupDeck = function (gamedatas) {
+    Market.prototype.setupDecks = function (gamedatas) {
         this.deck = new Deck(this.game.viceCardManager, this.ui.deck, {
             cardNumber: gamedatas.deckCount,
             thicknesses: [100],
@@ -3608,6 +3639,15 @@ var Market = (function () {
                 position: 'center'
             }
         });
+        this.safePile = new Deck(this.game.viceCardManager, this.ui.safePile, {
+            cardNumber: 0,
+            thicknesses: [100],
+            counter: {
+                show: true,
+                position: 'center'
+            }
+        });
+        this.updateSafePile(gamedatas);
     };
     Market.prototype.setupSlotStock = function (gamedatas) {
         this.stock = new SlotStock(this.game.viceCardManager, document.getElementById('moho-market-slots'), {
@@ -3622,6 +3662,9 @@ var Market = (function () {
     };
     Market.prototype.updateMarket = function (gamedatas) {
         this.stock.addCards(gamedatas.market);
+    };
+    Market.prototype.updateSafePile = function (gamedatas) {
+        this.safePile.addCards(Object.values(gamedatas.safePile).map(function (card) { return getViceCard(card); }));
     };
     return Market;
 }());

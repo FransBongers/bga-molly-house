@@ -152,8 +152,8 @@ $machinestates = [
 
     ST_PLAYER_TURN => GameStateBuilder::create()
         ->name(PLAYER_TURN)
-        ->description(clienttranslate('${actplayer} must play a card or pass'))
-        ->descriptionmyturn(clienttranslate('${you} must play a card or pass'))
+        ->description(clienttranslate('${actplayer} must perform an action'))
+        ->descriptionmyturn(clienttranslate('${you}'))
         ->type(StateType::ACTIVE_PLAYER)
         ->args('argsAtomicAction')
         ->possibleactions([
