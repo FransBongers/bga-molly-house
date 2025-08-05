@@ -215,11 +215,12 @@ class Notifications
     ]);
   }
 
-  public static function movePawn($player, $pawn)
+  public static function movePawn($player, $pawn, $from)
   {
     self::notifyAll('movePawn', clienttranslate('${player_name} moves ${tkn_pawn} to ${tkn_boldText_location}'), [
       'player' => $player,
       'pawn' => $pawn,
+      'from' => $from,
       'tkn_pawn' => self::tknPawn($player),
       'tkn_boldText_location' => Sites::get($pawn->getLocation())->getName(),
       'i18n' => ['tkn_boldText_location'],

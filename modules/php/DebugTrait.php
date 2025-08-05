@@ -27,7 +27,19 @@ trait DebugTrait
 
   function debug_test()
   {
-    Notifications::log('card', ViceCards::getCardFarthestFromViceDeck());
+    $pawnIndex = 1;
+
+    $steps = -3;
+
+    $highestIndex = count(SITES) - 1;
+    $toIndex = $pawnIndex + $steps;
+    if ($toIndex > $highestIndex) {
+      $toIndex = $toIndex - $highestIndex - 1;
+    } else if ($toIndex < 0) {
+      $toIndex = $highestIndex + $toIndex + 1;
+    }
+    Notifications::log('toIndex', $toIndex);
+
     // DieManager::rollDice(Players::get());
     // Pawns::setupNewGame();
     // Notifications::log('tradeRoute', TradeRoutes::getOrdersForTradeRoute(ORDER_BOMBAY_3, 16));

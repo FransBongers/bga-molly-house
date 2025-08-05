@@ -73,7 +73,7 @@ const updatePageTitle = (
 
 const incScore = (playerId: number, value: number) => {
   Interaction.use().game.framework().scoreCtrl[playerId].incValue(value);
-}
+};
 
 const formatStringRecursive = (
   log: string,
@@ -93,6 +93,23 @@ const setAbsolutePosition = (
   }
   elt.style.top = `calc(var(--${scaleVarName}) * ${top}px)`;
   elt.style.left = `calc(var(--${scaleVarName}) * ${left}px)`;
+};
+
+const setCalculatedValue = ({
+  elt,
+  scaleVarName,
+  value,
+  property,
+}: {
+  elt: HTMLElement;
+  scaleVarName: string;
+  value: number;
+  property: 'top' | 'left' | 'width' | 'height';
+}) => {
+  if (!elt) {
+    return;
+  }
+  elt.style[property] = `calc(var(--${scaleVarName}) * ${value}px)`;
 };
 
 const onClick = (

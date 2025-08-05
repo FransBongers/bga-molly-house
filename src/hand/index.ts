@@ -44,7 +44,6 @@ class Hand {
       }
     );
     const cards = this.game.gamedatas.players[this.game.getPlayerId()].hand;
-    console.log('cards', cards);
     this.handStock.addCards(cards);
   }
 

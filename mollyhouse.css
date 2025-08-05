@@ -542,6 +542,24 @@ body > .bga-dice_die {
   bottom: calc(var(--boardScale) * 0px);
 }
 
+.moho-select-box {
+  position: absolute;
+  display: none;
+}
+
+.moho-select-box.selectable {
+  cursor: pointer;
+  display: block;
+  outline: calc(var(--boardScale) * 4px) solid yellow !important;
+}
+
+.moho-select-box.selected,
+.moho-select-box.selectable:hover {
+  cursor: pointer;
+  display: block;
+  outline: calc(var(--boardScale) * 4px) solid blue !important;
+}
+
 #info-panel {
   display: flex;
   flex-direction: column;

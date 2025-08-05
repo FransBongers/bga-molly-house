@@ -142,7 +142,20 @@ class Board {
     });
   }
 
-  private setupSelectBoxes() {}
+  private setupSelectBoxes() {
+    SITES.forEach((site) => {
+      const elt = (this.ui.selectBoxes[site] =
+        document.createElement('div'));
+      elt.classList.add('moho-select-box');
+      elt.classList.add('moho-select-site');
+      elt.setAttribute('data-site', site);
+      const sitePosition = SITE_SELECT_POSITIONS[site];
+      setAbsolutePosition(elt, BOARD_SCALE, SITE_SELECT_POSITIONS[site]);
+      setCalculatedValue({elt, scaleVarName: BOARD_SCALE, value: sitePosition.width, property: 'width'});
+      setCalculatedValue({elt, scaleVarName: BOARD_SCALE, value: sitePosition.height, property: 'height'});
+      this.ui.containers.selectBoxes.appendChild(elt);
+    });
+  }
 
   // .##.....##.########..########.....###....########.########....##.....##.####
   // .##.....##.##.....##.##.....##...##.##......##....##..........##.....##..##.
@@ -231,7 +244,6 @@ class Board {
   }
 
   public async placePawn(pawn: MohoPawn, fromElement?: HTMLElement) {
-    console.log('Placing pawn', pawn);
     const { id, location } = pawn;
     if (pawn.location === 'supply' || this.pawnAlreadyOnSite(id, location)) {
       return;

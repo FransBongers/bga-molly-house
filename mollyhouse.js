@@ -2864,10 +2864,20 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_movePawn = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, pawn;
+            var _a, from, pawn, board;
             return __generator(this, function (_b) {
-                _a = notif.args, playerId = _a.playerId, pawn = _a.pawn;
-                return [2];
+                switch (_b.label) {
+                    case 0:
+                        _a = notif.args, from = _a.from, pawn = _a.pawn;
+                        board = Board.getInstance();
+                        return [4, board.movePawn({
+                                pawn: pawn,
+                                from: from,
+                            })];
+                    case 1:
+                        _b.sent();
+                        return [2];
+                }
             });
         });
     };
@@ -3514,6 +3524,13 @@ var setAbsolutePosition = function (elt, scaleVarName, _a) {
     elt.style.top = "calc(var(--".concat(scaleVarName, ") * ").concat(top, "px)");
     elt.style.left = "calc(var(--".concat(scaleVarName, ") * ").concat(left, "px)");
 };
+var setCalculatedValue = function (_a) {
+    var elt = _a.elt, scaleVarName = _a.scaleVarName, value = _a.value, property = _a.property;
+    if (!elt) {
+        return;
+    }
+    elt.style[property] = "calc(var(--".concat(scaleVarName, ") * ").concat(value, "px)");
+};
 var onClick = function (node, callback, temporary) {
     if (temporary === void 0) { temporary = true; }
     var element = typeof node === 'string' ? document.getElementById(node) : node;
@@ -3566,7 +3583,7 @@ var MollyHouse = (function () {
         this.states = {
             ConfirmPartialTurn: ConfirmPartialTurn,
             ConfirmTurn: ConfirmTurn,
-            PlayerTurn: PlayerTurn,
+            TakeAction: TakeAction,
             PlayerSetupChooseCard: PlayerSetupChooseCard,
             Indulge: Indulge,
             LieLow: LieLow,
@@ -3590,6 +3607,7 @@ var MollyHouse = (function () {
         this.gameOptions = gamedatas.gameOptions;
         debug('gamedatas', gamedatas);
         this.setupPlayerOrder(gamedatas.playerOrder);
+        debug('game', this);
         this._connections = [];
         Object.values(this.states).forEach(function (state) { return state.create(_this); });
         InfoPanel.create(this);
@@ -3902,7 +3920,7 @@ var MollyHouse = (function () {
     };
     return MollyHouse;
 }());
-var _a;
+var _a, _b;
 var getGroupPosition = function (top, left, index, rowSize) {
     var row = Math.floor(index / rowSize);
     var column = index % 4;
@@ -3939,6 +3957,24 @@ var getPawnPosition = function (location, index) {
     }
     return position;
 };
+var SITE_SELECT_POSITIONS = (_b = {},
+    _b[MOTHER_CLAPS] = { top: 25, left: 28, width: 319, height: 253 },
+    _b[ST_PAULS_CATHEDRAL] = { top: 25, left: 357, width: 185, height: 169 },
+    _b[NOBLE_STREET] = { top: 25, left: 552, width: 185, height: 169 },
+    _b[MOORFIELDS] = { top: 25, left: 747, width: 185, height: 169 },
+    _b[MISS_MUFFS] = { top: 25, left: 942, width: 319, height: 253 },
+    _b[ROYAL_EXCHANGE] = { top: 289, left: 1093, width: 168, height: 185 },
+    _b[LEADENHALL_STREET] = { top: 485, left: 1093, width: 168, height: 185 },
+    _b[LONDON_BRIDGE] = { top: 680, left: 1093, width: 168, height: 185 },
+    _b[SUKEY_BEVELLS] = { top: 875, left: 943, width: 319, height: 253 },
+    _b[OLD_ROUND_COURT] = { top: 959, left: 747, width: 185, height: 169 },
+    _b[CANNON_STREET] = { top: 959, left: 552, width: 185, height: 169 },
+    _b[ST_JAMESS_PARK] = { top: 959, left: 357, width: 185, height: 169 },
+    _b[JULIUS_CESAR_TAYLORS] = { top: 875, left: 28, width: 319, height: 253 },
+    _b[COVENT_GARDEN_PIAZZA] = { top: 680, left: 28, width: 168, height: 185 },
+    _b[DUKE_STREET] = { top: 485, left: 28, width: 168, height: 185 },
+    _b[LINCOLNS_INN_BOGHOUSE] = { top: 289, left: 28, width: 168, height: 185 },
+    _b);
 var Board = (function () {
     function Board(game) {
         this.sites = {};
@@ -4030,7 +4066,21 @@ var Board = (function () {
             _this.sites[site] = [];
         });
     };
-    Board.prototype.setupSelectBoxes = function () { };
+    Board.prototype.setupSelectBoxes = function () {
+        var _this = this;
+        SITES.forEach(function (site) {
+            var elt = (_this.ui.selectBoxes[site] =
+                document.createElement('div'));
+            elt.classList.add('moho-select-box');
+            elt.classList.add('moho-select-site');
+            elt.setAttribute('data-site', site);
+            var sitePosition = SITE_SELECT_POSITIONS[site];
+            setAbsolutePosition(elt, BOARD_SCALE, SITE_SELECT_POSITIONS[site]);
+            setCalculatedValue({ elt: elt, scaleVarName: BOARD_SCALE, value: sitePosition.width, property: 'width' });
+            setCalculatedValue({ elt: elt, scaleVarName: BOARD_SCALE, value: sitePosition.height, property: 'height' });
+            _this.ui.containers.selectBoxes.appendChild(elt);
+        });
+    };
     Board.prototype.moveToken = function (type, value) {
         return __awaiter(this, void 0, void 0, function () {
             var fromRect;
@@ -4103,7 +4153,6 @@ var Board = (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        console.log('Placing pawn', pawn);
                         id = pawn.id, location = pawn.location;
                         if (pawn.location === 'supply' || this.pawnAlreadyOnSite(id, location)) {
                             return [2];
@@ -4203,7 +4252,6 @@ var Hand = (function () {
             cardShift: 'calc(var(--cardScale) * 15px)',
         });
         var cards = this.game.gamedatas.players[this.game.getPlayerId()].hand;
-        console.log('cards', cards);
         this.handStock.addCards(cards);
     };
     Hand.prototype.updateFloatingHandScale = function () {
@@ -4306,6 +4354,9 @@ var getTokenDiv = function (_a) {
         default:
             return value;
     }
+};
+var tknPawn = function (pawn) {
+    return [pawn.color, 'pawn'].join(':');
 };
 var tlpLogTokenText = function (_a) {
     var text = _a.text, tooltipId = _a.tooltipId, _b = _a.italic, italic = _b === void 0 ? false : _b;
@@ -4500,37 +4551,37 @@ var tplPlayerCounters = function (_a) {
     var playerId = _a.playerId;
     return "\n<div id=\"moho-counters-".concat(playerId, "-row-1\" class=\"moho-counters-row\">\n\n</div>\n\n");
 };
-var PlayerTurn = (function () {
-    function PlayerTurn(game) {
+var TakeAction = (function () {
+    function TakeAction(game) {
         this.game = game;
     }
-    PlayerTurn.create = function (game) {
-        PlayerTurn.instance = new PlayerTurn(game);
+    TakeAction.create = function (game) {
+        TakeAction.instance = new TakeAction(game);
     };
-    PlayerTurn.getInstance = function () {
-        return PlayerTurn.instance;
+    TakeAction.getInstance = function () {
+        return TakeAction.instance;
     };
-    PlayerTurn.prototype.onEnteringState = function (args) {
-        debug('Entering PlayerTurn state');
+    TakeAction.prototype.onEnteringState = function (args) {
+        debug('Entering TakeAction state');
         this.args = args;
         this.updateInterfaceInitialStep();
     };
-    PlayerTurn.prototype.onLeavingState = function () {
-        debug('Leaving PlayerTurn state');
+    TakeAction.prototype.onLeavingState = function () {
+        debug('Leaving TakeAction state');
     };
-    PlayerTurn.prototype.setDescription = function (activePlayerIds, args) { };
-    PlayerTurn.prototype.updateInterfaceInitialStep = function () {
+    TakeAction.prototype.setDescription = function (activePlayerIds, args) { };
+    TakeAction.prototype.updateInterfaceInitialStep = function () {
         this.game.clearPossible();
         updatePageTitle(_('${you} may perform an action'), {});
     };
-    PlayerTurn.prototype.updateInterfaceConfirm = function () {
+    TakeAction.prototype.updateInterfaceConfirm = function () {
         clearPossible();
         updatePageTitle(_('Confirm ship placement'));
         addConfirmButton(function () {
-            performAction('actPlayerTurn', {});
+            performAction('actTakeAction', {});
         });
     };
-    return PlayerTurn;
+    return TakeAction;
 }());
 var PlayerSetupChooseCard = (function () {
     function PlayerSetupChooseCard(game) {
@@ -4655,6 +4706,13 @@ var StaticData = (function () {
         var data = this.staticData.viceCards[id];
         if (!data) {
             throw new Error('FE_ERROR_001');
+        }
+        return data;
+    };
+    StaticData.prototype.site = function (id) {
+        var data = this.staticData.sites[id];
+        if (!data) {
+            throw new Error('FE_ERROR_002');
         }
         return data;
     };
@@ -4834,15 +4892,31 @@ var MovePawn = (function () {
     };
     MovePawn.prototype.setDescription = function (activePlayerIds, args) { };
     MovePawn.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
         this.game.clearPossible();
-        updatePageTitle(_('${you} must select a site'), {});
-    };
-    MovePawn.prototype.updateInterfaceConfirm = function () {
-        clearPossible();
-        updatePageTitle(_('Confirm action'));
-        addConfirmButton(function () {
-            performAction('actMovePawn', {});
+        updatePageTitle(_('${you} must select a site to move ${tkn_pawn} to'), {
+            tkn_pawn: tknPawn(this.args.pawn)
         });
+        var board = Board.getInstance();
+        Object.entries(this.args.sites).forEach(function (_a) {
+            var siteId = _a[0], site = _a[1];
+            onClick(board.ui.selectBoxes[siteId], function () { return _this.updateInterfaceConfirm(site); });
+        });
+    };
+    MovePawn.prototype.updateInterfaceConfirm = function (site) {
+        clearPossible();
+        updatePageTitle(_('Move ${tkn_pawn} to ${site}?'), {
+            site: StaticData.get().site(site.id).name,
+            tkn_pawn: tknPawn(this.args.pawn)
+        });
+        var board = Board.getInstance();
+        setSelected(board.ui.selectBoxes[site.id]);
+        addConfirmButton(function () {
+            performAction('actMovePawn', {
+                siteId: site.id,
+            });
+        });
+        addCancelButton();
     };
     return MovePawn;
 }());

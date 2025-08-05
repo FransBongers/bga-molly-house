@@ -152,15 +152,15 @@ $machinestates = [
         ])
         ->build(),
 
-    ST_PLAYER_TURN => GameStateBuilder::create()
-        ->name(PLAYER_TURN)
+    ST_TAKE_ACTION => GameStateBuilder::create()
+        ->name(TAKE_ACTION)
         ->description(clienttranslate('${actplayer} must perform an action'))
         ->descriptionmyturn(clienttranslate('${you}'))
         ->type(StateType::ACTIVE_PLAYER)
         ->args('argsAtomicAction')
         ->possibleactions([
             // these actions are called from the front with bgaPerformAction, and matched to the function on the game.php file
-            'act' . PLAYER_TURN,
+            'act' . TAKE_ACTION,
             'actTakeAtomicAction',
         ])
         ->transitions([
@@ -265,7 +265,7 @@ $machinestates = [
         ->args('argsAtomicAction')
         ->possibleactions([
             'act' . MOVE_PAWN,
-            'actPass',
+            'actTakeAtomicAction',
         ])
         ->build(),
 ];

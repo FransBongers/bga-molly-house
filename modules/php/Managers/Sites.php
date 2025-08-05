@@ -7,7 +7,9 @@ class Sites extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
 {
   protected static $table = 'sites';
   protected static $prefix = 'site_';
-  protected static $customFields = [];
+  protected static $customFields = [
+    'raided_or_dangerous'
+  ];
   protected static $autoremovePrefix = false;
   protected static $autoreshuffle = false;
   protected static $autoIncrement = false;
@@ -59,6 +61,7 @@ class Sites extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
       $sites[$siteId] = [
         'id' => $siteId,
         'location' => 'board_'.$index,
+        'raided_or_dangerous' => 0,
       ];
     }
 

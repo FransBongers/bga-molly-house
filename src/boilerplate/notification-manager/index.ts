@@ -178,12 +178,17 @@ class NotificationManager {
 
   async notif_gainCubes(notif: Notif<NotifGainCubes>) {
     const { playerId, numberOfCubes } = notif.args;
-
-
   }
 
   async notif_movePawn(notif: Notif<NotifMovePawn>) {
-    const { playerId, pawn } = notif.args;
+    const { from, pawn } = notif.args;
+
+    const board = Board.getInstance();
+
+    await board.movePawn({
+      pawn,
+      from,
+    });
   }
 
   async notif_placePawn(notif: Notif<NotifPlacePawn>) {

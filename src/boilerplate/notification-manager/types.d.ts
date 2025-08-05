@@ -28,6 +28,7 @@ interface NotifGainCubes extends NotifWithPlayerArgs {
 
 interface NotifMovePawn extends NotifWithPlayerArgs {
   pawn: MohoPawn;
+  from: string;
 }
 
 interface NotifPlacePawn extends NotifWithPlayerArgs {

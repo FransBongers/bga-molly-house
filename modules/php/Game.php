@@ -267,6 +267,7 @@ class Game extends \Bga\GameFramework\Table
             'players' => Players::getUiData($playerId),
             'staticData' => [
                 'viceCards' => ViceCards::getStaticUiData(),
+                'sites' => Sites::getStaticUiData(),
             ],
             'deckCount' => ViceCards::countInLocation(DECK),
             'dice' => DieManager::getValues(),
@@ -274,6 +275,7 @@ class Game extends \Bga\GameFramework\Table
             'market' => ViceCards::getMarket(),
             'pawns' => Pawns::getAll(),
             'safePile' => ViceCards::getInLocation(SAFE_PILE),
+            'sites' => Sites::getAll(),
         ];
 
 

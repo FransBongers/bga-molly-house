@@ -31,4 +31,12 @@ class StaticData {
     }
     return data;
   }
+
+  public site(id: string): MohoSiteStaticData {
+    const data = this.staticData.sites[id];
+    if (!data) {
+      throw new Error('FE_ERROR_002');
+    }
+    return data;
+  }
 }

@@ -75,3 +75,32 @@
   background-position-x: 0%;
   bottom: calc(var(--boardScale) * 0px);
 }
+
+.moho-select-box {
+  position: absolute;
+  display: none;
+}
+
+.moho-select-box.selectable {
+  cursor: pointer;
+  display: block;
+  outline: calc(var(--boardScale) * 4px) solid base.$selectable-color !important;
+}
+
+
+// .moho-select-box.moho-select-site.selectable {
+//   outline: calc(var(--boardScale) * 8px) solid base.$selectable-color !important;
+// }
+
+
+.moho-select-box.selected,
+.moho-select-box.selectable:hover {
+  cursor: pointer;
+  display: block;
+  outline: calc(var(--boardScale) * 4px) solid base.$selected-color !important;
+}
+
+// .moho-select-box.selected,
+// .moho-select-box.selectable:hover {
+//   outline: calc(var(--boardScale) * 8px) solid base.$selected-color !important;
+// }

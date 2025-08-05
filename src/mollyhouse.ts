@@ -62,7 +62,7 @@ class MollyHouse implements Game {
   private states = {
     ConfirmPartialTurn,
     ConfirmTurn,
-    PlayerTurn,
+    TakeAction,
     PlayerSetupChooseCard,
     Indulge,
     LieLow,
@@ -106,6 +106,7 @@ class MollyHouse implements Game {
 
     debug('gamedatas', gamedatas);
     this.setupPlayerOrder(gamedatas.playerOrder);
+    debug('game', this);
 
     this._connections = [];
 

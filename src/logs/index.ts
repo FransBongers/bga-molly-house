@@ -29,7 +29,7 @@ const getTokenDiv = ({
     case LOG_TOKEN_BOLD_ITALIC_TEXT:
       return tlpLogTokenText({ text: value, italic: true });
     case LOG_TOKEN_DIE:
-      return tplLogTokenDie(value.split(':')[0])
+      return tplLogTokenDie(value.split(':')[0]);
     case LOG_TOKEN_NEW_LINE:
       return '<br class="moho-new-line">';
     case LOG_TOKEN_PAWN:
@@ -51,4 +51,8 @@ const getTokenDiv = ({
     default:
       return value;
   }
+};
+
+const tknPawn = (pawn: MohoPawn) => {
+  return [pawn.color, 'pawn'].join(':');
 };

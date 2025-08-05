@@ -46,7 +46,7 @@ trait TurnTrait
           'playerId' => $playerId,
         ],
         [
-          'action' => PLAYER_TURN,
+          'action' => TAKE_ACTION,
           'playerId' => $playerId,
         ],
       ],

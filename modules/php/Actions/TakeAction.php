@@ -11,11 +11,11 @@ use Bga\Games\MollyHouse\Game;
 use Bga\Games\MollyHouse\Managers\AtomicActions;
 
 
-class PlayerTurn extends \Bga\Games\MollyHouse\Models\AtomicAction
+class TakeAction extends \Bga\Games\MollyHouse\Models\AtomicAction
 {
   public function getState()
   {
-    return ST_PLAYER_TURN;
+    return ST_TAKE_ACTION;
   }
 
   // ....###....########...######....######.
@@ -27,7 +27,7 @@ class PlayerTurn extends \Bga\Games\MollyHouse\Models\AtomicAction
   // .##.....##.##.....##..######....######.
 
 
-  public function argsPlayerTurn()
+  public function argsTakeAction()
   {
     $info = $this->ctx->getInfo();
 
@@ -52,7 +52,7 @@ class PlayerTurn extends \Bga\Games\MollyHouse\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function actPassPlayerTurn()
+  public function actPassTakeAction()
   {
     $player = self::getPlayer();
     // Stats::incPassActionCount($player->getId(), 1);
@@ -60,9 +60,9 @@ class PlayerTurn extends \Bga\Games\MollyHouse\Models\AtomicAction
     $this->resolveAction(PASS);
   }
 
-  public function actPlayerTurn($args)
+  public function actTakeAction($args)
   {
-    self::checkAction('actPlayerTurn');
+    self::checkAction('actTakeAction');
 
 
 

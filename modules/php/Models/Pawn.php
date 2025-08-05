@@ -50,12 +50,18 @@ class Pawn extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     );
   }
 
-  public function move($location, $notify = true)
+  public function move($player, $location, $notify = true)
   {
+    $from = $this->getLocation();
     $this->setLocation($location);
     if (!$notify) {
       return;
     }
+    Notifications::movePawn(
+      $player,
+      $this,
+      $from,
+    );
   }
 
   public function getColor()
