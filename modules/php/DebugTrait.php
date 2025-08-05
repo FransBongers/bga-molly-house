@@ -10,6 +10,7 @@ use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 
 
 use Bga\Games\MollyHouse\Managers\AtomicActions;
+use Bga\Games\MollyHouse\Managers\DieManager;
 use Bga\Games\MollyHouse\Managers\IndictmentCards;
 use Bga\Games\MollyHouse\Managers\Items;
 use Bga\Games\MollyHouse\Managers\Pawns;
@@ -26,9 +27,11 @@ trait DebugTrait
 
   function debug_test()
   {
-    Pawns::setupNewGame();
+    Notifications::log('card', ViceCards::getCardFarthestFromViceDeck());
+    // DieManager::rollDice(Players::get());
+    // Pawns::setupNewGame();
     // Notifications::log('tradeRoute', TradeRoutes::getOrdersForTradeRoute(ORDER_BOMBAY_3, 16));
-    
+
 
   }
 

@@ -15,7 +15,8 @@
   "license": "MIT",
   "dependencies": {
     "bga-animations": "thoun/bga-animations#1.1.1",
-    "bga-cards": "thoun/bga-cards#3.1.1"
+    "bga-cards": "thoun/bga-cards#3.1.1",
+    "bga-dice": "thoun/bga-dice#0.0.1"
   },
   "devDependencies": {
     "sass": "^1.77.2",

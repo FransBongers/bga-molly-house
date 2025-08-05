@@ -3,6 +3,7 @@ const LOG_TOKEN_BOLD_ITALIC_TEXT = 'boldItalicText';
 const LOG_TOKEN_NEW_LINE = 'newLine';
 const LOG_TOKEN_PLAYER_NAME = 'playerName';
 // Game specific
+const LOG_TOKEN_DIE = 'die';
 const LOG_TOKEN_PAWN = 'pawn';
 const LOG_TOKEN_SUIT = 'suit';
 const LOG_TOKEN_VICE_CARD = 'viceCard';
@@ -27,6 +28,8 @@ const getTokenDiv = ({
       return tlpLogTokenText({ text: value });
     case LOG_TOKEN_BOLD_ITALIC_TEXT:
       return tlpLogTokenText({ text: value, italic: true });
+    case LOG_TOKEN_DIE:
+      return tplLogTokenDie(value.split(':')[0])
     case LOG_TOKEN_NEW_LINE:
       return '<br class="moho-new-line">';
     case LOG_TOKEN_PAWN:

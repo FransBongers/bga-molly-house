@@ -18,7 +18,7 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   protected $suit;
   protected $value;
   protected $joy;
-  protected $minPlayers = 2;
+  protected $minPlayers = 1;
 
   protected $attributes = [
     'id' => ['card_id', 'str'],
@@ -73,10 +73,16 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     return $this->type === THREAT;
   }
 
-  public function addToGossip($player)
+  public function addToGossip($player, $notify = true)
   {
-
+    $state = ViceCards::insertOnTop($this->getId(), GOSSIP_PILE);
+    $this->location = GOSSIP_PILE;
+    $this->state = $state;
+    if ($notify) {
+      Notifications::addCardToGossipPile($player, $this);
+    }
   }
+
 
   public function addToSafePile($player, $notify = true)
   {
@@ -92,5 +98,9 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   public function scoreJoy($player)
   {
     return;
+  }
+
+  public function getMostInfamousValue() {
+    return $this->value;
   }
 }

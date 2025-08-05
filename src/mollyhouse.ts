@@ -56,6 +56,7 @@ class MollyHouse implements Game {
   public loadingComplete: boolean = false;
 
   // Card managers
+  public diceManager: MollyHouseDiceManager;
   public viceCardManager: ViceCardManager;
 
   private states = {
@@ -63,6 +64,12 @@ class MollyHouse implements Game {
     ConfirmTurn,
     PlayerTurn,
     PlayerSetupChooseCard,
+    Indulge,
+    LieLow,
+    Accuse,
+    Cruise,
+    Shop,
+    MovePawn,
   };
 
   constructor() {
@@ -119,6 +126,7 @@ class MollyHouse implements Game {
     });
 
     StaticData.create(this);
+    this.diceManager = new MollyHouseDiceManager(this);
     this.viceCardManager = new ViceCardManager(this);
     Interaction.create(this);
     PlayerManager.create(this);

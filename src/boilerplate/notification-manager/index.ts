@@ -61,13 +61,17 @@ class NotificationManager {
       'log',
       'message',
       // Game specific
+      'addCardToGossipPile',
       'addCardToSafePile',
+      'gainCubes',
       'movePawn',
       'placePawn',
+      'rollDice',
       'scoreJoy',
       'setupChooseCardPrivate',
       'setupChooseCard',
       'setupRevealCard',
+      'startOfTurn',
     ];
 
     // example: https://github.com/thoun/knarr/blob/main/src/knarr.ts
@@ -158,11 +162,24 @@ class NotificationManager {
     // Only here so messages get displayed in title bar
   }
 
+  async notif_addCardToGossipPile(notif: Notif<NotifAddCardToGossipPile>) {
+    const { card } = notif.args;
+
+    const board = Board.getInstance();
+    await board.gossipPile.addCard(getViceCard(card));
+  }
+
   async notif_addCardToSafePile(notif: Notif<NotifAddCardToSafePile>) {
     const { card } = notif.args;
 
     const market = Market.getInstance();
     await market.safePile.addCard(getViceCard(card));
+  }
+
+  async notif_gainCubes(notif: Notif<NotifGainCubes>) {
+    const { playerId, numberOfCubes } = notif.args;
+
+
   }
 
   async notif_movePawn(notif: Notif<NotifMovePawn>) {
@@ -180,6 +197,16 @@ class NotificationManager {
       pawn,
       document.getElementById(`player_board_${playerId}`)
     );
+  }
+
+  async notif_rollDice(notif: Notif<NotifRollDice>) {
+    const { diceResults } = notif.args;
+
+    Board.getInstance().diceStock.rollDice(getDice(diceResults), {
+      effect: 'rollIn',
+      duration: [800, 1200],
+    });
+    await sleep(1200);
   }
 
   async notif_scoreJoy(notif: Notif<NotifScoreJoy>) {
@@ -206,4 +233,6 @@ class NotificationManager {
     const { playerId, card } = notif.args;
     this.game.viceCardManager.updateCardInformations(getViceCard(card));
   }
+
+  async notif_startOfTurn(notif: Notif<NotifStartOfTurn>) {}
 }

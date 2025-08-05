@@ -10,10 +10,14 @@
   height: calc(var(--cardScale) * 180px);
   width: 100%;
   z-index: 2;
+  pointer-events: none;
+
+  .moho-vice-card {
+    pointer-events: auto;
+  }
 
   .moho-vice-card:hover {
     transform: translateY(-20px) scale(1.1);
     transition: transform 0.2s ease-in-out;
   }
 }
-

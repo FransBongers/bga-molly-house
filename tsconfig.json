@@ -29,6 +29,11 @@
     "node_modules/bga-cards/src/stocks/void-stock.ts",
     "node_modules/bga-cards/src/sort.ts",
     "node_modules/bga-cards/src/card-manager.ts",
+    "node_modules/bga-dice/src/dice-manager.ts",
+    "node_modules/bga-dice/src/die.ts",
+    "node_modules/bga-dice/src/dice/die6.ts",
+    "node_modules/bga-dice/src/stocks/dice-stock.ts",
+    "node_modules/bga-dice/src/stocks/line-stock.ts",
     "src/animations.ts",
     "src/boilerplate/constants.ts",
     "src/boilerplate/counter.d.ts",
@@ -49,6 +54,7 @@
     "src/boilerplate/states/ConfirmTurn.ts",
     "src/boilerplate/states/types.d.ts",
     "src/boilerplate/utility.ts",
+    "src/dice-manager/index.ts",
     "src/mollyhouse.ts",
     "src/mollyhouse.d.ts",
     "src/board/config.ts",
@@ -67,8 +73,15 @@
     "src/player-manager/templates.ts",
     "src/states/PlayerTurn.ts",
     "src/states/PlayerSetupChooseCard.ts",
+    "src/states/Indulge.ts",
+    "src/states/LieLow.ts",
     "src/static-data/index.ts",
     "src/templates.ts",
-    "src/utility.ts"
+    "src/utility.ts",
+    "src/states/Accuse.ts",
+    "src/states/Cruise.ts",
+    "src/states/Shop.ts",
+    "src/states/ThrowFestivity.ts",
+    "src/states/MovePawn.ts"
   ]
 }

@@ -25,6 +25,9 @@ const tplLogTokenPlayerName = ({
 
 /* ------- GAME SPECIFIC LOG TOKENS ------- */
 
+const tplLogTokenDie = (dieFace: string) =>
+  `<div class="log-token bga-dice_die-face" data-face="${dieFace}"></div>`;
+
 const tplLogTokenPawn = (color: string) =>
   `<div class="log-token moho-pawn" data-color="${color}"></div>`;
 

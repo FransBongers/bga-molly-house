@@ -2,6 +2,7 @@
 
 namespace Bga\Games\MollyHouse\Models;
 
+use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
 use Bga\Games\MollyHouse\Boilerplate\Core\Preferences;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 use Bga\Games\MollyHouse\Managers\Pawns;
@@ -83,5 +84,29 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   public function getColor()
   {
     return $this->hexColorMap[$this->getHexColor()];
+  }
+
+  public function expose($card)
+  {
+    $suit = $card->getSuit();
+    Notifications::message(
+      clienttranslate('${player} is exposed by ${tkn_boldText_cardValue} of ${tkn_suit}'),
+      [
+        'player' => $this,
+        'tkn_boldText_cardValue' => Notifications::viceCardValueText($card->getValue()),
+        'tkn_suit' => $suit,
+      ],
+    );
+
+    $reputation = $this->getReputation();
+    $numberOfCubes = 0;
+    foreach($reputation as $viceCard) {
+      if ($viceCard->getSuit() !== $suit) {
+        continue;
+      }
+      $numberOfCubes += 1;
+      $viceCard->addToGossip($this);
+    }
+    Notifications::gainCubes($this, $suit, $numberOfCubes);
   }
 }

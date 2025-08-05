@@ -56,6 +56,8 @@ use Bga\GameFramework\StateType;
 
 
 $machinestates = [
+    98 => GameStateBuilder::endScore()->build(),
+
     // .########.##....##..######...####.##....##.########
     // .##.......###...##.##....##...##..###...##.##......
     // .##.......####..##.##.........##..####..##.##......
@@ -167,17 +169,103 @@ $machinestates = [
         ])
         ->build(),
 
-    // 3 => GameStateBuilder::create()
-    //     ->name('nextPlayer')
-    //     ->description('')
-    //     ->type(StateType::GAME)
-    //     ->action('stNextPlayer')
-    //     ->updateGameProgression(true)
-    //     ->transitions([
-    //         'endScore' => 98, 
-    //         'nextPlayer' => 2,
-    //     ])
-    //     ->build(),
+    ST_ROLL_DICE => GameStateBuilder::create()
+        ->name(ROLL_DICE)
+        ->description('')
+        ->type(StateType::GAME)
+        ->action('stAtomicAction')
+        ->build(),
 
-    98 => GameStateBuilder::endScore()->build(),
+    ST_RESOLVE_MARKET_DISCARD => GameStateBuilder::create()
+        ->name(RESOLVE_MARKET_DISCARD)
+        ->description('')
+        ->type(StateType::GAME)
+        ->action('stAtomicAction')
+        ->build(),
+
+    ST_INDULGE => GameStateBuilder::create()
+        ->name(INDULGE)
+        ->description(clienttranslate('${actplayer} must indulge or pass'))
+        ->descriptionmyturn(clienttranslate('${you} must indulge or pass'))
+        ->type(StateType::ACTIVE_PLAYER)
+        ->args('argsAtomicAction')
+        ->possibleactions([
+            // these actions are called from the front with bgaPerformAction, and matched to the function on the game.php file
+            'act' . INDULGE,
+            'actPass',
+        ])
+        ->build(),
+
+    ST_LIE_LOW => GameStateBuilder::create()
+        ->name(LIE_LOW)
+        ->description(clienttranslate('${actplayer} must lie low or pass'))
+        ->descriptionmyturn(clienttranslate('${you} must indulge or pass'))
+        ->type(StateType::ACTIVE_PLAYER)
+        ->args('argsAtomicAction')
+        ->possibleactions([
+            // these actions are called from the front with bgaPerformAction, and matched to the function on the game.php file
+            'act' . LIE_LOW,
+            'actPass',
+        ])
+        ->build(),
+
+    ST_ACCUSE => GameStateBuilder::create()
+        ->name(ACCUSE)
+        ->description(clienttranslate('${actplayer} must accuse or pass'))
+        ->descriptionmyturn(clienttranslate('${you} must accuse or pass'))
+        ->type(StateType::ACTIVE_PLAYER)
+        ->args('argsAtomicAction')
+        ->possibleactions([
+            'act' . ACCUSE,
+            'actPass',
+        ])
+        ->build(),
+
+    ST_CRUISE => GameStateBuilder::create()
+        ->name(CRUISE)
+        ->description(clienttranslate('${actplayer} is cruising'))
+        ->descriptionmyturn(clienttranslate('${you} are cruising'))
+        ->type(StateType::ACTIVE_PLAYER)
+        ->args('argsAtomicAction')
+        ->possibleactions([
+            'act' . CRUISE,
+            'actPass',
+        ])
+        ->build(),
+
+    ST_SHOP => GameStateBuilder::create()
+        ->name(SHOP)
+        ->description(clienttranslate('${actplayer} is shopping'))
+        ->descriptionmyturn(clienttranslate('${you} are shopping'))
+        ->type(StateType::ACTIVE_PLAYER)
+        ->args('argsAtomicAction')
+        ->possibleactions([
+            'act' . SHOP,
+            'actPass',
+        ])
+        ->build(),
+
+    ST_THROW_FESTIVITY => GameStateBuilder::create()
+        ->name(THROW_FESTIVITY)
+        ->description(clienttranslate('${actplayer} must throw a festivity'))
+        ->descriptionmyturn(clienttranslate('${you} must throw a festivity'))
+        ->type(StateType::ACTIVE_PLAYER)
+        ->args('argsAtomicAction')
+        ->possibleactions([
+            'actThrow' . THROW_FESTIVITY,
+            'actPass',
+        ])
+        ->build(),
+
+    ST_MOVE_PAWN => GameStateBuilder::create()
+        ->name(MOVE_PAWN)
+        ->description(clienttranslate('${actplayer} must move their pawn'))
+        ->descriptionmyturn(clienttranslate('${you}'))
+        ->type(StateType::ACTIVE_PLAYER)
+        ->args('argsAtomicAction')
+        ->possibleactions([
+            'act' . MOVE_PAWN,
+            'actPass',
+        ])
+        ->build(),
 ];

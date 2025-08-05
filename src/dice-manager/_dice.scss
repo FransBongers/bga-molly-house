@@ -1,0 +1,27 @@
+.bga-dice_die-face {
+  // width: calc(var(--iconScale) * 50px);
+  // height: calc(var(--iconScale) * 50px);
+  background-image: url('img/die.jpg');
+  background-size: 600% 100%;
+  background-repeat: no-repeat;
+  border: 1px solid black;
+}
+
+.bga-dice_die-face[data-face='1'] {
+  background-position-x: 0%;
+}
+.bga-dice_die-face[data-face='2'] {
+  background-position-x: 20%;
+}
+.bga-dice_die-face[data-face='3'] {
+  background-position-x: 40%;
+}
+.bga-dice_die-face[data-face='4'] {
+  background-position-x: 60%;
+}
+.bga-dice_die-face[data-face='5'] {
+  background-position-x: 80%;
+}
+.bga-dice_die-face[data-face='6'] {
+  background-position-x: 100%;
+}

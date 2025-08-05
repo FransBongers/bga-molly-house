@@ -17,4 +17,8 @@ class DesireCard extends \Bga\Games\MollyHouse\Models\ViceCard
     $player->incScore($this->getJoy());
     Notifications::scoreJoy($player, $this->getJoy());
   }
+
+  public function getMostInfamousValue() {
+    return 10;
+  }
 }

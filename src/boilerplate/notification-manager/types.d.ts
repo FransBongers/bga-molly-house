@@ -13,8 +13,17 @@ interface NotifWithPlayerArgs {
   player_name: string;
 }
 
+interface NotifAddCardToGossipPile extends NotifWithPlayerArgs {
+  card: ViceCardBase;
+}
+
 interface NotifAddCardToSafePile extends NotifWithPlayerArgs {
   card: ViceCardBase;
+}
+
+interface NotifGainCubes extends NotifWithPlayerArgs {
+  suit: Suit;
+  numberOfCubes: number;
 }
 
 interface NotifMovePawn extends NotifWithPlayerArgs {
@@ -23,6 +32,10 @@ interface NotifMovePawn extends NotifWithPlayerArgs {
 
 interface NotifPlacePawn extends NotifWithPlayerArgs {
   pawn: MohoPawn;
+}
+
+interface NotifRollDice extends NotifWithPlayerArgs {
+  diceResults: number[];
 }
 
 interface NotifScoreJoy extends NotifWithPlayerArgs {
@@ -43,3 +56,5 @@ interface NotifSetupChooseCardPrivate extends NotifWithPlayerArgs {
 interface NotifSetupRevealCard extends NotifWithPlayerArgs {
   card: ViceCardBase;
 }
+
+interface NotifStartOfTurn extends NotifWithPlayerArgs {}

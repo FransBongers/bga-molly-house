@@ -19,3 +19,12 @@ const getViceCardValueText = (value: string | number): string => {
       return String(value);
   }
 };
+
+const getDice = (diceValues: number[]): BgaDie[] => {
+  const dice = diceValues.map((faceIndex, id) => ({
+    id,
+    face: faceIndex + 1,
+    type: 0,
+  }));
+  return dice;
+};

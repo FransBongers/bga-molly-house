@@ -1,31 +1,31 @@
-interface OnEnteringPlayerTurnArgs extends CommonStateArgs {}
+interface OnEnteringLieLowArgs extends CommonStateArgs {}
 
-class PlayerTurn implements State {
-  private static instance: PlayerTurn;
-  private args: OnEnteringPlayerTurnArgs;
+class LieLow implements State {
+  private static instance: LieLow;
+  private args: OnEnteringLieLowArgs;
 
   constructor(private game: GameAlias) {}
 
   public static create(game: GameAlias) {
-    PlayerTurn.instance = new PlayerTurn(game);
+    LieLow.instance = new LieLow(game);
   }
 
   public static getInstance() {
-    return PlayerTurn.instance;
+    return LieLow.instance;
   }
 
-  onEnteringState(args: OnEnteringPlayerTurnArgs) {
-    debug('Entering PlayerTurn state');
+  onEnteringState(args: OnEnteringLieLowArgs) {
+    debug('Entering LieLow state');
     this.args = args;
 
     this.updateInterfaceInitialStep();
   }
 
   onLeavingState() {
-    debug('Leaving PlayerTurn state');
+    debug('Leaving LieLow state');
   }
 
-  setDescription(activePlayerIds: number, args: OnEnteringPlayerTurnArgs) {}
+  setDescription(activePlayerIds: number, args: OnEnteringLieLowArgs) {}
 
   //  .####.##....##.########.########.########..########....###.....######..########
   //  ..##..###...##....##....##.......##.....##.##.........##.##...##....##.##......
@@ -47,41 +47,19 @@ class PlayerTurn implements State {
     this.game.clearPossible();
 
     updatePageTitle(_('${you} may perform an action'), {});
-
-    // addPrimaryActionButton({
-    //   id: 'continue_btn',
-    //   text: _('Roll dice'),
-    //   callback: async () => {
-    //     console.log('Shuffling gossip pile');
-
-    //     const dice = [
-    //       {
-    //         type: '0',
-    //         id: 'die1',
-    //         face: 6,
-    //       },
-    //     ];
-
-    //     Board.getInstance().diceStock.rollDice(dice, {
-    //       effect: 'rollIn',
-    //       duration: [800, 1200],
-    //     });
-    //     await sleep(1200);
-    //   },
-    // });
   }
 
   private updateInterfaceConfirm() {
     clearPossible();
 
-    updatePageTitle(_('Confirm ship placement'));
+    updatePageTitle(_('Confirm action'));
 
     addConfirmButton(() => {
-      performAction('actPlayerTurn', {});
+      performAction('actLieLow', {});
     });
   }
 
-  //  .##.....##.########.####.##.......####.########.##....##
+    //  .##.....##.########.####.##.......####.########.##....##
   //  .##.....##....##.....##..##........##.....##.....##..##.
   //  .##.....##....##.....##..##........##.....##......####..
   //  .##.....##....##.....##..##........##.....##.......##...

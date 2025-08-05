@@ -2,6 +2,7 @@ class Board {
   private static instance: Board;
   private game: GameAlias;
 
+  public diceStock: LineDiceStock;
   public gossipPile: Deck<ViceCard>;
 
   public ui: {
@@ -65,12 +66,24 @@ class Board {
 
     this.setupGossipPile(gamedatas);
     this.setupHouseRaidedMarkers();
-    
+
+    this.setupDiceStock(gamedatas);
     this.setupSelectBoxes();
     this.setupSites();
     // Needs to happen aftert setupSites, as it uses the sites
     this.setupPawns(gamedatas);
     this.setupTokens(gamedatas);
+  }
+
+  private setupDiceStock(gamedatas: GamedatasAlias) {
+    this.diceStock = new LineDiceStock(
+      this.game.diceManager,
+      document.getElementById(`moho-dice-stock`),
+      { gap: 'calc(var(--boardScale) * 32px)' }
+    );
+    document.getElementById(`moho-dice-stock`).dataset.place = `${1}`;
+
+    this.diceStock.addDice(getDice(gamedatas.dice));
   }
 
   private setupGossipPile(gamedatas: GamedatasAlias) {

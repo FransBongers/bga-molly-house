@@ -10,8 +10,17 @@ class AtomicActions
 {
   // Mapping of actionId and corresponding class
   static $classes = [
+    ACCUSE => ACCUSE,
+    INDULGE => INDULGE,
     PLAYER_SETUP_CHOOSE_CARD => PLAYER_SETUP_CHOOSE_CARD,
     PLAYER_TURN => PLAYER_TURN,
+    LIE_LOW => LIE_LOW,
+    CRUISE => CRUISE,
+    ROLL_DICE => ROLL_DICE,
+    SHOP => SHOP,
+    THROW_FESTIVITY => THROW_FESTIVITY,
+    RESOLVE_MARKET_DISCARD => RESOLVE_MARKET_DISCARD,
+    MOVE_PAWN => MOVE_PAWN,
   ];
 
   public static function get($actionId, $ctx = null)

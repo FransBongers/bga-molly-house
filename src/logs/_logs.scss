@@ -118,6 +118,11 @@ span[style*='color:#c0c0c0'] {
   .moho-pawn {
     --iconScale: 0.4;
   }
+
+  .bga-dice_die-face {
+    width: 40px;
+    height: 40px;
+  }
 }
 
 .log > .roundedbox,
@@ -133,5 +138,27 @@ span[style*='color:#c0c0c0'] {
 
   .moho-pawn {
     --iconScale: 0.4;
+  }
+
+  .bga-dice_die-face {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+.notif_startOfTurn {
+  .roundedboxinner,
+  .roundedbox {
+    // background-color: base.$light-blue;
+    // background-color: rgb(1, 97, 140);
+    font-weight: bold;
+    text-align: center;
+  }
+}
+
+.notif_startOfTurn {
+  .roundedbox {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
   }
 }

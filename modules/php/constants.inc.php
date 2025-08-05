@@ -11,16 +11,50 @@ const SUPPLY = 'supply';
 const PAWN = 'pawn';
 
 /**
+ * Dice
+ */
+const SINGLE_BOOT = 'singleBoot';
+const DOUBLE_BOOT = 'doubleBoot';
+const MARKET_DISCARD = 'marketDiscard';
+
+const DIE_FACES = [
+  SINGLE_BOOT,
+  SINGLE_BOOT,
+  DOUBLE_BOOT,
+  MARKET_DISCARD,
+  SINGLE_BOOT,
+  DOUBLE_BOOT,
+];
+
+/**
  * Game states
  */
 const ST_PLAYER_SETUP_CHOOSE_CARD = 3;
 const ST_PLAYER_TURN = 4;
+const ST_INDULGE = 5;
+const ST_LIE_LOW = 6;
+const ST_ACCUSE = 7;
+const ST_CRUISE = 8;
+const ST_SHOP = 9;
+const ST_THROW_FESTIVITY = 10;
+const ST_ROLL_DICE = 11;
+const ST_RESOLVE_MARKET_DISCARD = 12;
+const ST_MOVE_PAWN = 13;
 
 /**
  * Game state names
  */
 const PLAYER_SETUP_CHOOSE_CARD = 'PlayerSetupChooseCard';
 const PLAYER_TURN = 'PlayerTurn';
+const INDULGE = 'Indulge';
+const LIE_LOW = 'LieLow';
+const ACCUSE = 'Accuse';
+const CRUISE = 'Cruise';
+const SHOP = 'Shop';
+const THROW_FESTIVITY = 'ThrowFestivity';
+const ROLL_DICE = 'RollDice';
+const RESOLVE_MARKET_DISCARD = 'ResolveMarketDiscard';
+const MOVE_PAWN = 'MovePawn';
 
 /**
  * Card types

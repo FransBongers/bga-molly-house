@@ -1,31 +1,31 @@
-interface OnEnteringPlayerTurnArgs extends CommonStateArgs {}
+interface OnEnteringShopArgs extends CommonStateArgs {}
 
-class PlayerTurn implements State {
-  private static instance: PlayerTurn;
-  private args: OnEnteringPlayerTurnArgs;
+class Shop implements State {
+  private static instance: Shop;
+  private args: OnEnteringShopArgs;
 
   constructor(private game: GameAlias) {}
 
   public static create(game: GameAlias) {
-    PlayerTurn.instance = new PlayerTurn(game);
+    Shop.instance = new Shop(game);
   }
 
   public static getInstance() {
-    return PlayerTurn.instance;
+    return Shop.instance;
   }
 
-  onEnteringState(args: OnEnteringPlayerTurnArgs) {
-    debug('Entering PlayerTurn state');
+  onEnteringState(args: OnEnteringShopArgs) {
+    debug('Entering Shop state');
     this.args = args;
 
     this.updateInterfaceInitialStep();
   }
 
   onLeavingState() {
-    debug('Leaving PlayerTurn state');
+    debug('Leaving Shop state');
   }
 
-  setDescription(activePlayerIds: number, args: OnEnteringPlayerTurnArgs) {}
+  setDescription(activePlayerIds: number, args: OnEnteringShopArgs) {}
 
   //  .####.##....##.########.########.########..########....###.....######..########
   //  ..##..###...##....##....##.......##.....##.##.........##.##...##....##.##......
@@ -47,37 +47,15 @@ class PlayerTurn implements State {
     this.game.clearPossible();
 
     updatePageTitle(_('${you} may perform an action'), {});
-
-    // addPrimaryActionButton({
-    //   id: 'continue_btn',
-    //   text: _('Roll dice'),
-    //   callback: async () => {
-    //     console.log('Shuffling gossip pile');
-
-    //     const dice = [
-    //       {
-    //         type: '0',
-    //         id: 'die1',
-    //         face: 6,
-    //       },
-    //     ];
-
-    //     Board.getInstance().diceStock.rollDice(dice, {
-    //       effect: 'rollIn',
-    //       duration: [800, 1200],
-    //     });
-    //     await sleep(1200);
-    //   },
-    // });
   }
 
   private updateInterfaceConfirm() {
     clearPossible();
 
-    updatePageTitle(_('Confirm ship placement'));
+    updatePageTitle(_('Confirm action'));
 
     addConfirmButton(() => {
-      performAction('actPlayerTurn', {});
+      performAction('actShop', {});
     });
   }
 

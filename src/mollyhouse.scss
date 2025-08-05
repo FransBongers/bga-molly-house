@@ -8,11 +8,13 @@
  * -----
  */
 
- @use '../node_modules/bga-cards/bga-cards';
+@use '../node_modules/bga-cards/bga-cards';
+@use '../node_modules/bga-dice/bga-dice';
 @use './base';
 @use './board/board';
 @use './boilerplate/default';
 @use './card-managers/cards';
+@use './dice-manager/dice';
 @use './hand/hand';
 @use './market//market';
 @use './player-manager/playerBoard';
@@ -40,7 +42,6 @@ html {
 }
 
 #left-column {
-
 }
 
 #right-column {

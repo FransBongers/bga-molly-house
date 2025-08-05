@@ -132,6 +132,11 @@ class Notifications
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
+  protected static function tknDie($die)
+  {
+    return implode(':', [$die + 1, DIE_FACES[$die]]);
+  }
+
   protected static function tknPawn($pawn)
   {
     return implode(':', [$pawn->getColor(), PAWN]);
@@ -142,7 +147,7 @@ class Notifications
     return $card->getId();
   }
 
-  protected static function viceCardValueText($value)
+  public static function viceCardValueText($value)
   {
     switch ($value) {
       case 'Q':
@@ -187,6 +192,29 @@ class Notifications
     ]);
   }
 
+  public static function addCardToGossipPile($player, $card)
+  {
+    self::notifyAll('addCardToGossipPile', clienttranslate('${player_name} adds ${tkn_boldText_cardValue} of ${tkn_suit} to the gossip pile ${tkn_viceCard} '), [
+      'player' => $player,
+      'card' => $card,
+      'tkn_viceCard' => self::tknViceCard($card),
+      'tkn_boldText_cardValue' => self::viceCardValueText($card->getValue()),
+      'tkn_suit' => $card->getSuit(),
+      'i18n' => ['tkn_boldText_cardValue'],
+    ]);
+  }
+
+  public static function gainCubes($player, $suit, $numberOfCubes)
+  {
+    self::notifyAll('gainCubes', clienttranslate('${player_name} gains ${tkn_boldText_numberOfCubes} cube(s) of ${tkn_suit}'), [
+      'player' => $player,
+      'suit' => $suit,
+      'numberOfCubes' => $numberOfCubes,
+      'tkn_boldText_numberOfCubes' => $numberOfCubes,
+      'tkn_suit' => $suit,
+    ]);
+  }
+
   public static function movePawn($player, $pawn)
   {
     self::notifyAll('movePawn', clienttranslate('${player_name} moves ${tkn_pawn} to ${tkn_boldText_location}'), [
@@ -206,6 +234,16 @@ class Notifications
       'tkn_pawn' => self::tknPawn($player),
       'tkn_boldText_location' => Sites::get($pawn->getLocation())->getName(),
       'i18n' => ['tkn_boldText_location'],
+    ]);
+  }
+
+  public static function rollDice($player, $diceResults)
+  {
+    self::notifyAll('rollDice', clienttranslate('${player_name} rolls ${tkn_die_0}${tkn_die_1}'), [
+      'player' => $player,
+      'diceResults' => $diceResults,
+      'tkn_die_0' => self::tknDie($diceResults[0]),
+      'tkn_die_1' => self::tknDie($diceResults[1])
     ]);
   }
 
@@ -250,6 +288,13 @@ class Notifications
       'tkn_suit' => $card->getSuit(),
       'you' => '${you}',
       'i18n' => ['tkn_boldText_cardValue'],
+    ]);
+  }
+
+  public static function startOfTurn($player)
+  {
+    self::notifyAll('startOfTurn', clienttranslate('${player_name} starts their turn'), [
+      'player' => $player,
     ]);
   }
 }

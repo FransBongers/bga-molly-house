@@ -1551,6 +1551,633 @@ var CardManager = (function () {
     };
     return CardManager;
 }());
+var DiceManager = (function () {
+    function DiceManager(game, settings) {
+        var _this = this;
+        var _a;
+        this.game = game;
+        this.settings = settings;
+        this.stocks = [];
+        this.registeredDieTypes = [];
+        this.animationManager = (_a = settings.animationManager) !== null && _a !== void 0 ? _a : new AnimationManager(game);
+        if (settings.dieTypes) {
+            Object.entries(settings.dieTypes).forEach(function (entry) { return _this.setDieType(entry[0], entry[1]); });
+        }
+    }
+    DiceManager.prototype.animationsActive = function () {
+        return this.animationManager.animationsActive();
+    };
+    DiceManager.prototype.addStock = function (stock) {
+        this.stocks.push(stock);
+    };
+    DiceManager.prototype.setDieType = function (type, dieType) {
+        this.registeredDieTypes[type] = dieType;
+    };
+    DiceManager.prototype.getDieType = function (die) {
+        return this.registeredDieTypes[die.type];
+    };
+    DiceManager.prototype.getId = function (die) {
+        return "bga-die-".concat(die.type, "-").concat(die.id);
+    };
+    DiceManager.prototype.createDieElement = function (die) {
+        var _a, _b, _c;
+        var id = this.getId(die);
+        if (this.getDieElement(die)) {
+            throw new Error("This die already exists ".concat(JSON.stringify(die)));
+        }
+        var dieType = this.registeredDieTypes[die.type];
+        if (!dieType) {
+            throw new Error("This die type doesn't exists ".concat(die.type));
+        }
+        var element = document.createElement("div");
+        element.id = id;
+        element.classList.add('bga-dice_die');
+        element.style.setProperty('--size', "".concat((_a = dieType.size) !== null && _a !== void 0 ? _a : 50, "px"));
+        var dieFaces = document.createElement("div");
+        dieFaces.classList.add('bga-dice_die-faces');
+        dieFaces.dataset.visibleFace = '' + die.face;
+        element.appendChild(dieFaces);
+        var facesElements = [];
+        for (var i = 1; i <= dieType.facesCount; i++) {
+            facesElements[i] = document.createElement("div");
+            facesElements[i].id = "".concat(id, "-face-").concat(i);
+            facesElements[i].classList.add('bga-dice_die-face');
+            facesElements[i].dataset.face = '' + i;
+            dieFaces.appendChild(facesElements[i]);
+            element.dataset.face = '' + i;
+        }
+        document.body.appendChild(element);
+        (_b = dieType.setupDieDiv) === null || _b === void 0 ? void 0 : _b.call(dieType, die, element);
+        if (dieType.setupFaceDiv) {
+            for (var i = 1; i <= dieType.facesCount; i++) {
+                (_c = dieType.setupFaceDiv) === null || _c === void 0 ? void 0 : _c.call(dieType, die, facesElements[i], i);
+            }
+        }
+        document.body.removeChild(element);
+        return element;
+    };
+    DiceManager.prototype.getDieElement = function (die) {
+        return document.getElementById(this.getId(die));
+    };
+    DiceManager.prototype.removeDie = function (die) {
+        var _a;
+        var id = this.getId(die);
+        var div = document.getElementById(id);
+        if (!div) {
+            return false;
+        }
+        div.id = "deleted".concat(id);
+        div.remove();
+        (_a = this.getDieStock(die)) === null || _a === void 0 ? void 0 : _a.dieRemoved(die);
+        return true;
+    };
+    DiceManager.prototype.getDieStock = function (die) {
+        return this.stocks.find(function (stock) { return stock.contains(die); });
+    };
+    DiceManager.prototype.updateDieInformations = function (die, updateData) {
+        var _this = this;
+        var div = this.getDieElement(die);
+        div.dataset.visibleFace = '' + die.face;
+        if (updateData !== null && updateData !== void 0 ? updateData : true) {
+            var stock = this.getDieStock(die);
+            var dice = stock.getDice();
+            var dieIndex = dice.findIndex(function (c) { return _this.getId(c) === _this.getId(die); });
+            if (dieIndex !== -1) {
+                stock.dice.splice(dieIndex, 1, die);
+            }
+        }
+    };
+    DiceManager.prototype.getPerspective = function () {
+        var _a, _b;
+        return ((_a = this.settings) === null || _a === void 0 ? void 0 : _a.perspective) === undefined ? 1000 : (_b = this.settings) === null || _b === void 0 ? void 0 : _b.perspective;
+    };
+    DiceManager.prototype.getSelectableDieClass = function () {
+        var _a, _b;
+        return ((_a = this.settings) === null || _a === void 0 ? void 0 : _a.selectableDieClass) === undefined ? 'bga-dice_selectable-die' : (_b = this.settings) === null || _b === void 0 ? void 0 : _b.selectableDieClass;
+    };
+    DiceManager.prototype.getUnselectableDieClass = function () {
+        var _a, _b;
+        return ((_a = this.settings) === null || _a === void 0 ? void 0 : _a.unselectableDieClass) === undefined ? 'bga-dice_disabled-die' : (_b = this.settings) === null || _b === void 0 ? void 0 : _b.unselectableDieClass;
+    };
+    DiceManager.prototype.getSelectedDieClass = function () {
+        var _a, _b;
+        return ((_a = this.settings) === null || _a === void 0 ? void 0 : _a.selectedDieClass) === undefined ? 'bga-dice_selected-die' : (_b = this.settings) === null || _b === void 0 ? void 0 : _b.selectedDieClass;
+    };
+    return DiceManager;
+}());
+var BgaDie6 = (function () {
+    function BgaDie6(settings) {
+        var _a;
+        this.settings = settings;
+        this.facesCount = 6;
+        this.borderRadius = (_a = settings === null || settings === void 0 ? void 0 : settings.borderRadius) !== null && _a !== void 0 ? _a : 0;
+    }
+    BgaDie6.prototype.setupDieDiv = function (die, element) {
+        element.classList.add('bga-dice_die6');
+        element.style.setProperty('--bga-dice_border-radius', "".concat(this.borderRadius, "%"));
+    };
+    return BgaDie6;
+}());
+var DiceStock = (function () {
+    function DiceStock(manager, element, settings) {
+        this.manager = manager;
+        this.element = element;
+        this.settings = settings;
+        this.dice = [];
+        this.selectedDice = [];
+        this.selectionMode = 'none';
+        manager.addStock(this);
+        element === null || element === void 0 ? void 0 : element.classList.add('bga-dice_die-stock');
+        var perspective = this.getPerspective();
+        element.style.setProperty('--perspective', perspective ? "".concat(perspective, "px") : 'unset');
+        this.bindClick();
+        this.sort = settings === null || settings === void 0 ? void 0 : settings.sort;
+    }
+    DiceStock.prototype.getDice = function () {
+        return this.dice.slice();
+    };
+    DiceStock.prototype.isEmpty = function () {
+        return !this.dice.length;
+    };
+    DiceStock.prototype.getSelection = function () {
+        return this.selectedDice.slice();
+    };
+    DiceStock.prototype.isSelected = function (die) {
+        var _this = this;
+        return this.selectedDice.some(function (c) { return _this.manager.getId(c) == _this.manager.getId(die); });
+    };
+    DiceStock.prototype.contains = function (die) {
+        var _this = this;
+        return this.dice.some(function (c) { return _this.manager.getId(c) == _this.manager.getId(die); });
+    };
+    DiceStock.prototype.getDieElement = function (die) {
+        return this.manager.getDieElement(die);
+    };
+    DiceStock.prototype.canAddDie = function (die, settings) {
+        return !this.contains(die);
+    };
+    DiceStock.prototype.addDie = function (die, animation, settings) {
+        var _this = this;
+        var _a;
+        if (!this.canAddDie(die, settings)) {
+            return Promise.resolve(false);
+        }
+        var promise;
+        var originStock = this.manager.getDieStock(die);
+        var index = this.getNewDieIndex(die);
+        var settingsWithIndex = __assign({ index: index }, (settings !== null && settings !== void 0 ? settings : {}));
+        var updateInformations = (_a = settingsWithIndex.updateInformations) !== null && _a !== void 0 ? _a : true;
+        if (originStock === null || originStock === void 0 ? void 0 : originStock.contains(die)) {
+            var element = this.getDieElement(die);
+            promise = this.moveFromOtherStock(die, element, __assign(__assign({}, animation), { fromStock: originStock }), settingsWithIndex);
+        }
+        else if ((animation === null || animation === void 0 ? void 0 : animation.fromStock) && animation.fromStock.contains(die)) {
+            var element = this.getDieElement(die);
+            promise = this.moveFromOtherStock(die, element, animation, settingsWithIndex);
+        }
+        else {
+            var element = this.manager.createDieElement(die);
+            promise = this.moveFromElement(die, element, animation, settingsWithIndex);
+        }
+        if (settingsWithIndex.index !== null && settingsWithIndex.index !== undefined) {
+            this.dice.splice(index, 0, die);
+        }
+        else {
+            this.dice.push(die);
+        }
+        if (updateInformations) {
+            this.manager.updateDieInformations(die);
+        }
+        if (!promise) {
+            console.warn("Dicetock.addDie didn't return a Promise");
+            promise = Promise.resolve(false);
+        }
+        if (this.selectionMode !== 'none') {
+            promise.then(function () { var _a; return _this.setSelectableDie(die, (_a = settingsWithIndex.selectable) !== null && _a !== void 0 ? _a : true); });
+        }
+        return promise;
+    };
+    DiceStock.prototype.getNewDieIndex = function (die) {
+        if (this.sort) {
+            var otherDice = this.getDice();
+            for (var i = 0; i < otherDice.length; i++) {
+                var otherDie = otherDice[i];
+                if (this.sort(die, otherDie) < 0) {
+                    return i;
+                }
+            }
+            return otherDice.length;
+        }
+        else {
+            return undefined;
+        }
+    };
+    DiceStock.prototype.addDieElementToParent = function (dieElement, settings) {
+        var _a;
+        var parent = (_a = settings === null || settings === void 0 ? void 0 : settings.forceToElement) !== null && _a !== void 0 ? _a : this.element;
+        if ((settings === null || settings === void 0 ? void 0 : settings.index) === null || (settings === null || settings === void 0 ? void 0 : settings.index) === undefined || !parent.children.length || (settings === null || settings === void 0 ? void 0 : settings.index) >= parent.children.length) {
+            parent.appendChild(dieElement);
+        }
+        else {
+            parent.insertBefore(dieElement, parent.children[settings.index]);
+        }
+    };
+    DiceStock.prototype.moveFromOtherStock = function (die, dieElement, animation, settings) {
+        var promise;
+        var element = animation.fromStock.contains(die) ? this.manager.getDieElement(die) : animation.fromStock.element;
+        var fromRect = element.getBoundingClientRect();
+        this.addDieElementToParent(dieElement, settings);
+        this.removeSelectionClassesFromElement(dieElement);
+        promise = this.animationFromElement(dieElement, fromRect, {
+            originalSide: animation.originalSide,
+            rotationDelta: animation.rotationDelta,
+            animation: animation.animation,
+        });
+        if (animation.fromStock && animation.fromStock != this) {
+            animation.fromStock.removeDie(die);
+        }
+        if (!promise) {
+            console.warn("Dicetock.moveFromOtherStock didn't return a Promise");
+            promise = Promise.resolve(false);
+        }
+        return promise;
+    };
+    DiceStock.prototype.moveFromElement = function (die, dieElement, animation, settings) {
+        var promise;
+        this.addDieElementToParent(dieElement, settings);
+        if (animation) {
+            if (animation.fromStock) {
+                promise = this.animationFromElement(dieElement, animation.fromStock.element.getBoundingClientRect(), {
+                    originalSide: animation.originalSide,
+                    rotationDelta: animation.rotationDelta,
+                    animation: animation.animation,
+                });
+                animation.fromStock.removeDie(die);
+            }
+            else if (animation.fromElement) {
+                promise = this.animationFromElement(dieElement, animation.fromElement.getBoundingClientRect(), {
+                    originalSide: animation.originalSide,
+                    rotationDelta: animation.rotationDelta,
+                    animation: animation.animation,
+                });
+            }
+        }
+        else {
+            promise = Promise.resolve(false);
+        }
+        if (!promise) {
+            console.warn("Dicetock.moveFromElement didn't return a Promise");
+            promise = Promise.resolve(false);
+        }
+        return promise;
+    };
+    DiceStock.prototype.addDice = function (dice_1, animation_1, settings_1) {
+        return __awaiter(this, arguments, void 0, function (dice, animation, settings, shift) {
+            var promises, result, others, _loop_3, i, results;
+            var _this = this;
+            if (shift === void 0) { shift = false; }
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!this.manager.animationsActive()) {
+                            shift = false;
+                        }
+                        promises = [];
+                        if (!(shift === true)) return [3, 4];
+                        if (!dice.length) return [3, 3];
+                        return [4, this.addDie(dice[0], animation, settings)];
+                    case 1:
+                        result = _a.sent();
+                        return [4, this.addDice(dice.slice(1), animation, settings, shift)];
+                    case 2:
+                        others = _a.sent();
+                        return [2, result || others];
+                    case 3: return [3, 5];
+                    case 4:
+                        if (typeof shift === 'number') {
+                            _loop_3 = function (i) {
+                                setTimeout(function () { return promises.push(_this.addDie(dice[i], animation, settings)); }, i * shift);
+                            };
+                            for (i = 0; i < dice.length; i++) {
+                                _loop_3(i);
+                            }
+                        }
+                        else {
+                            promises = dice.map(function (die) { return _this.addDie(die, animation, settings); });
+                        }
+                        _a.label = 5;
+                    case 5: return [4, Promise.all(promises)];
+                    case 6:
+                        results = _a.sent();
+                        return [2, results.some(function (result) { return result; })];
+                }
+            });
+        });
+    };
+    DiceStock.prototype.removeDie = function (die) {
+        if (this.contains(die) && this.element.contains(this.getDieElement(die))) {
+            this.manager.removeDie(die);
+        }
+        this.dieRemoved(die);
+    };
+    DiceStock.prototype.dieRemoved = function (die) {
+        var _this = this;
+        var index = this.dice.findIndex(function (c) { return _this.manager.getId(c) == _this.manager.getId(die); });
+        if (index !== -1) {
+            this.dice.splice(index, 1);
+        }
+        if (this.selectedDice.find(function (c) { return _this.manager.getId(c) == _this.manager.getId(die); })) {
+            this.unselectDie(die);
+        }
+    };
+    DiceStock.prototype.removeDice = function (dice) {
+        var _this = this;
+        dice.forEach(function (die) { return _this.removeDie(die); });
+    };
+    DiceStock.prototype.removeAll = function () {
+        var _this = this;
+        var dice = this.getDice();
+        dice.forEach(function (die) { return _this.removeDie(die); });
+    };
+    DiceStock.prototype.setSelectionMode = function (selectionMode, selectableDice) {
+        var _this = this;
+        if (selectionMode !== this.selectionMode) {
+            this.unselectAll(true);
+        }
+        this.dice.forEach(function (die) { return _this.setSelectableDie(die, selectionMode != 'none'); });
+        this.element.classList.toggle('bga-dice_selectable-stock', selectionMode != 'none');
+        this.selectionMode = selectionMode;
+        if (selectionMode === 'none') {
+            this.getDice().forEach(function (die) { return _this.removeSelectionClasses(die); });
+        }
+        else {
+            this.setSelectableDice(selectableDice !== null && selectableDice !== void 0 ? selectableDice : this.getDice());
+        }
+    };
+    DiceStock.prototype.setSelectableDie = function (die, selectable) {
+        if (this.selectionMode === 'none') {
+            return;
+        }
+        var element = this.getDieElement(die);
+        var selectableDiceClass = this.getSelectableDieClass();
+        var unselectableDiceClass = this.getUnselectableDieClass();
+        if (selectableDiceClass) {
+            element.classList.toggle(selectableDiceClass, selectable);
+        }
+        if (unselectableDiceClass) {
+            element.classList.toggle(unselectableDiceClass, !selectable);
+        }
+        if (!selectable && this.isSelected(die)) {
+            this.unselectDie(die, true);
+        }
+    };
+    DiceStock.prototype.setSelectableDice = function (selectableDice) {
+        var _this = this;
+        if (this.selectionMode === 'none') {
+            return;
+        }
+        var selectableDiceIds = (selectableDice !== null && selectableDice !== void 0 ? selectableDice : this.getDice()).map(function (die) { return _this.manager.getId(die); });
+        this.dice.forEach(function (die) {
+            return _this.setSelectableDie(die, selectableDiceIds.includes(_this.manager.getId(die)));
+        });
+    };
+    DiceStock.prototype.selectDie = function (die, silent) {
+        var _this = this;
+        var _a;
+        if (silent === void 0) { silent = false; }
+        if (this.selectionMode == 'none') {
+            return;
+        }
+        var element = this.getDieElement(die);
+        var selectableDiceClass = this.getSelectableDieClass();
+        if (!element.classList.contains(selectableDiceClass)) {
+            return;
+        }
+        if (this.selectionMode === 'single') {
+            this.dice.filter(function (c) { return _this.manager.getId(c) != _this.manager.getId(die); }).forEach(function (c) { return _this.unselectDie(c, true); });
+        }
+        var selectedDiceClass = this.getSelectedDieClass();
+        element.classList.add(selectedDiceClass);
+        this.selectedDice.push(die);
+        if (!silent) {
+            (_a = this.onSelectionChange) === null || _a === void 0 ? void 0 : _a.call(this, this.selectedDice.slice(), die);
+        }
+    };
+    DiceStock.prototype.unselectDie = function (die, silent) {
+        var _this = this;
+        var _a;
+        if (silent === void 0) { silent = false; }
+        var element = this.getDieElement(die);
+        var selectedDiceClass = this.getSelectedDieClass();
+        element.classList.remove(selectedDiceClass);
+        var index = this.selectedDice.findIndex(function (c) { return _this.manager.getId(c) == _this.manager.getId(die); });
+        if (index !== -1) {
+            this.selectedDice.splice(index, 1);
+        }
+        if (!silent) {
+            (_a = this.onSelectionChange) === null || _a === void 0 ? void 0 : _a.call(this, this.selectedDice.slice(), die);
+        }
+    };
+    DiceStock.prototype.selectAll = function (silent) {
+        var _this = this;
+        var _a;
+        if (silent === void 0) { silent = false; }
+        if (this.selectionMode == 'none') {
+            return;
+        }
+        this.dice.forEach(function (c) { return _this.selectDie(c, true); });
+        if (!silent) {
+            (_a = this.onSelectionChange) === null || _a === void 0 ? void 0 : _a.call(this, this.selectedDice.slice(), null);
+        }
+    };
+    DiceStock.prototype.unselectAll = function (silent) {
+        var _this = this;
+        var _a;
+        if (silent === void 0) { silent = false; }
+        var dice = this.getDice();
+        dice.forEach(function (c) { return _this.unselectDie(c, true); });
+        if (!silent) {
+            (_a = this.onSelectionChange) === null || _a === void 0 ? void 0 : _a.call(this, this.selectedDice.slice(), null);
+        }
+    };
+    DiceStock.prototype.bindClick = function () {
+        var _this = this;
+        var _a;
+        (_a = this.element) === null || _a === void 0 ? void 0 : _a.addEventListener('click', function (event) {
+            var dieDiv = event.target.closest('.bga-dice_die');
+            if (!dieDiv) {
+                return;
+            }
+            var die = _this.dice.find(function (c) { return _this.manager.getId(c) == dieDiv.id; });
+            if (!die) {
+                return;
+            }
+            _this.dieClick(die);
+        });
+    };
+    DiceStock.prototype.dieClick = function (die) {
+        var _this = this;
+        var _a;
+        if (this.selectionMode != 'none') {
+            var alreadySelected = this.selectedDice.some(function (c) { return _this.manager.getId(c) == _this.manager.getId(die); });
+            if (alreadySelected) {
+                this.unselectDie(die);
+            }
+            else {
+                this.selectDie(die);
+            }
+        }
+        (_a = this.onDieClick) === null || _a === void 0 ? void 0 : _a.call(this, die);
+    };
+    DiceStock.prototype.animationFromElement = function (element, fromRect, settings) {
+        return __awaiter(this, void 0, void 0, function () {
+            var side, diceides_1, animation, result;
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        side = element.dataset.side;
+                        if (settings.originalSide && settings.originalSide != side) {
+                            diceides_1 = element.getElementsByClassName('die-sides')[0];
+                            diceides_1.style.transition = 'none';
+                            element.dataset.side = settings.originalSide;
+                            setTimeout(function () {
+                                diceides_1.style.transition = null;
+                                element.dataset.side = side;
+                            });
+                        }
+                        animation = settings.animation;
+                        if (animation) {
+                            animation.settings.element = element;
+                            animation.settings.fromRect = fromRect;
+                        }
+                        else {
+                            animation = new BgaSlideAnimation({ element: element, fromRect: fromRect });
+                        }
+                        return [4, this.manager.animationManager.play(animation)];
+                    case 1:
+                        result = _b.sent();
+                        return [2, (_a = result === null || result === void 0 ? void 0 : result.played) !== null && _a !== void 0 ? _a : false];
+                }
+            });
+        });
+    };
+    DiceStock.prototype.getPerspective = function () {
+        var _a, _b;
+        return ((_a = this.settings) === null || _a === void 0 ? void 0 : _a.perspective) === undefined ? this.manager.getPerspective() : (_b = this.settings) === null || _b === void 0 ? void 0 : _b.perspective;
+    };
+    DiceStock.prototype.getSelectableDieClass = function () {
+        var _a, _b;
+        return ((_a = this.settings) === null || _a === void 0 ? void 0 : _a.selectableDieClass) === undefined ? this.manager.getSelectableDieClass() : (_b = this.settings) === null || _b === void 0 ? void 0 : _b.selectableDieClass;
+    };
+    DiceStock.prototype.getUnselectableDieClass = function () {
+        var _a, _b;
+        return ((_a = this.settings) === null || _a === void 0 ? void 0 : _a.unselectableDieClass) === undefined ? this.manager.getUnselectableDieClass() : (_b = this.settings) === null || _b === void 0 ? void 0 : _b.unselectableDieClass;
+    };
+    DiceStock.prototype.getSelectedDieClass = function () {
+        var _a, _b;
+        return ((_a = this.settings) === null || _a === void 0 ? void 0 : _a.selectedDieClass) === undefined ? this.manager.getSelectedDieClass() : (_b = this.settings) === null || _b === void 0 ? void 0 : _b.selectedDieClass;
+    };
+    DiceStock.prototype.removeSelectionClasses = function (die) {
+        this.removeSelectionClassesFromElement(this.getDieElement(die));
+    };
+    DiceStock.prototype.removeSelectionClassesFromElement = function (dieElement) {
+        var selectableDiceClass = this.getSelectableDieClass();
+        var unselectableDiceClass = this.getUnselectableDieClass();
+        var selectedDiceClass = this.getSelectedDieClass();
+        dieElement.classList.remove(selectableDiceClass, unselectableDiceClass, selectedDiceClass);
+    };
+    DiceStock.prototype.addRollEffectToDieElement = function (die, element, effect, duration) {
+        var _a, _b;
+        switch (effect) {
+            case 'rollIn':
+                this.manager.animationManager.play(new BgaSlideAnimation({
+                    element: element,
+                    duration: duration,
+                    transitionTimingFunction: 'ease-out',
+                    fromDelta: {
+                        x: 0,
+                        y: ((_a = this.manager.getDieType(die).size) !== null && _a !== void 0 ? _a : 50) * 5,
+                    }
+                }));
+                break;
+            case 'rollOutPauseAndBack':
+                this.manager.animationManager.play(new BgaCumulatedAnimation({ animations: [
+                        new BgaSlideToAnimation({
+                            element: element,
+                            duration: duration,
+                            transitionTimingFunction: 'ease-out',
+                            fromDelta: {
+                                x: 0,
+                                y: ((_b = this.manager.getDieType(die).size) !== null && _b !== void 0 ? _b : 50) * -5,
+                            }
+                        }),
+                        new BgaPauseAnimation({}),
+                        new BgaSlideToAnimation({
+                            duration: 250,
+                            transitionTimingFunction: 'ease-out',
+                            element: element,
+                            fromDelta: {
+                                x: 0,
+                                y: 0,
+                            }
+                        }),
+                    ] }));
+                break;
+            case 'turn':
+                this.manager.animationManager.play(new BgaPauseAnimation({ duration: duration }));
+                break;
+        }
+    };
+    DiceStock.prototype.rollDice = function (dice, settings) {
+        var _this = this;
+        dice.forEach(function (die) { return _this.rollDie(die, settings); });
+    };
+    DiceStock.prototype.rollDie = function (die, settings) {
+        var _a, _b;
+        var div = this.getDieElement(die);
+        var faces = div.querySelector('.bga-dice_die-faces');
+        faces.style.setProperty('--roll-duration', "0");
+        faces.clientWidth;
+        faces.dataset.visibleFace = "";
+        faces.clientWidth;
+        var rollEffect = (_a = settings === null || settings === void 0 ? void 0 : settings.effect) !== null && _a !== void 0 ? _a : 'rollIn';
+        var animate = this.manager.animationManager.animationsActive() && rollEffect !== 'none';
+        var duration = (_b = settings === null || settings === void 0 ? void 0 : settings.duration) !== null && _b !== void 0 ? _b : 1000;
+        if (animate) {
+            if (Array.isArray(duration)) {
+                var diff = Math.abs(duration[1] - duration[0]);
+                duration = Math.min.apply(Math, duration) + Math.floor(Math.random() * diff);
+            }
+            if (rollEffect.includes('roll')) {
+                faces.style.transform = "rotate3d(".concat(Math.random() < 0.5 ? -1 : 1, ", ").concat(Math.random() < 0.5 ? -1 : 1, ", ").concat(Math.random() < 0.5 ? -1 : 1, ", ").concat(720 + Math.random() * 360, "deg)");
+                faces.clientWidth;
+            }
+            this.addRollEffectToDieElement(die, div, rollEffect, duration);
+        }
+        faces.style.setProperty('--roll-duration', "".concat(animate ? duration : 0, "ms"));
+        faces.clientWidth;
+        faces.style.removeProperty('transform');
+        faces.dataset.visibleFace = "".concat(die.face);
+    };
+    return DiceStock;
+}());
+var LineDiceStock = (function (_super) {
+    __extends(LineDiceStock, _super);
+    function LineDiceStock(manager, element, settings) {
+        var _a, _b, _c, _d;
+        var _this = _super.call(this, manager, element, settings) || this;
+        _this.manager = manager;
+        _this.element = element;
+        element.classList.add('bga-dice_line-stock');
+        element.dataset.center = ((_a = settings === null || settings === void 0 ? void 0 : settings.center) !== null && _a !== void 0 ? _a : true).toString();
+        element.style.setProperty('--wrap', (_b = settings === null || settings === void 0 ? void 0 : settings.wrap) !== null && _b !== void 0 ? _b : 'wrap');
+        element.style.setProperty('--direction', (_c = settings === null || settings === void 0 ? void 0 : settings.direction) !== null && _c !== void 0 ? _c : 'row');
+        element.style.setProperty('--gap', (_d = settings === null || settings === void 0 ? void 0 : settings.gap) !== null && _d !== void 0 ? _d : '8px');
+        return _this;
+    }
+    return LineDiceStock;
+}(DiceStock));
 var _this = this;
 var moveToAnimation = function (_a) { return __awaiter(_this, [_a], void 0, function (_b) {
     var toElement, fromRect, toRect, top, left, originalPositionStyle;
@@ -2129,13 +2756,17 @@ var NotificationManager = (function () {
         var notifs = [
             'log',
             'message',
+            'addCardToGossipPile',
             'addCardToSafePile',
+            'gainCubes',
             'movePawn',
             'placePawn',
+            'rollDice',
             'scoreJoy',
             'setupChooseCardPrivate',
             'setupChooseCard',
             'setupRevealCard',
+            'startOfTurn',
         ];
         notifs.forEach(function (notifName) {
             _this.subscriptions.push(dojo.subscribe(notifName, _this, function (notifDetails) {
@@ -2190,6 +2821,22 @@ var NotificationManager = (function () {
             });
         });
     };
+    NotificationManager.prototype.notif_addCardToGossipPile = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var card, board;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        card = notif.args.card;
+                        board = Board.getInstance();
+                        return [4, board.gossipPile.addCard(getViceCard(card))];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
     NotificationManager.prototype.notif_addCardToSafePile = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
             var card, market;
@@ -2203,6 +2850,15 @@ var NotificationManager = (function () {
                         _a.sent();
                         return [2];
                 }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_gainCubes = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, playerId, numberOfCubes;
+            return __generator(this, function (_b) {
+                _a = notif.args, playerId = _a.playerId, numberOfCubes = _a.numberOfCubes;
+                return [2];
             });
         });
     };
@@ -2227,6 +2883,25 @@ var NotificationManager = (function () {
                         return [4, board.placePawn(pawn, document.getElementById("player_board_".concat(playerId)))];
                     case 1:
                         _b.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_rollDice = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var diceResults;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        diceResults = notif.args.diceResults;
+                        Board.getInstance().diceStock.rollDice(getDice(diceResults), {
+                            effect: 'rollIn',
+                            duration: [800, 1200],
+                        });
+                        return [4, sleep(1200)];
+                    case 1:
+                        _a.sent();
                         return [2];
                 }
             });
@@ -2283,6 +2958,11 @@ var NotificationManager = (function () {
                 return [2];
             });
         });
+    };
+    NotificationManager.prototype.notif_startOfTurn = function (notif) {
+        return __awaiter(this, void 0, void 0, function () { return __generator(this, function (_a) {
+            return [2];
+        }); });
     };
     return NotificationManager;
 }());
@@ -2850,6 +3530,27 @@ var performAction = function (actionName, args) {
 var getPlayerName = function (playerId) {
     return PlayerManager.getInstance().getPlayer(playerId).getName();
 };
+var MollyHouseDie = (function (_super) {
+    __extends(MollyHouseDie, _super);
+    function MollyHouseDie() {
+        var _this = _super.call(this) || this;
+        _this.size = 48;
+        return _this;
+    }
+    return MollyHouseDie;
+}(BgaDie6));
+var MollyHouseDiceManager = (function (_super) {
+    __extends(MollyHouseDiceManager, _super);
+    function MollyHouseDiceManager(game) {
+        return _super.call(this, game, {
+            dieTypes: {
+                '0': new MollyHouseDie(),
+            },
+            perspective: 1000,
+        }) || this;
+    }
+    return MollyHouseDiceManager;
+}(DiceManager));
 function sleep(ms) {
     return new Promise(function (r) { return setTimeout(r, ms); });
 }
@@ -2867,6 +3568,12 @@ var MollyHouse = (function () {
             ConfirmTurn: ConfirmTurn,
             PlayerTurn: PlayerTurn,
             PlayerSetupChooseCard: PlayerSetupChooseCard,
+            Indulge: Indulge,
+            LieLow: LieLow,
+            Accuse: Accuse,
+            Cruise: Cruise,
+            Shop: Shop,
+            MovePawn: MovePawn,
         };
         console.log('MollyHouse constructor');
     }
@@ -2894,6 +3601,7 @@ var MollyHouse = (function () {
                 : 2100 - settings.get(PREF_ANIMATION_SPEED),
         });
         StaticData.create(this);
+        this.diceManager = new MollyHouseDiceManager(this);
         this.viceCardManager = new ViceCardManager(this);
         Interaction.create(this);
         PlayerManager.create(this);
@@ -3262,10 +3970,16 @@ var Board = (function () {
         };
         this.setupGossipPile(gamedatas);
         this.setupHouseRaidedMarkers();
+        this.setupDiceStock(gamedatas);
         this.setupSelectBoxes();
         this.setupSites();
         this.setupPawns(gamedatas);
         this.setupTokens(gamedatas);
+    };
+    Board.prototype.setupDiceStock = function (gamedatas) {
+        this.diceStock = new LineDiceStock(this.game.diceManager, document.getElementById("moho-dice-stock"), { gap: 'calc(var(--boardScale) * 32px)' });
+        document.getElementById("moho-dice-stock").dataset.place = "".concat(1);
+        this.diceStock.addDice(getDice(gamedatas.dice));
     };
     Board.prototype.setupGossipPile = function (gamedatas) {
         this.gossipPile = new Deck(this.game.viceCardManager, this.ui.containers.gossipPile, {
@@ -3418,7 +4132,7 @@ var Board = (function () {
     };
     return Board;
 }());
-var tplBoard = function (gamedatas) { return "<div id=\"moho-board\">\n<div id=\"moho-playmat\"></div>\n  <div id=\"house-raided-markers\"></div>\n  <div id=\"moho-select-boxes\"></div>\n  <div id=\"moho-pawns\"></div>\n  <div id=\"moho-gossip-pile\"></div>\n</div>"; };
+var tplBoard = function (gamedatas) { return "<div id=\"moho-board\">\n<div id=\"moho-playmat\">\n  <div id=\"moho-dice-stock\"></div>\n</div>\n  <div id=\"house-raided-markers\"></div>\n  <div id=\"moho-select-boxes\"></div>\n  <div id=\"moho-pawns\"></div>\n  <div id=\"moho-gossip-pile\"></div>\n</div>"; };
 var ViceCardManager = (function (_super) {
     __extends(ViceCardManager, _super);
     function ViceCardManager(game) {
@@ -3554,6 +4268,7 @@ var LOG_TOKEN_BOLD_TEXT = 'boldText';
 var LOG_TOKEN_BOLD_ITALIC_TEXT = 'boldItalicText';
 var LOG_TOKEN_NEW_LINE = 'newLine';
 var LOG_TOKEN_PLAYER_NAME = 'playerName';
+var LOG_TOKEN_DIE = 'die';
 var LOG_TOKEN_PAWN = 'pawn';
 var LOG_TOKEN_SUIT = 'suit';
 var LOG_TOKEN_VICE_CARD = 'viceCard';
@@ -3568,6 +4283,8 @@ var getTokenDiv = function (_a) {
             return tlpLogTokenText({ text: value });
         case LOG_TOKEN_BOLD_ITALIC_TEXT:
             return tlpLogTokenText({ text: value, italic: true });
+        case LOG_TOKEN_DIE:
+            return tplLogTokenDie(value.split(':')[0]);
         case LOG_TOKEN_NEW_LINE:
             return '<br class="moho-new-line">';
         case LOG_TOKEN_PAWN:
@@ -3597,6 +4314,9 @@ var tlpLogTokenText = function (_a) {
 var tplLogTokenPlayerName = function (_a) {
     var name = _a.name, color = _a.color;
     return "<span class=\"playername\" style=\"color:#".concat(color, ";\">").concat(name, "</span>");
+};
+var tplLogTokenDie = function (dieFace) {
+    return "<div class=\"log-token bga-dice_die-face\" data-face=\"".concat(dieFace, "\"></div>");
 };
 var tplLogTokenPawn = function (color) {
     return "<div class=\"log-token moho-pawn\" data-color=\"".concat(color, "\"></div>");
@@ -3856,6 +4576,70 @@ var PlayerSetupChooseCard = (function () {
     };
     return PlayerSetupChooseCard;
 }());
+var Indulge = (function () {
+    function Indulge(game) {
+        this.game = game;
+    }
+    Indulge.create = function (game) {
+        Indulge.instance = new Indulge(game);
+    };
+    Indulge.getInstance = function () {
+        return Indulge.instance;
+    };
+    Indulge.prototype.onEnteringState = function (args) {
+        debug('Entering Indulge state');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    Indulge.prototype.onLeavingState = function () {
+        debug('Leaving Indulge state');
+    };
+    Indulge.prototype.setDescription = function (activePlayerIds, args) { };
+    Indulge.prototype.updateInterfaceInitialStep = function () {
+        this.game.clearPossible();
+        updatePageTitle(_('${you} may perform an action'), {});
+    };
+    Indulge.prototype.updateInterfaceConfirm = function () {
+        clearPossible();
+        updatePageTitle(_('Confirm ship placement'));
+        addConfirmButton(function () {
+            performAction('actIndulge', {});
+        });
+    };
+    return Indulge;
+}());
+var LieLow = (function () {
+    function LieLow(game) {
+        this.game = game;
+    }
+    LieLow.create = function (game) {
+        LieLow.instance = new LieLow(game);
+    };
+    LieLow.getInstance = function () {
+        return LieLow.instance;
+    };
+    LieLow.prototype.onEnteringState = function (args) {
+        debug('Entering LieLow state');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    LieLow.prototype.onLeavingState = function () {
+        debug('Leaving LieLow state');
+    };
+    LieLow.prototype.setDescription = function (activePlayerIds, args) { };
+    LieLow.prototype.updateInterfaceInitialStep = function () {
+        this.game.clearPossible();
+        updatePageTitle(_('${you} may perform an action'), {});
+    };
+    LieLow.prototype.updateInterfaceConfirm = function () {
+        clearPossible();
+        updatePageTitle(_('Confirm action'));
+        addConfirmButton(function () {
+            performAction('actLieLow', {});
+        });
+    };
+    return LieLow;
+}());
 var StaticData = (function () {
     function StaticData(game) {
         this.game = game;
@@ -3894,3 +4678,171 @@ var getViceCardValueText = function (value) {
             return String(value);
     }
 };
+var getDice = function (diceValues) {
+    var dice = diceValues.map(function (faceIndex, id) { return ({
+        id: id,
+        face: faceIndex + 1,
+        type: 0,
+    }); });
+    return dice;
+};
+var Accuse = (function () {
+    function Accuse(game) {
+        this.game = game;
+    }
+    Accuse.create = function (game) {
+        Accuse.instance = new Accuse(game);
+    };
+    Accuse.getInstance = function () {
+        return Accuse.instance;
+    };
+    Accuse.prototype.onEnteringState = function (args) {
+        debug('Entering Accuse state');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    Accuse.prototype.onLeavingState = function () {
+        debug('Leaving Accuse state');
+    };
+    Accuse.prototype.setDescription = function (activePlayerIds, args) { };
+    Accuse.prototype.updateInterfaceInitialStep = function () {
+        this.game.clearPossible();
+        updatePageTitle(_('${you} may perform an action'), {});
+    };
+    Accuse.prototype.updateInterfaceConfirm = function () {
+        clearPossible();
+        updatePageTitle(_('Confirm action'));
+        addConfirmButton(function () {
+            performAction('actAccuse', {});
+        });
+    };
+    return Accuse;
+}());
+var Cruise = (function () {
+    function Cruise(game) {
+        this.game = game;
+    }
+    Cruise.create = function (game) {
+        Cruise.instance = new Cruise(game);
+    };
+    Cruise.getInstance = function () {
+        return Cruise.instance;
+    };
+    Cruise.prototype.onEnteringState = function (args) {
+        debug('Entering Cruise state');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    Cruise.prototype.onLeavingState = function () {
+        debug('Leaving Cruise state');
+    };
+    Cruise.prototype.setDescription = function (activePlayerIds, args) { };
+    Cruise.prototype.updateInterfaceInitialStep = function () {
+        this.game.clearPossible();
+        updatePageTitle(_('${you} may perform an action'), {});
+    };
+    Cruise.prototype.updateInterfaceConfirm = function () {
+        clearPossible();
+        updatePageTitle(_('Confirm action'));
+        addConfirmButton(function () {
+            performAction('actCruise', {});
+        });
+    };
+    return Cruise;
+}());
+var Shop = (function () {
+    function Shop(game) {
+        this.game = game;
+    }
+    Shop.create = function (game) {
+        Shop.instance = new Shop(game);
+    };
+    Shop.getInstance = function () {
+        return Shop.instance;
+    };
+    Shop.prototype.onEnteringState = function (args) {
+        debug('Entering Shop state');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    Shop.prototype.onLeavingState = function () {
+        debug('Leaving Shop state');
+    };
+    Shop.prototype.setDescription = function (activePlayerIds, args) { };
+    Shop.prototype.updateInterfaceInitialStep = function () {
+        this.game.clearPossible();
+        updatePageTitle(_('${you} may perform an action'), {});
+    };
+    Shop.prototype.updateInterfaceConfirm = function () {
+        clearPossible();
+        updatePageTitle(_('Confirm action'));
+        addConfirmButton(function () {
+            performAction('actShop', {});
+        });
+    };
+    return Shop;
+}());
+var ThrowFestivity = (function () {
+    function ThrowFestivity(game) {
+        this.game = game;
+    }
+    ThrowFestivity.create = function (game) {
+        ThrowFestivity.instance = new ThrowFestivity(game);
+    };
+    ThrowFestivity.getInstance = function () {
+        return ThrowFestivity.instance;
+    };
+    ThrowFestivity.prototype.onEnteringState = function (args) {
+        debug('Entering ThrowFestivity state');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    ThrowFestivity.prototype.onLeavingState = function () {
+        debug('Leaving ThrowFestivity state');
+    };
+    ThrowFestivity.prototype.setDescription = function (activePlayerIds, args) { };
+    ThrowFestivity.prototype.updateInterfaceInitialStep = function () {
+        this.game.clearPossible();
+        updatePageTitle(_('${you} may perform an action'), {});
+    };
+    ThrowFestivity.prototype.updateInterfaceConfirm = function () {
+        clearPossible();
+        updatePageTitle(_('Confirm action'));
+        addConfirmButton(function () {
+            performAction('actThrowFestivity', {});
+        });
+    };
+    return ThrowFestivity;
+}());
+var MovePawn = (function () {
+    function MovePawn(game) {
+        this.game = game;
+    }
+    MovePawn.create = function (game) {
+        MovePawn.instance = new MovePawn(game);
+    };
+    MovePawn.getInstance = function () {
+        return MovePawn.instance;
+    };
+    MovePawn.prototype.onEnteringState = function (args) {
+        debug('Entering MovePawn state');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    MovePawn.prototype.onLeavingState = function () {
+        debug('Leaving MovePawn state');
+    };
+    MovePawn.prototype.setDescription = function (activePlayerIds, args) { };
+    MovePawn.prototype.updateInterfaceInitialStep = function () {
+        this.game.clearPossible();
+        updatePageTitle(_('${you} must select a site'), {});
+    };
+    MovePawn.prototype.updateInterfaceConfirm = function () {
+        clearPossible();
+        updatePageTitle(_('Confirm action'));
+        addConfirmButton(function () {
+            performAction('actMovePawn', {});
+        });
+    };
+    return MovePawn;
+}());

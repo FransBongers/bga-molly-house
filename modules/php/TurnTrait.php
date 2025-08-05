@@ -31,13 +31,23 @@ trait TurnTrait
   function stNextPlayer()
   {
     $player = Players::getActive();
-    self::giveExtraTime($player->getId());
+    $playerId = $player->getId();
+    self::giveExtraTime($playerId);
+    Notifications::startOfTurn($player);
 
     $node = [
       'children' => [
         [
+          'action' => ROLL_DICE,
+          'playerId' => $playerId,
+        ],
+        [
+          'action' => MOVE_PAWN,
+          'playerId' => $playerId,
+        ],
+        [
           'action' => PLAYER_TURN,
-          'playerId' => $player->getId(),
+          'playerId' => $playerId,
         ],
       ],
     ];
