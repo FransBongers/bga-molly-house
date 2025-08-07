@@ -13,12 +13,38 @@ interface NotifWithPlayerArgs {
   player_name: string;
 }
 
+interface NotifAddCardToHand extends NotifWithPlayerArgs {
+  card: ViceCardBase;
+}
+
 interface NotifAddCardToGossipPile extends NotifWithPlayerArgs {
+  card: ViceCardBase;
+}
+
+interface NotifAddCardToReputation extends NotifWithPlayerArgs {
   card: ViceCardBase;
 }
 
 interface NotifAddCardToSafePile extends NotifWithPlayerArgs {
   card: ViceCardBase;
+}
+
+interface NotifAddExcessCardsToGossip extends NotifWithPlayerArgs {
+  number: number;
+}
+
+interface NotifAddExcessCardsToGossipPrivate extends NotifWithPlayerArgs {
+  cards: ViceCardBase[];
+}
+
+interface NotifDrawCards extends NotifWithPlayerArgs {
+  amount: number;
+}
+
+
+interface NotifDrawCardsPrivate extends NotifWithPlayerArgs {
+  amount: number;
+  cards: ViceCardBase[];
 }
 
 interface NotifGainCubes extends NotifWithPlayerArgs {
@@ -35,8 +61,16 @@ interface NotifPlacePawn extends NotifWithPlayerArgs {
   pawn: MohoPawn;
 }
 
+interface NotifRefillMarket extends NotifWithPlayerArgs {
+  cards: ViceCardBase[];
+}
+
 interface NotifRollDice extends NotifWithPlayerArgs {
   diceResults: number[];
+}
+
+interface NotifScoreBonusJoy extends NotifWithPlayerArgs {
+  amount: number;
 }
 
 interface NotifScoreJoy extends NotifWithPlayerArgs {

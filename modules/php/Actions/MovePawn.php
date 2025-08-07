@@ -31,13 +31,18 @@ class MovePawn extends \Bga\Games\MollyHouse\Models\AtomicAction
     $stepsToTake = [];
     $total = 0;
     foreach ($rolledFaces as $dieFace) {
-      
-      if ($dieFace === SINGLE_BOOT && !in_array(1, $stepsToTake)) {
-        $stepsToTake[] = 1;
+
+      if ($dieFace === SINGLE_BOOT) {
         $total += 1;
-      } else if ($dieFace === DOUBLE_BOOT && !in_array(2, $stepsToTake)) {
-        $stepsToTake[] = 2;
+
+        if (!in_array(1, $stepsToTake)) {
+          $stepsToTake[] = 1;
+        }
+      } else if ($dieFace === DOUBLE_BOOT) {
         $total += 2;
+        if (!in_array(2, $stepsToTake)) {
+          $stepsToTake[] = 2;
+        }
       }
     }
     $marketDiscardRolled = in_array(MARKET_DISCARD, $rolledFaces);
@@ -92,7 +97,7 @@ class MovePawn extends \Bga\Games\MollyHouse\Models\AtomicAction
 
     $stateArgs = $this->argsMovePawn();
 
-    if(!isset($stateArgs['sites'][$siteId])) {
+    if (!isset($stateArgs['sites'][$siteId])) {
       throw new \feException("ERROR_003");
     }
 
@@ -111,33 +116,33 @@ class MovePawn extends \Bga\Games\MollyHouse\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-  private function getSites($stepsToTake, $pawnLocation) {
+  private function getSites($stepsToTake, $pawnLocation)
+  {
     $sites = Sites::getAll();
     if (count($stepsToTake) === 0) {
       return $sites;
     }
 
-    $pawnIndex = array_search($pawnLocation,SITES);
+    $pawnIndex = array_search($pawnLocation, SITES);
     $sitesToMoveTo = [];
 
-    foreach($stepsToTake as $stepToTake) {
+    foreach ($stepsToTake as $stepToTake) {
       if ($stepToTake === 0) {
         $sitesToMoveTo[$pawnLocation] = $sites[$pawnLocation];
       }
 
-      foreach([$stepToTake, -$stepToTake] as $steps) {
-         $highestIndex = count(SITES) - 1;
+      foreach ([$stepToTake, -$stepToTake] as $steps) {
+        $highestIndex = count(SITES) - 1;
         $toIndex = $pawnIndex + $steps;
         if ($toIndex > $highestIndex) {
           $toIndex = $toIndex - $highestIndex - 1;
         } else if ($toIndex < 0) {
           $toIndex = $highestIndex + $toIndex + 1;
         }
-  
+
         $siteId = SITES[$toIndex];
         $sitesToMoveTo[$siteId] = $sites[$siteId];
       }
-
     }
 
     return $sitesToMoveTo;

@@ -11,5 +11,7 @@ class SukeyBevells extends \Bga\Games\MollyHouse\Models\Site
     $this->name = clienttranslate("Sukey Bevell's");
     $this->locationOrder = 8;
     $this->address = clienttranslate("The Mint");
+    $this->action = THROW_FESTIVITY;
+    $this->suit = HEARTS;
   }
 }

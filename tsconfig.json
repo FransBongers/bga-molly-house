@@ -29,6 +29,7 @@
     "node_modules/bga-cards/src/stocks/void-stock.ts",
     "node_modules/bga-cards/src/sort.ts",
     "node_modules/bga-cards/src/card-manager.ts",
+    "node_modules/bga-dice/src/animations.ts",
     "node_modules/bga-dice/src/dice-manager.ts",
     "node_modules/bga-dice/src/die.ts",
     "node_modules/bga-dice/src/dice/die6.ts",
@@ -82,6 +83,7 @@
     "src/states/Cruise.ts",
     "src/states/Shop.ts",
     "src/states/ThrowFestivity.ts",
-    "src/states/MovePawn.ts"
+    "src/states/MovePawn.ts",
+    "src/states/AddExcessCardsToGossip.ts"
   ]
 }

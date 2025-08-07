@@ -32,11 +32,10 @@ use Bga\Games\MollyHouse\Managers\DieManager;
 use Bga\Games\MollyHouse\Managers\IndictmentCards;
 use Bga\Games\MollyHouse\Managers\Items;
 use Bga\Games\MollyHouse\Managers\Pawns;
+use Bga\Games\MollyHouse\Managers\PlayerCubes;
 use Bga\Games\MollyHouse\Managers\Players;
 use Bga\Games\MollyHouse\Managers\Sites;
-use Bga\Games\MollyHouse\Managers\ViceCards;
-
-;
+use Bga\Games\MollyHouse\Managers\ViceCards;;
 
 class Game extends \Bga\GameFramework\Table
 {
@@ -295,6 +294,7 @@ class Game extends \Bga\GameFramework\Table
         ViceCards::setupNewGame($players, $options);
         Pawns::setupNewGame($players, $options);
         Sites::setupNewGame($players, $options);
+        PlayerCubes::setupNewGame();
         // IndictmentCards::setupNewGame($players, $options);
         // Items::setupNewGame($players, $options);
 

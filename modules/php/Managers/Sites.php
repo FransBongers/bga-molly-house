@@ -8,6 +8,7 @@ class Sites extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
   protected static $table = 'sites';
   protected static $prefix = 'site_';
   protected static $customFields = [
+    'evidence',
     'raided_or_dangerous'
   ];
   protected static $autoremovePrefix = false;

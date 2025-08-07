@@ -42,7 +42,7 @@ interface MollyHouseGamedatas extends Gamedatas {
   deckCount: number;
   dice: number[];
   gossipPileCount: number;
-  market: ViceCard[];
+  market: Record<string,ViceCardBase>;
   pawns: Record<string,MohoPawn>;
   safePile: ViceCardBase[];
   sites: MohoSiteBase[]

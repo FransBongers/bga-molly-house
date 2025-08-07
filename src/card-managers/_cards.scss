@@ -20,8 +20,18 @@
   cursor: pointer !important;
   .card-sides {
     .card-side {
-      box-shadow: 0px 0px 0px calc(var(--cardScale) * 4px)
-        base.$selected-color !important;
+      box-shadow: 0px 0px 0px calc(var(--cardScale) * 4px) base.$selected-color !important;
     }
   }
+}
+
+#moho-deck.selectable {
+  cursor: pointer !important;
+  box-shadow: 0px 0px 0px calc(var(--cardScale) * 4px) base.$selectable-color !important;
+}
+
+#moho-deck.selectable:hover,
+#moho-deck.selected {
+  cursor: pointer !important;
+  box-shadow: 0px 0px 0px calc(var(--cardScale) * 4px) base.$selected-color !important;
 }

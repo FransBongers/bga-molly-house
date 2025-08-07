@@ -67,6 +67,7 @@ class MollyHouse implements Game {
     Indulge,
     LieLow,
     Accuse,
+    AddExcessCardsToGossip,
     Cruise,
     Shop,
     MovePawn,

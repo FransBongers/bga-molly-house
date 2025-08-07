@@ -11,5 +11,6 @@ class HeartsQueen extends \Bga\Games\MollyHouse\Cards\ViceCards\MollyCard
     $this->value = 'Q';
     $this->suit = HEARTS;
     $this->joy = 4;
+    $this->bonusJoy = 3;
   }
 }

@@ -10,11 +10,11 @@ use Bga\Games\MollyHouse\Managers\Players;
 use Bga\Games\MollyHouse\Managers\ViceCards;
 
 
-class ResolveMarketDiscard extends \Bga\Games\MollyHouse\Models\AtomicAction
+class RefillMarket extends \Bga\Games\MollyHouse\Models\AtomicAction
 {
   public function getState()
   {
-    return ST_RESOLVE_MARKET_DISCARD;
+    return ST_REFILL_MARKET;
   }
 
   // ..######..########....###....########.########
@@ -34,21 +34,49 @@ class ResolveMarketDiscard extends \Bga\Games\MollyHouse\Models\AtomicAction
   // .##.....##..######.....##....####..#######..##....##
 
 
-  public function stResolveMarketDiscard()
+  public function stRefillMarket()
   {
-    $player = $this->getPlayer();
+    // $cardsInMarket = ViceCards::getMarket();
 
-    $card = ViceCards::getCardFarthestFromViceDeck();
+    $reversedMarketSpots =  [
+      MARKET_3,
+      MARKET_2,
+      MARKET_1,
+      MARKET_0,
+    ];
 
-    if ($card->isDesire()) {
-      $card->addToSafePile($player);
-    } else {
-      // Note: Threat card model handles exposing player. 
-      // Possibly move here?
-      $card->addToGossip($player);
+    $openSpots = [];
+    $updatedCards = [];
+
+    // Move cards
+    foreach ($reversedMarketSpots as $marketSpot) {
+      // TODO: can be done more efficiently?
+      $card = ViceCards::getTopOf($marketSpot);
+
+      if ($card === null) {
+        $openSpots[] = $marketSpot;
+      } else if ($card !== null && count($openSpots) > 0) {
+        // Move card to first open spot
+        $spot = array_shift($openSpots);
+        $card->setLocation($spot);
+        $updatedCards[] = $card;
+        $openSpots[] = $marketSpot;
+      }
     }
 
-    $this->resolveAction(['automatic' => true]);
+    // Fill remaining open spots
+    foreach ($openSpots as $spot) {
+      $card = ViceCards::getTopOf(DECK);
+      if ($card === null) {
+        break;
+      }
+      $card->setLocation($spot);
+      $updatedCards[] = $card;
+    }
+
+    Notifications::refillMarket($this->getPlayer(), $updatedCards);
+
+    $this->resolveAction(['automatic' => true], true);
   }
 
 

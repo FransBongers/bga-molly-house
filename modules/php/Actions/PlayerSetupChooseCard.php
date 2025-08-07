@@ -115,7 +115,7 @@ class PlayerSetupChooseCard extends \Bga\Games\MollyHouse\Models\AtomicAction
 
   private function resolveSetup($player)
   {
-    $reputationCards = $player->getReputation();
+    $reputationCards = $player->getCardsInReputation();
     $card = $reputationCards[0];
     $card->setHidden(0);
 

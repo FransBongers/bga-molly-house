@@ -10,5 +10,6 @@ class NobleStreet extends \Bga\Games\MollyHouse\Models\Site
     $this->id = NOBLE_STREET;
     $this->name = clienttranslate("Noble Street");
     $this->locationOrder = 2;
+    $this->action = SHOP;
   }
 }

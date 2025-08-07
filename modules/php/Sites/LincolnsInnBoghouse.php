@@ -10,5 +10,7 @@ class LincolnsInnBoghouse extends \Bga\Games\MollyHouse\Models\Site
     $this->id = LINCOLNS_INN_BOGHOUSE;
     $this->name = clienttranslate("Lincoln's Inn Boghouse");
     $this->locationOrder = 15;
+    $this->action = CRUISE;
+    $this->suit = PENTACLES;
   }
 }

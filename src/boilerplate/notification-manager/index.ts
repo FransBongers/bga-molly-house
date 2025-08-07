@@ -61,12 +61,20 @@ class NotificationManager {
       'log',
       'message',
       // Game specific
+      'addCardToHand',
       'addCardToGossipPile',
+      'addCardToReputation',
       'addCardToSafePile',
+      'addExcessCardsToGossip',
+      'addExcessCardsToGossipPrivate',
+      'drawCards',
+      'drawCardsPrivate',
       'gainCubes',
       'movePawn',
       'placePawn',
+      'refillMarket',
       'rollDice',
+      'scoreBonusJoy',
       'scoreJoy',
       'setupChooseCardPrivate',
       'setupChooseCard',
@@ -117,15 +125,17 @@ class NotificationManager {
       this.game.framework().notifqueue.setSynchronous(notifName, undefined);
 
       // Setup notifs that need to be ignored
-      ['setupChooseCard'].forEach((notifId) => {
-        this.game
-          .framework()
-          .notifqueue.setIgnoreNotificationCheck(
-            notifId,
-            (notif: Notif<{ playerId: number }>) =>
-              notif.args.playerId == this.game.getPlayerId()
-          );
-      });
+      ['addExcessCardsToGossip', 'drawCards', 'setupChooseCard'].forEach(
+        (notifId) => {
+          this.game
+            .framework()
+            .notifqueue.setIgnoreNotificationCheck(
+              notifId,
+              (notif: Notif<{ playerId: number }>) =>
+                notif.args.playerId == this.game.getPlayerId()
+            );
+        }
+      );
     });
   }
 
@@ -162,6 +172,19 @@ class NotificationManager {
     // Only here so messages get displayed in title bar
   }
 
+  async notif_addCardToHand(notif: Notif<NotifAddCardToHand>) {
+    const { playerId, card } = notif.args;
+
+    const viceCard = getViceCard(card);
+    if (playerId === this.game.getPlayerId()) {
+      const hand = Hand.getInstance();
+
+      await hand.addCard(viceCard);
+    } else {
+      Market.getInstance().stock.removeCard(viceCard);
+    }
+  }
+
   async notif_addCardToGossipPile(notif: Notif<NotifAddCardToGossipPile>) {
     const { card } = notif.args;
 
@@ -169,11 +192,66 @@ class NotificationManager {
     await board.gossipPile.addCard(getViceCard(card));
   }
 
+  async notif_addCardToReputation(notif: Notif<NotifAddCardToReputation>) {
+    const { playerId, card } = notif.args;
+
+    const player = this.getPlayer(playerId);
+
+    const viceCard = getViceCard(card);
+    const fromElement =
+      this.game.getPlayerId() !== playerId
+        ? document.getElementById(`player_board_${playerId}`)
+        : undefined;
+
+    await player.reputation.addCard(viceCard, {
+      fromElement,
+    });
+  }
+
   async notif_addCardToSafePile(notif: Notif<NotifAddCardToSafePile>) {
     const { card } = notif.args;
 
     const market = Market.getInstance();
     await market.safePile.addCard(getViceCard(card));
+  }
+
+  async notif_addExcessCardsToGossip(
+    notif: Notif<NotifAddExcessCardsToGossip>
+  ) {
+    const { number } = notif.args;
+    // TODO update counters
+  }
+
+  async notif_addExcessCardsToGossipPrivate(
+    notif: Notif<NotifAddExcessCardsToGossipPrivate>
+  ) {
+    const { cards } = notif.args;
+
+    const board = Board.getInstance();
+    await board.gossipPile.addCards(cards.map(getViceCard));
+  }
+
+  async notif_drawCards(notif: Notif<NotifDrawCards>) {
+    const { playerId } = notif.args;
+
+    // TODO: update player panel
+  }
+
+  async notif_drawCardsPrivate(notif: Notif<NotifDrawCardsPrivate>) {
+    const { cards } = notif.args;
+
+    const viceCards = cards.map((card) => getViceCard(card));
+    const hand = Hand.getInstance();
+    const promises = viceCards.map(async (card, index) => {
+      // TODO: add card to deck before drawing
+      // await this.game.framework().wait(index * 150);
+      // await hand.getStock().addCard(card, {
+      //   fromElement: document.getElementById('moho-deck'),
+      // });
+      await hand.addCard(card);
+    });
+
+    await Promise.all(promises);
   }
 
   async notif_gainCubes(notif: Notif<NotifGainCubes>) {
@@ -204,6 +282,13 @@ class NotificationManager {
     );
   }
 
+  async notif_refillMarket(notif: Notif<NotifRefillMarket>) {
+    const { cards } = notif.args;
+    // TODO animation
+    const market = Market.getInstance();
+    await market.stock.addCards(cards.map(getViceCard));
+  }
+
   async notif_rollDice(notif: Notif<NotifRollDice>) {
     const { diceResults } = notif.args;
 
@@ -212,6 +297,12 @@ class NotificationManager {
       duration: [800, 1200],
     });
     await sleep(1200);
+  }
+
+  async notif_scoreBonusJoy(notif: Notif<NotifScoreBonusJoy>) {
+    const { playerId, amount } = notif.args;
+
+    incScore(playerId, amount);
   }
 
   async notif_scoreJoy(notif: Notif<NotifScoreJoy>) {

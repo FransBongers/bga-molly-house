@@ -11,5 +11,7 @@ class MissMuffs extends \Bga\Games\MollyHouse\Models\Site
     $this->name = clienttranslate("Miss Muff's");
     $this->locationOrder = 4;
     $this->address = clienttranslate("Black Lion Yard");
+    $this->action = THROW_FESTIVITY;
+    $this->suit = FANS;
   }
 }

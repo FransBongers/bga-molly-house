@@ -10,5 +10,7 @@ class Moorfields extends \Bga\Games\MollyHouse\Models\Site
     $this->id = MOORFIELDS;
     $this->name = clienttranslate("Moorfields");
     $this->locationOrder = 3;
+    $this->action = CRUISE;
+    $this->suit = FANS;
   }
 }

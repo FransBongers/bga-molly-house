@@ -10,5 +10,8 @@ class RoyalExchange extends \Bga\Games\MollyHouse\Models\Site
     $this->id = ROYAL_EXCHANGE;
     $this->name = clienttranslate("Royal Exchange");
     $this->locationOrder = 5;
+    $this->action = CRUISE;
+    $this->suit = CUPS;
+    $this->suit = FANS;
   }
 }

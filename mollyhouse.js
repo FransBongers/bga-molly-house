@@ -1,4 +1,10 @@
 var _a;
+var INDULGE = 'Indulge';
+var LIE_LOW = 'LieLow';
+var ACCUSE = 'Accuse';
+var CRUISE = 'Cruise';
+var SHOP = 'Shop';
+var THROW_FESTIVITY = 'ThrowFestivity';
 var DESIRE = 'desire';
 var THREAT = 'threat';
 var MOLLY = 'molly';
@@ -2381,6 +2387,7 @@ var Interaction = (function () {
         }
     };
     Interaction.prototype.addUndoButtons = function (_a) {
+        var _this = this;
         var previousSteps = _a.previousSteps, previousEngineChoices = _a.previousEngineChoices;
         var lastStep = Math.max.apply(Math, __spreadArray([0], previousSteps, false));
         if (lastStep > 0) {
@@ -2388,6 +2395,9 @@ var Interaction = (function () {
                 id: 'undo_last_step_btn',
                 text: _('Undo last step'),
                 callback: function () {
+                    _this.game.framework().bgaPerformAction('actUndoToStep', {
+                        stepId: lastStep,
+                    });
                 },
             });
         }
@@ -2396,6 +2406,7 @@ var Interaction = (function () {
                 id: 'restart_btn',
                 text: _('Restart turn'),
                 callback: function () {
+                    _this.game.framework().bgaPerformAction('actRestart');
                 },
             });
         }
@@ -2756,12 +2767,20 @@ var NotificationManager = (function () {
         var notifs = [
             'log',
             'message',
+            'addCardToHand',
             'addCardToGossipPile',
+            'addCardToReputation',
             'addCardToSafePile',
+            'addExcessCardsToGossip',
+            'addExcessCardsToGossipPrivate',
+            'drawCards',
+            'drawCardsPrivate',
             'gainCubes',
             'movePawn',
             'placePawn',
+            'refillMarket',
             'rollDice',
+            'scoreBonusJoy',
             'scoreJoy',
             'setupChooseCardPrivate',
             'setupChooseCard',
@@ -2791,7 +2810,7 @@ var NotificationManager = (function () {
                 }
             }));
             _this.game.framework().notifqueue.setSynchronous(notifName, undefined);
-            ['setupChooseCard'].forEach(function (notifId) {
+            ['addExcessCardsToGossip', 'drawCards', 'setupChooseCard'].forEach(function (notifId) {
                 _this.game
                     .framework()
                     .notifqueue.setIgnoreNotificationCheck(notifId, function (notif) {
@@ -2821,6 +2840,28 @@ var NotificationManager = (function () {
             });
         });
     };
+    NotificationManager.prototype.notif_addCardToHand = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, playerId, card, viceCard, hand;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = notif.args, playerId = _a.playerId, card = _a.card;
+                        viceCard = getViceCard(card);
+                        if (!(playerId === this.game.getPlayerId())) return [3, 2];
+                        hand = Hand.getInstance();
+                        return [4, hand.addCard(viceCard)];
+                    case 1:
+                        _b.sent();
+                        return [3, 3];
+                    case 2:
+                        Market.getInstance().stock.removeCard(viceCard);
+                        _b.label = 3;
+                    case 3: return [2];
+                }
+            });
+        });
+    };
     NotificationManager.prototype.notif_addCardToGossipPile = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
             var card, board;
@@ -2837,6 +2878,28 @@ var NotificationManager = (function () {
             });
         });
     };
+    NotificationManager.prototype.notif_addCardToReputation = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, playerId, card, player, viceCard, fromElement;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = notif.args, playerId = _a.playerId, card = _a.card;
+                        player = this.getPlayer(playerId);
+                        viceCard = getViceCard(card);
+                        fromElement = this.game.getPlayerId() !== playerId
+                            ? document.getElementById("player_board_".concat(playerId))
+                            : undefined;
+                        return [4, player.reputation.addCard(viceCard, {
+                                fromElement: fromElement,
+                            })];
+                    case 1:
+                        _b.sent();
+                        return [2];
+                }
+            });
+        });
+    };
     NotificationManager.prototype.notif_addCardToSafePile = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
             var card, market;
@@ -2846,6 +2909,68 @@ var NotificationManager = (function () {
                         card = notif.args.card;
                         market = Market.getInstance();
                         return [4, market.safePile.addCard(getViceCard(card))];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_addExcessCardsToGossip = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var number;
+            return __generator(this, function (_a) {
+                number = notif.args.number;
+                return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_addExcessCardsToGossipPrivate = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var cards, board;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        cards = notif.args.cards;
+                        board = Board.getInstance();
+                        return [4, board.gossipPile.addCards(cards.map(getViceCard))];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_drawCards = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var playerId;
+            return __generator(this, function (_a) {
+                playerId = notif.args.playerId;
+                return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_drawCardsPrivate = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var cards, viceCards, hand, promises;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        cards = notif.args.cards;
+                        viceCards = cards.map(function (card) { return getViceCard(card); });
+                        hand = Hand.getInstance();
+                        promises = viceCards.map(function (card, index) { return __awaiter(_this, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0: return [4, hand.addCard(card)];
+                                    case 1:
+                                        _a.sent();
+                                        return [2];
+                                }
+                            });
+                        }); });
+                        return [4, Promise.all(promises)];
                     case 1:
                         _a.sent();
                         return [2];
@@ -2898,6 +3023,22 @@ var NotificationManager = (function () {
             });
         });
     };
+    NotificationManager.prototype.notif_refillMarket = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var cards, market;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        cards = notif.args.cards;
+                        market = Market.getInstance();
+                        return [4, market.stock.addCards(cards.map(getViceCard))];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
     NotificationManager.prototype.notif_rollDice = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
             var diceResults;
@@ -2914,6 +3055,16 @@ var NotificationManager = (function () {
                         _a.sent();
                         return [2];
                 }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_scoreBonusJoy = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, playerId, amount;
+            return __generator(this, function (_b) {
+                _a = notif.args, playerId = _a.playerId, amount = _a.amount;
+                incScore(playerId, amount);
+                return [2];
             });
         });
     };
@@ -3588,6 +3739,7 @@ var MollyHouse = (function () {
             Indulge: Indulge,
             LieLow: LieLow,
             Accuse: Accuse,
+            AddExcessCardsToGossip: AddExcessCardsToGossip,
             Cruise: Cruise,
             Shop: Shop,
             MovePawn: MovePawn,
@@ -4407,16 +4559,16 @@ var Market = (function () {
             thicknesses: [100],
             counter: {
                 show: true,
-                position: 'center'
-            }
+                position: 'center',
+            },
         });
         this.safePile = new Deck(this.game.viceCardManager, this.ui.safePile, {
             cardNumber: 0,
             thicknesses: [100],
             counter: {
                 show: true,
-                position: 'center'
-            }
+                position: 'center',
+            },
         });
         this.updateSafePile(gamedatas);
     };
@@ -4432,7 +4584,7 @@ var Market = (function () {
         this.updateMarket(gamedatas);
     };
     Market.prototype.updateMarket = function (gamedatas) {
-        this.stock.addCards(gamedatas.market);
+        this.stock.addCards(Object.values(gamedatas.market).map(getViceCard));
     };
     Market.prototype.updateSafePile = function (gamedatas) {
         this.safePile.addCards(Object.values(gamedatas.safePile).map(function (card) { return getViceCard(card); }));
@@ -4545,7 +4697,7 @@ var MohoPlayer = (function () {
 }());
 var tplPlayerBoard = function (_a) {
     var playerId = _a.playerId, color = _a.color;
-    return "\n<div id=\"moho-player-row-".concat(playerId, "\" class=\"moho-player-row\">\n  <div id=\"moho-reputation-").concat(playerId, "\" class=\"moho-reputation\"></div>\n  <div id=\"moho-player-board-").concat(playerId, "\" class=\"moho-player-board\" data-color=\"").concat(color, "\"></div>\n</div>\n\n");
+    return "\n<div id=\"moho-player-row-".concat(playerId, "\" class=\"moho-player-row\">\n  <div id=\"moho-player-board-").concat(playerId, "\" class=\"moho-player-board\" data-color=\"").concat(color, "\"></div>\n  <div id=\"moho-reputation-").concat(playerId, "\" class=\"moho-reputation\"></div>\n</div>\n\n");
 };
 var tplPlayerCounters = function (_a) {
     var playerId = _a.playerId;
@@ -4571,15 +4723,75 @@ var TakeAction = (function () {
     };
     TakeAction.prototype.setDescription = function (activePlayerIds, args) { };
     TakeAction.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
         this.game.clearPossible();
-        updatePageTitle(_('${you} may perform an action'), {});
-    };
-    TakeAction.prototype.updateInterfaceConfirm = function () {
-        clearPossible();
-        updatePageTitle(_('Confirm ship placement'));
-        addConfirmButton(function () {
-            performAction('actTakeAction', {});
+        updatePageTitle(_('${you} must take an action'), {});
+        if (this.args._private.LieLow) {
+            onClick('moho-deck', function () { return _this.updateInterfaceConfirm(LIE_LOW, 'deck'); });
+        }
+        Object.values(this.args._private.Indulge || {}).forEach(function (card) {
+            onClick(document.getElementById(card.id), function () {
+                return _this.updateInterfaceConfirm(INDULGE, card.id);
+            });
         });
+        Object.values(this.args._private.Cruise || {}).forEach(function (card) {
+            onClick(document.getElementById(card.id), function () {
+                return _this.updateInterfaceConfirm(CRUISE, card.id);
+            });
+        });
+        addUndoButtons(this.args);
+    };
+    TakeAction.prototype.updateInterfaceConfirm = function (action, target) {
+        clearPossible();
+        this.updateConfirmTitle(action, target);
+        this.updateConfirmTargetSelected(action, target);
+        addConfirmButton(function () {
+            performAction('actTakeAction', {
+                takenAction: action,
+                target: target,
+            });
+        });
+        addCancelButton();
+    };
+    TakeAction.prototype.updateConfirmTargetSelected = function (action, target) {
+        switch (action) {
+            case CRUISE:
+            case INDULGE:
+                setSelected(document.getElementById(target));
+                break;
+            case LIE_LOW:
+                setSelected(document.getElementById('moho-deck'));
+                break;
+            default:
+                updatePageTitle(_('Confirm your action'));
+                break;
+        }
+    };
+    TakeAction.prototype.updateConfirmTitle = function (action, target) {
+        switch (action) {
+            case CRUISE:
+                updatePageTitle(_('Cruise on ${site} and add ${value} of ${tkn_suit} to your reputation'), {
+                    site: StaticData.get().site(this.args.site.id).name,
+                    value: StaticData.get().viceCard(target).value,
+                    tkn_suit: StaticData.get().viceCard(target).suit,
+                });
+                break;
+            case INDULGE:
+                updatePageTitle(_('Indulge on ${site} and add ${value} of ${tkn_suit} to your hand'), {
+                    site: StaticData.get().site(this.args.site.id).name,
+                    value: StaticData.get().viceCard(target).value,
+                    tkn_suit: StaticData.get().viceCard(target).suit,
+                });
+                break;
+            case LIE_LOW:
+                updatePageTitle(_('Lie Low on ${site} and draw a card from the vice deck?'), {
+                    site: StaticData.get().site(this.args.site.id).name,
+                });
+                break;
+            default:
+                updatePageTitle(_('Confirm your action'));
+                break;
+        }
     };
     return TakeAction;
 }());
@@ -4919,4 +5131,78 @@ var MovePawn = (function () {
         addCancelButton();
     };
     return MovePawn;
+}());
+var AddExcessCardsToGossip = (function () {
+    function AddExcessCardsToGossip(game) {
+        this.game = game;
+    }
+    AddExcessCardsToGossip.create = function (game) {
+        AddExcessCardsToGossip.instance = new AddExcessCardsToGossip(game);
+    };
+    AddExcessCardsToGossip.getInstance = function () {
+        return AddExcessCardsToGossip.instance;
+    };
+    AddExcessCardsToGossip.prototype.onEnteringState = function (args) {
+        debug('Entering AddExcessCardsToGossip state');
+        this.args = args;
+        this.selectedCards = {};
+        this.updateInterfaceInitialStep();
+    };
+    AddExcessCardsToGossip.prototype.onLeavingState = function () {
+        debug('Leaving Indulge state');
+    };
+    AddExcessCardsToGossip.prototype.setDescription = function (activePlayerIds, args) { };
+    AddExcessCardsToGossip.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        var remaining = this.args.numberToDiscard - Object.keys(this.selectedCards).length;
+        if (remaining === 0) {
+            this.updateInterfaceConfirm();
+            return;
+        }
+        updatePageTitle(_('${you} must select cards to add to the gossip pile (${number} remaining)'), {
+            number: remaining,
+        });
+        this.args._private.cards.forEach(function (card) {
+            var cardElt = document.getElementById(card.id);
+            if (cardElt) {
+                onClick(cardElt, function () { return _this.onClickCard(card); });
+            }
+        });
+        this.setSelected();
+        if (Object.keys(this.selectedCards).length > 0) {
+            addCancelButton();
+        }
+        else {
+            addUndoButtons(this.args);
+        }
+    };
+    AddExcessCardsToGossip.prototype.updateInterfaceConfirm = function () {
+        var _this = this;
+        clearPossible();
+        updatePageTitle(_('Add selected cards to the gossip pile?'));
+        this.setSelected();
+        addConfirmButton(function () {
+            performAction('actAddExcessCardsToGossip', {
+                cardIds: Object.keys(_this.selectedCards),
+            });
+        });
+        addCancelButton();
+    };
+    AddExcessCardsToGossip.prototype.setSelected = function () {
+        Object.keys(this.selectedCards).forEach(function (cardId) {
+            var cardElt = document.getElementById(cardId);
+            setSelected(cardElt);
+        });
+    };
+    AddExcessCardsToGossip.prototype.onClickCard = function (card) {
+        if (this.selectedCards[card.id]) {
+            delete this.selectedCards[card.id];
+        }
+        else {
+            this.selectedCards[card.id] = card;
+        }
+        this.updateInterfaceInitialStep();
+    };
+    return AddExcessCardsToGossip;
 }());

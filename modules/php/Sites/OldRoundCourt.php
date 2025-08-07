@@ -10,5 +10,7 @@ class OldRoundCourt extends \Bga\Games\MollyHouse\Models\Site
     $this->id = OLD_ROUND_COURT;
     $this->name = clienttranslate("Old Round Court");
     $this->locationOrder = 9;
+    $this->action = CRUISE;
+    $this->suit = HEARTS;
   }
 }

@@ -68,6 +68,8 @@ class Shop extends \Bga\Games\MollyHouse\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-
+  public function getOptions($player, $site) {
+    return [];
+  }
 }
 

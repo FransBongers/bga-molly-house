@@ -3,14 +3,16 @@
 namespace Bga\Games\MollyHouse\Actions;
 
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
-use Bga\Games\MollyHouse\Managers\ViceCards;
+use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 
-class Indulge extends \Bga\Games\MollyHouse\Models\AtomicAction
+class AddExcessCardsToGossip extends \Bga\Games\MollyHouse\Models\AtomicAction
 {
   public function getState()
   {
-    return ST_INDULGE;
+    return ST_ADD_EXCESS_CARDS_TO_GOSSIP;
   }
+
+
 
   // ....###....########...######....######.
   // ...##.##...##.....##.##....##..##....##
@@ -20,14 +22,22 @@ class Indulge extends \Bga\Games\MollyHouse\Models\AtomicAction
   // .##.....##.##....##..##....##..##....##
   // .##.....##.##.....##..######....######.
 
-
-  public function argsIndulge()
+  public function argsAddExcessCardsToGossip()
   {
-    $info = $this->ctx->getInfo();
+    $player = $this->getPlayer();
+    $hand = $player->getHand();
 
-    $data = [];
+    $numberToDiscard = count($hand) - 6;
 
-    return $data;
+    return [
+      '_private' => [
+        $player->getId() => [
+          'cards' => $hand,
+
+        ],
+      ],
+      'numberToDiscard' => $numberToDiscard,
+    ];
   }
 
   //  .########..##..........###....##....##.########.########.
@@ -46,20 +56,38 @@ class Indulge extends \Bga\Games\MollyHouse\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function actPassIndulge()
+  public function actPassAddExcessCardsToGossip()
   {
     $player = self::getPlayer();
     $this->resolveAction(PASS);
   }
 
-  public function actIndulge($args)
+  public function actAddExcessCardsToGossip($args)
   {
-    self::checkAction('actIndulge');
+    self::checkAction('actAddExcessCardsToGossip');
 
+    $cardIds = $args->cardIds;
 
+    $stateArgs = $this->argsAddExcessCardsToGossip();
 
+    $player = $this->getPlayer();
+    $playerId = $player->getId();
 
-    $this->resolveAction([], true);
+    $cards = [];
+    foreach ($cardIds as $cardId) {
+      $card = Utils::array_find($stateArgs['_private'][$playerId]['cards'], function ($c) use ($cardId) {
+        return $c->getId() === $cardId;
+      });
+      if ($card === null) {
+        throw new \feException("ERROR_009");
+      }
+      $card->setLocation(GOSSIP_PILE);
+      $cards[] = $card;
+    }
+
+    Notifications::addExcessCardsToGossip($player, $cards);
+
+    $this->resolveAction([]);
   }
 
   //  .##.....##.########.####.##.......####.########.##....##
@@ -70,33 +98,5 @@ class Indulge extends \Bga\Games\MollyHouse\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-  public function performAction($player, $site, $card)
-  {
-    Notifications::message(clienttranslate('${player_name} indulges on ${tkn_boldText_site}'), [
-      'player' => $player,
-      'tkn_boldText_site' => $site->getName(),
-      'i18n' => ['tkn_boldText_site'],
-    ]);
-    $card->addToHand($player);
-  }
-
-  public function getOptions($site)
-  {
-    $market = ViceCards::getMarket();
-    $suit = $site->getSuit();
-
-    if ($suit === null) {
-      return [];
-    }
-
-    $options = [];
-
-    foreach ($market as $card) {
-      if ($card->getSuit() === $suit) {
-        $options[$card->getId()] = $card;
-      }
-    }
-    return $options;
-  }
 
 }

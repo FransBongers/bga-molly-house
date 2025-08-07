@@ -63,17 +63,21 @@ class Market {
       thicknesses: [100],
       counter: {
         show: true,
-        position: 'center'
-      }
+        position: 'center',
+      },
     });
-    this.safePile = new Deck<ViceCard>(this.game.viceCardManager, this.ui.safePile, {
-      cardNumber: 0,
-      thicknesses: [100],
-      counter: {
-        show: true,
-        position: 'center'
+    this.safePile = new Deck<ViceCard>(
+      this.game.viceCardManager,
+      this.ui.safePile,
+      {
+        cardNumber: 0,
+        thicknesses: [100],
+        counter: {
+          show: true,
+          position: 'center',
+        },
       }
-    });
+    );
     this.updateSafePile(gamedatas);
   }
 
@@ -108,11 +112,13 @@ class Market {
   // ..#######..##........########..##.....##....##....########.....#######..####
 
   private updateMarket(gamedatas: GamedatasAlias) {
-    this.stock.addCards(gamedatas.market);
+    this.stock.addCards(Object.values(gamedatas.market).map(getViceCard));
   }
 
   private updateSafePile(gamedatas: GamedatasAlias) {
-    this.safePile.addCards(Object.values(gamedatas.safePile).map((card) => getViceCard(card)));
+    this.safePile.addCards(
+      Object.values(gamedatas.safePile).map((card) => getViceCard(card))
+    );
   }
 
   //  .##.....##.########.####.##.......####.########.##....##

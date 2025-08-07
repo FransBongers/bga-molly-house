@@ -14,6 +14,9 @@ trait TurnTrait
 
   function stStartGameEngine()
   {
+    // custom order activates stStartOfTurn when it's a players turn
+    $this->initCustomDefaultTurnOrder('default', 'stStartOfTurn', 'not_used', true);
+
     $node = [
       'children' => [
         [
@@ -24,15 +27,16 @@ trait TurnTrait
     ];
 
     // Inserting leaf Action card
-    Engine::setup($node, ['method' => 'stNextPlayer']);
+    Engine::setup($node, ['method' => 'stStartOfTurn']);
     Engine::proceed();
   }
 
-  function stNextPlayer()
+  function stStartOfTurn()
   {
     $player = Players::getActive();
     $playerId = $player->getId();
     self::giveExtraTime($playerId);
+
     Notifications::startOfTurn($player);
 
     $node = [
@@ -49,6 +53,29 @@ trait TurnTrait
           'action' => TAKE_ACTION,
           'playerId' => $playerId,
         ],
+        [
+          'action' => CHECK_HAND_SIZE,
+          'playerId' => $playerId,
+        ],
+      ],
+    ];
+
+    Engine::setup($node, ['method' => 'stSetupRefillMarket']);
+    Engine::proceed();
+  }
+
+  function stSetupRefillMarket()
+  {
+    // TO CHECK: is active player always the player whos turn it is?
+    $player = Players::getActive();
+    $playerId = $player->getId();
+
+    $node = [
+      'children' => [
+        [
+          'action' => REFILL_MARKET,
+          'playerId' => $playerId,
+        ],
       ],
     ];
 
@@ -56,50 +83,18 @@ trait TurnTrait
     Engine::proceed();
   }
 
-
-
-
-  function setupPlayerTurn() {}
-
-  /**
-   * Activate next player
-   * TODO: is this even used?
-   */
-  function stTurnAction()
+  function stNextPlayer()
   {
-    $player = Players::getActive();
-    self::giveExtraTime($player->getId());
+    // Check if ViceDeck is empty
 
-    $node = [
-      'children' => [],
-    ];
-    // Notifications::startTurn($player);
-
-    // Inserting leaf Action card
-    Engine::setup($node, ['method' => 'stTurnAction']);
-    Engine::proceed();
+    $this->nextPlayerCustomOrder('default');
   }
 
 
-  function endOfGameInit()
-  {
-    // if (Globals::getEndFinalScoringDone() !== true) {
-    //   // Trigger discard state
-    //   Engine::setup(
-    //     [
-    //       'action' => DISCARD_SCORING,
-    //       'playerId' => 'all',
-    //       'args' => ['current' => Players::getActive()->getId()],
-    //     ],
-    //     ''
-    //   );
-    //   Engine::proceed();
-    // } else {
-    //   // Goto scoring state
-    //   $this->gamestate->jumpToState(\ST_PRE_END_OF_GAME);
-    // }
-    // return;
-  }
+  public function stGenericNextPlayer() {}
+
+
+  function endOfGameInit() {}
 
   function stPreEndOfGame() {}
 

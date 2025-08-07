@@ -3,6 +3,7 @@
 namespace Bga\Games\MollyHouse\Models;
 
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
+use Bga\Games\MollyHouse\Managers\Sites;
 
 class Pawn extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
 {
@@ -48,6 +49,10 @@ class Pawn extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
       $player,
       $this
     );
+  }
+
+  public function getSite() {
+    return Sites::get($this->getLocation());
   }
 
   public function move($player, $location, $notify = true)

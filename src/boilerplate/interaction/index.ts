@@ -157,6 +157,9 @@ class Interaction {
         id: 'undo_last_step_btn',
         text: _('Undo last step'),
         callback: () => {
+          this.game.framework().bgaPerformAction('actUndoToStep', {
+            stepId: lastStep,
+          })
           // this.takeAction({
           //   action: 'actUndoToStep',
           //   args: {
@@ -174,6 +177,7 @@ class Interaction {
         id: 'restart_btn',
         text: _('Restart turn'),
         callback: () => {
+          this.game.framework().bgaPerformAction('actRestart')
           // this.takeAction({ action: 'actRestart', atomicAction: false }),
         },
       });

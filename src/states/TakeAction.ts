@@ -1,4 +1,11 @@
-interface OnEnteringTakeActionArgs extends CommonStateArgs {}
+interface OnEnteringTakeActionArgs extends CommonStateArgs {
+  _private: {
+    Cruise?: Record<string, ViceCardBase>;
+    Indulge: Record<string, ViceCardBase>;
+    LieLow: boolean;
+  };
+  site: MohoSiteBase;
+}
 
 class TakeAction implements State {
   private static instance: TakeAction;
@@ -46,7 +53,23 @@ class TakeAction implements State {
   private updateInterfaceInitialStep() {
     this.game.clearPossible();
 
-    updatePageTitle(_('${you} may perform an action'), {});
+    updatePageTitle(_('${you} must take an action'), {});
+
+    if (this.args._private.LieLow) {
+      onClick('moho-deck', () => this.updateInterfaceConfirm(LIE_LOW, 'deck'));
+    }
+
+    Object.values(this.args._private.Indulge || {}).forEach((card) => {
+      onClick(document.getElementById(card.id), () =>
+        this.updateInterfaceConfirm(INDULGE, card.id)
+      );
+    });
+
+    Object.values(this.args._private.Cruise || {}).forEach((card) => {
+      onClick(document.getElementById(card.id), () =>
+        this.updateInterfaceConfirm(CRUISE, card.id)
+      );
+    });
 
     // addPrimaryActionButton({
     //   id: 'continue_btn',
@@ -69,16 +92,22 @@ class TakeAction implements State {
     //     await sleep(1200);
     //   },
     // });
+    addUndoButtons(this.args);
   }
 
-  private updateInterfaceConfirm() {
+  private updateInterfaceConfirm(action: string, target: string) {
     clearPossible();
 
-    updatePageTitle(_('Confirm ship placement'));
+    this.updateConfirmTitle(action, target);
+    this.updateConfirmTargetSelected(action, target);
 
     addConfirmButton(() => {
-      performAction('actTakeAction', {});
+      performAction('actTakeAction', {
+        takenAction: action,
+        target,
+      });
     });
+    addCancelButton();
   }
 
   //  .##.....##.########.####.##.......####.########.##....##
@@ -88,6 +117,61 @@ class TakeAction implements State {
   //  .##.....##....##.....##..##........##.....##.......##...
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
+
+  private updateConfirmTargetSelected(action: string, target: string) {
+    switch (action) {
+      case CRUISE:
+      case INDULGE:
+        setSelected(document.getElementById(target));
+        break;
+      case LIE_LOW:
+        setSelected(document.getElementById('moho-deck'));
+        break;
+      default:
+        updatePageTitle(_('Confirm your action'));
+        break;
+    }
+  }
+
+  private updateConfirmTitle(action: string, target: string) {
+    switch (action) {
+      case CRUISE:
+        updatePageTitle(
+          _(
+            'Cruise on ${site} and add ${value} of ${tkn_suit} to your reputation'
+          ),
+          {
+            site: StaticData.get().site(this.args.site.id).name,
+            value: StaticData.get().viceCard(target).value,
+            tkn_suit: StaticData.get().viceCard(target).suit,
+          }
+        );
+        break;
+      case INDULGE:
+        updatePageTitle(
+          _(
+            'Indulge on ${site} and add ${value} of ${tkn_suit} to your hand'
+          ),
+          {
+            site: StaticData.get().site(this.args.site.id).name,
+            value: StaticData.get().viceCard(target).value,
+            tkn_suit: StaticData.get().viceCard(target).suit,
+          }
+        );
+        break;
+      case LIE_LOW:
+        updatePageTitle(
+          _('Lie Low on ${site} and draw a card from the vice deck?'),
+          {
+            site: StaticData.get().site(this.args.site.id).name,
+          }
+        );
+        break;
+      default:
+        updatePageTitle(_('Confirm your action'));
+        break;
+    }
+  }
 
   //  ..######..##.......####..######..##....##
   //  .##....##.##........##..##....##.##...##.

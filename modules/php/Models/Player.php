@@ -6,6 +6,7 @@ use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
 use Bga\Games\MollyHouse\Boilerplate\Core\Preferences;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 use Bga\Games\MollyHouse\Managers\Pawns;
+use Bga\Games\MollyHouse\Managers\PlayerCubes;
 use Bga\Games\MollyHouse\Managers\ViceCards;
 
 /*
@@ -71,7 +72,7 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     return ViceCards::getInLocation(Locations::hand($this->getId()))->toArray();
   }
 
-  public function getReputation()
+  public function getCardsInReputation()
   {
     return ViceCards::getInLocation(Locations::reputation($this->getId()))->toArray();
   }
@@ -86,11 +87,29 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     return $this->hexColorMap[$this->getHexColor()];
   }
 
+  public function drawCards($amount)
+  {
+    $cards = ViceCards::pickForLocation($amount, DECK, Locations::hand($this->getId()))->toArray();
+
+    Notifications::drawCards($this, $cards);
+
+    $drawTokens = $amount - count($cards);
+    if ($drawTokens > 0) {
+      Notifications::message(
+        clienttranslate('${player_name} gains ${tkn_boldText_drawTokens} draw tokens (TODO)'),
+        [
+          'player' => $this,
+          'tkn_boldText_drawTokens' => $drawTokens
+        ],
+      );
+    }
+  }
+
   public function expose($card)
   {
     $suit = $card->getSuit();
     Notifications::message(
-      clienttranslate('${player} is exposed by ${tkn_boldText_cardValue} of ${tkn_suit}'),
+      clienttranslate('${player_name} is exposed by ${tkn_boldText_cardValue} of ${tkn_suit}'),
       [
         'player' => $this,
         'tkn_boldText_cardValue' => Notifications::viceCardValueText($card->getValue()),
@@ -98,9 +117,9 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
       ],
     );
 
-    $reputation = $this->getReputation();
+    $reputation = $this->getCardsInReputation();
     $numberOfCubes = 0;
-    foreach($reputation as $viceCard) {
+    foreach ($reputation as $viceCard) {
       if ($viceCard->getSuit() !== $suit) {
         continue;
       }
@@ -108,5 +127,17 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
       $viceCard->addToGossip($this);
     }
     Notifications::gainCubes($this, $suit, $numberOfCubes);
+  }
+
+  public function getReputationForSuit($suit)
+  {
+    $reputation = PlayerCubes::getReputationForSuit($this->getId(), $suit);
+    $cards = $this->getCardsInReputation();
+    foreach ($cards as $card) {
+      if ($card->getSuit() === $suit) {
+        $reputation += 1;
+      }
+    }
+    return $reputation;
   }
 }

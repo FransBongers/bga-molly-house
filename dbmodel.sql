@@ -81,6 +81,7 @@ CREATE TABLE IF NOT EXISTS `sites` (
   `site_location` varchar(32) NOT NULL,
   `site_state` int(10) DEFAULT 0,
   `raided_or_dangerous` tinyint(1) DEFAULT 0,
+  `evidence` int(10) DEFAULT 0,
   PRIMARY KEY (`site_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 CREATE TABLE IF NOT EXISTS `pawns` (

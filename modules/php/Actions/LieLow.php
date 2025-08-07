@@ -2,6 +2,8 @@
 
 namespace Bga\Games\MollyHouse\Actions;
 
+use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
+
 class LieLow extends \Bga\Games\MollyHouse\Models\AtomicAction
 {
   public function getState()
@@ -62,4 +64,18 @@ class LieLow extends \Bga\Games\MollyHouse\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
+
+  public function getOptions($player, $site) {
+    return true;
+  }
+
+  public function performAction($player, $site)
+  {
+    Notifications::message(clienttranslate('${player_name} lies low on ${tkn_boldText_site}'), [
+      'player' => $player,
+      'tkn_boldText_site' => $site->getName(),
+      'i18n' => ['tkn_boldText_site'],
+    ]);
+    $player->drawCards(1);
+  }
 }

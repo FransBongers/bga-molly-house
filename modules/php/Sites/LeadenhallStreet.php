@@ -10,5 +10,6 @@ class LeadenhallStreet extends \Bga\Games\MollyHouse\Models\Site
     $this->id = LEADENHALL_STREET;
     $this->name = clienttranslate("Leadenhall Street");
     $this->locationOrder = 6;
+    $this->action = SHOP;
   }
 }

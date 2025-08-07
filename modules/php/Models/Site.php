@@ -16,15 +16,19 @@ class Site extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   protected $address = '';
   protected $suit;
   protected $raidedOrDangerous;
+  protected $action = null;
+  protected $evidence;
 
   protected $attributes = [
     'id' => ['site_id', 'str'],
     'location' => 'site_location',
     'state' => ['site_state', 'int'],
+    'evidence' => ['evidence', 'int'],
     'raidedOrDangerous' => ['raided_or_dangerous', 'int'],
   ];
 
   protected $staticAttributes = [
+    'action',
     'locationOrder',
     'name',
     'address',

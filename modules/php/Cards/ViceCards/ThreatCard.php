@@ -32,7 +32,7 @@ class ThreatCard extends \Bga\Games\MollyHouse\Models\ViceCard
       }
 
       $location = $card->getLocation();
-      if (!Utils::startsWith($location, 'gossip')) {
+      if (!Utils::startsWith($location, 'reputation')) {
         continue;
       }
       $playerId = intval(explode('_', $location)[1]);
@@ -61,7 +61,7 @@ class ThreatCard extends \Bga\Games\MollyHouse\Models\ViceCard
 
     foreach ($exposedPlayers as $playerId) {
       $player = Players::get($playerId);
-      $player->expose($suit);
+      $player->expose($this);
     }
   }
 }

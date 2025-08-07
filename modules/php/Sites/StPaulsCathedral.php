@@ -10,5 +10,7 @@ class StPaulsCathedral extends \Bga\Games\MollyHouse\Models\Site
     $this->id = ST_PAULS_CATHEDRAL;
     $this->name = clienttranslate("St Paul's Cathedral");
     $this->locationOrder = 1;
+    $this->action = CRUISE;
+    $this->suit = PENTACLES;
   }
 }

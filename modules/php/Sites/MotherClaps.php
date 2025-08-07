@@ -11,5 +11,7 @@ class MotherClaps extends \Bga\Games\MollyHouse\Models\Site
     $this->name = clienttranslate("Mother Clap's");
     $this->locationOrder = 0;
     $this->address = clienttranslate("Field Lane");
+    $this->action = THROW_FESTIVITY;
+    $this->suit = PENTACLES;
   }
 }

@@ -2,20 +2,17 @@
 
 namespace Bga\Games\MollyHouse\Actions;
 
-use Bga\Games\MollyHouse\Boilerplate\Core\Engine\LeafNode;
+use Bga\Games\MollyHouse\Boilerplate\Core\Engine;
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
-use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
-use Bga\Games\MollyHouse\Managers\Players;
-use Bga\Games\MollyHouse\Managers\ViceCards;
 
-
-class ResolveMarketDiscard extends \Bga\Games\MollyHouse\Models\AtomicAction
+class CheckHandSize extends \Bga\Games\MollyHouse\Models\AtomicAction
 {
   public function getState()
   {
-    return ST_RESOLVE_MARKET_DISCARD;
+    return ST_CHECK_HAND_SIZE;
   }
+
 
   // ..######..########....###....########.########
   // .##....##....##......##.##......##....##......
@@ -34,20 +31,19 @@ class ResolveMarketDiscard extends \Bga\Games\MollyHouse\Models\AtomicAction
   // .##.....##..######.....##....####..#######..##....##
 
 
-  public function stResolveMarketDiscard()
+  public function stCheckHandSize()
   {
     $player = $this->getPlayer();
 
-    $card = ViceCards::getCardFarthestFromViceDeck();
+    $hand = $player->getHand();
 
-    if ($card->isDesire()) {
-      $card->addToSafePile($player);
-    } else {
-      // Note: Threat card model handles exposing player. 
-      // Possibly move here?
-      $card->addToGossip($player);
+    if (count($hand) > 6) {
+      $action = [
+        'action' => ADD_EXCESS_CARDS_TO_GOSSIP,
+        'playerId' => $player->getId(),
+      ];
+      $this->ctx->insertAsBrother(Engine::buildTree($action));
     }
-
     $this->resolveAction(['automatic' => true]);
   }
 

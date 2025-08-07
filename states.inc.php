@@ -67,11 +67,12 @@ $machinestates = [
     // .########.##....##..######...####.##....##.########
 
 
-    // ST_GENERIC_NEXT_PLAYER => GameStateBuilder::create()
-    //     ->name('genericNextPlayer')
-    //     ->description('')
-    //     ->type(StateType::GAME)
-    //     ->build(),
+    ST_GENERIC_NEXT_PLAYER => GameStateBuilder::create()
+        ->name(GENERIC_NEXT_PLAYER)
+        ->description('')
+        ->action('stGenericNextPlayer')
+        ->type(StateType::GAME)
+        ->build(),
 
     ST_RESOLVE_STACK => GameStateBuilder::create()
         ->name(START_GAME_ENGINE)
@@ -162,6 +163,8 @@ $machinestates = [
             // these actions are called from the front with bgaPerformAction, and matched to the function on the game.php file
             'act' . TAKE_ACTION,
             'actTakeAtomicAction',
+            'actRestart',
+            'actUndoToStep',
         ])
         ->transitions([
             'playCard' => 4,
@@ -176,8 +179,22 @@ $machinestates = [
         ->action('stAtomicAction')
         ->build(),
 
+    ST_CHECK_HAND_SIZE => GameStateBuilder::create()
+        ->name(CHECK_HAND_SIZE)
+        ->description('')
+        ->type(StateType::GAME)
+        ->action('stAtomicAction')
+        ->build(),
+
     ST_RESOLVE_MARKET_DISCARD => GameStateBuilder::create()
         ->name(RESOLVE_MARKET_DISCARD)
+        ->description('')
+        ->type(StateType::GAME)
+        ->action('stAtomicAction')
+        ->build(),
+
+    ST_REFILL_MARKET => GameStateBuilder::create()
+        ->name(REFILL_MARKET)
         ->description('')
         ->type(StateType::GAME)
         ->action('stAtomicAction')
@@ -266,6 +283,21 @@ $machinestates = [
         ->possibleactions([
             'act' . MOVE_PAWN,
             'actTakeAtomicAction',
+        ])
+        ->build(),
+
+    ST_ADD_EXCESS_CARDS_TO_GOSSIP => GameStateBuilder::create()
+        ->name(ADD_EXCESS_CARDS_TO_GOSSIP)
+        ->description(clienttranslate('${actplayer} must add excess cards to the gossip pile'))
+        ->descriptionmyturn(clienttranslate('${you}'))
+        ->type(StateType::ACTIVE_PLAYER)
+        ->args('argsAtomicAction')
+        ->action('stAtomicAction')
+        ->possibleactions([
+            'actAddExcessCardsToGossip',
+            'actTakeAtomicAction',
+            'actRestart',
+            'actUndoToStep',
         ])
         ->build(),
 ];

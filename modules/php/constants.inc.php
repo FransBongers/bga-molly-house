@@ -40,6 +40,9 @@ const ST_THROW_FESTIVITY = 10;
 const ST_ROLL_DICE = 11;
 const ST_RESOLVE_MARKET_DISCARD = 12;
 const ST_MOVE_PAWN = 13;
+const ST_REFILL_MARKET = 14;
+const ST_CHECK_HAND_SIZE = 15;
+const ST_ADD_EXCESS_CARDS_TO_GOSSIP = 16;
 
 /**
  * Game state names
@@ -55,6 +58,9 @@ const THROW_FESTIVITY = 'ThrowFestivity';
 const ROLL_DICE = 'RollDice';
 const RESOLVE_MARKET_DISCARD = 'ResolveMarketDiscard';
 const MOVE_PAWN = 'MovePawn';
+const REFILL_MARKET = 'RefillMarket';
+const CHECK_HAND_SIZE = 'CheckHandSize';
+const ADD_EXCESS_CARDS_TO_GOSSIP = 'AddExcessCardsToGossip';
 
 /**
  * Card types

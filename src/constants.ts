@@ -1,3 +1,12 @@
+/**
+ * Actions
+ */
+const INDULGE = 'Indulge';
+const LIE_LOW = 'LieLow';
+const ACCUSE = 'Accuse';
+const CRUISE = 'Cruise';
+const SHOP = 'Shop';
+const THROW_FESTIVITY = 'ThrowFestivity';
 
 /**
  * Card types

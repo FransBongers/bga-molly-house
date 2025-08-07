@@ -51,10 +51,14 @@ class ViceCards extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
 
   public static function getMarket()
   {
-    $pieces = self::getAll()->toArray();
-    return Utils::filter($pieces, function ($piece) {
-      return in_array($piece->getLocation(), MARKET_SPOTS);
-    });
+    $cards = self::getAll();
+    $result = [];
+    foreach ($cards as $cardId => $card) {
+      if (in_array($card->getLocation(), MARKET_SPOTS)) {
+        $result[$cardId] = $card;
+      }
+    }
+    return $result;
   }
 
   public static function getCardFarthestFromViceDeck()

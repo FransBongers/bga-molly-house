@@ -3,6 +3,7 @@
 namespace Bga\Games\MollyHouse\Models;
 
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
+use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 use Bga\Games\MollyHouse\Managers\ViceCards;
 
 class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
@@ -83,6 +84,27 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     }
   }
 
+  public function addToHand($player, $notify = true)
+  {
+    $location = Locations::hand($player->getId());
+    $state = ViceCards::insertOnTop($this->getId(), $location);
+    $this->location = $location;
+    $this->state = $state;
+    if ($notify) {
+      Notifications::addCardToHand($player, $this);
+    }
+  }
+
+  public function addToReputation($player, $notify = true)
+  {
+    $reputationLocation = Locations::reputation($player->getId());
+    $state = ViceCards::insertOnTop($this->getId(), $reputationLocation);
+    $this->location = $reputationLocation;
+    $this->state = $state;
+    if ($notify) {
+      Notifications::addCardToReputation($player, $this);
+    }
+  }
 
   public function addToSafePile($player, $notify = true)
   {

@@ -53,7 +53,7 @@ class RollDice extends \Bga\Games\MollyHouse\Models\AtomicAction
       }
     }
 
-    $this->resolveAction(['automatic' => true]);
+    $this->resolveAction(['automatic' => true], true);
   }
 
 

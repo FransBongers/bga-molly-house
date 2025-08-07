@@ -135,7 +135,7 @@ trait EngineTrait
     Engine::restart();
   }
 
-  public function actUndoToStep($stepId)
+  public function actUndoToStep(int $stepId)
   {
     self::checkAction('actRestart');
     Engine::undoToStep($stepId);

@@ -179,10 +179,33 @@ class Notifications
   // .##...###.##.....##....##.....##..##.......##....##
   // .##....##..#######.....##....####.##........######.
 
+  public static function addCardToHand($player, $card)
+  {
+    self::notifyAll('addCardToHand', clienttranslate('${player_name} adds ${tkn_boldText_cardValue} of ${tkn_suit} to their hand${tkn_viceCard}'), [
+      'player' => $player,
+      'card' => $card,
+      'tkn_viceCard' => self::tknViceCard($card),
+      'tkn_boldText_cardValue' => self::viceCardValueText($card->getValue()),
+      'tkn_suit' => $card->getSuit(),
+      'i18n' => ['tkn_boldText_cardValue'],
+    ]);
+  }
+
+  public static function addCardToReputation($player, $card)
+  {
+    self::notifyAll('addCardToReputation', clienttranslate('${player_name} adds ${tkn_boldText_cardValue} of ${tkn_suit} to their reputation${tkn_viceCard}'), [
+      'player' => $player,
+      'card' => $card,
+      'tkn_viceCard' => self::tknViceCard($card),
+      'tkn_boldText_cardValue' => self::viceCardValueText($card->getValue()),
+      'tkn_suit' => $card->getSuit(),
+      'i18n' => ['tkn_boldText_cardValue'],
+    ]);
+  }
 
   public static function addCardToSafePile($player, $card)
   {
-    self::notifyAll('addCardToSafePile', clienttranslate('${player_name} adds ${tkn_boldText_cardValue} of ${tkn_suit} to the safe pile ${tkn_viceCard} '), [
+    self::notifyAll('addCardToSafePile', clienttranslate('${player_name} adds ${tkn_boldText_cardValue} of ${tkn_suit} to the safe pile ${tkn_viceCard}'), [
       'player' => $player,
       'card' => $card,
       'tkn_viceCard' => self::tknViceCard($card),
@@ -194,13 +217,53 @@ class Notifications
 
   public static function addCardToGossipPile($player, $card)
   {
-    self::notifyAll('addCardToGossipPile', clienttranslate('${player_name} adds ${tkn_boldText_cardValue} of ${tkn_suit} to the gossip pile ${tkn_viceCard} '), [
+    self::notifyAll('addCardToGossipPile', clienttranslate('${player_name} adds ${tkn_boldText_cardValue} of ${tkn_suit} to the gossip pile ${tkn_viceCard}'), [
       'player' => $player,
       'card' => $card,
       'tkn_viceCard' => self::tknViceCard($card),
       'tkn_boldText_cardValue' => self::viceCardValueText($card->getValue()),
       'tkn_suit' => $card->getSuit(),
       'i18n' => ['tkn_boldText_cardValue'],
+    ]);
+  }
+
+  public static function addExcessCardsToGossip($player, $cards)
+  {
+
+    self::notify($player, 'addExcessCardsToGossipPrivate', clienttranslate('${player_name} adds ${tkn_boldText_number} cards from their hand to the gossip pile'), [
+      'player' => $player,
+      'tkn_boldText_number' => count($cards),
+      'cards' => $cards,
+    ]);
+
+    self::notifyAll('addExcessCardsToGossip', clienttranslate('${player_name} adds ${tkn_boldText_number} cards from their hand to the gossip pile'), [
+      'player' => $player,
+      'tkn_boldText_number' => count($cards),
+      'preserve' => ['playerId'],
+    ]);
+  }
+
+  public static function drawCards($player, $cards)
+  {
+    // TODO: cardsLog ?
+    $text = count($cards) === 1
+      ? clienttranslate('${player_name} draws ${tkn_boldText_amount} card')
+      : clienttranslate('${player_name} draws ${tkn_boldText_amount} cards');
+
+    $amount = count($cards);
+
+    self::notify($player, 'drawCardsPrivate', $text, [
+      'player' => $player,
+      'cards' => $cards,
+      'amount' => $amount,
+      'tkn_boldText_amount' => $amount,
+    ]);
+
+    self::notifyAll('drawCards', $text, [
+      'player' => $player,
+      'amount' => $amount,
+      'tkn_boldText_amount' => $amount,
+      'preserve' => ['playerId'],
     ]);
   }
 
@@ -238,6 +301,14 @@ class Notifications
     ]);
   }
 
+  public static function refillMarket($player, $updatedCards)
+  {
+    self::notifyAll('refillMarket', clienttranslate('${player_name} refills the market'), [
+      'player' => $player,
+      'cards' => $updatedCards,
+    ]);
+  }
+
   public static function rollDice($player, $diceResults)
   {
     self::notifyAll('rollDice', clienttranslate('${player_name} rolls ${tkn_die_0}${tkn_die_1}'), [
@@ -245,6 +316,19 @@ class Notifications
       'diceResults' => $diceResults,
       'tkn_die_0' => self::tknDie($diceResults[0]),
       'tkn_die_1' => self::tknDie($diceResults[1])
+    ]);
+  }
+
+  public static function scoreBonusJoy($player, $amount, $card)
+  {
+    self::notifyAll('scoreBonusJoy', clienttranslate('${player_name} scores ${tkn_boldText_amount} bonus joy with ${tkn_boldText_cardValue} of ${tkn_suit}${tkn_viceCard}'), [
+      'player' => $player,
+      'amount' => $amount,
+      'tkn_boldText_amount' => $amount,
+      'tkn_boldText_cardValue' => self::viceCardValueText($card->getValue()),
+      'tkn_suit' => $card->getSuit(),
+      'tkn_viceCard' => self::tknViceCard($card),
+      'i18n' => ['tkn_boldText_cardValue'],
     ]);
   }
 
@@ -260,7 +344,7 @@ class Notifications
 
   public static function setupChooseCard($player, $selectedCard)
   {
-    self::notify($player, 'setupChooseCardPrivate', clienttranslate('${player_name} selects ${tkn_boldText_cardValue} of ${tkn_suit}${tkn_viceCard} '), [
+    self::notify($player, 'setupChooseCardPrivate', clienttranslate('${player_name} selects ${tkn_boldText_cardValue} of ${tkn_suit}${tkn_viceCard}'), [
       'player' => $player,
       'card' => $selectedCard,
       'tkn_viceCard' => self::tknViceCard($selectedCard),

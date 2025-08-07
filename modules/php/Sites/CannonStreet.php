@@ -10,5 +10,6 @@ class CannonStreet extends \Bga\Games\MollyHouse\Models\Site
     $this->id = CANNON_STREET;
     $this->name = clienttranslate("Cannon Street");
     $this->locationOrder = 10;
+    $this->action = SHOP;
   }
 }

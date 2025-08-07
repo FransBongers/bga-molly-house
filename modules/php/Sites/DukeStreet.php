@@ -10,5 +10,6 @@ class DukeStreet extends \Bga\Games\MollyHouse\Models\Site
     $this->id = DUKE_STREET;
     $this->name = clienttranslate("Duke Street");
     $this->locationOrder = 14;
+    $this->action = SHOP;
   }
 }

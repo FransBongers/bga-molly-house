@@ -10,5 +10,7 @@ class LondonBridge extends \Bga\Games\MollyHouse\Models\Site
     $this->id = LONDON_BRIDGE;
     $this->name = clienttranslate("London Bridge");
     $this->locationOrder = 7;
+    $this->action = CRUISE;
+    $this->suit = HEARTS;
   }
 }

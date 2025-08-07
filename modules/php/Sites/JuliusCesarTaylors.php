@@ -11,5 +11,7 @@ class JuliusCesarTaylors extends \Bga\Games\MollyHouse\Models\Site
     $this->name = clienttranslate("Julius Cesar Taylor's");
     $this->locationOrder = 12;
     $this->address = clienttranslate("Tottenham Court Road");
+    $this->action = THROW_FESTIVITY;
+    $this->suit = CUPS;
   }
 }

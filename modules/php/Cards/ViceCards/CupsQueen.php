@@ -11,5 +11,6 @@ class CupsQueen extends \Bga\Games\MollyHouse\Cards\ViceCards\MollyCard
     $this->value = 'Q';
     $this->suit = CUPS;
     $this->joy = 4;
+    $this->bonusJoy = 3;
   }
 }

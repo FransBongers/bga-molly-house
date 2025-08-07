@@ -1417,6 +1417,17 @@ span[style*="color:#fcd873"] {
   box-shadow: 0px 0px 0px calc(var(--cardScale) * 4px) blue !important;
 }
 
+#moho-deck.selectable {
+  cursor: pointer !important;
+  box-shadow: 0px 0px 0px calc(var(--cardScale) * 4px) yellow !important;
+}
+
+#moho-deck.selectable:hover,
+#moho-deck.selected {
+  cursor: pointer !important;
+  box-shadow: 0px 0px 0px calc(var(--cardScale) * 4px) blue !important;
+}
+
 .bga-dice_die-face {
   background-image: url("img/die.jpg");
   background-size: 600% 100%;
@@ -1484,6 +1495,7 @@ span[style*="color:#fcd873"] {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
+  gap: calc(var(--rightColumnScale) * 8px);
 }
 
 .moho-player-board {
@@ -1491,9 +1503,8 @@ span[style*="color:#fcd873"] {
   --tokenScale: var(--rightColumnScale);
   position: relative;
   background-size: 100% 100%;
-  height: calc(var(--rightColumnScale) * 300px);
-  min-height: calc(var(--rightColumnScale) * 300px);
-  width: calc(var(--rightColumnScale) * 685px);
+  width: calc(var(--rightColumnScale) * 600px);
+  aspect-ratio: 137/60;
   outline: 1px solid black;
 }
 
@@ -1501,12 +1512,12 @@ span[style*="color:#fcd873"] {
   position: relative;
   display: flex;
   --cardScale: var(--rightColumnScale);
-  flex-direction: row-reverse !important;
-  margin-left: auto;
+  justify-content: flex-start !important;
+  flex-grow: 1;
   align-items: center;
 }
-.moho-reputation .moho-vice-card-container {
-  margin-right: calc(var(--rightColumnScale) * -100px);
+.moho-reputation .moho-vice-card-container:not(:first-child) {
+  margin-left: calc(var(--rightColumnScale) * -115px);
 }
 
 .moho-player-board[data-color=blue] {

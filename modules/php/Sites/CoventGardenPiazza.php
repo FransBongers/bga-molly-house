@@ -10,5 +10,7 @@ class CoventGardenPiazza extends \Bga\Games\MollyHouse\Models\Site
     $this->id = COVENT_GARDEN_PIAZZA;
     $this->name = clienttranslate("Covent Garden Piazza");
     $this->locationOrder = 13;
+    $this->action = CRUISE;
+    $this->suit = CUPS;
   }
 }
