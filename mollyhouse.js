@@ -1,10 +1,39 @@
-var _a;
+var DISABLED = 'disabled';
+var SELECTABLE = 'selectable';
+var SELECTED = 'selected';
+var HAND = 'hand';
+var PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY = 'confirmEndOfTurnPlayerSwitchOnly';
+var PREF_SHOW_ANIMATIONS = 'showAnimations';
+var PREF_ANIMATION_SPEED = 'animationSpeed';
+var PREF_CARD_INFO_IN_TOOLTIP = 'cardInfoInTooltip';
+var PREF_CARD_SIZE = 'cardSize';
+var PREF_CARD_SIZE_IN_LOG = 'cardSizeInLog';
+var PREF_COLUMN_SIZES = 'columnSizes';
+var PREF_DISABLED = 'disabled';
+var PREF_ENABLED = 'enabled';
+var PREF_SINGLE_COLUMN_MAP_SIZE = 'singleColumnMapSize';
+var PREF_TWO_COLUMN_LAYOUT = 'twoColumnLayout';
+var BOARD_SCALE = 'boardScale';
+var BLUE = 'blue';
+var GREEN = 'green';
+var PINK = 'pink';
+var PURPLE = 'purple';
+var YELLOW = 'yellow';
+var HEX_COLOR_COLOR_MAP = {
+    '8393ca': BLUE,
+    a2a882: GREEN,
+    e3bcb4: PINK,
+    '7f5574': PURPLE,
+    fcd873: YELLOW,
+};
+var _a, _b, _c;
 var INDULGE = 'Indulge';
 var LIE_LOW = 'LieLow';
 var ACCUSE = 'Accuse';
 var CRUISE = 'Cruise';
 var SHOP = 'Shop';
 var THROW_FESTIVITY = 'ThrowFestivity';
+var RED = 'red';
 var DESIRE = 'desire';
 var THREAT = 'threat';
 var MOLLY = 'molly';
@@ -15,16 +44,23 @@ var CUPS = 'cups';
 var PENTACLES = 'pentacles';
 var FANS = 'fans';
 var HEARTS = 'hearts';
+var SUIT_COLOR_MAP = (_a = {},
+    _a[CUPS] = BLUE,
+    _a[PENTACLES] = YELLOW,
+    _a[FANS] = GREEN,
+    _a[HEARTS] = RED,
+    _a);
+var COLOR_SUIT_MAP = (_b = {},
+    _b[BLUE] = CUPS,
+    _b[YELLOW] = PENTACLES,
+    _b[GREEN] = FANS,
+    _b[RED] = HEARTS,
+    _b);
 var MARKET_0 = 'market_0';
 var MARKET_1 = 'market_1';
 var MARKET_2 = 'market_2';
 var MARKET_3 = 'market_3';
-var MARKET_SPOTS = [
-    MARKET_0,
-    MARKET_1,
-    MARKET_2,
-    MARKET_3,
-];
+var MARKET_SPOTS = [MARKET_0, MARKET_1, MARKET_2, MARKET_3];
 var GOSSIP_PILE = 'gossipPile';
 var SAFE_PILE = 'safePile';
 var MOTHER_CLAPS = 'MotherClaps';
@@ -82,17 +118,17 @@ var DRESS_OF_CUPS = 'DressOfCups';
 var DRESS_OF_PENTACLES = 'DressOfPentacles';
 var DRESS_OF_FANS = 'DressOfFans';
 var DRESS_OF_HEARTS = 'DressOfHearts';
-var ITEM_DISTRIBUTIION = (_a = {},
-    _a[NEWSPAPER_NOTICE] = 3,
-    _a[BRIBE] = 3,
-    _a[VIOLIN] = 3,
-    _a[DOMINO] = 3,
-    _a[BOTTLE_OF_GIN] = 4,
-    _a[DRESS_OF_CUPS] = 1,
-    _a[DRESS_OF_PENTACLES] = 1,
-    _a[DRESS_OF_FANS] = 1,
-    _a[DRESS_OF_HEARTS] = 1,
-    _a);
+var ITEM_DISTRIBUTIION = (_c = {},
+    _c[NEWSPAPER_NOTICE] = 3,
+    _c[BRIBE] = 3,
+    _c[VIOLIN] = 3,
+    _c[DOMINO] = 3,
+    _c[BOTTLE_OF_GIN] = 4,
+    _c[DRESS_OF_CUPS] = 1,
+    _c[DRESS_OF_PENTACLES] = 1,
+    _c[DRESS_OF_FANS] = 1,
+    _c[DRESS_OF_HEARTS] = 1,
+    _c);
 var BgaAnimation = (function () {
     function BgaAnimation(animationFunction, settings) {
         this.animationFunction = animationFunction;
@@ -2225,33 +2261,6 @@ var pxNumber = function (px) {
         return 0;
     }
 };
-var DISABLED = 'disabled';
-var SELECTABLE = 'selectable';
-var SELECTED = 'selected';
-var PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY = 'confirmEndOfTurnPlayerSwitchOnly';
-var PREF_SHOW_ANIMATIONS = 'showAnimations';
-var PREF_ANIMATION_SPEED = 'animationSpeed';
-var PREF_CARD_INFO_IN_TOOLTIP = 'cardInfoInTooltip';
-var PREF_CARD_SIZE = 'cardSize';
-var PREF_CARD_SIZE_IN_LOG = 'cardSizeInLog';
-var PREF_COLUMN_SIZES = 'columnSizes';
-var PREF_DISABLED = 'disabled';
-var PREF_ENABLED = 'enabled';
-var PREF_SINGLE_COLUMN_MAP_SIZE = 'singleColumnMapSize';
-var PREF_TWO_COLUMN_LAYOUT = 'twoColumnLayout';
-var BOARD_SCALE = 'boardScale';
-var BLUE = 'blue';
-var GREEN = 'green';
-var PINK = 'pink';
-var PURPLE = 'purple';
-var YELLOW = 'yellow';
-var HEX_COLOR_COLOR_MAP = {
-    '8393ca': BLUE,
-    a2a882: GREEN,
-    e3bcb4: PINK,
-    '7f5574': PURPLE,
-    fcd873: YELLOW,
-};
 define([
     'dojo',
     'dojo/_base/declare',
@@ -2848,6 +2857,7 @@ var NotificationManager = (function () {
                     case 0:
                         _a = notif.args, playerId = _a.playerId, card = _a.card;
                         viceCard = getViceCard(card);
+                        this.getPlayer(playerId).counters[HAND].incValue(1);
                         if (!(playerId === this.game.getPlayerId())) return [3, 2];
                         hand = Hand.getInstance();
                         return [4, hand.addCard(viceCard)];
@@ -2890,11 +2900,13 @@ var NotificationManager = (function () {
                         fromElement = this.game.getPlayerId() !== playerId
                             ? document.getElementById("player_board_".concat(playerId))
                             : undefined;
+                        player.counters[HAND].incValue(-1);
                         return [4, player.reputation.addCard(viceCard, {
                                 fromElement: fromElement,
                             })];
                     case 1:
                         _b.sent();
+                        player.counters[viceCard.suit].incValue(1);
                         return [2];
                 }
             });
@@ -2943,36 +2955,39 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_drawCards = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var playerId;
-            return __generator(this, function (_a) {
-                playerId = notif.args.playerId;
+            var _a, playerId, number;
+            return __generator(this, function (_b) {
+                _a = notif.args, playerId = _a.playerId, number = _a.number;
+                this.getPlayer(playerId).counters[HAND].incValue(number);
                 return [2];
             });
         });
     };
     NotificationManager.prototype.notif_drawCardsPrivate = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var cards, viceCards, hand, promises;
+            var _a, cards, playerId, viceCards, hand, player, promises;
             var _this = this;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        cards = notif.args.cards;
+                        _a = notif.args, cards = _a.cards, playerId = _a.playerId;
                         viceCards = cards.map(function (card) { return getViceCard(card); });
                         hand = Hand.getInstance();
+                        player = this.getPlayer(playerId);
                         promises = viceCards.map(function (card, index) { return __awaiter(_this, void 0, void 0, function () {
                             return __generator(this, function (_a) {
                                 switch (_a.label) {
                                     case 0: return [4, hand.addCard(card)];
                                     case 1:
                                         _a.sent();
+                                        player.counters[HAND].incValue(1);
                                         return [2];
                                 }
                             });
                         }); });
                         return [4, Promise.all(promises)];
                     case 1:
-                        _a.sent();
+                        _b.sent();
                         return [2];
                 }
             });
@@ -3085,6 +3100,7 @@ var NotificationManager = (function () {
                 switch (_b.label) {
                     case 0:
                         _a = notif.args, playerId = _a.playerId, card = _a.card;
+                        this.getPlayer(playerId).counters[HAND].incValue(-1);
                         return [4, this.getPlayer(playerId).reputation.addCard(card, {
                                 fromElement: document.getElementById("player_board_".concat(playerId)),
                             })];
@@ -3102,6 +3118,7 @@ var NotificationManager = (function () {
                 switch (_b.label) {
                     case 0:
                         _a = notif.args, playerId = _a.playerId, card = _a.card;
+                        this.getPlayer(playerId).counters[HAND].incValue(-1);
                         return [4, this.getPlayer(playerId).reputation.addCard(getViceCard(card))];
                     case 1:
                         _b.sent();
@@ -3112,10 +3129,12 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_setupRevealCard = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, card;
+            var _a, playerId, card, viceCard;
             return __generator(this, function (_b) {
                 _a = notif.args, playerId = _a.playerId, card = _a.card;
-                this.game.viceCardManager.updateCardInformations(getViceCard(card));
+                viceCard = getViceCard(card);
+                this.game.viceCardManager.updateCardInformations(viceCard);
+                this.getPlayer(playerId).counters[viceCard.suit].incValue(1);
                 return [2];
             });
         });
@@ -3630,6 +3649,58 @@ var ConfirmTurn = (function () {
         addUndoButtons(this.args);
     };
     return ConfirmTurn;
+}());
+var IconCounter = (function () {
+    function IconCounter(config) {
+        this.setupIconCounter(config);
+    }
+    IconCounter.prototype.setupIconCounter = function (_a) {
+        var id = _a.id, initialValue = _a.initialValue, parentElement = _a.parentElement, _b = _a.type, type = _b === void 0 ? 'row' : _b;
+        this.containerElement = document.createElement('div');
+        this.containerElement.id = id;
+        this.containerElement.className = 'icon-counter-container';
+        this.containerElement.dataset.type = type;
+        this.iconElement = document.createElement('div');
+        this.iconElement.id = "".concat(id, "-icon");
+        this.iconElement.className = 'icon-counter-icon';
+        this.counterElement = document.createElement('span');
+        this.counterElement.id = "".concat(id, "-counter");
+        this.counterElement.className = 'icon-counter-counter';
+        this.containerElement.appendChild(this.iconElement);
+        if (type === 'overlap') {
+            this.iconElement.appendChild(this.counterElement);
+        }
+        else {
+            this.containerElement.appendChild(this.counterElement);
+        }
+        parentElement.appendChild(this.containerElement);
+        this.counter = new ebg.counter();
+        this.counter.create("".concat(id, "-counter"));
+        this.setValue(initialValue);
+    };
+    IconCounter.prototype.setValue = function (value) {
+        this.counter.setValue(value);
+        this.checkHasValue(value);
+    };
+    IconCounter.prototype.incValue = function (value) {
+        this.counter.incValue(value);
+        this.checkHasValue(this.counter.getValue());
+    };
+    IconCounter.prototype.getElement = function () {
+        return this.containerElement;
+    };
+    IconCounter.prototype.getValue = function () {
+        return this.counter.getValue();
+    };
+    IconCounter.prototype.checkHasValue = function (value) {
+        if (value === 0) {
+            this.containerElement.dataset.hasValue = 'false';
+        }
+        else {
+            this.containerElement.dataset.hasValue = 'true';
+        }
+    };
+    return IconCounter;
 }());
 var isDebug = window.location.host == 'studio.boardgamearena.com' ||
     window.location.hash.indexOf('debug') > -1;
@@ -4404,7 +4475,7 @@ var Hand = (function () {
             cardShift: 'calc(var(--cardScale) * 15px)',
         });
         var cards = this.game.gamedatas.players[this.game.getPlayerId()].hand;
-        this.handStock.addCards(cards);
+        this.handStock.addCards(cards.map(getViceCard));
     };
     Hand.prototype.updateFloatingHandScale = function () {
         var WIDTH = $('game_play_area').getBoundingClientRect()['width'];
@@ -4665,23 +4736,46 @@ var MohoPlayer = (function () {
             playerId: this.playerId,
         }));
         this.reputation = new LineStock(this.game.viceCardManager, document.getElementById("moho-reputation-".concat(this.playerId)), {
-            gap: '0px'
+            gap: '0px',
         });
         this.updatePlayerBoard(playerGamedatas);
     };
     MohoPlayer.prototype.setupPlayerPanel = function (gamedatas) {
+        var _this = this;
         var playerGamedatas = gamedatas.players[this.playerId];
         var node = document.querySelector("#player_board_".concat(this.playerId, " .player-board-game-specific-content"));
         if (!node) {
             return;
         }
-        node.insertAdjacentHTML('afterbegin', tplPlayerCounters({
-            playerId: this.playerId,
-        }));
+        console.log('CubeCounter yellow');
+        [PENTACLES, FANS, CUPS, HEARTS].forEach(function (suit) {
+            _this.counters[suit] = new SuitCounter({
+                id: "cards-".concat(suit, "-").concat(_this.playerId),
+                initialValue: playerGamedatas.reputation.filter(function (card) { return getViceCard(card).suit === suit && !card.hidden; }).length,
+                parentElement: node,
+                suit: suit,
+                type: 'overlap',
+            });
+        });
+        this.counters[HAND] = new HandCounter({
+            id: "hand-".concat(this.playerId),
+            initialValue: playerGamedatas.handCardCount,
+            parentElement: node,
+            type: 'overlap',
+        });
+        [YELLOW, GREEN, BLUE, RED].forEach(function (color) {
+            _this.counters[color] = new CubeCounter({
+                id: "cubes-".concat(color, "-").concat(_this.playerId),
+                initialValue: playerGamedatas.cubes[COLOR_SUIT_MAP[color]],
+                parentElement: node,
+                color: color,
+                type: 'overlap',
+            });
+        });
         this.updatePlayerPanel(gamedatas);
     };
     MohoPlayer.prototype.updatePlayerBoard = function (playerGamedatas) {
-        this.reputation.addCards(playerGamedatas.reputation);
+        this.reputation.addCards(playerGamedatas.reputation.map(getViceCard));
     };
     MohoPlayer.prototype.updatePlayerPanel = function (gamedatas) { };
     MohoPlayer.prototype.getColor = function () {
@@ -5206,3 +5300,43 @@ var AddExcessCardsToGossip = (function () {
     };
     return AddExcessCardsToGossip;
 }());
+var CubeCounter = (function (_super) {
+    __extends(CubeCounter, _super);
+    function CubeCounter(props) {
+        var _this = _super.call(this, props) || this;
+        _this.setup(props);
+        return _this;
+    }
+    CubeCounter.prototype.setup = function (_a) {
+        var color = _a.color;
+        this.iconElement.classList.add("moho-cube");
+        this.iconElement.dataset.color = color;
+    };
+    return CubeCounter;
+}(IconCounter));
+var HandCounter = (function (_super) {
+    __extends(HandCounter, _super);
+    function HandCounter(props) {
+        var _this = _super.call(this, props) || this;
+        _this.setup(props);
+        return _this;
+    }
+    HandCounter.prototype.setup = function (props) {
+        this.iconElement.classList.add('moho-card-back');
+    };
+    return HandCounter;
+}(IconCounter));
+var SuitCounter = (function (_super) {
+    __extends(SuitCounter, _super);
+    function SuitCounter(props) {
+        var _this = _super.call(this, props) || this;
+        _this.setup(props);
+        return _this;
+    }
+    SuitCounter.prototype.setup = function (_a) {
+        var suit = _a.suit;
+        this.iconElement.classList.add("moho-suit");
+        this.iconElement.dataset.suit = suit;
+    };
+    return SuitCounter;
+}(IconCounter));

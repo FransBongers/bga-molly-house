@@ -176,6 +176,7 @@ class NotificationManager {
     const { playerId, card } = notif.args;
 
     const viceCard = getViceCard(card);
+    this.getPlayer(playerId).counters[HAND].incValue(1);
     if (playerId === this.game.getPlayerId()) {
       const hand = Hand.getInstance();
 
@@ -203,9 +204,11 @@ class NotificationManager {
         ? document.getElementById(`player_board_${playerId}`)
         : undefined;
 
+    player.counters[HAND].incValue(-1);
     await player.reputation.addCard(viceCard, {
       fromElement,
     });
+    player.counters[viceCard.suit].incValue(1);
   }
 
   async notif_addCardToSafePile(notif: Notif<NotifAddCardToSafePile>) {
@@ -232,16 +235,18 @@ class NotificationManager {
   }
 
   async notif_drawCards(notif: Notif<NotifDrawCards>) {
-    const { playerId } = notif.args;
+    const { playerId, number } = notif.args;
 
     // TODO: update player panel
+    this.getPlayer(playerId).counters[HAND].incValue(number);
   }
 
   async notif_drawCardsPrivate(notif: Notif<NotifDrawCardsPrivate>) {
-    const { cards } = notif.args;
+    const { cards, playerId } = notif.args;
 
     const viceCards = cards.map((card) => getViceCard(card));
     const hand = Hand.getInstance();
+    const player = this.getPlayer(playerId);
     const promises = viceCards.map(async (card, index) => {
       // TODO: add card to deck before drawing
       // await this.game.framework().wait(index * 150);
@@ -249,6 +254,7 @@ class NotificationManager {
       //   fromElement: document.getElementById('moho-deck'),
       // });
       await hand.addCard(card);
+      player.counters[HAND].incValue(1);
     });
 
     await Promise.all(promises);
@@ -313,6 +319,7 @@ class NotificationManager {
 
   async notif_setupChooseCard(notif: Notif<NotifSetupChooseCard>) {
     const { playerId, card } = notif.args;
+    this.getPlayer(playerId).counters[HAND].incValue(-1);
     await this.getPlayer(playerId).reputation.addCard(card as ViceCard, {
       fromElement: document.getElementById(`player_board_${playerId}`),
     });
@@ -322,12 +329,15 @@ class NotificationManager {
     notif: Notif<NotifSetupChooseCardPrivate>
   ) {
     const { playerId, card } = notif.args;
+    this.getPlayer(playerId).counters[HAND].incValue(-1);
     await this.getPlayer(playerId).reputation.addCard(getViceCard(card));
   }
 
   async notif_setupRevealCard(notif: Notif<NotifSetupRevealCard>) {
     const { playerId, card } = notif.args;
-    this.game.viceCardManager.updateCardInformations(getViceCard(card));
+    const viceCard = getViceCard(card);
+    this.game.viceCardManager.updateCardInformations(viceCard);
+    this.getPlayer(playerId).counters[viceCard.suit].incValue(1);
   }
 
   async notif_startOfTurn(notif: Notif<NotifStartOfTurn>) {}

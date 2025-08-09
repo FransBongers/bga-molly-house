@@ -30,7 +30,7 @@ trait DebugTrait
   function debug_test()
   {
 
-
+    
 
     // DieManager::rollDice(Players::get());
     // Pawns::setupNewGame();

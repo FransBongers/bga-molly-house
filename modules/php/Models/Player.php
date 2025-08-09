@@ -52,11 +52,15 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     $data = parent::jsonSerialize();
     $isCurrentPlayer = intval($currentPlayerId) == $this->getId();
 
+    $handCards =  ViceCards::getInLocation(Locations::hand($this->getId()))->toArray();
+
     return array_merge(
       $data,
       [
-        'hand' => $isCurrentPlayer ? ViceCards::getInLocation(Locations::hand($currentPlayerId))->toArray() : [],
+        'handCardCount' => count($handCards),
+        'hand' => $isCurrentPlayer ? $handCards : [],
         'reputation' => ViceCards::getInLocationOrdered(Locations::reputation($this->getId()))->toArray(),
+        'cubes' => PlayerCubes::getCubesForPlayer($this->getId()),
         // 'pawn' => Pawns::getPlayerPawn($this),
       ],
     );

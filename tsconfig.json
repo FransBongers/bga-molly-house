@@ -9,6 +9,7 @@
     "removeComments": true
   },
   "files": [
+    "src/boilerplate/constants.ts",
     "src/constants.ts",
     "node_modules/bga-animations/src/animations.ts",
     "node_modules/bga-animations/src/animations/attach-with-animation.ts",
@@ -36,7 +37,6 @@
     "node_modules/bga-dice/src/stocks/dice-stock.ts",
     "node_modules/bga-dice/src/stocks/line-stock.ts",
     "src/animations.ts",
-    "src/boilerplate/constants.ts",
     "src/boilerplate/counter.d.ts",
     "src/boilerplate/define.ts",
     "src/boilerplate/framework/types.d.ts",
@@ -54,6 +54,7 @@
     "src/boilerplate/states/ConfirmPartialTurn.ts",
     "src/boilerplate/states/ConfirmTurn.ts",
     "src/boilerplate/states/types.d.ts",
+    "src/boilerplate/ui-components/icon-counter/index.ts",
     "src/boilerplate/utility.ts",
     "src/dice-manager/index.ts",
     "src/mollyhouse.ts",
@@ -84,6 +85,9 @@
     "src/states/Shop.ts",
     "src/states/ThrowFestivity.ts",
     "src/states/MovePawn.ts",
-    "src/states/AddExcessCardsToGossip.ts"
+    "src/states/AddExcessCardsToGossip.ts",
+    "src/ui-components/cube-counter.ts",
+    "src/ui-components/hand-counter.ts",
+    "src/ui-components/suit-counter.ts",
   ]
 }

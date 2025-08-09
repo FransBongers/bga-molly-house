@@ -49,8 +49,10 @@ interface MollyHouseGamedatas extends Gamedatas {
 }
 
 interface MollyHousePlayerData extends BgaPlayer {
-  hand: ViceCard[];
-  reputation: ViceCard[];
+  hand: ViceCardBase[];
+  handCardCount: number;
+  reputation: ViceCardBase[];
+  cubes: Record<Suit, number>;
 }
 
 type GameAlias = MollyHouse;

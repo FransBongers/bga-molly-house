@@ -112,7 +112,7 @@ span[style*='color:#c0c0c0'] {
   --cardScale: 0;
 
   .moho-suit {
-    --iconScale: 0.8;
+    --iconScale: 1.14;
   }
 
   .moho-pawn {
@@ -143,6 +143,10 @@ span[style*='color:#c0c0c0'] {
   .bga-dice_die-face {
     width: 30px;
     height: 30px;
+  }
+
+  .moho-suit {
+    --iconScale: 1;
   }
 }
 

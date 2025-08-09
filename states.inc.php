@@ -92,6 +92,7 @@ $machinestates = [
             // these actions are called from the front with bgaPerformAction, and matched to the function on the game.php file
             'act' . CONFIRM_TURN,
             'actRestart',
+            'actUndoToStep',
         ])
         ->build(),
 
@@ -106,6 +107,7 @@ $machinestates = [
             // these actions are called from the front with bgaPerformAction, and matched to the function on the game.php file
             'act' . CONFIRM_PARTIAL_TURN,
             'actRestart',
+            'actUndoToStep',
         ])
         ->build(),
 

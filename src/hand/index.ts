@@ -44,7 +44,7 @@ class Hand {
       }
     );
     const cards = this.game.gamedatas.players[this.game.getPlayerId()].hand;
-    this.handStock.addCards(cards);
+    this.handStock.addCards(cards.map(getViceCard));
   }
 
   public updateFloatingHandScale() {

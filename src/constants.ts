@@ -9,6 +9,11 @@ const SHOP = 'Shop';
 const THROW_FESTIVITY = 'ThrowFestivity';
 
 /**
+ * Colors
+ */
+const RED = 'red'; // the other colors are also player colors
+
+/**
  * Card types
  */
 const DESIRE = 'desire';
@@ -27,6 +32,22 @@ const PENTACLES = 'pentacles';
 const FANS = 'fans';
 const HEARTS = 'hearts';
 
+const SUIT_COLOR_MAP = {
+  [CUPS]: BLUE,
+  [PENTACLES]: YELLOW,
+  [FANS]: GREEN,
+  [HEARTS]: RED,
+};
+
+const COLOR_SUIT_MAP = {
+  [BLUE]: CUPS,
+  [YELLOW]: PENTACLES,
+  [GREEN]: FANS,
+  [RED]: HEARTS,
+};
+
+
+
 /**
  * Market locations
  */
@@ -35,12 +56,7 @@ const MARKET_1 = 'market_1';
 const MARKET_2 = 'market_2';
 const MARKET_3 = 'market_3';
 
-const MARKET_SPOTS = [
-  MARKET_0,
-  MARKET_1,
-  MARKET_2,
-  MARKET_3,
-];
+const MARKET_SPOTS = [MARKET_0, MARKET_1, MARKET_2, MARKET_3];
 
 const GOSSIP_PILE = 'gossipPile';
 const SAFE_PILE = 'safePile';
@@ -61,7 +77,7 @@ const OLD_ROUND_COURT = 'OldRoundCourt';
 const CANNON_STREET = 'CannonStreet';
 const ST_JAMESS_PARK = 'StJamessPark';
 const JULIUS_CESAR_TAYLORS = 'JuliusCesarTaylors';
-const COVENT_GARDEN_PIAZZA  = 'CoventGardenPiazza';
+const COVENT_GARDEN_PIAZZA = 'CoventGardenPiazza';
 const DUKE_STREET = 'DukeStreet';
 const LINCOLNS_INN_BOGHOUSE = 'LincolnsInnBoghouse';
 

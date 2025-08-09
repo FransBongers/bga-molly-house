@@ -35,6 +35,11 @@ class PlayerCubes
     Globals::setPlayerCubes($cubes);
   }
 
+  public static function getCubesForPlayer($playerId)
+  {
+    return Globals::getPlayerCubes()[$playerId];
+  }
+
   public static function getReputationForSuit($playerId, $suit)
   {
     $cubes = Globals::getPlayerCubes();
@@ -43,7 +48,6 @@ class PlayerCubes
     } else {
       throw new \feException("ERROR_007");
     }
-    
   }
 
   // public static function mapDiceResults($diceResults) {

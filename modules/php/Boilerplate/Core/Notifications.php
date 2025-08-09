@@ -247,22 +247,22 @@ class Notifications
   {
     // TODO: cardsLog ?
     $text = count($cards) === 1
-      ? clienttranslate('${player_name} draws ${tkn_boldText_amount} card')
-      : clienttranslate('${player_name} draws ${tkn_boldText_amount} cards');
+      ? clienttranslate('${player_name} draws ${tkn_boldText_number} card')
+      : clienttranslate('${player_name} draws ${tkn_boldText_number} cards');
 
-    $amount = count($cards);
+    $number = count($cards);
 
     self::notify($player, 'drawCardsPrivate', $text, [
       'player' => $player,
       'cards' => $cards,
-      'amount' => $amount,
-      'tkn_boldText_amount' => $amount,
+      'number' => $number,
+      'tkn_boldText_number' => $number,
     ]);
 
     self::notifyAll('drawCards', $text, [
       'player' => $player,
-      'amount' => $amount,
-      'tkn_boldText_amount' => $amount,
+      'number' => $number,
+      'tkn_boldText_number' => $number,
       'preserve' => ['playerId'],
     ]);
   }

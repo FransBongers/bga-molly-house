@@ -74,7 +74,10 @@ class RefillMarket extends \Bga\Games\MollyHouse\Models\AtomicAction
       $updatedCards[] = $card;
     }
 
-    Notifications::refillMarket($this->getPlayer(), $updatedCards);
+    if (count($updatedCards) > 0) {
+      Notifications::refillMarket($this->getPlayer(), $updatedCards);
+    }
+
 
     $this->resolveAction(['automatic' => true], true);
   }

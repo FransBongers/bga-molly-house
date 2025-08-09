@@ -38,12 +38,12 @@ interface NotifAddExcessCardsToGossipPrivate extends NotifWithPlayerArgs {
 }
 
 interface NotifDrawCards extends NotifWithPlayerArgs {
-  amount: number;
+  number: number;
 }
 
 
 interface NotifDrawCardsPrivate extends NotifWithPlayerArgs {
-  amount: number;
+  number: number;
   cards: ViceCardBase[];
 }
 

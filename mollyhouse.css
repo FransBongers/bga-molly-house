@@ -1060,6 +1060,31 @@ body > .bga-dice_die {
   flex-wrap: wrap;
 }
 
+.icon-counter-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  position: relative;
+  gap: 4px;
+}
+.icon-counter-container .icon-counter-counter {
+  cursor: default;
+  font-weight: bold;
+  font-size: calc(var(--iconScale) * 20px);
+}
+.icon-counter-container[data-has-value=false] {
+  opacity: 0.3;
+}
+
+.icon-counter-container[data-type=overlap] .icon-counter-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-counter-container[data-type=overlap] .icon-counter-counter {
+  text-shadow: #fff 0 0 2px, #fff 0 0 2px, #fff 0 0 2px, #fff 0 0 2px, #fff 0 0 2px, #fff 0 0 2px;
+}
+
 /* make space between buttons on touch devices */
 @media (hover: none) {
   #page-title .action-button.bgabutton,
@@ -1478,6 +1503,62 @@ span[style*="color:#fcd873"] {
   transition: transform 0.2s ease-in-out;
 }
 
+.moho-suit {
+  width: calc(var(--iconScale) * 40px);
+  aspect-ratio: 1/1;
+  background-image: url("img/suits.png");
+  background-size: 400% 100%;
+  background-repeat: no-repeat;
+}
+
+.moho-suit[data-suit=cups] {
+  background-position-x: 0%;
+}
+
+.moho-suit[data-suit=fans] {
+  background-position-x: 33.3333333333%;
+}
+
+.moho-suit[data-suit=hearts] {
+  background-position-x: 66.6666666667%;
+}
+
+.moho-suit[data-suit=pentacles] {
+  background-position-x: 100%;
+}
+
+.moho-cube {
+  width: calc(var(--iconScale) * 40px);
+  aspect-ratio: 160/179;
+  background-image: url("img/cubes.png");
+  background-size: 400% 100%;
+  background-repeat: no-repeat;
+}
+
+.moho-cube[data-color=blue] {
+  background-position-x: 0%;
+}
+
+.moho-cube[data-color=green] {
+  background-position-x: 33.3333333333%;
+}
+
+.moho-cube[data-color=red] {
+  background-position-x: 66.6666666667%;
+}
+
+.moho-cube[data-color=yellow] {
+  background-position-x: 100%;
+}
+
+.moho-card-back {
+  height: calc(var(--iconScale) * 40px);
+  aspect-ratio: 300/419;
+  background-image: url("img/back.jpg");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
 #moho-market {
   display: flex;
   flex-direction: row;
@@ -1541,9 +1622,13 @@ span[style*="color:#fcd873"] {
 }
 
 .player-board-game-specific-content {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: auto;
+  grid-gap: 8px;
+  grid-row-gap: 8px;
+  --iconScale: 1;
+  padding-top: 8px;
 }
 
 .moho-counters-row {
@@ -1656,7 +1741,7 @@ span[style*="color:#c0c0c0"] {
 }
 #pagemaintitletext .moho-suit,
 #gameaction_status .moho-suit {
-  --iconScale: 0.8;
+  --iconScale: 1.14;
 }
 #pagemaintitletext .moho-pawn,
 #gameaction_status .moho-pawn {
@@ -1688,6 +1773,10 @@ span[style*="color:#c0c0c0"] {
   width: 30px;
   height: 30px;
 }
+.log > .roundedbox .moho-suit,
+.log > .roundedboxinner .moho-suit {
+  --iconScale: 1;
+}
 
 .notif_startOfTurn .roundedboxinner,
 .notif_startOfTurn .roundedbox {
@@ -1698,30 +1787,6 @@ span[style*="color:#c0c0c0"] {
 .notif_startOfTurn .roundedbox {
   border-top: 1px solid black;
   border-bottom: 1px solid black;
-}
-
-.moho-suit {
-  width: calc(var(--iconScale) * 50px);
-  height: calc(var(--iconScale) * 50px);
-  background-image: url("img/suits.png");
-  background-size: 400% 100%;
-  background-repeat: no-repeat;
-}
-
-.moho-suit[data-suit=cups] {
-  background-position-x: 0%;
-}
-
-.moho-suit[data-suit=fans] {
-  background-position-x: 33.3333333333%;
-}
-
-.moho-suit[data-suit=hearts] {
-  background-position-x: 66.6666666667%;
-}
-
-.moho-suit[data-suit=pentacles] {
-  background-position-x: 100%;
 }
 
 .moho-pawn {
