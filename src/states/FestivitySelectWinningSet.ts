@@ -156,8 +156,8 @@ class FestivitySelectWinningSet implements State {
       .sort((a, b) => {
         const cardA = getViceCard(a);
         const cardB = getViceCard(b);
-        const valueA = typeof cardA.value === 'string' ? 0 : cardA.value;
-        const valueB = typeof cardB.value === 'string' ? 0 : cardB.value;
+        const valueA = typeof cardA.displayValue === 'string' ? 0 : cardA.displayValue;
+        const valueB = typeof cardB.displayValue === 'string' ? 0 : cardB.displayValue;
         return valueA - valueB;
       });
 

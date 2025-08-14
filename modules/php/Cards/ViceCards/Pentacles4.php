@@ -8,7 +8,7 @@ class Pentacles4 extends \Bga\Games\MollyHouse\Cards\ViceCards\DesireCard
   {
     parent::__construct($row);
     $this->id = 'Pentacles4';
-    $this->value = 4;
+    $this->displayValue = 4;
     $this->suit = PENTACLES;
     $this->joy = 3;
   }

@@ -8,7 +8,7 @@ class Hearts6 extends \Bga\Games\MollyHouse\Cards\ViceCards\DesireCard
   {
     parent::__construct($row);
     $this->id = 'Hearts6';
-    $this->value = 6;
+    $this->displayValue = 6;
     $this->suit = HEARTS;
     $this->joy = 4;
   }

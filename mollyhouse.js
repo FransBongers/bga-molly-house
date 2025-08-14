@@ -5097,14 +5097,14 @@ var TakeAction = (function () {
             case CRUISE:
                 updatePageTitle(_('Cruise at ${site} and add ${value} of ${tkn_suit} to your reputation'), {
                     site: site,
-                    value: StaticData.get().viceCard(target).value,
+                    value: StaticData.get().viceCard(target).displayValue,
                     tkn_suit: StaticData.get().viceCard(target).suit,
                 });
                 break;
             case INDULGE:
                 updatePageTitle(_('Indulge at ${site} and add ${value} of ${tkn_suit} to your hand'), {
                     site: site,
-                    value: StaticData.get().viceCard(target).value,
+                    value: StaticData.get().viceCard(target).displayValue,
                     tkn_suit: StaticData.get().viceCard(target).suit,
                 });
                 break;
@@ -5155,9 +5155,9 @@ var PlayerSetupChooseCard = (function () {
     PlayerSetupChooseCard.prototype.updateInterfaceConfirm = function (card) {
         clearPossible();
         setSelected(card.id);
-        var _a = getViceCard(card), value = _a.value, suit = _a.suit;
+        var _a = getViceCard(card), displayValue = _a.displayValue, suit = _a.suit;
         updatePageTitle(_('Place ${value} of ${tkn_suit} in your reputation?'), {
-            value: getViceCardValueText(value),
+            value: getViceCardValueText(displayValue),
             tkn_suit: suit,
         });
         addConfirmButton(function () {
@@ -5322,7 +5322,7 @@ var cardsLog = function (cards) {
         var log = '';
         var key = 'tkn_boldText_cardValue' + index;
         log = log + '${' + key + '}';
-        cardsLogArgs[key] = viceCardValueText(viceCard.value);
+        cardsLogArgs[key] = viceCardValueText(viceCard.displayValue);
         var keySuit = 'tkn_suit_' + index;
         log = log + '${' + keySuit + '}';
         cardsLogArgs[keySuit] = viceCard.suit;
@@ -5661,9 +5661,9 @@ var FestivityPlayCard = (function () {
     FestivityPlayCard.prototype.updateInterfaceConfirm = function (card) {
         clearPossible();
         setSelected(card.id);
-        var _a = getViceCard(card), value = _a.value, suit = _a.suit;
+        var _a = getViceCard(card), displayValue = _a.displayValue, suit = _a.suit;
         updatePageTitle(_('Play ${value} of ${tkn_suit}?'), {
-            value: getViceCardValueText(value),
+            value: getViceCardValueText(displayValue),
             tkn_suit: suit,
         });
         addConfirmButton(function () {
@@ -5707,7 +5707,7 @@ var FestivityGenerateGossip = (function () {
         clearPossible();
         var viceCard = getViceCard(card);
         updatePageTitle(_('Add ${value} of ${tkn_suit} to the gossip pile?'), {
-            value: getViceCardValueText(viceCard.value),
+            value: getViceCardValueText(viceCard.displayValue),
             tkn_suit: viceCard.suit,
         });
         setSelected(card.id);
@@ -5797,8 +5797,8 @@ var FestivitySelectWinningSet = (function () {
             .sort(function (a, b) {
             var cardA = getViceCard(a);
             var cardB = getViceCard(b);
-            var valueA = typeof cardA.value === 'string' ? 0 : cardA.value;
-            var valueB = typeof cardB.value === 'string' ? 0 : cardB.value;
+            var valueA = typeof cardA.displayValue === 'string' ? 0 : cardA.displayValue;
+            var valueB = typeof cardB.displayValue === 'string' ? 0 : cardB.displayValue;
             return valueA - valueB;
         });
         updatePageTitle(_('Confirm winning ${festivityName}: ${cardsLog}'), {

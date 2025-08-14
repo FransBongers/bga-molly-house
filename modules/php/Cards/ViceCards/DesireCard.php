@@ -32,7 +32,7 @@ class DesireCard extends \Bga\Games\MollyHouse\Models\ViceCard
 
     $reptution = $playerOrCommunity->getCardsInReputation();
     foreach ($reptution as $card) {
-      if ($card->getSuit() === $this->getSuit() && in_array($card->getValue(), ['J', 'Q'])) {
+      if ($card->getSuit() === $this->getSuit() && in_array($card->getDisplayValue(), ['J', 'Q'])) {
         $card->scoreBonusJoy($playerOrCommunity);
       }
     }

@@ -129,7 +129,7 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
       clienttranslate('${player_name} is exposed by ${tkn_boldText_cardValue} of ${tkn_suit}'),
       [
         'player' => $this,
-        'tkn_boldText_cardValue' => Notifications::viceCardValueText($card->getValue()),
+        'tkn_boldText_cardValue' => Notifications::viceCardValueText($card->getDisplayValue()),
         'tkn_suit' => $suit,
       ],
     );

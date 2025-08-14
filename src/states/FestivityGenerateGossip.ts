@@ -63,7 +63,7 @@ class FestivityGenerateGossip implements State {
 
     const viceCard = getViceCard(card);
     updatePageTitle(_('Add ${value} of ${tkn_suit} to the gossip pile?'), {
-      value: getViceCardValueText(viceCard.value),
+      value: getViceCardValueText(viceCard.displayValue),
       tkn_suit: viceCard.suit,
     });
     setSelected(card.id);

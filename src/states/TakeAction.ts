@@ -154,7 +154,7 @@ class TakeAction implements State {
           ),
           {
             site,
-            value: StaticData.get().viceCard(target).value,
+            value: StaticData.get().viceCard(target).displayValue,
             tkn_suit: StaticData.get().viceCard(target).suit,
           }
         );
@@ -166,7 +166,7 @@ class TakeAction implements State {
           ),
           {
             site,
-            value: StaticData.get().viceCard(target).value,
+            value: StaticData.get().viceCard(target).displayValue,
             tkn_suit: StaticData.get().viceCard(target).suit,
           }
         );

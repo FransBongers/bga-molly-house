@@ -90,7 +90,7 @@ interface ViceCardBase extends GamePiece {
 
 interface ViceCardStaticData {
   type: ViceCardType;
-  value: number | string;
+  displayValue: number | string;
   suit: Suit;
   joy: number;
 }

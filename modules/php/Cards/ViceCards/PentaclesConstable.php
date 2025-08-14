@@ -8,7 +8,7 @@ class PentaclesConstable extends \Bga\Games\MollyHouse\Cards\ViceCards\ThreatCar
   {
     parent::__construct($row);
     $this->id = 'PentaclesConstable';
-    $this->value = 'C';
+    $this->displayValue = 'C';
     $this->suit = PENTACLES;
     $this->joy = 0;
   }

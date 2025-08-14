@@ -8,7 +8,7 @@ class FansQueen extends \Bga\Games\MollyHouse\Cards\ViceCards\MollyCard
   {
     parent::__construct($row);
     $this->id = 'FansQueen';
-    $this->value = 'Q';
+    $this->displayValue = 'Q';
     $this->suit = FANS;
     $this->joy = 4;
     $this->bonusJoy = 3;

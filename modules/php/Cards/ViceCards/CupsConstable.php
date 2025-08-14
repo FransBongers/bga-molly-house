@@ -8,7 +8,7 @@ class CupsConstable extends \Bga\Games\MollyHouse\Cards\ViceCards\ThreatCard
   {
     parent::__construct($row);
     $this->id = 'CupsConstable';
-    $this->value = 'C';
+    $this->displayValue = 'C';
     $this->suit = CUPS;
     $this->joy = 0;
   }

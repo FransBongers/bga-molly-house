@@ -175,7 +175,7 @@ class Notifications
       // Value
       $key = 'tkn_boldText_cardValue' . $index;
       $log = $log . '${' . $key . '}';
-      $cardsLogArgs[$key] = self::viceCardValueText($card->getValue());
+      $cardsLogArgs[$key] = self::viceCardValueText($card->getDisplayValue());
 
       // Suit
       $keySuit = 'tkn_suit_' . $index;
@@ -212,7 +212,7 @@ class Notifications
       'player' => $player,
       'card' => $card,
       'tkn_viceCard' => self::tknViceCard($card),
-      'tkn_boldText_cardValue' => self::viceCardValueText($card->getValue()),
+      'tkn_boldText_cardValue' => self::viceCardValueText($card->getDisplayValue()),
       'tkn_suit' => $card->getSuit(),
       'i18n' => ['tkn_boldText_cardValue'],
     ]);
@@ -224,7 +224,7 @@ class Notifications
       'player' => $player,
       'card' => $card,
       'tkn_viceCard' => self::tknViceCard($card),
-      'tkn_boldText_cardValue' => self::viceCardValueText($card->getValue()),
+      'tkn_boldText_cardValue' => self::viceCardValueText($card->getDisplayValue()),
       'tkn_suit' => $card->getSuit(),
       'i18n' => ['tkn_boldText_cardValue'],
     ]);
@@ -237,7 +237,7 @@ class Notifications
         'tkn_boldText_community' => clienttranslate('community'),
         'card' => $card,
         'tkn_viceCard' => self::tknViceCard($card),
-        'tkn_boldText_cardValue' => self::viceCardValueText($card->getValue()),
+        'tkn_boldText_cardValue' => self::viceCardValueText($card->getDisplayValue()),
         'tkn_suit' => $card->getSuit(),
         'i18n' => ['tkn_boldText_cardValue'],
       ]);
@@ -248,7 +248,7 @@ class Notifications
       'player' => $playerOrCommunity,
       'card' => $card,
       'tkn_viceCard' => self::tknViceCard($card),
-      'tkn_boldText_cardValue' => self::viceCardValueText($card->getValue()),
+      'tkn_boldText_cardValue' => self::viceCardValueText($card->getDisplayValue()),
       'tkn_suit' => $card->getSuit(),
       'i18n' => ['tkn_boldText_cardValue'],
     ]);
@@ -260,7 +260,7 @@ class Notifications
       'player' => $player,
       'card' => $card,
       'tkn_viceCard' => self::tknViceCard($card),
-      'tkn_boldText_cardValue' => self::viceCardValueText($card->getValue()),
+      'tkn_boldText_cardValue' => self::viceCardValueText($card->getDisplayValue()),
       'tkn_suit' => $card->getSuit(),
       'i18n' => ['tkn_boldText_cardValue'],
     ]);
@@ -320,7 +320,7 @@ class Notifications
       'player' => $player,
       'card' => $card,
       'tkn_viceCard' => self::tknViceCard($card),
-      'tkn_boldText_cardValue' => self::viceCardValueText($card->getValue()),
+      'tkn_boldText_cardValue' => self::viceCardValueText($card->getDisplayValue()),
       'tkn_suit' => $card->getSuit(),
       'i18n' => ['tkn_boldText_cardValue'],
     ]);
@@ -332,7 +332,7 @@ class Notifications
       'player' => $player,
       'card' => $card,
       'tkn_viceCard' => self::tknViceCard($card),
-      'tkn_boldText_cardValue' => self::viceCardValueText($card->getValue()),
+      'tkn_boldText_cardValue' => self::viceCardValueText($card->getDisplayValue()),
       'tkn_boldText_community' => clienttranslate('community'),
       'tkn_suit' => $card->getSuit(),
       'i18n' => ['tkn_boldText_cardValue', 'tkn_boldText_community'],
@@ -357,7 +357,7 @@ class Notifications
       'card' => $card,
       'value' => $value,
       'tkn_viceCard' => self::tknViceCard($card),
-      'tkn_boldText_cardValue' => self::viceCardValueText($card->getValue()),
+      'tkn_boldText_cardValue' => self::viceCardValueText($card->getDisplayValue()),
       'tkn_suit' => $card->getSuit(),
       'tkn_boldText_value' => self::viceCardValueText($value),
       'i18n' => ['tkn_boldText_cardValue', 'tkn_boldText_value'],
@@ -457,7 +457,7 @@ class Notifications
       'player' => $player,
       'amount' => $amount,
       'tkn_boldText_amount' => $amount,
-      'tkn_boldText_cardValue' => self::viceCardValueText($card->getValue()),
+      'tkn_boldText_cardValue' => self::viceCardValueText($card->getDisplayValue()),
       'tkn_suit' => $card->getSuit(),
       'tkn_viceCard' => self::tknViceCard($card),
       'i18n' => ['tkn_boldText_cardValue'],
@@ -492,7 +492,7 @@ class Notifications
       'player' => $player,
       'card' => $selectedCard,
       'tkn_viceCard' => self::tknViceCard($selectedCard),
-      'tkn_boldText_cardValue' => self::viceCardValueText($selectedCard->getValue()),
+      'tkn_boldText_cardValue' => self::viceCardValueText($selectedCard->getDisplayValue()),
       'tkn_suit' => $selectedCard->getSuit(),
       'i18n' => ['tkn_boldText_cardValue'],
     ]);
@@ -513,7 +513,7 @@ class Notifications
       'player' => $player,
       'card' => $card,
       'tkn_viceCard' => self::tknViceCard($card),
-      'tkn_boldText_cardValue' => self::viceCardValueText($card->getValue()),
+      'tkn_boldText_cardValue' => self::viceCardValueText($card->getDisplayValue()),
       'tkn_suit' => $card->getSuit(),
       'you' => '${you}',
       'i18n' => ['tkn_boldText_cardValue'],

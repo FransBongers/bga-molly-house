@@ -8,7 +8,7 @@ class CupsJack extends \Bga\Games\MollyHouse\Cards\ViceCards\MollyCard
   {
     parent::__construct($row);
     $this->id = 'CupsJack';
-    $this->value = 'J';
+    $this->displayValue = 'J';
     $this->suit = CUPS;
     $this->joy = 4;
   }

@@ -59,10 +59,10 @@ class PlayerSetupChooseCard implements State {
     clearPossible();
     setSelected(card.id);
 
-    const {value, suit} = getViceCard(card)
+    const {displayValue, suit} = getViceCard(card)
 
     updatePageTitle(_('Place ${value} of ${tkn_suit} in your reputation?'),{
-      value: getViceCardValueText(value),
+      value: getViceCardValueText(displayValue),
       tkn_suit: suit,
     });
 

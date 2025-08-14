@@ -18,7 +18,7 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
 
   protected $type;
   protected $suit;
-  protected $value;
+  protected $displayValue;
   protected $joy;
   protected $minPlayers = 1;
 
@@ -32,7 +32,7 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   protected $staticAttributes = [
     'type',
     'suit',
-    'value',
+    'displayValue',
     'joy',
     'minPlayers',
   ];
@@ -62,7 +62,7 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
 
   public function isConstable()
   {
-    return $this->value === 'Q';
+    return $this->displayValue === 'C';
   }
 
   public function isDesire()
@@ -72,7 +72,7 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
 
   public function isJack()
   {
-    return $this->value === 'J';
+    return $this->displayValue === 'J';
   }
 
   public function isMolly()
@@ -82,7 +82,7 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
 
   public function isRogue()
   {
-    return $this->value === 'R';
+    return $this->displayValue === 'R';
   }
 
   public function isThreat()
@@ -92,7 +92,7 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
 
   public function isQueen()
   {
-    return $this->value === 'Q';
+    return $this->displayValue === 'Q';
   }
 
   public function addToGossip($player, $notify = true)
@@ -146,7 +146,7 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
 
   public function getMostInfamousValue()
   {
-    return $this->value;
+    return $this->displayValue;
   }
 
   public function insertOnTop($location)
@@ -158,7 +158,7 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   public function getValueForFestivity()
   {
     if ($this->isDesire()) {
-      return $this->value;
+      return $this->displayValue;
     }
     if ($this->isRogue()) {
       return Festivity::getRogue($this->getSuit());

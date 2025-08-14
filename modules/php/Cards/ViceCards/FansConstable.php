@@ -8,7 +8,7 @@ class FansConstable extends \Bga\Games\MollyHouse\Cards\ViceCards\ThreatCard
   {
     parent::__construct($row);
     $this->id = 'FansConstable';
-    $this->value = 'C';
+    $this->displayValue = 'C';
     $this->suit = FANS;
     $this->joy = 0;
   }

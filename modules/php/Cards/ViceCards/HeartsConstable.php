@@ -8,7 +8,7 @@ class HeartsConstable extends \Bga\Games\MollyHouse\Cards\ViceCards\ThreatCard
   {
     parent::__construct($row);
     $this->id = 'HeartsConstable';
-    $this->value = 'C';
+    $this->displayValue = 'C';
     $this->suit = HEARTS;
     $this->joy = 0;
   }

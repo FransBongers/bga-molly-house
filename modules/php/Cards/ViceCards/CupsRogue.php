@@ -8,7 +8,7 @@ class CupsRogue extends \Bga\Games\MollyHouse\Cards\ViceCards\ThreatCard
   {
     parent::__construct($row);
     $this->id = 'CupsRogue';
-    $this->value = 'R';
+    $this->displayValue = 'R';
     $this->suit = CUPS;
     $this->joy = 0;
   }

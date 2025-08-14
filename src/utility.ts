@@ -73,7 +73,7 @@ const cardsLog = (
     // Value
     const key = 'tkn_boldText_cardValue' + index;
     log = log + '${' + key + '}';
-    cardsLogArgs[key] = viceCardValueText(viceCard.value);
+    cardsLogArgs[key] = viceCardValueText(viceCard.displayValue);
 
     // Suit
     const keySuit = 'tkn_suit_' + index;

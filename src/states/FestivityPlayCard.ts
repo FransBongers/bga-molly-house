@@ -71,10 +71,10 @@ class FestivityPlayCard implements State {
 
     setSelected(card.id);
 
-    const { value, suit } = getViceCard(card);
+    const { displayValue, suit } = getViceCard(card);
 
     updatePageTitle(_('Play ${value} of ${tkn_suit}?'), {
-      value: getViceCardValueText(value),
+      value: getViceCardValueText(displayValue),
       tkn_suit: suit,
     });
 

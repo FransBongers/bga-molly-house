@@ -8,7 +8,7 @@ class Fans5 extends \Bga\Games\MollyHouse\Cards\ViceCards\DesireCard
   {
     parent::__construct($row);
     $this->id = 'Fans5';
-    $this->value = 5;
+    $this->displayValue = 5;
     $this->suit = FANS;
     $this->joy = 3;
   }

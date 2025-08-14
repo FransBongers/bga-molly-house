@@ -8,7 +8,7 @@ class Cups6 extends \Bga\Games\MollyHouse\Cards\ViceCards\DesireCard
   {
     parent::__construct($row);
     $this->id = 'Cups6';
-    $this->value = 6;
+    $this->displayValue = 6;
     $this->suit = CUPS;
     $this->joy = 4;
   }
