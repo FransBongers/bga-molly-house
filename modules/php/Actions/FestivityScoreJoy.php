@@ -60,7 +60,7 @@ class FestivityScoreJoy extends \Bga\Games\MollyHouse\Models\AtomicAction
 
     foreach ($cardsPerPlayer as $playerId => $playerCards) {
       usort($playerCards, function ($a, $b) {
-        return $a->getValueForFestivity() <=> $b->getValueForFestivity();
+        return $a->getFestivityValue() <=> $b->getFestivityValue();
       });
 
       $playerIsCommunity = $playerId === COMMUNITY;

@@ -16,6 +16,7 @@ class ViceCards extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
   protected static $table = 'vice_cards';
   protected static $prefix = 'card_';
   protected static $customFields = [
+    'festivity_value',
     'hidden',
   ];
   protected static $autoremovePrefix = false;
@@ -67,7 +68,7 @@ class ViceCards extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
 
     $card = null;
     $index = -1;
-    foreach($cards as $cardInMarket) {
+    foreach ($cards as $cardInMarket) {
       $cardIndex = array_search($cardInMarket->getLocation(), MARKET_SPOTS);
       if ($cardIndex > $index) {
         $index = $cardIndex;
@@ -104,9 +105,13 @@ class ViceCards extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
         continue;
       }
 
+      $displayValue = $card->getDisplayValue();
+      $festivityValue = in_array($displayValue, ['J', 'Q', 'R', 'C']) ? 0 : $displayValue;
+
       $cards[$cId] = [
         'id' => $cId,
         'location' => DECK,
+        'festivity_value' => $festivityValue,
       ];
     }
 

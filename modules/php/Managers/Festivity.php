@@ -54,7 +54,6 @@ class Festivity
       'runner' => $festivity['runner'],
       'passed' => $festivity['passed'],
       'round' => $festivity['round'],
-      'rogues' => $festivity['rogues'],
       'communityCards' => ViceCards::getInLocationOrdered(Locations::festivity(COMMUNITY))->toArray(),
     ];
 
@@ -68,27 +67,9 @@ class Festivity
       'runner' => null,
       'passed' => [],
       'round' => 0,
-      'rogues' => [
-        CUPS => 0,
-        PENTACLES => 0,
-        FANS => 0,
-        HEARTS => 0,
-      ],
     ];
   }
 
-  public static function setRogue($suit, $value)
-  {
-    $festivity = self::get();
-    $festivity['rogues'][$suit] = $value;
-    Globals::setFestivity($festivity);
-  }
-
-  public static function getRogue($suit)
-  {
-    $festivity = self::get();
-    return $festivity['rogues'][$suit];
-  }
 
   public static function getPlayedCards()
   {

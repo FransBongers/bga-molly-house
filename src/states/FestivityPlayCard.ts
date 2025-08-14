@@ -83,6 +83,7 @@ class FestivityPlayCard implements State {
         cardId: card.id,
       });
     });
+    addCancelButton();
   }
 
   //  .##.....##.########.####.##.......####.########.##....##

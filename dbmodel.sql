@@ -74,6 +74,7 @@ CREATE TABLE IF NOT EXISTS `vice_cards` (
   `card_location` varchar(32) NOT NULL,
   `card_state` int(10) DEFAULT 0,
   `hidden` tinyint(1) DEFAULT 0,
+  `festivity_value` int(10) DEFAULT 0,
   PRIMARY KEY (`card_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 CREATE TABLE IF NOT EXISTS `sites` (

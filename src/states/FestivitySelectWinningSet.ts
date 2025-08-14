@@ -154,11 +154,7 @@ class FestivitySelectWinningSet implements State {
     const winningSet = set.selected
       .concat(this.getSelectedCardsFromOptions())
       .sort((a, b) => {
-        const cardA = getViceCard(a);
-        const cardB = getViceCard(b);
-        const valueA = typeof cardA.displayValue === 'string' ? 0 : cardA.displayValue;
-        const valueB = typeof cardB.displayValue === 'string' ? 0 : cardB.displayValue;
-        return valueA - valueB;
+        return a.festivityValue - b.festivityValue;
       });
 
     updatePageTitle(_('Confirm winning ${festivityName}: ${cardsLog}'), {

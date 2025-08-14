@@ -111,7 +111,7 @@ class FestivitySelectWinningSet extends \Bga\Games\MollyHouse\Models\AtomicActio
     }
 
     usort($winningSet, function ($a, $b) {
-      return $a->getValueForFestivity() <=> $b->getValueForFestivity();
+      return $a->getFestivityValue() <=> $b->getFestivityValue();
     });
 
     Notifications::festivityWinningSet($winningSet);

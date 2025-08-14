@@ -64,7 +64,7 @@ class FestivityDetermineWinningSet extends \Bga\Games\MollyHouse\Models\AtomicAc
     }
 
     usort($winningSet, function ($a, $b) {
-      return $a->getValueForFestivity() <=> $b->getValueForFestivity();
+      return $a->getFestivityValue() <=> $b->getFestivityValue();
     });
 
     Notifications::festivityWinningSet($winningSet);
@@ -165,7 +165,7 @@ class FestivityDetermineWinningSet extends \Bga\Games\MollyHouse\Models\AtomicAc
         continue;
       }
       usort($suitCards, function ($a, $b) {
-        return $a->getValueForFestivity() <=> $b->getValueForFestivity();
+        return $a->getFestivityValue() <=> $b->getFestivityValue();
       });
 
       $set = $this->getSetOfSizeInSequentialOrder($suitCards, 4);
@@ -204,7 +204,7 @@ class FestivityDetermineWinningSet extends \Bga\Games\MollyHouse\Models\AtomicAc
       if ($card->isQueen()) {
         $queens[] = $card;
       } else if ($card->isDesire() || $card->isRogue()) {
-        $value = $card->getValueForFestivity();
+        $value = $card->getFestivityValue();
         if (!isset($desireCards[$value])) {
           $desireCards[$value] = [];
         }
@@ -285,7 +285,7 @@ class FestivityDetermineWinningSet extends \Bga\Games\MollyHouse\Models\AtomicAc
       if ($card->isConstable()) {
         $constables[] = $card; // Constables are always chosen
       } else if ($card->isDesire()) {
-        $value = $card->getValueForFestivity();
+        $value = $card->getFestivityValue();
         if (!isset($desireCards[$value])) {
           $desireCards[$value] = [];
         }
@@ -331,11 +331,11 @@ class FestivityDetermineWinningSet extends \Bga\Games\MollyHouse\Models\AtomicAc
     $storedSet = null;
     $set = [];
     usort($cards, function ($a, $b) {
-      return $a->getValueForFestivity() <=> $b->getValueForFestivity();
+      return $a->getFestivityValue() <=> $b->getFestivityValue();
     });
 
     foreach ($cards as $i => $card) {
-      $value = $card->getValueForFestivity();
+      $value = $card->getFestivityValue();
 
       // Item already exists in set, just add it
       if (isset($set[$value])) {

@@ -86,6 +86,7 @@ type Suit = 'hearts' | 'cups' | 'fans' | 'pentacles';
 
 interface ViceCardBase extends GamePiece {
   hidden: boolean;
+  festivityValue: number;
 }
 
 interface ViceCardStaticData {

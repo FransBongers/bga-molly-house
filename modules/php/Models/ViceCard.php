@@ -15,6 +15,7 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   protected $location;
   protected $state;
   protected $hidden;
+  protected $festivityValue;
 
   protected $type;
   protected $suit;
@@ -26,6 +27,7 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     'id' => ['card_id', 'str'],
     'location' => 'card_location',
     'state' => ['card_state', 'int'],
+    'festivityValue' => ['festivity_value', 'int'],
     'hidden' => ['hidden', 'int'],
   ];
 
@@ -155,15 +157,4 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     $this->state = ViceCards::insertOnTop($this->getId(), $location);
   }
 
-  public function getValueForFestivity()
-  {
-    if ($this->isDesire()) {
-      return $this->displayValue;
-    }
-    if ($this->isRogue()) {
-      return Festivity::getRogue($this->getSuit());
-    }
-    // Return 0 so that with sorting Jacks and Queens are always at the start
-    return 0;
-  }
 }

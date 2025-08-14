@@ -5671,6 +5671,7 @@ var FestivityPlayCard = (function () {
                 cardId: card.id,
             });
         });
+        addCancelButton();
     };
     return FestivityPlayCard;
 }());
@@ -5795,11 +5796,7 @@ var FestivitySelectWinningSet = (function () {
         var winningSet = set.selected
             .concat(this.getSelectedCardsFromOptions())
             .sort(function (a, b) {
-            var cardA = getViceCard(a);
-            var cardB = getViceCard(b);
-            var valueA = typeof cardA.displayValue === 'string' ? 0 : cardA.displayValue;
-            var valueB = typeof cardB.displayValue === 'string' ? 0 : cardB.displayValue;
-            return valueA - valueB;
+            return a.festivityValue - b.festivityValue;
         });
         updatePageTitle(_('Confirm winning ${festivityName}: ${cardsLog}'), {
             cardsLog: cardsLog(winningSet),

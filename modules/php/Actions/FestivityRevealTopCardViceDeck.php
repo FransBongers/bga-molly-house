@@ -50,7 +50,7 @@ class FestivityRevealTopCardViceDeck extends \Bga\Games\MollyHouse\Models\Atomic
 
     if ($card->isRogue()) {
       $value = bga_rand(0, 9);
-      Festivity::setRogue($card->getSuit(), $value);
+      $card->setFestivityValue($value);
       Notifications::festivitySetRogueValue($player, $card, $value, true);
     }
 
