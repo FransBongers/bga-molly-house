@@ -30,7 +30,6 @@ class IndictmentCards extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
     // $prefix = self::getClassPrefix($id);
 
     $className = "\Bga\Games\MollyHouse\Cards\IndictmentCards\\$id";
-    Notifications::log('className', $className);
     return new $className($data);
   }
 

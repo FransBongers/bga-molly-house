@@ -25,7 +25,7 @@ interface NotifAddCardToReputation extends NotifWithPlayerArgs {
   card: ViceCardBase;
 }
 
-interface NotifAddCardToSafePile extends NotifWithPlayerArgs {
+interface NotifAddCardToSafePile {
   card: ViceCardBase;
 }
 
@@ -41,15 +41,44 @@ interface NotifDrawCards extends NotifWithPlayerArgs {
   number: number;
 }
 
-
 interface NotifDrawCardsPrivate extends NotifWithPlayerArgs {
   number: number;
+  cards: ViceCardBase[];
+}
+
+interface NotifFestivityEnd {}
+
+interface NotifFestivityPlayCard extends NotifWithPlayerArgs {
+  card: ViceCardBase;
+}
+
+interface NotifFestivityRevealTopCardViceDeck {
+  card: ViceCardBase;
+}
+
+interface NotifFestivityPhase {}
+
+interface NotifFestivitySetRogueValue extends NotifWithPlayerArgs {
+  card: ViceCardBase;
+  value: number;
+}
+
+interface NotifFestivityWinningSet {
   cards: ViceCardBase[];
 }
 
 interface NotifGainCubes extends NotifWithPlayerArgs {
   suit: Suit;
   numberOfCubes: number;
+}
+
+interface NotifLoseJoy extends NotifWithPlayerArgs {
+  amount: number;
+}
+
+interface NotifLoseJoyCommunity {
+  joyDecrease: number;
+  joyTotal: number;
 }
 
 interface NotifMovePawn extends NotifWithPlayerArgs {
@@ -77,6 +106,11 @@ interface NotifScoreJoy extends NotifWithPlayerArgs {
   amount: number;
 }
 
+interface NotifScoreJoyCommunity {
+  joyIncrease: number;
+  joyTotal: number;
+}
+
 interface NotifSetupChooseCard extends NotifWithPlayerArgs {
   card: {
     id: string;
@@ -93,3 +127,5 @@ interface NotifSetupRevealCard extends NotifWithPlayerArgs {
 }
 
 interface NotifStartOfTurn extends NotifWithPlayerArgs {}
+
+interface NotifThrowFestivity extends NotifWithPlayerArgs {}

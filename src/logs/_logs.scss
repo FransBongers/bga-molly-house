@@ -112,7 +112,7 @@ span[style*='color:#c0c0c0'] {
   --cardScale: 0;
 
   .moho-suit {
-    --iconScale: 1.14;
+    --iconScale: 1;
   }
 
   .moho-pawn {
@@ -146,10 +146,11 @@ span[style*='color:#c0c0c0'] {
   }
 
   .moho-suit {
-    --iconScale: 1;
+    --iconScale: 0.875;
   }
 }
 
+.notif_festivityPhase,
 .notif_startOfTurn {
   .roundedboxinner,
   .roundedbox {
@@ -160,6 +161,7 @@ span[style*='color:#c0c0c0'] {
   }
 }
 
+.notif_festivityPhase,
 .notif_startOfTurn {
   .roundedbox {
     border-top: 1px solid black;

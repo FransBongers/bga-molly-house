@@ -4,6 +4,7 @@ namespace Bga\Games\MollyHouse\Models;
 
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
+use Bga\Games\MollyHouse\Managers\Festivity;
 use Bga\Games\MollyHouse\Managers\ViceCards;
 
 class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
@@ -59,9 +60,19 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     return $this->hidden === 1;
   }
 
+  public function isConstable()
+  {
+    return $this->value === 'Q';
+  }
+
   public function isDesire()
   {
     return $this->type === DESIRE;
+  }
+
+  public function isJack()
+  {
+    return $this->value === 'J';
   }
 
   public function isMolly()
@@ -69,9 +80,19 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     return $this->type === MOLLY;
   }
 
+  public function isRogue()
+  {
+    return $this->value === 'R';
+  }
+
   public function isThreat()
   {
     return $this->type === THREAT;
+  }
+
+  public function isQueen()
+  {
+    return $this->value === 'Q';
   }
 
   public function addToGossip($player, $notify = true)
@@ -106,7 +127,7 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     }
   }
 
-  public function addToSafePile($player, $notify = true)
+  public function addToSafePile($playerOrCommunity, $notify = true)
   {
     $state = ViceCards::insertOnTop($this->getId(), SAFE_PILE);
     $this->location = SAFE_PILE;
@@ -114,15 +135,35 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     if (!$notify) {
       return;
     }
-    Notifications::addCardToSafePile($player, $this);
+
+    Notifications::addCardToSafePile($playerOrCommunity, $this);
   }
 
-  public function scoreJoy($player)
+  public function scoreJoy($playerOrCommunity)
   {
     return;
   }
 
-  public function getMostInfamousValue() {
+  public function getMostInfamousValue()
+  {
     return $this->value;
+  }
+
+  public function insertOnTop($location)
+  {
+    $this->location = $location;
+    $this->state = ViceCards::insertOnTop($this->getId(), $location);
+  }
+
+  public function getValueForFestivity()
+  {
+    if ($this->isDesire()) {
+      return $this->value;
+    }
+    if ($this->isRogue()) {
+      return Festivity::getRogue($this->getSuit());
+    }
+    // Return 0 so that with sorting Jacks and Queens are always at the start
+    return 0;
   }
 }

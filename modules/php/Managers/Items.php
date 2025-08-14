@@ -76,8 +76,6 @@ class Items extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
     }
 
 
-    Notifications::log('cards', $cards);
-
     // Create the cards
     self::create($cards, null);
     self::shuffle(DECK);

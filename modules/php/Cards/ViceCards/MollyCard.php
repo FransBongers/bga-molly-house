@@ -2,6 +2,7 @@
 
 namespace Bga\Games\MollyHouse\Cards\ViceCards;
 
+use Bga\Games\MollyHouse\Boilerplate\Core\Globals;
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
 
 class MollyCard extends \Bga\Games\MollyHouse\Models\ViceCard
@@ -14,7 +15,8 @@ class MollyCard extends \Bga\Games\MollyHouse\Models\ViceCard
     $this->type = MOLLY;
   }
 
-  public function getMostInfamousValue() {
+  public function getMostInfamousValue()
+  {
     return 10;
   }
 
@@ -23,6 +25,15 @@ class MollyCard extends \Bga\Games\MollyHouse\Models\ViceCard
     $bonusJoy = $this->bonusJoy;
     $player->incScore($bonusJoy);
     Notifications::scoreBonusJoy($player, $bonusJoy, $this);
+  }
 
+  public function scoreJoy($playerOrCommunity)
+  {
+    if ($playerOrCommunity === COMMUNITY) {
+      $joyIncrease = 4;
+      $joyTotal = Globals::incCommunityJoy($joyIncrease);
+      Notifications::scoreJoyCommunity($joyIncrease, $joyTotal);
+      return;
+    }
   }
 }

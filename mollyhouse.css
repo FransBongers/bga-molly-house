@@ -508,6 +508,10 @@ body > .bga-dice_die {
 #moho-board .moho-pawn {
   position: absolute;
 }
+#moho-board #moho-dice-stock[data-festivity=true] {
+  display: none;
+  pointer-events: none;
+}
 
 .moho-house-raided-marker {
   position: absolute;
@@ -1484,6 +1488,40 @@ span[style*="color:#fcd873"] {
   background-position-x: 100%;
 }
 
+#moho-festivity {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+#moho-festivity .moho-festivity-container {
+  width: calc(var(--cardScale) * 254px);
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--boardScale) * 4px);
+}
+#moho-festivity .moho-festivity-container span {
+  text-shadow: 1px 0 0 black, 0 1px 0 black, -1px 0 0 black, 0 -1px 0 black, 1px 1px 0 black, -1px 1px 0 black, 1px -1px 0 black, -1px -1px 0 black !important;
+  font-size: calc(var(--boardScale) * 20px);
+}
+#moho-festivity .moho-festivity-container .moho-festivity-stock {
+  height: calc(var(--cardScale) * 225px);
+}
+#moho-festivity .moho-festivity-container .moho-festivity-stock .moho-vice-card-container:not(:first-child) {
+  margin-left: calc(var(--cardScale) * -115px);
+}
+#moho-festivity #moho-festivity-community span {
+  color: ivory;
+}
+
+#moho-festivity[data-active=false] {
+  display: none;
+  pointer-events: none;
+}
+
 #hand {
   position: fixed;
   bottom: 0;
@@ -1741,7 +1779,7 @@ span[style*="color:#c0c0c0"] {
 }
 #pagemaintitletext .moho-suit,
 #gameaction_status .moho-suit {
-  --iconScale: 1.14;
+  --iconScale: 1;
 }
 #pagemaintitletext .moho-pawn,
 #gameaction_status .moho-pawn {
@@ -1775,15 +1813,18 @@ span[style*="color:#c0c0c0"] {
 }
 .log > .roundedbox .moho-suit,
 .log > .roundedboxinner .moho-suit {
-  --iconScale: 1;
+  --iconScale: 0.875;
 }
 
+.notif_festivityPhase .roundedboxinner,
+.notif_festivityPhase .roundedbox,
 .notif_startOfTurn .roundedboxinner,
 .notif_startOfTurn .roundedbox {
   font-weight: bold;
   text-align: center;
 }
 
+.notif_festivityPhase .roundedbox,
 .notif_startOfTurn .roundedbox {
   border-top: 1px solid black;
   border-bottom: 1px solid black;

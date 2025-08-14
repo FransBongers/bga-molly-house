@@ -44,6 +44,11 @@
   .moho-pawn {
     position: absolute;
   }
+
+  #moho-dice-stock[data-festivity='true'] {
+    display: none;
+    pointer-events: none;
+  }
 }
 
 .moho-house-raided-marker {
@@ -87,11 +92,9 @@
   outline: calc(var(--boardScale) * 4px) solid base.$selectable-color !important;
 }
 
-
 // .moho-select-box.moho-select-site.selectable {
 //   outline: calc(var(--boardScale) * 8px) solid base.$selectable-color !important;
 // }
-
 
 .moho-select-box.selected,
 .moho-select-box.selectable:hover {

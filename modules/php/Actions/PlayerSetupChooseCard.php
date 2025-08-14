@@ -68,7 +68,6 @@ class PlayerSetupChooseCard extends \Bga\Games\MollyHouse\Models\AtomicAction
     self::checkAction('actPlayerSetupChooseCard');
 
     $cardId = $args->cardId;
-    Notifications::log('cardId', $cardId);
 
     $player = Players::getCurrent();
     $stateArgs = $this->argsPlayerSetupChooseCard();

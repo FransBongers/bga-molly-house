@@ -64,6 +64,8 @@
     "src/board/templates.ts",
     "src/board/utility.ts",
     "src/card-managers/vice-cards/index.ts",
+    "src/festivity/config.ts",
+    "src/festivity/index.ts",
     "src/hand/index.ts",
     "src/hand/templates.ts",
     "src/logs/index.ts",
@@ -89,5 +91,8 @@
     "src/ui-components/cube-counter.ts",
     "src/ui-components/hand-counter.ts",
     "src/ui-components/suit-counter.ts",
+    "src/states/FestivityPlayCard.ts",
+    "src/states/FestivityGenerateGossip.ts",
+    "src/states/FestivitySelectWinningSet.ts",
   ]
 }

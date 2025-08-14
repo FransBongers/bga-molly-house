@@ -9,6 +9,7 @@ const DISCARD = 'discard';
 const SUPPLY = 'supply';
 
 const PAWN = 'pawn';
+const COMMUNITY = 'community';
 
 /**
  * Dice
@@ -43,6 +44,16 @@ const ST_MOVE_PAWN = 13;
 const ST_REFILL_MARKET = 14;
 const ST_CHECK_HAND_SIZE = 15;
 const ST_ADD_EXCESS_CARDS_TO_GOSSIP = 16;
+const ST_FESTIVITY_SETUP_ROUND = 17;
+const ST_FESTIVITY_REVEAL_TOP_CARD_VICE_DECK = 18;
+const ST_FESTIVITY_PLAY_CARD = 19;
+const ST_FESTIVITY_CLEANUP = 20;
+const ST_FESTIVITY_DETERMINE_WINNING_SET = 21;
+const ST_FESTIVITY_SCORE_JOY = 22;
+const ST_FESTIVITY_SCORE_BONUS = 23;
+const ST_FESTIVITY_GENERATE_GOSSIP = 24;
+const ST_FESTIVITY_SELECT_WINNING_SET = 25;
+const ST_LOG_STEP = 26;
 
 /**
  * Game state names
@@ -61,6 +72,16 @@ const MOVE_PAWN = 'MovePawn';
 const REFILL_MARKET = 'RefillMarket';
 const CHECK_HAND_SIZE = 'CheckHandSize';
 const ADD_EXCESS_CARDS_TO_GOSSIP = 'AddExcessCardsToGossip';
+const FESTIVITY_SETUP_ROUND = 'FestivitySetupRound';
+const FESTIVITY_REVEAL_TOP_CARD_VICE_DECK = 'FestivityRevealTopCardViceDeck';
+const FESTIVITY_PLAY_CARD = 'FestivityPlayCard';
+const FESTIVITY_CLEANUP = 'FestivityCleanup';
+const FESTIVITY_DETERMINE_WINNING_SET = 'FestivityDetermineWinningSet';
+const FESTIVITY_SCORE_JOY = 'FestivityScoreJoy';
+const FESTIVITY_SCORE_BONUS = 'FestivityScoreBonus';
+const FESTIVITY_GENERATE_GOSSIP = 'FestivityGenerateGossip';
+const FESTIVITY_SELECT_WINNING_SET = 'FestivitySelectWinningSet';
+const LOG_STEP = 'LogStep';
 
 /**
  * Card types
@@ -183,4 +204,16 @@ const ITEM_DISTRIBUTIION = [
   DRESS_OF_PENTACLES => 1,
   DRESS_OF_FANS => 1,
   DRESS_OF_HEARTS => 1,
+];
+
+const SURPRISE_BALL = 'SurpriseBall';
+const CHRISTENING = 'Christening';
+const DANCE = 'Dance';
+const QUIET_GATHERING = 'QuietGathering';
+
+const FESTIVITIES = [
+  SURPRISE_BALL,
+  CHRISTENING,
+  DANCE,
+  QUIET_GATHERING,
 ];

@@ -69,17 +69,27 @@ class NotificationManager {
       'addExcessCardsToGossipPrivate',
       'drawCards',
       'drawCardsPrivate',
+      'festivityEnd',
+      'festivityPlayCard',
+      'festivityRevealTopCardViceDeck',
+      'festivityPhase',
+      'festivitySetRogueValue',
+      'festivityWinningSet',
       'gainCubes',
+      'loseJoy',
+      'loseJoyCommunity',
       'movePawn',
       'placePawn',
       'refillMarket',
       'rollDice',
       'scoreBonusJoy',
       'scoreJoy',
+      'scoreJoyCommunity',
       'setupChooseCardPrivate',
       'setupChooseCard',
       'setupRevealCard',
       'startOfTurn',
+      'throwFestivity',
     ];
 
     // example: https://github.com/thoun/knarr/blob/main/src/knarr.ts
@@ -221,16 +231,20 @@ class NotificationManager {
   async notif_addExcessCardsToGossip(
     notif: Notif<NotifAddExcessCardsToGossip>
   ) {
-    const { number } = notif.args;
+    const { number, playerId } = notif.args;
+    const player = this.getPlayer(playerId);
+    player.counters[HAND].incValue(-number);
     // TODO update counters
   }
 
   async notif_addExcessCardsToGossipPrivate(
     notif: Notif<NotifAddExcessCardsToGossipPrivate>
   ) {
-    const { cards } = notif.args;
+    const { cards, playerId } = notif.args;
 
     const board = Board.getInstance();
+
+    this.getPlayer(playerId).counters[HAND].incValue(-cards.length);
     await board.gossipPile.addCards(cards.map(getViceCard));
   }
 
@@ -260,8 +274,53 @@ class NotificationManager {
     await Promise.all(promises);
   }
 
+  async notif_festivityEnd(notif: Notif<NotifFestivityEnd>) {
+    Board.getInstance().setFestivityActive(false);
+    Festivity.getInstance().setFestivityActive(false);
+  }
+
+  async notif_festivityPlayCard(notif: Notif<NotifFestivityPlayCard>) {
+    const { playerId, card } = notif.args;
+
+    this.getPlayer(playerId).counters[HAND].incValue(-1);
+    await Festivity.getInstance().stocks[playerId].addCard(getViceCard(card));
+  }
+
+  async notif_festivityRevealTopCardViceDeck(
+    notif: Notif<NotifFestivityRevealTopCardViceDeck>
+  ) {
+    const { card } = notif.args;
+
+    await Festivity.getInstance().stocks[COMMUNITY].addCard(getViceCard(card));
+  }
+
+  async notif_festivityPhase(notif: Notif<NotifFestivityPhase>) {}
+
+  async notif_festivitySetRogueValue(
+    notif: Notif<NotifFestivitySetRogueValue>
+  ) {
+    const { playerId, value } = notif.args;
+    // Festivity.getInstance().setRogueValue(playerId, value);
+  }
+
+  async notif_festivityWinningSet(notif: Notif<NotifFestivityWinningSet>) {
+    const { cards } = notif.args;
+  }
+
   async notif_gainCubes(notif: Notif<NotifGainCubes>) {
-    const { playerId, numberOfCubes } = notif.args;
+    const { playerId, numberOfCubes, suit } = notif.args;
+    const player = this.getPlayer(playerId);
+    player.counters[SUIT_COLOR_MAP[suit]].incValue(numberOfCubes);
+  }
+
+  async notif_loseJoy(notif: Notif<NotifLoseJoy>) {
+    const { playerId, amount } = notif.args;
+
+    incScore(playerId, -amount);
+  }
+
+  async notif_loseJoyCommunity(notif: Notif<NotifLoseJoyCommunity>) {
+    const { joyDecrease, joyTotal } = notif.args;
   }
 
   async notif_movePawn(notif: Notif<NotifMovePawn>) {
@@ -317,6 +376,10 @@ class NotificationManager {
     incScore(playerId, amount);
   }
 
+  async notif_scoreJoyCommunity(notif: Notif<NotifScoreJoyCommunity>) {
+    const { joyIncrease, joyTotal } = notif.args;
+  }
+
   async notif_setupChooseCard(notif: Notif<NotifSetupChooseCard>) {
     const { playerId, card } = notif.args;
     this.getPlayer(playerId).counters[HAND].incValue(-1);
@@ -341,4 +404,9 @@ class NotificationManager {
   }
 
   async notif_startOfTurn(notif: Notif<NotifStartOfTurn>) {}
+
+  async notif_throwFestivity(notif: Notif<NotifThrowFestivity>) {
+    Board.getInstance().setFestivityActive(true);
+    Festivity.getInstance().setFestivityActive(true);
+  }
 }

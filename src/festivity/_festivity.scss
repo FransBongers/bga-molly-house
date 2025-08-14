@@ -1,0 +1,48 @@
+#moho-festivity {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  // z-index: 1;
+  // background-color: yellow;
+
+  .moho-festivity-container {
+    width: calc(var(--cardScale) * 254px);
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    // background-color: blue;
+    gap: calc(var(--boardScale) * 4px);
+
+    span {
+      text-shadow: 1px 0 0 black, 0 1px 0 black, -1px 0 0 black, 0 -1px 0 black,
+      1px 1px 0 black, -1px 1px 0 black, 1px -1px 0 black, -1px -1px 0 black !important;
+
+      // text-shadow: 1px 0 0 white, 0 1px 0 white, -1px 0 0 white, 0 -1px 0 white,
+      // 1px 1px 0 white, -1px 1px 0 white, 1px -1px 0 white, -1px -1px 0 white !important;
+      // font-weight: bold;
+      font-size: calc(var(--boardScale) * 20px);
+    }
+
+    .moho-festivity-stock {
+      height: calc(var(--cardScale) * 225px);
+
+      .moho-vice-card-container:not(:first-child) {
+        margin-left: calc(var(--cardScale) * -115px);
+      }
+    }
+  }
+
+  #moho-festivity-community {
+    span {
+      color: ivory;
+    }
+  }
+}
+
+#moho-festivity[data-active='false'] {
+  display: none;
+  pointer-events: none;
+}

@@ -29,6 +29,7 @@ use Bga\Games\MollyHouse\Boilerplate\Core\Engine\LeafNode;
 use Bga\Games\MollyHouse\Boilerplate\Core\Globals;
 use Bga\Games\MollyHouse\Boilerplate\Core\Stats;
 use Bga\Games\MollyHouse\Managers\DieManager;
+use Bga\Games\MollyHouse\Managers\Festivity;
 use Bga\Games\MollyHouse\Managers\IndictmentCards;
 use Bga\Games\MollyHouse\Managers\Items;
 use Bga\Games\MollyHouse\Managers\Pawns;
@@ -270,6 +271,7 @@ class Game extends \Bga\GameFramework\Table
             ],
             'deckCount' => ViceCards::countInLocation(DECK),
             'dice' => DieManager::getValues(),
+            'festivity' => Festivity::getGamedatas(),
             'gossipPileCount' => ViceCards::countInLocation(GOSSIP_PILE),
             'market' => ViceCards::getMarket(),
             'pawns' => Pawns::getAll(),
@@ -289,6 +291,7 @@ class Game extends \Bga\GameFramework\Table
     protected function setupNewGame($players, $options = [])
     {
         Globals::setupNewGame($players, $options);
+        Festivity::setupNewGame();
         DieManager::setupNewGame();
         Players::setupNewGame($players, $options);
         ViceCards::setupNewGame($players, $options);

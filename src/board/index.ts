@@ -17,6 +17,7 @@ class Board {
       };
       selectBoxes: HTMLElement;
     };
+    diceStock: HTMLElement;
     houseRaidedMarkers: Record<string, HTMLElement>;
     pawns: Record<string, HTMLElement>;
     selectBoxes: Record<string, HTMLElement>;
@@ -26,6 +27,7 @@ class Board {
   constructor(game: GameAlias) {
     this.game = game;
     this.setup(game.gamedatas);
+    
   }
 
   public static create(game: GameAlias) {
@@ -59,6 +61,7 @@ class Board {
         selectBoxes: document.getElementById('moho-select-boxes'),
         houseRaidedMarkers: document.getElementById('house-raided-markers'),
       },
+      diceStock: document.getElementById('moho-dice-stock'),
       houseRaidedMarkers: {},
       pawns: {},
       selectBoxes: {},
@@ -73,15 +76,17 @@ class Board {
     // Needs to happen aftert setupSites, as it uses the sites
     this.setupPawns(gamedatas);
     this.setupTokens(gamedatas);
+    this.setFestivityActive(gamedatas.festivity.active);
   }
 
   private setupDiceStock(gamedatas: GamedatasAlias) {
+    
     this.diceStock = new LineDiceStock(
       this.game.diceManager,
-      document.getElementById(`moho-dice-stock`),
+      this.ui.diceStock,
       { gap: 'calc(var(--boardScale) * 32px)' }
     );
-    document.getElementById(`moho-dice-stock`).dataset.place = `${1}`;
+    this.ui.diceStock.dataset.place = `${1}`;
 
     this.diceStock.addDice(getDice(gamedatas.dice));
   }
@@ -164,6 +169,10 @@ class Board {
   // .##.....##.##........##.....##.#########....##....##..........##.....##..##.
   // .##.....##.##........##.....##.##.....##....##....##..........##.....##..##.
   // ..#######..##........########..##.....##....##....########.....#######..####
+
+  setFestivityActive(active: boolean) {
+    this.ui.diceStock.dataset.festivity = active ? 'true' : 'false';
+  }
 
   async moveToken(
     type: keyof typeof this.ui.containers.tokens,

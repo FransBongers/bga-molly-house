@@ -163,6 +163,33 @@ class Notifications
     }
   }
 
+  private static function cardsLog($cards)
+  {
+    $cardsLog = [];
+    $cardsLogArgs = [];
+
+    //  ${tkn_boldText_cardValue} of ${tkn_suit}
+
+    foreach ($cards as $index => $card) {
+      $log = '';
+      // Value
+      $key = 'tkn_boldText_cardValue' . $index;
+      $log = $log . '${' . $key . '}';
+      $cardsLogArgs[$key] = self::viceCardValueText($card->getValue());
+
+      // Suit
+      $keySuit = 'tkn_suit_' . $index;
+      $log = $log . '${' . $keySuit . '}';
+      $cardsLogArgs[$keySuit] = $card->getSuit();
+      $cardsLog[] = $log;
+    }
+
+    return [
+      'log' => implode(' ', $cardsLog),
+      'args' => $cardsLogArgs,
+    ];
+  }
+
   // ..######......###....##.....##.########
   // .##....##....##.##...###...###.##......
   // .##.........##...##..####.####.##......
@@ -203,10 +230,22 @@ class Notifications
     ]);
   }
 
-  public static function addCardToSafePile($player, $card)
+  public static function addCardToSafePile($playerOrCommunity, $card)
   {
+    if ($playerOrCommunity === COMMUNITY) {
+      self::notifyAll('addCardToSafePile', clienttranslate('The ${tkn_boldText_community} adds ${tkn_boldText_cardValue} of ${tkn_suit} to the safe pile ${tkn_viceCard}'), [
+        'tkn_boldText_community' => clienttranslate('community'),
+        'card' => $card,
+        'tkn_viceCard' => self::tknViceCard($card),
+        'tkn_boldText_cardValue' => self::viceCardValueText($card->getValue()),
+        'tkn_suit' => $card->getSuit(),
+        'i18n' => ['tkn_boldText_cardValue'],
+      ]);
+      return;
+    }
+
     self::notifyAll('addCardToSafePile', clienttranslate('${player_name} adds ${tkn_boldText_cardValue} of ${tkn_suit} to the safe pile ${tkn_viceCard}'), [
-      'player' => $player,
+      'player' => $playerOrCommunity,
       'card' => $card,
       'tkn_viceCard' => self::tknViceCard($card),
       'tkn_boldText_cardValue' => self::viceCardValueText($card->getValue()),
@@ -230,15 +269,18 @@ class Notifications
   public static function addExcessCardsToGossip($player, $cards)
   {
 
+    $number = count($cards);
+
     self::notify($player, 'addExcessCardsToGossipPrivate', clienttranslate('${player_name} adds ${tkn_boldText_number} cards from their hand to the gossip pile'), [
       'player' => $player,
-      'tkn_boldText_number' => count($cards),
+      'tkn_boldText_number' => $number,
       'cards' => $cards,
     ]);
 
     self::notifyAll('addExcessCardsToGossip', clienttranslate('${player_name} adds ${tkn_boldText_number} cards from their hand to the gossip pile'), [
       'player' => $player,
-      'tkn_boldText_number' => count($cards),
+      'tkn_boldText_number' => $number,
+      'number' => $number,
       'preserve' => ['playerId'],
     ]);
   }
@@ -267,6 +309,75 @@ class Notifications
     ]);
   }
 
+  public static function festivityEnd()
+  {
+    self::notifyAll('festivityEnd', '', []);
+  }
+
+  public static function festivityPlayCard($player, $card)
+  {
+    self::notifyAll('festivityPlayCard', clienttranslate('${player_name} plays ${tkn_boldText_cardValue} of ${tkn_suit}${tkn_viceCard}'), [
+      'player' => $player,
+      'card' => $card,
+      'tkn_viceCard' => self::tknViceCard($card),
+      'tkn_boldText_cardValue' => self::viceCardValueText($card->getValue()),
+      'tkn_suit' => $card->getSuit(),
+      'i18n' => ['tkn_boldText_cardValue'],
+    ]);
+  }
+
+  public static function festivityRevealTopCardViceDeck($player, $card)
+  {
+    self::notifyAll('festivityRevealTopCardViceDeck', clienttranslate('The ${tkn_boldText_community} plays ${tkn_boldText_cardValue} of ${tkn_suit}${tkn_viceCard}'), [
+      'player' => $player,
+      'card' => $card,
+      'tkn_viceCard' => self::tknViceCard($card),
+      'tkn_boldText_cardValue' => self::viceCardValueText($card->getValue()),
+      'tkn_boldText_community' => clienttranslate('community'),
+      'tkn_suit' => $card->getSuit(),
+      'i18n' => ['tkn_boldText_cardValue', 'tkn_boldText_community'],
+    ]);
+  }
+
+  public static function festivityPhase($phase)
+  {
+    self::notifyAll('festivityPhase', clienttranslate('Festivity - ${phase}'), [
+      'phase' => $phase,
+    ]);
+  }
+
+  public static function festivitySetRogueValue($player, $card, $value, $isCommunityCard = false)
+  {
+    $text = $isCommunityCard
+      ? clienttranslate('The ${tkn_boldText_community} sets the value of ${tkn_boldText_cardValue} of ${tkn_suit} to ${tkn_boldText_value}${tkn_viceCard}')
+      : clienttranslate('${player_name} sets the value of ${tkn_boldText_cardValue} of ${tkn_suit} to ${tkn_boldText_value}${tkn_viceCard}');
+
+    $args = [
+      'player' => $player,
+      'card' => $card,
+      'value' => $value,
+      'tkn_viceCard' => self::tknViceCard($card),
+      'tkn_boldText_cardValue' => self::viceCardValueText($card->getValue()),
+      'tkn_suit' => $card->getSuit(),
+      'tkn_boldText_value' => self::viceCardValueText($value),
+      'i18n' => ['tkn_boldText_cardValue', 'tkn_boldText_value'],
+    ];
+
+    if ($isCommunityCard) {
+      $args['tkn_boldText_community'] = clienttranslate('Community');
+    }
+
+    self::notifyAll('festivitySetRogueValue', $text, $args);
+  }
+
+  public static function festivityWinningSet($cards)
+  {
+    self::notifyAll('festivityWinningSet', clienttranslate('The winning set is ${cardsLog}'), [
+      'cards' => $cards,
+      'cardsLog' => self::cardsLog($cards),
+    ]);
+  }
+
   public static function gainCubes($player, $suit, $numberOfCubes)
   {
     self::notifyAll('gainCubes', clienttranslate('${player_name} gains ${tkn_boldText_numberOfCubes} cube(s) of ${tkn_suit}'), [
@@ -275,6 +386,27 @@ class Notifications
       'numberOfCubes' => $numberOfCubes,
       'tkn_boldText_numberOfCubes' => $numberOfCubes,
       'tkn_suit' => $suit,
+    ]);
+  }
+
+  public static function loseJoy($player, $amount)
+  {
+    self::notifyAll('loseJoy', clienttranslate('${player_name} loses ${tkn_boldText_amount} joy'), [
+      'player' => $player,
+      'amount' => $amount,
+      'tkn_boldText_amount' => $amount,
+      'i18n' => ['tkn_boldText_amount'],
+    ]);
+  }
+
+  public static function loseJoyCommunity($joyDecrease, $joyTotal)
+  {
+    self::notifyAll('loseJoyCommunity', clienttranslate('The ${tkn_boldText_community} loses ${tkn_boldText_amount} joy'), [
+      'joyDecrease' => $joyDecrease,
+      'joyTotal' => $joyTotal,
+      'tkn_boldText_community' => clienttranslate('community'),
+      'tkn_boldText_amount' => $joyDecrease,
+      'i18n' => ['tkn_boldText_amount', 'tkn_boldText_community'],
     ]);
   }
 
@@ -332,6 +464,7 @@ class Notifications
     ]);
   }
 
+
   public static function scoreJoy($player, $amount)
   {
     self::notifyAll('scoreJoy', clienttranslate('${player_name} scores ${tkn_boldText_amount} joy!'), [
@@ -339,6 +472,17 @@ class Notifications
       'amount' => $amount,
       'tkn_boldText_amount' => $amount,
       'i18n' => ['tkn_boldText_amount'],
+    ]);
+  }
+
+  public static function scoreJoyCommunity($joyIncrease, $joyTotal)
+  {
+    self::notifyAll('scoreJoyCommunity', clienttranslate('The ${tkn_boldText_community} scores ${tkn_boldText_amount} joy!'), [
+      'joyIncrease' => $joyIncrease,
+      'joyTotal' => $joyTotal,
+      'tkn_boldText_community' => clienttranslate('community'),
+      'tkn_boldText_amount' => $joyIncrease,
+      'i18n' => ['tkn_boldText_amount', 'tkn_boldText_community'],
     ]);
   }
 
@@ -380,6 +524,15 @@ class Notifications
   {
     self::notifyAll('startOfTurn', clienttranslate('${player_name} starts their turn'), [
       'player' => $player,
+    ]);
+  }
+
+  public static function throwFestivity($player, $site)
+  {
+    self::notifyAll('throwFestivity', clienttranslate('${player_name} throws a festivity at ${tkn_boldText_site}'), [
+      'player' => $player,
+      'tkn_boldText_site' => $site->getName(),
+      'i18n' => ['tkn_boldText_site'],
     ]);
   }
 }

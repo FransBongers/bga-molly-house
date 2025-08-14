@@ -22,12 +22,13 @@ class Globals extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Manager
     'logState' => 'int', // Used to store state id when enabling the log
     'firstPlayer' => 'int',
     // Game options
-
+    
     // Other
     'communityJoy' => 'int',
     'currentWeek' => 'int',
     'dice' => 'obj',
     'playerCubes' => 'obj',
+    'festivity' => 'obj',
   ];
 
   protected static $table = 'global_variables';

@@ -5,6 +5,7 @@ namespace Bga\Games\MollyHouse\Models;
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
 use Bga\Games\MollyHouse\Boilerplate\Core\Preferences;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
+use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 use Bga\Games\MollyHouse\Managers\Pawns;
 use Bga\Games\MollyHouse\Managers\PlayerCubes;
 use Bga\Games\MollyHouse\Managers\ViceCards;
@@ -57,6 +58,7 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     return array_merge(
       $data,
       [
+        'festivity' => $this->getCardsPlayedInFestivity(),
         'handCardCount' => count($handCards),
         'hand' => $isCurrentPlayer ? $handCards : [],
         'reputation' => ViceCards::getInLocationOrdered(Locations::reputation($this->getId()))->toArray(),
@@ -107,11 +109,22 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
         ],
       );
     }
+    // TODO: Add checkpoint
   }
 
   public function expose($card)
   {
     $suit = $card->getSuit();
+    $reputation = $this->getCardsInReputation();
+
+    $numberOfCards = count(Utils::filter($reputation, function ($viceCard) use ($suit) {
+      return $viceCard->getSuit() === $suit;
+    }));
+
+    if ($numberOfCards === 0) {
+      return;
+    }
+
     Notifications::message(
       clienttranslate('${player_name} is exposed by ${tkn_boldText_cardValue} of ${tkn_suit}'),
       [
@@ -121,7 +134,7 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
       ],
     );
 
-    $reputation = $this->getCardsInReputation();
+
     $numberOfCubes = 0;
     foreach ($reputation as $viceCard) {
       if ($viceCard->getSuit() !== $suit) {
@@ -130,6 +143,7 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
       $numberOfCubes += 1;
       $viceCard->addToGossip($this);
     }
+    PlayerCubes::gainCubes($this->getId(), $suit, $numberOfCubes);
     Notifications::gainCubes($this, $suit, $numberOfCubes);
   }
 
@@ -143,5 +157,25 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
       }
     }
     return $reputation;
+  }
+
+  public function getCardsPlayedInFestivity()
+  {
+    return ViceCards::getInLocationOrdered(Locations::festivity($this->getId()))->toArray();
+  }
+
+  public function loseJoy($amount)
+  {
+    $currentScore = $this->getScore();
+    $amount = $amount > $currentScore ? $currentScore : $amount;
+
+    $this->incScore(-$amount);
+    Notifications::loseJoy($this, $amount);
+  }
+
+  public function scoreJoy($amount)
+  {
+    $this->incScore($amount);
+    Notifications::scoreJoy($this, $amount);
   }
 }

@@ -27,6 +27,7 @@ const PREF_TWO_COLUMN_LAYOUT = 'twoColumnLayout';
  * Var names
  */
 const BOARD_SCALE = 'boardScale';
+const CARD_SCALE = 'cardScale';
 
 /**
  * Colors

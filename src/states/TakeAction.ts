@@ -3,6 +3,7 @@ interface OnEnteringTakeActionArgs extends CommonStateArgs {
     Cruise?: Record<string, ViceCardBase>;
     Indulge: Record<string, ViceCardBase>;
     LieLow: boolean;
+    ThrowFestivity?: boolean;
   };
   site: MohoSiteBase;
 }
@@ -57,6 +58,16 @@ class TakeAction implements State {
 
     if (this.args._private.LieLow) {
       onClick('moho-deck', () => this.updateInterfaceConfirm(LIE_LOW, 'deck'));
+    }
+
+    if (this.args._private.ThrowFestivity) {
+      addPrimaryActionButton({
+        id: 'throw_festivity_btn',
+        text: _('Throw a Festivity'),
+        callback: () => {
+          this.updateInterfaceConfirm(THROW_FESTIVITY, '');
+        },
+      })
     }
 
     Object.values(this.args._private.Indulge || {}).forEach((card) => {
@@ -128,20 +139,21 @@ class TakeAction implements State {
         setSelected(document.getElementById('moho-deck'));
         break;
       default:
-        updatePageTitle(_('Confirm your action'));
         break;
     }
   }
 
   private updateConfirmTitle(action: string, target: string) {
+    const site = StaticData.get().site(this.args.site.id).name;
+    console.log(`Updating confirm title for action: ${action}, target: ${target}`);
     switch (action) {
       case CRUISE:
         updatePageTitle(
           _(
-            'Cruise on ${site} and add ${value} of ${tkn_suit} to your reputation'
+            'Cruise at ${site} and add ${value} of ${tkn_suit} to your reputation'
           ),
           {
-            site: StaticData.get().site(this.args.site.id).name,
+            site,
             value: StaticData.get().viceCard(target).value,
             tkn_suit: StaticData.get().viceCard(target).suit,
           }
@@ -150,10 +162,10 @@ class TakeAction implements State {
       case INDULGE:
         updatePageTitle(
           _(
-            'Indulge on ${site} and add ${value} of ${tkn_suit} to your hand'
+            'Indulge at ${site} and add ${value} of ${tkn_suit} to your hand'
           ),
           {
-            site: StaticData.get().site(this.args.site.id).name,
+            site,
             value: StaticData.get().viceCard(target).value,
             tkn_suit: StaticData.get().viceCard(target).suit,
           }
@@ -161,9 +173,17 @@ class TakeAction implements State {
         break;
       case LIE_LOW:
         updatePageTitle(
-          _('Lie Low on ${site} and draw a card from the vice deck?'),
+          _('Lie Low at ${site} and draw a card from the vice deck?'),
           {
             site: StaticData.get().site(this.args.site.id).name,
+          }
+        );
+        break;
+      case THROW_FESTIVITY:
+        updatePageTitle(
+          _('Throw a Festivity at ${site}?'),
+          {
+            site,
           }
         );
         break;

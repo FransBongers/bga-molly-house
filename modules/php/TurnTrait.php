@@ -15,7 +15,7 @@ trait TurnTrait
   function stStartGameEngine()
   {
     // custom order activates stStartOfTurn when it's a players turn
-    $this->initCustomDefaultTurnOrder('default', 'stStartOfTurn', 'not_used', true);
+    $this->initCustomDefaultTurnOrder('default', 'stStartOfTurn', 'not_used', true, false);
 
     $node = [
       'children' => [
@@ -27,7 +27,7 @@ trait TurnTrait
     ];
 
     // Inserting leaf Action card
-    Engine::setup($node, ['method' => 'stStartOfTurn']);
+    Engine::setup($node, ['method' => 'stNextPlayer']);
     Engine::proceed();
   }
 

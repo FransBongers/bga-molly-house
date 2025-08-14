@@ -1,5 +1,6 @@
 const tplBoard = (gamedatas: GamedatasAlias) => `<div id="moho-board">
 <div id="moho-playmat">
+  <div id="moho-festivity"></div>
   <div id="moho-dice-stock"></div>
 </div>
   <div id="house-raided-markers"></div>

@@ -2,7 +2,9 @@
 
 namespace Bga\Games\MollyHouse\Cards\ViceCards;
 
+use Bga\Games\MollyHouse\Boilerplate\Core\Globals;
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
+use Bga\Games\MollyHouse\Managers\Community;
 
 class DesireCard extends \Bga\Games\MollyHouse\Models\ViceCard
 {
@@ -18,15 +20,20 @@ class DesireCard extends \Bga\Games\MollyHouse\Models\ViceCard
     $this->scoreJoy($player);
   }
 
-  public function scoreJoy($player)
+  public function scoreJoy($playerOrCommunity)
   {
-    $player->incScore($this->getJoy());
-    Notifications::scoreJoy($player, $this->getJoy());
+    if ($playerOrCommunity === COMMUNITY) {
+      Community::scoreJoy($this->getJoy());
+      return;
+    }
 
-    $reptution = $player->getCardsInReputation();
+    $playerOrCommunity->incScore($this->getJoy());
+    Notifications::scoreJoy($playerOrCommunity, $this->getJoy());
+
+    $reptution = $playerOrCommunity->getCardsInReputation();
     foreach ($reptution as $card) {
       if ($card->getSuit() === $this->getSuit() && in_array($card->getValue(), ['J', 'Q'])) {
-        $card->scoreBonusJoy($player);
+        $card->scoreBonusJoy($playerOrCommunity);
       }
     }
   }

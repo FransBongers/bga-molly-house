@@ -1,3 +1,5 @@
+const COMMUNITY = 'community';
+
 /**
  * Actions
  */
@@ -139,3 +141,15 @@ const ITEM_DISTRIBUTIION = {
   [DRESS_OF_FANS]: 1,
   [DRESS_OF_HEARTS]: 1,
 };
+
+const SURPRISE_BALL = 'SurpriseBall';
+const CHRISTENING = 'Christening';
+const DANCE = 'Dance';
+const QUIET_GATHERING = 'QuietGathering';
+
+const FESTIVITIES = [
+  SURPRISE_BALL,
+  CHRISTENING,
+  DANCE,
+  QUIET_GATHERING,
+];

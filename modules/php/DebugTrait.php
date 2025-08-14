@@ -12,6 +12,7 @@ use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 
 use Bga\Games\MollyHouse\Managers\AtomicActions;
 use Bga\Games\MollyHouse\Managers\DieManager;
+use Bga\Games\MollyHouse\Managers\Festivity;
 use Bga\Games\MollyHouse\Managers\IndictmentCards;
 use Bga\Games\MollyHouse\Managers\Items;
 use Bga\Games\MollyHouse\Managers\Pawns;
@@ -30,7 +31,11 @@ trait DebugTrait
   function debug_test()
   {
 
+
+
     
+
+    // Notifications::log('bestSet', $bestSet);
 
     // DieManager::rollDice(Players::get());
     // Pawns::setupNewGame();

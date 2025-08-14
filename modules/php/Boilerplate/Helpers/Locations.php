@@ -10,6 +10,12 @@ class Locations
     return 'deck_' . $type;
   }
 
+  // Player id or community
+  public static function festivity($playerId)
+  {
+    return 'festivity_' . $playerId;
+  }
+
   public static function hand($playerId)
   {
     return 'hand_' . $playerId;

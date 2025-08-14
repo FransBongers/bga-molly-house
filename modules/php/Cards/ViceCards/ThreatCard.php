@@ -43,7 +43,7 @@ class ThreatCard extends \Bga\Games\MollyHouse\Models\ViceCard
         $playerValues[$playerId] = $value;
       }
     }
-    Notifications::log('mostInfamousPlayers', $playerValues);
+
     if (count($playerValues) === 0) {
       Notifications::message(clienttranslate('No one is exposed'));
     }

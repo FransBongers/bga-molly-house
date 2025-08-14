@@ -3,13 +3,15 @@
 namespace Bga\Games\MollyHouse\Actions;
 
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
-use Bga\Games\MollyHouse\Managers\ViceCards;
+use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
+use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
+use Bga\Games\MollyHouse\Managers\Festivity;
 
-class Indulge extends \Bga\Games\MollyHouse\Models\AtomicAction
+class FestivityPlayCard extends \Bga\Games\MollyHouse\Models\AtomicAction
 {
   public function getState()
   {
-    return ST_INDULGE;
+    return ST_FESTIVITY_PLAY_CARD;
   }
 
   // ....###....########...######....######.
@@ -20,12 +22,16 @@ class Indulge extends \Bga\Games\MollyHouse\Models\AtomicAction
   // .##.....##.##....##..##....##..##....##
   // .##.....##.##.....##..######....######.
 
-
-  public function argsIndulge()
+  public function argsFestivityPlayCard()
   {
     $info = $this->ctx->getInfo();
+    $player = $this->getPlayer();
 
-    $data = [];
+    $data = [
+      '_private' => [
+        $player->getId() => $player->getHand(),
+      ]
+    ];
 
     return $data;
   }
@@ -46,20 +52,40 @@ class Indulge extends \Bga\Games\MollyHouse\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function actPassIndulge()
+  public function actPassFestivityPlayCard()
   {
     $player = self::getPlayer();
-    $this->resolveAction(PASS);
+    Notifications::message(clienttranslate('${player_name} passes'), [
+      'player' => $player
+    ]);
+
+    Festivity::pass($player->getId());
+
+    $this->resolveAction([]);
   }
 
-  public function actIndulge($args)
+  public function actFestivityPlayCard($args)
   {
-    self::checkAction('actIndulge');
+    self::checkAction('actFestivityPlayCard');
+    $cardId = $args->cardId;
 
+    $player = $this->getPlayer();
+    $playerId = $player->getId();
+    $stateArgs = $this->argsFestivityPlayCard();
 
+    $card = Utils::array_find($stateArgs['_private'][$playerId], function ($c) use ($cardId) {
+      return $c->getId() == $cardId;
+    });
 
+    if ($card === null) {
+      throw new \feException("ERROR_010");
+    }
 
-    $this->resolveAction([], true);
+    $card->insertOnTop(Locations::festivity($playerId));
+
+    Notifications::festivityPlayCard($player, $card);
+
+    $this->resolveAction([]);
   }
 
   //  .##.....##.########.####.##.......####.########.##....##
@@ -70,33 +96,5 @@ class Indulge extends \Bga\Games\MollyHouse\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-  public function performAction($player, $site, $card)
-  {
-    Notifications::message(clienttranslate('${player_name} indulges at ${tkn_boldText_site}'), [
-      'player' => $player,
-      'tkn_boldText_site' => $site->getName(),
-      'i18n' => ['tkn_boldText_site'],
-    ]);
-    $card->addToHand($player);
-  }
-
-  public function getOptions($site)
-  {
-    $market = ViceCards::getMarket();
-    $suit = $site->getSuit();
-
-    if ($suit === null) {
-      return [];
-    }
-
-    $options = [];
-
-    foreach ($market as $card) {
-      if ($card->getSuit() === $suit) {
-        $options[$card->getId()] = $card;
-      }
-    }
-    return $options;
-  }
 
 }

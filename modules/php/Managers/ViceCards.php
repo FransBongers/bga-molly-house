@@ -16,7 +16,7 @@ class ViceCards extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
   protected static $table = 'vice_cards';
   protected static $prefix = 'card_';
   protected static $customFields = [
-    'hidden'
+    'hidden',
   ];
   protected static $autoremovePrefix = false;
   protected static $autoreshuffle = false;
@@ -64,7 +64,7 @@ class ViceCards extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
   public static function getCardFarthestFromViceDeck()
   {
     $cards = self::getSelectQuery()->where('card_location', 'LIKE', 'market%')->get()->toArray();
-    Notifications::log('getCardFarthestFromViceDeck', $cards);
+
     $card = null;
     $index = -1;
     foreach($cards as $cardInMarket) {

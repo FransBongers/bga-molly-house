@@ -46,5 +46,8 @@ class Site extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     return $this->jsonSerialize(); // Static datas are already in js file
   }
 
-  
+  public function isRaided()
+  {
+    return $this->raidedOrDangerous === 1;
+  }
 }

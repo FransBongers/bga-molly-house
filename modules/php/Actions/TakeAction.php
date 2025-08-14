@@ -111,6 +111,9 @@ class TakeAction extends \Bga\Games\MollyHouse\Models\AtomicAction
       case CRUISE:
         AtomicActions::get(CRUISE)->performAction($player, $stateArgs['site'], $options[CRUISE][$target]);
         break;
+      case THROW_FESTIVITY:
+        AtomicActions::get(THROW_FESTIVITY)->performAction($this->ctx, $player, $stateArgs['site']);
+        break;
       default:
         throw new \feException("ERROR_006");
     }

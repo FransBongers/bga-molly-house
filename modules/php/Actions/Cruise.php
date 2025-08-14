@@ -73,7 +73,7 @@ class Cruise extends \Bga\Games\MollyHouse\Models\AtomicAction
 
   public function performAction($player, $site, $card)
   {
-    Notifications::message(clienttranslate('${player_name} cruises on ${tkn_boldText_site}'), [
+    Notifications::message(clienttranslate('${player_name} cruises at ${tkn_boldText_site}'), [
       'player' => $player,
       'tkn_boldText_site' => $site->getName(),
       'i18n' => ['tkn_boldText_site'],

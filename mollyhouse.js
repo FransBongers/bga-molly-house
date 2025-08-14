@@ -14,6 +14,7 @@ var PREF_ENABLED = 'enabled';
 var PREF_SINGLE_COLUMN_MAP_SIZE = 'singleColumnMapSize';
 var PREF_TWO_COLUMN_LAYOUT = 'twoColumnLayout';
 var BOARD_SCALE = 'boardScale';
+var CARD_SCALE = 'cardScale';
 var BLUE = 'blue';
 var GREEN = 'green';
 var PINK = 'pink';
@@ -27,6 +28,7 @@ var HEX_COLOR_COLOR_MAP = {
     fcd873: YELLOW,
 };
 var _a, _b, _c;
+var COMMUNITY = 'community';
 var INDULGE = 'Indulge';
 var LIE_LOW = 'LieLow';
 var ACCUSE = 'Accuse';
@@ -129,6 +131,16 @@ var ITEM_DISTRIBUTIION = (_c = {},
     _c[DRESS_OF_FANS] = 1,
     _c[DRESS_OF_HEARTS] = 1,
     _c);
+var SURPRISE_BALL = 'SurpriseBall';
+var CHRISTENING = 'Christening';
+var DANCE = 'Dance';
+var QUIET_GATHERING = 'QuietGathering';
+var FESTIVITIES = [
+    SURPRISE_BALL,
+    CHRISTENING,
+    DANCE,
+    QUIET_GATHERING,
+];
 var BgaAnimation = (function () {
     function BgaAnimation(animationFunction, settings) {
         this.animationFunction = animationFunction;
@@ -2784,17 +2796,27 @@ var NotificationManager = (function () {
             'addExcessCardsToGossipPrivate',
             'drawCards',
             'drawCardsPrivate',
+            'festivityEnd',
+            'festivityPlayCard',
+            'festivityRevealTopCardViceDeck',
+            'festivityPhase',
+            'festivitySetRogueValue',
+            'festivityWinningSet',
             'gainCubes',
+            'loseJoy',
+            'loseJoyCommunity',
             'movePawn',
             'placePawn',
             'refillMarket',
             'rollDice',
             'scoreBonusJoy',
             'scoreJoy',
+            'scoreJoyCommunity',
             'setupChooseCardPrivate',
             'setupChooseCard',
             'setupRevealCard',
             'startOfTurn',
+            'throwFestivity',
         ];
         notifs.forEach(function (notifName) {
             _this.subscriptions.push(dojo.subscribe(notifName, _this, function (notifDetails) {
@@ -2930,24 +2952,27 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_addExcessCardsToGossip = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var number;
-            return __generator(this, function (_a) {
-                number = notif.args.number;
+            var _a, number, playerId, player;
+            return __generator(this, function (_b) {
+                _a = notif.args, number = _a.number, playerId = _a.playerId;
+                player = this.getPlayer(playerId);
+                player.counters[HAND].incValue(-number);
                 return [2];
             });
         });
     };
     NotificationManager.prototype.notif_addExcessCardsToGossipPrivate = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var cards, board;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var _a, cards, playerId, board;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        cards = notif.args.cards;
+                        _a = notif.args, cards = _a.cards, playerId = _a.playerId;
                         board = Board.getInstance();
+                        this.getPlayer(playerId).counters[HAND].incValue(-cards.length);
                         return [4, board.gossipPile.addCards(cards.map(getViceCard))];
                     case 1:
-                        _a.sent();
+                        _b.sent();
                         return [2];
                 }
             });
@@ -2993,11 +3018,95 @@ var NotificationManager = (function () {
             });
         });
     };
+    NotificationManager.prototype.notif_festivityEnd = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                Board.getInstance().setFestivityActive(false);
+                Festivity.getInstance().setFestivityActive(false);
+                return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_festivityPlayCard = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, playerId, card;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = notif.args, playerId = _a.playerId, card = _a.card;
+                        this.getPlayer(playerId).counters[HAND].incValue(-1);
+                        return [4, Festivity.getInstance().stocks[playerId].addCard(getViceCard(card))];
+                    case 1:
+                        _b.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_festivityRevealTopCardViceDeck = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var card;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        card = notif.args.card;
+                        return [4, Festivity.getInstance().stocks[COMMUNITY].addCard(getViceCard(card))];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_festivityPhase = function (notif) {
+        return __awaiter(this, void 0, void 0, function () { return __generator(this, function (_a) {
+            return [2];
+        }); });
+    };
+    NotificationManager.prototype.notif_festivitySetRogueValue = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, playerId, value;
+            return __generator(this, function (_b) {
+                _a = notif.args, playerId = _a.playerId, value = _a.value;
+                return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_festivityWinningSet = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var cards;
+            return __generator(this, function (_a) {
+                cards = notif.args.cards;
+                return [2];
+            });
+        });
+    };
     NotificationManager.prototype.notif_gainCubes = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, numberOfCubes;
+            var _a, playerId, numberOfCubes, suit, player;
             return __generator(this, function (_b) {
-                _a = notif.args, playerId = _a.playerId, numberOfCubes = _a.numberOfCubes;
+                _a = notif.args, playerId = _a.playerId, numberOfCubes = _a.numberOfCubes, suit = _a.suit;
+                player = this.getPlayer(playerId);
+                player.counters[SUIT_COLOR_MAP[suit]].incValue(numberOfCubes);
+                return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_loseJoy = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, playerId, amount;
+            return __generator(this, function (_b) {
+                _a = notif.args, playerId = _a.playerId, amount = _a.amount;
+                incScore(playerId, -amount);
+                return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_loseJoyCommunity = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, joyDecrease, joyTotal;
+            return __generator(this, function (_b) {
+                _a = notif.args, joyDecrease = _a.joyDecrease, joyTotal = _a.joyTotal;
                 return [2];
             });
         });
@@ -3093,6 +3202,15 @@ var NotificationManager = (function () {
             });
         });
     };
+    NotificationManager.prototype.notif_scoreJoyCommunity = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, joyIncrease, joyTotal;
+            return __generator(this, function (_b) {
+                _a = notif.args, joyIncrease = _a.joyIncrease, joyTotal = _a.joyTotal;
+                return [2];
+            });
+        });
+    };
     NotificationManager.prototype.notif_setupChooseCard = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
             var _a, playerId, card;
@@ -3143,6 +3261,15 @@ var NotificationManager = (function () {
         return __awaiter(this, void 0, void 0, function () { return __generator(this, function (_a) {
             return [2];
         }); });
+    };
+    NotificationManager.prototype.notif_throwFestivity = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                Board.getInstance().setFestivityActive(true);
+                Festivity.getInstance().setFestivityActive(true);
+                return [2];
+            });
+        });
     };
     return NotificationManager;
 }());
@@ -3814,6 +3941,9 @@ var MollyHouse = (function () {
             Cruise: Cruise,
             Shop: Shop,
             MovePawn: MovePawn,
+            FestivityPlayCard: FestivityPlayCard,
+            FestivityGenerateGossip: FestivityGenerateGossip,
+            FestivitySelectWinningSet: FestivitySelectWinningSet,
         };
         console.log('MollyHouse constructor');
     }
@@ -3848,6 +3978,7 @@ var MollyHouse = (function () {
         PlayerManager.create(this);
         NotificationManager.create(this);
         Board.create(this);
+        Festivity.create(this);
         Market.create(this);
         if (this.playerOrder.includes(this.getPlayerId())) {
             Hand.create(this);
@@ -4223,6 +4354,7 @@ var Board = (function () {
                 selectBoxes: document.getElementById('moho-select-boxes'),
                 houseRaidedMarkers: document.getElementById('house-raided-markers'),
             },
+            diceStock: document.getElementById('moho-dice-stock'),
             houseRaidedMarkers: {},
             pawns: {},
             selectBoxes: {},
@@ -4234,10 +4366,11 @@ var Board = (function () {
         this.setupSites();
         this.setupPawns(gamedatas);
         this.setupTokens(gamedatas);
+        this.setFestivityActive(gamedatas.festivity.active);
     };
     Board.prototype.setupDiceStock = function (gamedatas) {
-        this.diceStock = new LineDiceStock(this.game.diceManager, document.getElementById("moho-dice-stock"), { gap: 'calc(var(--boardScale) * 32px)' });
-        document.getElementById("moho-dice-stock").dataset.place = "".concat(1);
+        this.diceStock = new LineDiceStock(this.game.diceManager, this.ui.diceStock, { gap: 'calc(var(--boardScale) * 32px)' });
+        this.ui.diceStock.dataset.place = "".concat(1);
         this.diceStock.addDice(getDice(gamedatas.dice));
     };
     Board.prototype.setupGossipPile = function (gamedatas) {
@@ -4303,6 +4436,9 @@ var Board = (function () {
             setCalculatedValue({ elt: elt, scaleVarName: BOARD_SCALE, value: sitePosition.height, property: 'height' });
             _this.ui.containers.selectBoxes.appendChild(elt);
         });
+    };
+    Board.prototype.setFestivityActive = function (active) {
+        this.ui.diceStock.dataset.festivity = active ? 'true' : 'false';
     };
     Board.prototype.moveToken = function (type, value) {
         return __awaiter(this, void 0, void 0, function () {
@@ -4404,7 +4540,7 @@ var Board = (function () {
     };
     return Board;
 }());
-var tplBoard = function (gamedatas) { return "<div id=\"moho-board\">\n<div id=\"moho-playmat\">\n  <div id=\"moho-dice-stock\"></div>\n</div>\n  <div id=\"house-raided-markers\"></div>\n  <div id=\"moho-select-boxes\"></div>\n  <div id=\"moho-pawns\"></div>\n  <div id=\"moho-gossip-pile\"></div>\n</div>"; };
+var tplBoard = function (gamedatas) { return "<div id=\"moho-board\">\n<div id=\"moho-playmat\">\n  <div id=\"moho-festivity\"></div>\n  <div id=\"moho-dice-stock\"></div>\n</div>\n  <div id=\"house-raided-markers\"></div>\n  <div id=\"moho-select-boxes\"></div>\n  <div id=\"moho-pawns\"></div>\n  <div id=\"moho-gossip-pile\"></div>\n</div>"; };
 var ViceCardManager = (function (_super) {
     __extends(ViceCardManager, _super);
     function ViceCardManager(game) {
@@ -4452,6 +4588,91 @@ var ViceCardManager = (function (_super) {
     };
     return ViceCardManager;
 }(CardManager));
+var _a;
+var FESTIVITY_CONFIG_TWO_PLAYERS = (_a = {},
+    _a[COMMUNITY] = {
+        top: 250,
+        left: 10,
+    },
+    _a[0] = {
+        top: 487,
+        left: 470,
+    },
+    _a[1] = {
+        top: 10,
+        left: 530,
+    },
+    _a);
+var getFestivityPosition = function (playerCount, position) {
+    switch (playerCount) {
+        case 2:
+            return FESTIVITY_CONFIG_TWO_PLAYERS[position];
+        default:
+            return {
+                top: 0,
+                left: 0,
+            };
+    }
+};
+var Festivity = (function () {
+    function Festivity(game) {
+        this.stocks = {};
+        this.game = game;
+        this.setupFestivity(game.gamedatas);
+        this.updateFestivity(game.gamedatas);
+        this.setFestivityActive(game.gamedatas.festivity.active);
+    }
+    Festivity.create = function (game) {
+        Festivity.instance = new Festivity(game);
+    };
+    Festivity.getInstance = function () {
+        return Festivity.instance;
+    };
+    Festivity.prototype.updateFestivity = function (gamedatas) {
+        var _this = this;
+        this.stocks[COMMUNITY].addCards(gamedatas.festivity.communityCards.map(getViceCard));
+        Object.entries(gamedatas.players).forEach(function (_a) {
+            var playerId = _a[0], player = _a[1];
+            _this.stocks[playerId].addCards(player.festivity.map(getViceCard));
+        });
+    };
+    Festivity.prototype.setupFestivity = function (gamedatas) {
+        var _this = this;
+        this.festivityContainer = document.getElementById('moho-festivity');
+        var players = PlayerManager.getInstance().getPlayers();
+        var playerCount = players.length;
+        var communityContainerElt = this.createPlayerElement(COMMUNITY, _('Community'));
+        setAbsolutePosition(communityContainerElt, CARD_SCALE, getFestivityPosition(playerCount, COMMUNITY));
+        var playerManager = PlayerManager.getInstance();
+        gamedatas.playerOrder.forEach(function (playerId, index) {
+            var containerElt = _this.createPlayerElement(playerId, formatStringRecursive('${tkn_playerName}', {
+                tkn_playerName: playerManager.getPlayer(playerId).getName(),
+            }));
+            setAbsolutePosition(containerElt, CARD_SCALE, getFestivityPosition(playerCount, index));
+        });
+    };
+    Festivity.prototype.createPlayerElement = function (playerId, playerName) {
+        var containerElt = document.createElement('div');
+        containerElt.id = "moho-festivity-".concat(playerId);
+        containerElt.classList.add('moho-festivity-container');
+        var nameSpan = document.createElement('span');
+        nameSpan.innerHTML = playerName;
+        var playerStockElt = document.createElement('div');
+        playerStockElt.classList.add('moho-festivity-stock');
+        containerElt.appendChild(playerStockElt);
+        containerElt.appendChild(nameSpan);
+        this.festivityContainer.appendChild(containerElt);
+        this.stocks[playerId] = new LineStock(this.game.viceCardManager, playerStockElt, {
+            gap: '0px',
+            wrap: 'nowrap',
+        });
+        return containerElt;
+    };
+    Festivity.prototype.setFestivityActive = function (active) {
+        this.festivityContainer.dataset.active = active ? 'true' : 'false';
+    };
+    return Festivity;
+}());
 var Hand = (function () {
     function Hand(game) {
         this.game = game;
@@ -4823,6 +5044,15 @@ var TakeAction = (function () {
         if (this.args._private.LieLow) {
             onClick('moho-deck', function () { return _this.updateInterfaceConfirm(LIE_LOW, 'deck'); });
         }
+        if (this.args._private.ThrowFestivity) {
+            addPrimaryActionButton({
+                id: 'throw_festivity_btn',
+                text: _('Throw a Festivity'),
+                callback: function () {
+                    _this.updateInterfaceConfirm(THROW_FESTIVITY, '');
+                },
+            });
+        }
         Object.values(this.args._private.Indulge || {}).forEach(function (card) {
             onClick(document.getElementById(card.id), function () {
                 return _this.updateInterfaceConfirm(INDULGE, card.id);
@@ -4857,29 +5087,35 @@ var TakeAction = (function () {
                 setSelected(document.getElementById('moho-deck'));
                 break;
             default:
-                updatePageTitle(_('Confirm your action'));
                 break;
         }
     };
     TakeAction.prototype.updateConfirmTitle = function (action, target) {
+        var site = StaticData.get().site(this.args.site.id).name;
+        console.log("Updating confirm title for action: ".concat(action, ", target: ").concat(target));
         switch (action) {
             case CRUISE:
-                updatePageTitle(_('Cruise on ${site} and add ${value} of ${tkn_suit} to your reputation'), {
-                    site: StaticData.get().site(this.args.site.id).name,
+                updatePageTitle(_('Cruise at ${site} and add ${value} of ${tkn_suit} to your reputation'), {
+                    site: site,
                     value: StaticData.get().viceCard(target).value,
                     tkn_suit: StaticData.get().viceCard(target).suit,
                 });
                 break;
             case INDULGE:
-                updatePageTitle(_('Indulge on ${site} and add ${value} of ${tkn_suit} to your hand'), {
-                    site: StaticData.get().site(this.args.site.id).name,
+                updatePageTitle(_('Indulge at ${site} and add ${value} of ${tkn_suit} to your hand'), {
+                    site: site,
                     value: StaticData.get().viceCard(target).value,
                     tkn_suit: StaticData.get().viceCard(target).suit,
                 });
                 break;
             case LIE_LOW:
-                updatePageTitle(_('Lie Low on ${site} and draw a card from the vice deck?'), {
+                updatePageTitle(_('Lie Low at ${site} and draw a card from the vice deck?'), {
                     site: StaticData.get().site(this.args.site.id).name,
+                });
+                break;
+            case THROW_FESTIVITY:
+                updatePageTitle(_('Throw a Festivity at ${site}?'), {
+                    site: site,
                 });
                 break;
             default:
@@ -5049,6 +5285,53 @@ var getDice = function (diceValues) {
         type: 0,
     }); });
     return dice;
+};
+var getFestivityRankingName = function (ranking) {
+    switch (ranking) {
+        case SURPRISE_BALL:
+            return _('Surprise Ball');
+        case CHRISTENING:
+            return _('Christening');
+        case DANCE:
+            return _('Dance');
+        case QUIET_GATHERING:
+            return _('Quiet Gathering');
+        default:
+            return '';
+    }
+};
+var viceCardValueText = function (value) {
+    switch (value) {
+        case 'Q':
+            return _('Queen');
+        case 'J':
+            return _('Jack');
+        case 'R':
+            return _('Rogue');
+        case 'C':
+            return _('Constable');
+        default:
+            return value + '';
+    }
+};
+var cardsLog = function (cards) {
+    var cardsLog = [];
+    var cardsLogArgs = {};
+    cards.forEach(function (card, index) {
+        var viceCard = getViceCard(card);
+        var log = '';
+        var key = 'tkn_boldText_cardValue' + index;
+        log = log + '${' + key + '}';
+        cardsLogArgs[key] = viceCardValueText(viceCard.value);
+        var keySuit = 'tkn_suit_' + index;
+        log = log + '${' + keySuit + '}';
+        cardsLogArgs[keySuit] = viceCard.suit;
+        cardsLog.push(log);
+    });
+    return {
+        log: cardsLog.join(' '),
+        args: cardsLogArgs,
+    };
 };
 var Accuse = (function () {
     function Accuse(game) {
@@ -5340,3 +5623,225 @@ var SuitCounter = (function (_super) {
     };
     return SuitCounter;
 }(IconCounter));
+var FestivityPlayCard = (function () {
+    function FestivityPlayCard(game) {
+        this.game = game;
+    }
+    FestivityPlayCard.create = function (game) {
+        FestivityPlayCard.instance = new FestivityPlayCard(game);
+    };
+    FestivityPlayCard.getInstance = function () {
+        return FestivityPlayCard.instance;
+    };
+    FestivityPlayCard.prototype.onEnteringState = function (args) {
+        debug('Entering FestivityPlayCard state');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    FestivityPlayCard.prototype.onLeavingState = function () {
+        debug('Leaving Indulge state');
+    };
+    FestivityPlayCard.prototype.setDescription = function (activePlayerIds, args) { };
+    FestivityPlayCard.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        if (this.args.optionalAction) {
+            updatePageTitle(_('${you} may play a card or pass'), {});
+        }
+        else {
+            updatePageTitle(_('${you} must play a card'), {});
+        }
+        this.args._private.forEach(function (card) {
+            onClick(card.id, function () {
+                _this.updateInterfaceConfirm(card);
+            });
+        });
+        addPassButton(this.args.optionalAction);
+    };
+    FestivityPlayCard.prototype.updateInterfaceConfirm = function (card) {
+        clearPossible();
+        setSelected(card.id);
+        var _a = getViceCard(card), value = _a.value, suit = _a.suit;
+        updatePageTitle(_('Play ${value} of ${tkn_suit}?'), {
+            value: getViceCardValueText(value),
+            tkn_suit: suit,
+        });
+        addConfirmButton(function () {
+            performAction('actFestivityPlayCard', {
+                cardId: card.id,
+            });
+        });
+    };
+    return FestivityPlayCard;
+}());
+var FestivityGenerateGossip = (function () {
+    function FestivityGenerateGossip(game) {
+        this.game = game;
+    }
+    FestivityGenerateGossip.create = function (game) {
+        FestivityGenerateGossip.instance = new FestivityGenerateGossip(game);
+    };
+    FestivityGenerateGossip.getInstance = function () {
+        return FestivityGenerateGossip.instance;
+    };
+    FestivityGenerateGossip.prototype.onEnteringState = function (args) {
+        debug('Entering FestivityGenerateGossip state');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    FestivityGenerateGossip.prototype.onLeavingState = function () {
+        debug('Leaving Indulge state');
+    };
+    FestivityGenerateGossip.prototype.setDescription = function (activePlayerIds, args) { };
+    FestivityGenerateGossip.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        updatePageTitle(_('${you} add cards to the gossip pile, one at a time'));
+        this.args.cards.forEach(function (card) {
+            onClick(card.id, function () {
+                _this.updateInterfaceConfirm(card);
+            });
+        });
+    };
+    FestivityGenerateGossip.prototype.updateInterfaceConfirm = function (card) {
+        clearPossible();
+        var viceCard = getViceCard(card);
+        updatePageTitle(_('Add ${value} of ${tkn_suit} to the gossip pile?'), {
+            value: getViceCardValueText(viceCard.value),
+            tkn_suit: viceCard.suit,
+        });
+        setSelected(card.id);
+        addConfirmButton(function () {
+            performAction('actFestivityGenerateGossip', {
+                cardId: card.id,
+            });
+        });
+        addCancelButton();
+    };
+    return FestivityGenerateGossip;
+}());
+var FestivitySelectWinningSet = (function () {
+    function FestivitySelectWinningSet(game) {
+        this.game = game;
+        this.selectedCards = {};
+    }
+    FestivitySelectWinningSet.create = function (game) {
+        FestivitySelectWinningSet.instance = new FestivitySelectWinningSet(game);
+    };
+    FestivitySelectWinningSet.getInstance = function () {
+        return FestivitySelectWinningSet.instance;
+    };
+    FestivitySelectWinningSet.prototype.onEnteringState = function (args) {
+        debug('Entering FestivitySelectWinningSet state');
+        this.args = args;
+        this.selectedSet = null;
+        this.selectedCards = {};
+        this.updateInterfaceInitialStep();
+    };
+    FestivitySelectWinningSet.prototype.onLeavingState = function () {
+        debug('Leaving Indulge state');
+    };
+    FestivitySelectWinningSet.prototype.setDescription = function (activePlayerIds, args) { };
+    FestivitySelectWinningSet.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        if (this.args.options.length === 1) {
+            this.selectedSet = 0;
+            this.args.options[0].choices.forEach(function (_a) {
+                var value = _a.value;
+                _this.selectedCards[value] = {};
+            });
+            this.updateInterfaceSelectCardsInSet();
+            return;
+        }
+    };
+    FestivitySelectWinningSet.prototype.updateInterfaceSelectCardsInSet = function () {
+        var _this = this;
+        this.game.clearPossible();
+        var set = this.args.options[this.selectedSet];
+        var remaining = 0;
+        var cardsAlreadySelected = 0;
+        set.choices.forEach(function (_a) {
+            var value = _a.value, numberToSelect = _a.numberToSelect, cards = _a.cards;
+            var numberSelected = Object.keys(_this.selectedCards[value]).length;
+            cardsAlreadySelected += numberSelected;
+            if (numberSelected < numberToSelect) {
+                remaining += numberToSelect - numberSelected;
+                cards.forEach(function (card) {
+                    onClick(document.getElementById(card.id), function () {
+                        _this.onClickCard(card, value);
+                    });
+                });
+            }
+        });
+        if (remaining === 0) {
+            this.updateInterfaceConfirm();
+            return;
+        }
+        this.setSelected(set.selected.concat(this.getSelectedCardsFromOptions()));
+        updatePageTitle(_('${you} must select cards for the winning ${festivityName} (${number} remaining)'), {
+            festivityName: getFestivityRankingName(this.args.ranking),
+            number: remaining,
+        });
+        if (cardsAlreadySelected > 0) {
+            addCancelButton();
+        }
+    };
+    FestivitySelectWinningSet.prototype.uppdateInterfaceSelectSet = function (index) { };
+    FestivitySelectWinningSet.prototype.updateInterfaceConfirm = function () {
+        var _this = this;
+        clearPossible();
+        var set = this.args.options[this.selectedSet];
+        var winningSet = set.selected
+            .concat(this.getSelectedCardsFromOptions())
+            .sort(function (a, b) {
+            var cardA = getViceCard(a);
+            var cardB = getViceCard(b);
+            var valueA = typeof cardA.value === 'string' ? 0 : cardA.value;
+            var valueB = typeof cardB.value === 'string' ? 0 : cardB.value;
+            return valueA - valueB;
+        });
+        updatePageTitle(_('Confirm winning ${festivityName}: ${cardsLog}'), {
+            cardsLog: cardsLog(winningSet),
+            festivityName: getFestivityRankingName(this.args.ranking),
+        });
+        this.setSelected(winningSet);
+        addConfirmButton(function () {
+            var selectedCards = {};
+            Object.entries(_this.selectedCards).forEach(function (_a) {
+                var value = _a[0], cards = _a[1];
+                selectedCards[value] = Object.keys(cards);
+            });
+            performAction('actFestivitySelectWinningSet', {
+                setIndex: _this.selectedSet,
+                selectedCards: selectedCards,
+            });
+        });
+        addCancelButton();
+    };
+    FestivitySelectWinningSet.prototype.setSelected = function (cards) {
+        if (cards === void 0) { cards = []; }
+        cards.forEach(function (_a) {
+            var id = _a.id;
+            var cardElt = document.getElementById(id);
+            setSelected(cardElt);
+        });
+    };
+    FestivitySelectWinningSet.prototype.getSelectedCardsFromOptions = function () {
+        var selectedCards = [];
+        Object.values(this.selectedCards).forEach(function (cards) {
+            selectedCards.push.apply(selectedCards, Object.values(cards));
+        });
+        return selectedCards;
+    };
+    FestivitySelectWinningSet.prototype.onClickCard = function (card, value) {
+        if (this.selectedCards[value][card.id]) {
+            delete this.selectedCards[value][card.id];
+        }
+        else {
+            this.selectedCards[value][card.id] = card;
+        }
+        this.updateInterfaceSelectCardsInSet();
+    };
+    return FestivitySelectWinningSet;
+}());

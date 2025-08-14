@@ -71,6 +71,9 @@ class MollyHouse implements Game {
     Cruise,
     Shop,
     MovePawn,
+    FestivityPlayCard,
+    FestivityGenerateGossip,
+    FestivitySelectWinningSet,
   };
 
   constructor() {
@@ -135,6 +138,7 @@ class MollyHouse implements Game {
     NotificationManager.create(this);
     
     Board.create(this);
+    Festivity.create(this);
     Market.create(this);
     if (this.playerOrder.includes(this.getPlayerId())) {
       Hand.create(this);
@@ -250,7 +254,7 @@ class MollyHouse implements Game {
     // console.log('onUpdateActionButtons: ' + stateName);
   }
 
-  // .##.....##.########.##.......########.....##.....##..#######..########..########
+  // .##.....##.########.##.......########.....##.....##..#######..########..##....##
   // .##.....##.##.......##.......##.....##....###...###.##.....##.##.....##.##......
   // .##.....##.##.......##.......##.....##....####.####.##.....##.##.....##.##......
   // .#########.######...##.......########.....##.###.##.##.....##.##.....##.######..

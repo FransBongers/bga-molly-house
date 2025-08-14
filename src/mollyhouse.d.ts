@@ -41,6 +41,11 @@ interface MollyHouseGamedatas extends Gamedatas {
   // Game specific
   deckCount: number;
   dice: number[];
+  festivity: {
+    runner: number;
+    active: boolean;
+    communityCards: ViceCardBase[];
+  }
   gossipPileCount: number;
   market: Record<string,ViceCardBase>;
   pawns: Record<string,MohoPawn>;
@@ -49,6 +54,7 @@ interface MollyHouseGamedatas extends Gamedatas {
 }
 
 interface MollyHousePlayerData extends BgaPlayer {
+  festivity: ViceCardBase[];
   hand: ViceCardBase[];
   handCardCount: number;
   reputation: ViceCardBase[];

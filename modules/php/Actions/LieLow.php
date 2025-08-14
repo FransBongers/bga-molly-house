@@ -71,7 +71,7 @@ class LieLow extends \Bga\Games\MollyHouse\Models\AtomicAction
 
   public function performAction($player, $site)
   {
-    Notifications::message(clienttranslate('${player_name} lies low on ${tkn_boldText_site}'), [
+    Notifications::message(clienttranslate('${player_name} lies low at ${tkn_boldText_site}'), [
       'player' => $player,
       'tkn_boldText_site' => $site->getName(),
       'i18n' => ['tkn_boldText_site'],

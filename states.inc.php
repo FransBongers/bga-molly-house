@@ -302,4 +302,94 @@ $machinestates = [
             'actUndoToStep',
         ])
         ->build(),
+
+    ST_FESTIVITY_SETUP_ROUND => GameStateBuilder::create()
+        ->name(FESTIVITY_SETUP_ROUND)
+        ->description('')
+        ->type(StateType::GAME)
+        ->action('stAtomicAction')
+        ->build(),
+
+    ST_FESTIVITY_REVEAL_TOP_CARD_VICE_DECK => GameStateBuilder::create()
+        ->name(FESTIVITY_REVEAL_TOP_CARD_VICE_DECK)
+        ->description('')
+        ->type(StateType::GAME)
+        ->action('stAtomicAction')
+        ->build(),
+
+    ST_FESTIVITY_PLAY_CARD => GameStateBuilder::create()
+        ->name(FESTIVITY_PLAY_CARD)
+        ->description(clienttranslate('${actplayer} must play a card'))
+        ->descriptionmyturn(clienttranslate('${you}'))
+        ->type(StateType::ACTIVE_PLAYER)
+        ->args('argsAtomicAction')
+        ->possibleactions([
+            'actFestivityPlayCard',
+            'actTakeAtomicAction',
+            'actPassOptionalAction',
+            'actRestart',
+            'actUndoToStep',
+        ])
+        ->build(),
+
+    ST_FESTIVITY_CLEANUP => GameStateBuilder::create()
+        ->name(FESTIVITY_CLEANUP)
+        ->description('')
+        ->type(StateType::GAME)
+        ->action('stAtomicAction')
+        ->build(),
+
+    ST_FESTIVITY_DETERMINE_WINNING_SET => GameStateBuilder::create()
+        ->name(FESTIVITY_DETERMINE_WINNING_SET)
+        ->description('')
+        ->type(StateType::GAME)
+        ->action('stAtomicAction')
+        ->build(),
+
+    ST_FESTIVITY_SCORE_JOY => GameStateBuilder::create()
+        ->name(FESTIVITY_SCORE_JOY)
+        ->description('')
+        ->type(StateType::GAME)
+        ->action('stAtomicAction')
+        ->build(),
+
+    ST_FESTIVITY_SCORE_BONUS => GameStateBuilder::create()
+        ->name(FESTIVITY_SCORE_BONUS)
+        ->description('')
+        ->type(StateType::GAME)
+        ->action('stAtomicAction')
+        ->build(),
+
+    ST_FESTIVITY_GENERATE_GOSSIP => GameStateBuilder::create()
+        ->name(FESTIVITY_GENERATE_GOSSIP)
+        ->description(clienttranslate('${actplayer} must generate gossip'))
+        ->descriptionmyturn(clienttranslate('${you}'))
+        ->type(StateType::ACTIVE_PLAYER)
+        ->args('argsAtomicAction')
+        ->possibleactions([
+            'actTakeAtomicAction',
+            'actFestivityGenerateGossip',
+            'actPass',
+        ])
+        ->build(),
+
+    ST_FESTIVITY_SELECT_WINNING_SET => GameStateBuilder::create()
+        ->name(FESTIVITY_SELECT_WINNING_SET)
+        ->description(clienttranslate('${actplayer} must select the winning set'))
+        ->descriptionmyturn(clienttranslate('${you}'))
+        ->type(StateType::ACTIVE_PLAYER)
+        ->args('argsAtomicAction')
+        ->possibleactions([
+            'actTakeAtomicAction',
+            'actFestivitySelectWinningSet',
+            'actPass',
+        ])
+        ->build(),
+
+    ST_LOG_STEP => GameStateBuilder::create()
+        ->name(LOG_STEP)
+        ->description('')
+        ->type(StateType::GAME)
+        ->action('stAtomicAction')
+        ->build(),
 ];

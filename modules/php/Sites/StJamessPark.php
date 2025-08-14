@@ -11,5 +11,6 @@ class StJamessPark extends \Bga\Games\MollyHouse\Models\Site
     $this->name = clienttranslate("St James's Park");
     $this->locationOrder = 11;
     $this->action = CRUISE;
+    $this->suit = CUPS;
   }
 }
