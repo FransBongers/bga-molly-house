@@ -91,7 +91,8 @@ interface NotifPlacePawn extends NotifWithPlayerArgs {
 }
 
 interface NotifRefillMarket extends NotifWithPlayerArgs {
-  cards: ViceCardBase[];
+  movedCards: ViceCardBase[];
+  addedCards: ViceCardBase[];
 }
 
 interface NotifRollDice extends NotifWithPlayerArgs {

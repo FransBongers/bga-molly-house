@@ -65,6 +65,7 @@ var MARKET_3 = 'market_3';
 var MARKET_SPOTS = [MARKET_0, MARKET_1, MARKET_2, MARKET_3];
 var GOSSIP_PILE = 'gossipPile';
 var SAFE_PILE = 'safePile';
+var DECK = 'deck';
 var MOTHER_CLAPS = 'MotherClaps';
 var ST_PAULS_CATHEDRAL = 'StPaulsCathedral';
 var NOBLE_STREET = 'NobleStreet';
@@ -2896,14 +2897,19 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_addCardToGossipPile = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var card, board;
+            var card, viceCard, board;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         card = notif.args.card;
+                        viceCard = getViceCard(card);
                         board = Board.getInstance();
-                        return [4, board.gossipPile.addCard(getViceCard(card))];
+                        return [4, board.gossipPile.addCard(viceCard)];
                     case 1:
+                        _a.sent();
+                        board.counters[GOSSIP_PILE].incValue(1);
+                        return [4, this.game.viceCardManager.removeCard(viceCard)];
+                    case 2:
                         _a.sent();
                         return [2];
                 }
@@ -2945,6 +2951,7 @@ var NotificationManager = (function () {
                         return [4, market.safePile.addCard(getViceCard(card))];
                     case 1:
                         _a.sent();
+                        market.counters[SAFE_PILE].incValue(1);
                         return [2];
                 }
             });
@@ -2963,14 +2970,35 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_addExcessCardsToGossipPrivate = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, cards, playerId, board;
+            var _a, cards, playerId, board, promises;
+            var _this = this;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _a = notif.args, cards = _a.cards, playerId = _a.playerId;
                         board = Board.getInstance();
                         this.getPlayer(playerId).counters[HAND].incValue(-cards.length);
-                        return [4, board.gossipPile.addCards(cards.map(getViceCard))];
+                        promises = cards.map(function (card, index) { return __awaiter(_this, void 0, void 0, function () {
+                            var viceCard;
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0: return [4, Interaction.use().wait(index * 150)];
+                                    case 1:
+                                        _a.sent();
+                                        viceCard = getViceCard(card);
+                                        viceCard.location = GOSSIP_PILE;
+                                        return [4, board.gossipPile.addCard(viceCard)];
+                                    case 2:
+                                        _a.sent();
+                                        board.counters[GOSSIP_PILE].incValue(1);
+                                        return [4, this.game.viceCardManager.removeCard(viceCard)];
+                                    case 3:
+                                        _a.sent();
+                                        return [2];
+                                }
+                            });
+                        }); });
+                        return [4, Promise.all(promises)];
                     case 1:
                         _b.sent();
                         return [2];
@@ -2983,6 +3011,7 @@ var NotificationManager = (function () {
             var _a, playerId, number;
             return __generator(this, function (_b) {
                 _a = notif.args, playerId = _a.playerId, number = _a.number;
+                Market.getInstance().counters[DECK].incValue(-number);
                 this.getPlayer(playerId).counters[HAND].incValue(number);
                 return [2];
             });
@@ -2990,7 +3019,7 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_drawCardsPrivate = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, cards, playerId, viceCards, hand, player, promises;
+            var _a, cards, playerId, viceCards, hand, market, player, promises;
             var _this = this;
             return __generator(this, function (_b) {
                 switch (_b.label) {
@@ -2998,12 +3027,23 @@ var NotificationManager = (function () {
                         _a = notif.args, cards = _a.cards, playerId = _a.playerId;
                         viceCards = cards.map(function (card) { return getViceCard(card); });
                         hand = Hand.getInstance();
+                        market = Market.getInstance();
                         player = this.getPlayer(playerId);
                         promises = viceCards.map(function (card, index) { return __awaiter(_this, void 0, void 0, function () {
+                            var location;
                             return __generator(this, function (_a) {
                                 switch (_a.label) {
-                                    case 0: return [4, hand.addCard(card)];
+                                    case 0:
+                                        Interaction.use().wait(index * 150);
+                                        location = card.location;
+                                        card.location = DECK;
+                                        return [4, market.deck.addCard(card)];
                                     case 1:
+                                        _a.sent();
+                                        card.location = location;
+                                        market.counters[DECK].incValue(-1);
+                                        return [4, hand.addCard(card)];
+                                    case 2:
                                         _a.sent();
                                         player.counters[HAND].incValue(1);
                                         return [2];
@@ -3048,13 +3088,22 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_festivityRevealTopCardViceDeck = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var card;
+            var card, viceCard, location, market;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         card = notif.args.card;
-                        return [4, Festivity.getInstance().stocks[COMMUNITY].addCard(getViceCard(card))];
+                        viceCard = getViceCard(card);
+                        location = viceCard.location;
+                        viceCard.location = DECK;
+                        market = Market.getInstance();
+                        return [4, market.deck.addCard(viceCard)];
                     case 1:
+                        _a.sent();
+                        viceCard.location = location;
+                        market.counters[DECK].incValue(-1);
+                        return [4, Festivity.getInstance().stocks[COMMUNITY].addCard(viceCard)];
+                    case 2:
                         _a.sent();
                         return [2];
                 }
@@ -3068,9 +3117,10 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_festivitySetRogueValue = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, value;
+            var _a, card, value;
             return __generator(this, function (_b) {
-                _a = notif.args, playerId = _a.playerId, value = _a.value;
+                _a = notif.args, card = _a.card, value = _a.value;
+                Festivity.getInstance().addRogueValue(card.id, value);
                 return [2];
             });
         });
@@ -3152,15 +3202,45 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_refillMarket = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var cards, market;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var _a, movedCards, addedCards, market, promises;
+            var _this = this;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        cards = notif.args.cards;
+                        _a = notif.args, movedCards = _a.movedCards, addedCards = _a.addedCards;
                         market = Market.getInstance();
-                        return [4, market.stock.addCards(cards.map(getViceCard))];
+                        promises = movedCards.concat(addedCards).map(function (card, index) { return __awaiter(_this, void 0, void 0, function () {
+                            var viceCard, location_1;
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0: return [4, Interaction.use().wait(index * 200)];
+                                    case 1:
+                                        _a.sent();
+                                        viceCard = getViceCard(card);
+                                        if (!movedCards.some(function (movedCard) { return movedCard.id === card.id; })) return [3, 3];
+                                        return [4, market.stock.addCard(viceCard)];
+                                    case 2:
+                                        _a.sent();
+                                        return [3, 6];
+                                    case 3:
+                                        location_1 = viceCard.location;
+                                        viceCard.location = DECK;
+                                        return [4, market.deck.addCard(viceCard)];
+                                    case 4:
+                                        _a.sent();
+                                        viceCard.location = location_1;
+                                        market.counters[DECK].incValue(-1);
+                                        return [4, market.stock.addCard(viceCard)];
+                                    case 5:
+                                        _a.sent();
+                                        _a.label = 6;
+                                    case 6: return [2];
+                                }
+                            });
+                        }); });
+                        return [4, Promise.all(promises)];
                     case 1:
-                        _a.sent();
+                        _b.sent();
                         return [2];
                 }
             });
@@ -4336,6 +4416,7 @@ var SITE_SELECT_POSITIONS = (_b = {},
     _b);
 var Board = (function () {
     function Board(game) {
+        this.counters = {};
         this.sites = {};
         this.game = game;
         this.setup(game.gamedatas);
@@ -4379,14 +4460,10 @@ var Board = (function () {
         this.diceStock.addDice(getDice(gamedatas.dice));
     };
     Board.prototype.setupGossipPile = function (gamedatas) {
-        this.gossipPile = new Deck(this.game.viceCardManager, this.ui.containers.gossipPile, {
-            cardNumber: gamedatas.gossipPileCount,
-            thicknesses: [100],
-            counter: {
-                show: true,
-                position: 'center',
-            },
-        });
+        this.gossipPile = new LineStock(this.game.viceCardManager, this.ui.containers.gossipPile);
+        this.counters[GOSSIP_PILE] = new ebg.counter();
+        this.counters[GOSSIP_PILE].create('moho-gossip-pile-counter');
+        this.updateGossipPile(gamedatas);
     };
     Board.prototype.setupHouseRaidedMarkers = function () {
         var _this = this;
@@ -4430,15 +4507,24 @@ var Board = (function () {
     Board.prototype.setupSelectBoxes = function () {
         var _this = this;
         SITES.forEach(function (site) {
-            var elt = (_this.ui.selectBoxes[site] =
-                document.createElement('div'));
+            var elt = (_this.ui.selectBoxes[site] = document.createElement('div'));
             elt.classList.add('moho-select-box');
             elt.classList.add('moho-select-site');
             elt.setAttribute('data-site', site);
             var sitePosition = SITE_SELECT_POSITIONS[site];
             setAbsolutePosition(elt, BOARD_SCALE, SITE_SELECT_POSITIONS[site]);
-            setCalculatedValue({ elt: elt, scaleVarName: BOARD_SCALE, value: sitePosition.width, property: 'width' });
-            setCalculatedValue({ elt: elt, scaleVarName: BOARD_SCALE, value: sitePosition.height, property: 'height' });
+            setCalculatedValue({
+                elt: elt,
+                scaleVarName: BOARD_SCALE,
+                value: sitePosition.width,
+                property: 'width',
+            });
+            setCalculatedValue({
+                elt: elt,
+                scaleVarName: BOARD_SCALE,
+                value: sitePosition.height,
+                property: 'height',
+            });
             _this.ui.containers.selectBoxes.appendChild(elt);
         });
     };
@@ -4502,6 +4588,9 @@ var Board = (function () {
         }
         setAbsolutePosition(this.ui.containers.pawns[type], BOARD_SCALE, position);
     };
+    Board.prototype.updateGossipPile = function (gamedatas) {
+        this.counters[GOSSIP_PILE].setValue(gamedatas.gossipPileCount);
+    };
     Board.prototype.updatePawns = function (pawns) {
         var _this = this;
         pawns.forEach(function (pawn) {
@@ -4545,7 +4634,7 @@ var Board = (function () {
     };
     return Board;
 }());
-var tplBoard = function (gamedatas) { return "<div id=\"moho-board\">\n<div id=\"moho-playmat\">\n  <div id=\"moho-festivity\"></div>\n  <div id=\"moho-dice-stock\"></div>\n</div>\n  <div id=\"house-raided-markers\"></div>\n  <div id=\"moho-select-boxes\"></div>\n  <div id=\"moho-pawns\"></div>\n  <div id=\"moho-gossip-pile\"></div>\n</div>"; };
+var tplBoard = function (gamedatas) { return "<div id=\"moho-board\">\n<div id=\"moho-playmat\">\n  <div id=\"moho-festivity\"></div>\n  <div id=\"moho-dice-stock\"></div>\n</div>\n  <div id=\"house-raided-markers\"></div>\n  <div id=\"moho-select-boxes\"></div>\n  <div id=\"moho-pawns\"></div>\n  <div id=\"moho-gossip-pile\" class=\"moho-vice-card\" data-card-id=\"back\">\n    <span id=\"moho-gossip-pile-counter\" class=\"moho-deck-counter\">10</span>\n  </div>\n</div>"; };
 var ViceCardManager = (function (_super) {
     __extends(ViceCardManager, _super);
     function ViceCardManager(game) {
@@ -4586,7 +4675,7 @@ var ViceCardManager = (function (_super) {
         div.style.width = 'calc(var(--cardScale) * 161px)';
     };
     ViceCardManager.prototype.isCardVisible = function (card) {
-        if (card.hidden || card.location === GOSSIP_PILE || card.id.startsWith('fake')) {
+        if (card.hidden || [DECK, GOSSIP_PILE,].includes(card.location) || card.id.startsWith('fake')) {
             return false;
         }
         return true;
@@ -4862,6 +4951,7 @@ var tplLogTokenViceCard = function (cardId) {
 };
 var Market = (function () {
     function Market(game) {
+        this.counters = {};
         this.game = game;
         this.setup(game.gamedatas);
     }
@@ -4884,22 +4974,13 @@ var Market = (function () {
         this.setupSlotStock(gamedatas);
     };
     Market.prototype.setupDecks = function (gamedatas) {
-        this.deck = new Deck(this.game.viceCardManager, this.ui.deck, {
-            cardNumber: gamedatas.deckCount,
-            thicknesses: [100],
-            counter: {
-                show: true,
-                position: 'center',
-            },
-        });
-        this.safePile = new Deck(this.game.viceCardManager, this.ui.safePile, {
-            cardNumber: 0,
-            thicknesses: [100],
-            counter: {
-                show: true,
-                position: 'center',
-            },
-        });
+        this.deck = new LineStock(this.game.viceCardManager, this.ui.deck, {});
+        this.safePile = new LineStock(this.game.viceCardManager, this.ui.safePile, {});
+        this.counters[DECK] = new ebg.counter();
+        this.counters[DECK].create('moho-deck-counter');
+        this.counters[SAFE_PILE] = new ebg.counter();
+        this.counters[SAFE_PILE].create('moho-safe-pile-counter');
+        this.updateDeck(gamedatas);
         this.updateSafePile(gamedatas);
     };
     Market.prototype.setupSlotStock = function (gamedatas) {
@@ -4916,12 +4997,16 @@ var Market = (function () {
     Market.prototype.updateMarket = function (gamedatas) {
         this.stock.addCards(Object.values(gamedatas.market).map(getViceCard));
     };
+    Market.prototype.updateDeck = function (gamedatas) {
+        this.counters[DECK].setValue(gamedatas.deckCount);
+    };
     Market.prototype.updateSafePile = function (gamedatas) {
         this.safePile.addCards(Object.values(gamedatas.safePile).map(function (card) { return getViceCard(card); }));
+        this.counters[SAFE_PILE].setValue(Object.keys(gamedatas.safePile).length);
     };
     return Market;
 }());
-var tplMarket = function (gamedatas) { return "<div id=\"moho-market\">\n<div id=\"moho-safe-pile\" class=\"moho-market-slot\"></div>\n  <div id=\"moho-deck\" class=\"moho-market-slot\"></div>\n  <div id=\"moho-market-slots\"></div>\n\n</div>"; };
+var tplMarket = function (gamedatas) { return "\n<div> \n  <div id=\"moho-market\">\n    <div id=\"moho-safe-pile\" class=\"moho-market-slot\">\n      <span id=\"moho-safe-pile-counter\" class=\"moho-deck-counter\"></span>\n    </div>\n    <div id=\"moho-deck\" class=\"moho-market-slot moho-vice-card\" data-card-id=\"back\">\n      <span id=\"moho-deck-counter\" class=\"moho-deck-counter\"></span>\n    </div>\n    <div id=\"moho-market-slots\"></div>\n\n  </div>\n  <div id=\"moho-market-bar\">\n    <span>".concat(_('Safe Pile'), "</span>\n    <span>").concat(_('Deck'), "</span>\n    <span class=\"moho-market-label\">").concat(_('Market'), "</span>\n  </div>\n</div>\n"); };
 var PlayerManager = (function () {
     function PlayerManager(game) {
         this.game = game;
@@ -5769,7 +5854,7 @@ var FestivityGenerateGossip = (function () {
     FestivityGenerateGossip.prototype.updateInterfaceInitialStep = function () {
         var _this = this;
         this.game.clearPossible();
-        updatePageTitle(_('${you} add cards to the gossip pile, one at a time'));
+        updatePageTitle(_('${you} must add cards to the gossip pile, one at a time'));
         this.args.cards.forEach(function (card) {
             onClick(card.id, function () {
                 _this.updateInterfaceConfirm(card);

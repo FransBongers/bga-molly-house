@@ -3,7 +3,8 @@ class Board {
   private game: GameAlias;
 
   public diceStock: LineDiceStock;
-  public gossipPile: Deck<ViceCard>;
+  public gossipPile: LineStock<ViceCard>;
+  public counters: Record<string, Counter> = {};
 
   public ui: {
     containers: {
@@ -27,7 +28,6 @@ class Board {
   constructor(game: GameAlias) {
     this.game = game;
     this.setup(game.gamedatas);
-    
   }
 
   public static create(game: GameAlias) {
@@ -80,7 +80,6 @@ class Board {
   }
 
   private setupDiceStock(gamedatas: GamedatasAlias) {
-    
     this.diceStock = new LineDiceStock(
       this.game.diceManager,
       this.ui.diceStock,
@@ -92,19 +91,13 @@ class Board {
   }
 
   private setupGossipPile(gamedatas: GamedatasAlias) {
-    this.gossipPile = new Deck<ViceCard>(
+    this.gossipPile = new LineStock<ViceCard>(
       this.game.viceCardManager,
-      this.ui.containers.gossipPile,
-      {
-        cardNumber: gamedatas.gossipPileCount,
-        // thicknesses: [0, 2, 5, 10, 20, 30],
-        thicknesses: [100],
-        counter: {
-          show: true,
-          position: 'center',
-        },
-      }
+      this.ui.containers.gossipPile
     );
+    this.counters[GOSSIP_PILE] = new ebg.counter();
+    this.counters[GOSSIP_PILE].create('moho-gossip-pile-counter');
+    this.updateGossipPile(gamedatas);
   }
 
   private setupHouseRaidedMarkers() {
@@ -149,15 +142,24 @@ class Board {
 
   private setupSelectBoxes() {
     SITES.forEach((site) => {
-      const elt = (this.ui.selectBoxes[site] =
-        document.createElement('div'));
+      const elt = (this.ui.selectBoxes[site] = document.createElement('div'));
       elt.classList.add('moho-select-box');
       elt.classList.add('moho-select-site');
       elt.setAttribute('data-site', site);
       const sitePosition = SITE_SELECT_POSITIONS[site];
       setAbsolutePosition(elt, BOARD_SCALE, SITE_SELECT_POSITIONS[site]);
-      setCalculatedValue({elt, scaleVarName: BOARD_SCALE, value: sitePosition.width, property: 'width'});
-      setCalculatedValue({elt, scaleVarName: BOARD_SCALE, value: sitePosition.height, property: 'height'});
+      setCalculatedValue({
+        elt,
+        scaleVarName: BOARD_SCALE,
+        value: sitePosition.width,
+        property: 'width',
+      });
+      setCalculatedValue({
+        elt,
+        scaleVarName: BOARD_SCALE,
+        value: sitePosition.height,
+        property: 'height',
+      });
       this.ui.containers.selectBoxes.appendChild(elt);
     });
   }
@@ -230,6 +232,10 @@ class Board {
         break;
     }
     setAbsolutePosition(this.ui.containers.pawns[type], BOARD_SCALE, position);
+  }
+
+  updateGossipPile(gamedatas: GamedatasAlias) {
+    this.counters[GOSSIP_PILE].setValue(gamedatas.gossipPileCount);
   }
 
   updatePawns(pawns: MohoPawn[]) {

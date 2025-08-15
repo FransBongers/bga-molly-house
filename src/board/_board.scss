@@ -38,7 +38,13 @@
     top: calc(var(--boardScale) * 903px);
     width: calc(var(--boardScale) * 161px);
     height: calc(var(--boardScale) * 225px);
+    box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);
+
     // outline: 2px yellow solid;
+    .card {
+      position: absolute !important;
+
+    }
   }
 
   .moho-pawn {

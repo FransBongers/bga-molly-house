@@ -198,9 +198,11 @@ class NotificationManager {
 
   async notif_addCardToGossipPile(notif: Notif<NotifAddCardToGossipPile>) {
     const { card } = notif.args;
-
+    const viceCard = getViceCard(card);
     const board = Board.getInstance();
-    await board.gossipPile.addCard(getViceCard(card));
+    await board.gossipPile.addCard(viceCard);
+    board.counters[GOSSIP_PILE].incValue(1);
+    await this.game.viceCardManager.removeCard(viceCard);
   }
 
   async notif_addCardToReputation(notif: Notif<NotifAddCardToReputation>) {
@@ -226,6 +228,7 @@ class NotificationManager {
 
     const market = Market.getInstance();
     await market.safePile.addCard(getViceCard(card));
+    market.counters[SAFE_PILE].incValue(1);
   }
 
   async notif_addExcessCardsToGossip(
@@ -245,13 +248,25 @@ class NotificationManager {
     const board = Board.getInstance();
 
     this.getPlayer(playerId).counters[HAND].incValue(-cards.length);
-    await board.gossipPile.addCards(cards.map(getViceCard));
+
+    const promises = cards.map(async (card, index) => {
+      await Interaction.use().wait(index * 150);
+      const viceCard = getViceCard(card);
+      viceCard.location = GOSSIP_PILE;
+
+      await board.gossipPile.addCard(viceCard);
+      board.counters[GOSSIP_PILE].incValue(1);
+
+      await this.game.viceCardManager.removeCard(viceCard);
+    });
+
+    await Promise.all(promises);
   }
 
   async notif_drawCards(notif: Notif<NotifDrawCards>) {
     const { playerId, number } = notif.args;
 
-    // TODO: update player panel
+    Market.getInstance().counters[DECK].incValue(-number);
     this.getPlayer(playerId).counters[HAND].incValue(number);
   }
 
@@ -260,13 +275,20 @@ class NotificationManager {
 
     const viceCards = cards.map((card) => getViceCard(card));
     const hand = Hand.getInstance();
+    const market = Market.getInstance();
     const player = this.getPlayer(playerId);
+
     const promises = viceCards.map(async (card, index) => {
-      // TODO: add card to deck before drawing
-      // await this.game.framework().wait(index * 150);
-      // await hand.getStock().addCard(card, {
-      //   fromElement: document.getElementById('moho-deck'),
-      // });
+      Interaction.use().wait(index * 150);
+      const location = card.location;
+      card.location = DECK;
+
+      // Add card to deck
+      await market.deck.addCard(card);
+      card.location = location;
+
+      // Add card to hand
+      market.counters[DECK].incValue(-1);
       await hand.addCard(card);
       player.counters[HAND].incValue(1);
     });
@@ -293,8 +315,17 @@ class NotificationManager {
     notif: Notif<NotifFestivityRevealTopCardViceDeck>
   ) {
     const { card } = notif.args;
+    const viceCard = getViceCard(card);
+    const location = viceCard.location;
+    // Add card to deck
+    viceCard.location = DECK;
+    const market = Market.getInstance();
+    await market.deck.addCard(viceCard);
 
-    await Festivity.getInstance().stocks[COMMUNITY].addCard(getViceCard(card));
+    // Play card to festivity
+    viceCard.location = location;
+    market.counters[DECK].incValue(-1);
+    await Festivity.getInstance().stocks[COMMUNITY].addCard(viceCard);
   }
 
   async notif_festivityPhase(notif: Notif<NotifFestivityPhase>) {}
@@ -302,8 +333,8 @@ class NotificationManager {
   async notif_festivitySetRogueValue(
     notif: Notif<NotifFestivitySetRogueValue>
   ) {
-    const { playerId, value } = notif.args;
-    // Festivity.getInstance().setRogueValue(playerId, value);
+    const { card, value } = notif.args;
+    Festivity.getInstance().addRogueValue(card.id, value);
   }
 
   async notif_festivityWinningSet(notif: Notif<NotifFestivityWinningSet>) {
@@ -351,10 +382,26 @@ class NotificationManager {
   }
 
   async notif_refillMarket(notif: Notif<NotifRefillMarket>) {
-    const { cards } = notif.args;
-    // TODO animation
+    const { movedCards, addedCards } = notif.args;
+
     const market = Market.getInstance();
-    await market.stock.addCards(cards.map(getViceCard));
+
+    const promises = movedCards.concat(addedCards).map(async (card, index) => {
+      await Interaction.use().wait(index * 200);
+      const viceCard = getViceCard(card);
+      if (movedCards.some((movedCard) => movedCard.id === card.id)) {
+        await market.stock.addCard(viceCard);
+      } else {
+        const location = viceCard.location;
+        viceCard.location = DECK;
+        await market.deck.addCard(viceCard);
+        viceCard.location = location;
+        market.counters[DECK].incValue(-1);
+        await market.stock.addCard(viceCard);
+      }
+    });
+
+    await Promise.all(promises);
   }
 
   async notif_rollDice(notif: Notif<NotifRollDice>) {

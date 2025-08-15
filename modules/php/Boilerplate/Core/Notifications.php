@@ -300,13 +300,17 @@ class Notifications
 
     $number = count($cards);
 
-    self::notify($player, 'addExcessCardsToGossipPrivate', clienttranslate('${player_name} adds ${tkn_boldText_number} cards from their hand to the gossip pile'), [
+    $text = $number === 1
+      ? clienttranslate('${player_name} adds ${tkn_boldText_number} card from their hand to the gossip pile')
+      : clienttranslate('${player_name} adds ${tkn_boldText_number} cards from their hand to the gossip pile');
+
+    self::notify($player, 'addExcessCardsToGossipPrivate', $text, [
       'player' => $player,
       'tkn_boldText_number' => $number,
       'cards' => $cards,
     ]);
 
-    self::notifyAll('addExcessCardsToGossip', clienttranslate('${player_name} adds ${tkn_boldText_number} cards from their hand to the gossip pile'), [
+    self::notifyAll('addExcessCardsToGossip', $text, [
       'player' => $player,
       'tkn_boldText_number' => $number,
       'number' => $number,
@@ -471,11 +475,12 @@ class Notifications
     ]);
   }
 
-  public static function refillMarket($player, $updatedCards)
+  public static function refillMarket($player, $movedCards, $addedCards)
   {
     self::notifyAll('refillMarket', clienttranslate('${player_name} refills the market'), [
       'player' => $player,
-      'cards' => $updatedCards,
+      'movedCards' => $movedCards,
+      'addedCards' => $addedCards,
     ]);
   }
 

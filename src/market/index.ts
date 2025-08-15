@@ -3,8 +3,9 @@ class Market {
   private game: GameAlias;
 
   public stock: SlotStock<ViceCard>;
-  public deck: Deck<ViceCard>;
-  public safePile: Deck<ViceCard>;
+  public deck: LineStock<ViceCard>;
+  public safePile: LineStock<ViceCard>;
+  public counters: Record<string, Counter> = {};
 
   public ui: {
     container: HTMLElement;
@@ -58,26 +59,22 @@ class Market {
   }
 
   private setupDecks(gamedatas: GamedatasAlias) {
-    this.deck = new Deck<ViceCard>(this.game.viceCardManager, this.ui.deck, {
-      cardNumber: gamedatas.deckCount,
-      thicknesses: [100],
-      counter: {
-        show: true,
-        position: 'center',
-      },
-    });
-    this.safePile = new Deck<ViceCard>(
+    this.deck = new LineStock<ViceCard>(
+      this.game.viceCardManager,
+      this.ui.deck,
+      {}
+    );
+    this.safePile = new LineStock<ViceCard>(
       this.game.viceCardManager,
       this.ui.safePile,
-      {
-        cardNumber: 0,
-        thicknesses: [100],
-        counter: {
-          show: true,
-          position: 'center',
-        },
-      }
+      {}
     );
+
+    this.counters[DECK] = new ebg.counter();
+    this.counters[DECK].create('moho-deck-counter');
+    this.counters[SAFE_PILE] = new ebg.counter();
+    this.counters[SAFE_PILE].create('moho-safe-pile-counter');
+    this.updateDeck(gamedatas);
     this.updateSafePile(gamedatas);
   }
 
@@ -115,10 +112,15 @@ class Market {
     this.stock.addCards(Object.values(gamedatas.market).map(getViceCard));
   }
 
+  private updateDeck(gamedatas: GamedatasAlias) {
+    this.counters[DECK].setValue(gamedatas.deckCount);
+  }
+
   private updateSafePile(gamedatas: GamedatasAlias) {
     this.safePile.addCards(
       Object.values(gamedatas.safePile).map((card) => getViceCard(card))
     );
+    this.counters[SAFE_PILE].setValue(Object.keys(gamedatas.safePile).length);
   }
 
   //  .##.....##.########.####.##.......####.########.##....##

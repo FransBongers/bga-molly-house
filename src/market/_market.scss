@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: row;
   padding: calc(var(--cardScale) * 16px);
+  padding-bottom: calc(var(--cardScale) * 8px);
   --cardScale: calc(var(--leftColumnScale) * 1.3);
   gap: calc(var(--cardScale) * 16px);
 
@@ -9,4 +10,52 @@
     width: calc(var(--cardScale) * 161px);
     height: calc(var(--cardScale) * 225px);
   }
+
+  #moho-deck {
+    box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);
+  }
+
+  #moho-safe-pile {
+    position: relative;
+
+    #moho-safe-pile-counter {
+      z-index: 1;
+    }
+
+    .card {
+      position: absolute !important;
+    }
+  }
+}
+
+#moho-market-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  --cardScale: calc(var(--leftColumnScale) * 1.3);
+  padding: calc(var(--cardScale) * 16px);
+  padding-top: 0px;
+  gap: calc(var(--cardScale) * 16px);
+
+  span {
+    width: calc(var(--cardScale) * 161px);
+    text-align: center;
+    font-weight: bold;
+      text-shadow: #fff 0 0 2px, #fff 0 0 2px, #fff 0 0 2px, #fff 0 0 2px,
+    #fff 0 0 2px, #fff 0 0 2px;
+  }
+
+  .moho-market-label {
+    width: calc(var(--cardScale) * 4 * 161px + 3 * 16px);
+  }
+}
+
+.moho-deck-counter {
+  position: absolute;
+  bottom: calc(var(--cardScale) * 2px);
+  right: calc(var(--cardScale) * 12px);
+  text-shadow: #fff 0 0 2px, #fff 0 0 2px, #fff 0 0 2px, #fff 0 0 2px,
+    #fff 0 0 2px, #fff 0 0 2px;
+  font-weight: bold;
+  font-size: calc(var(--cardScale) * 40px);
 }

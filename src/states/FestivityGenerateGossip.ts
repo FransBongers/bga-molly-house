@@ -49,7 +49,7 @@ class FestivityGenerateGossip implements State {
 
   private updateInterfaceInitialStep() {
     this.game.clearPossible();
-    updatePageTitle(_('${you} add cards to the gossip pile, one at a time'));
+    updatePageTitle(_('${you} must add cards to the gossip pile, one at a time'));
 
     this.args.cards.forEach((card) => {
       onClick(card.id, () => {

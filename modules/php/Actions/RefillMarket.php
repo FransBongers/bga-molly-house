@@ -46,7 +46,8 @@ class RefillMarket extends \Bga\Games\MollyHouse\Models\AtomicAction
     ];
 
     $openSpots = [];
-    $updatedCards = [];
+    $movedCards = [];
+    $addedCards = [];
 
     // Move cards
     foreach ($reversedMarketSpots as $marketSpot) {
@@ -59,7 +60,7 @@ class RefillMarket extends \Bga\Games\MollyHouse\Models\AtomicAction
         // Move card to first open spot
         $spot = array_shift($openSpots);
         $card->setLocation($spot);
-        $updatedCards[] = $card;
+        $movedCards[] = $card;
         $openSpots[] = $marketSpot;
       }
     }
@@ -71,11 +72,11 @@ class RefillMarket extends \Bga\Games\MollyHouse\Models\AtomicAction
         break;
       }
       $card->setLocation($spot);
-      $updatedCards[] = $card;
+      $addedCards[] = $card;
     }
 
-    if (count($updatedCards) > 0) {
-      Notifications::refillMarket($this->getPlayer(), $updatedCards);
+    if (count($movedCards) + count($addedCards) > 0) {
+      Notifications::refillMarket($this->getPlayer(), $movedCards, $addedCards);
     }
 
 

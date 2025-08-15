@@ -504,6 +504,10 @@ body > .bga-dice_die {
   top: calc(var(--boardScale) * 903px);
   width: calc(var(--boardScale) * 161px);
   height: calc(var(--boardScale) * 225px);
+  box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);
+}
+#moho-board #moho-gossip-pile .card {
+  position: absolute !important;
 }
 #moho-board .moho-pawn {
   position: absolute;
@@ -1610,12 +1614,53 @@ span[style*="color:#fcd873"] {
   display: flex;
   flex-direction: row;
   padding: calc(var(--cardScale) * 16px);
+  padding-bottom: calc(var(--cardScale) * 8px);
   --cardScale: calc(var(--leftColumnScale) * 1.3);
   gap: calc(var(--cardScale) * 16px);
 }
 #moho-market .moho-market-slot {
   width: calc(var(--cardScale) * 161px);
   height: calc(var(--cardScale) * 225px);
+}
+#moho-market #moho-deck {
+  box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);
+}
+#moho-market #moho-safe-pile {
+  position: relative;
+}
+#moho-market #moho-safe-pile #moho-safe-pile-counter {
+  z-index: 1;
+}
+#moho-market #moho-safe-pile .card {
+  position: absolute !important;
+}
+
+#moho-market-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  --cardScale: calc(var(--leftColumnScale) * 1.3);
+  padding: calc(var(--cardScale) * 16px);
+  padding-top: 0px;
+  gap: calc(var(--cardScale) * 16px);
+}
+#moho-market-bar span {
+  width: calc(var(--cardScale) * 161px);
+  text-align: center;
+  font-weight: bold;
+  text-shadow: #fff 0 0 2px, #fff 0 0 2px, #fff 0 0 2px, #fff 0 0 2px, #fff 0 0 2px, #fff 0 0 2px;
+}
+#moho-market-bar .moho-market-label {
+  width: calc(var(--cardScale) * 4 * 161px + 48px);
+}
+
+.moho-deck-counter {
+  position: absolute;
+  bottom: calc(var(--cardScale) * 2px);
+  right: calc(var(--cardScale) * 12px);
+  text-shadow: #fff 0 0 2px, #fff 0 0 2px, #fff 0 0 2px, #fff 0 0 2px, #fff 0 0 2px, #fff 0 0 2px;
+  font-weight: bold;
+  font-size: calc(var(--cardScale) * 40px);
 }
 
 .moho-player-row {

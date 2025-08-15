@@ -42,7 +42,7 @@ class ViceCardManager extends CardManager<ViceCard> {
   }
 
   isCardVisible(card: ViceCard) {
-    if (card.hidden || card.location === GOSSIP_PILE || card.id.startsWith('fake')) {
+    if (card.hidden || [DECK, GOSSIP_PILE,].includes(card.location) || card.id.startsWith('fake')) {
       return false;
     }
     return true;

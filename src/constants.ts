@@ -62,6 +62,7 @@ const MARKET_SPOTS = [MARKET_0, MARKET_1, MARKET_2, MARKET_3];
 
 const GOSSIP_PILE = 'gossipPile';
 const SAFE_PILE = 'safePile';
+const DECK = 'deck';
 
 /**
  * Sites
