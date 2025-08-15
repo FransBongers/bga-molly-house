@@ -46,6 +46,13 @@ class Festivity
     Globals::setFestivity($festivity);
   }
 
+  public static function end()
+  {
+    $festivity = self::get();
+    $festivity['active'] = false;
+    Globals::setFestivity($festivity);
+  }
+
   public static function getGamedatas()
   {
     $festivity = self::get();

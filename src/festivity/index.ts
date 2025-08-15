@@ -29,15 +29,41 @@ class Festivity {
   }
 
   updateFestivity(gamedatas: GamedatasAlias) {
-    this.stocks[COMMUNITY].addCards(
-      gamedatas.festivity.communityCards.map(getViceCard)
-    );
-
-    Object.entries(gamedatas.players).forEach(([playerId, player]) => {
-      this.stocks[playerId].addCards(player.festivity.map(getViceCard));
+    gamedatas.festivity.communityCards.map(getViceCard).forEach((card) => {
+      this.stocks[COMMUNITY].addCard(card);
+      if (card.displayValue === 'R') {
+        this.addRogueValue(card.id, card.festivityValue);
+      }
     });
 
+    Object.entries(gamedatas.players).forEach(([playerId, player]) => {
+      player.festivity.map(getViceCard).forEach((card) => {
+        this.stocks[playerId].addCard(card);
+        if (card.displayValue === 'R') {
+          this.addRogueValue(card.id, card.festivityValue);
+        }
+      });
+    });
+  }
 
+  public addRogueValue(cardId: string, value: number) {
+    const frontElt = document.getElementById(`${cardId}-front`);
+    if (!frontElt) {
+      return;
+    }
+
+    const roqgueValueElt = document.createElement('span');
+    roqgueValueElt.id = `${cardId}-rogue-value`;
+    roqgueValueElt.classList.add('moho-rogue-value');
+    roqgueValueElt.innerHTML = value.toString();
+    frontElt.appendChild(roqgueValueElt);
+  }
+
+  public removeRogueValue(cardId: string) {
+    const rogueValueElt = document.getElementById(`${cardId}-rogue-value`);
+    if (rogueValueElt) {
+      rogueValueElt.remove();
+    }
   }
 
   public setupFestivity(gamedatas: GamedatasAlias) {
@@ -45,8 +71,15 @@ class Festivity {
     const players = PlayerManager.getInstance().getPlayers();
     const playerCount = players.length;
 
-    const communityContainerElt = this.createPlayerElement(COMMUNITY, _('Community'));
-    setAbsolutePosition(communityContainerElt, CARD_SCALE, getFestivityPosition(playerCount, COMMUNITY));
+    const communityContainerElt = this.createPlayerElement(
+      COMMUNITY,
+      _('Community')
+    );
+    setAbsolutePosition(
+      communityContainerElt,
+      CARD_SCALE,
+      getFestivityPosition(playerCount, COMMUNITY)
+    );
     // const communityCards = document.createElement('div');
     // communityCards.classList.add('moho-festivity-stock');
     // communityCards.id = 'moho-festivity-community';
@@ -62,7 +95,11 @@ class Festivity {
           tkn_playerName: playerManager.getPlayer(playerId).getName(),
         })
       );
-      setAbsolutePosition(containerElt, CARD_SCALE, getFestivityPosition(playerCount, index));
+      setAbsolutePosition(
+        containerElt,
+        CARD_SCALE,
+        getFestivityPosition(playerCount, index)
+      );
       // const playerId = player.getPlayerId();
       // const playerElt = document.createElement('div');
       // playerElt.id = `moho-festivity-${playerId}`;

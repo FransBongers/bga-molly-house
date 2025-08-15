@@ -143,8 +143,8 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
       $numberOfCubes += 1;
       $viceCard->addToGossip($this);
     }
-    PlayerCubes::gainCubes($this->getId(), $suit, $numberOfCubes);
-    Notifications::gainCubes($this, $suit, $numberOfCubes);
+    PlayerCubes::gainCubes($this, $suit, $numberOfCubes);
+    
   }
 
   public function getReputationForSuit($suit)

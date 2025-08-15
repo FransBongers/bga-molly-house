@@ -54,6 +54,10 @@ const ST_FESTIVITY_SCORE_BONUS = 23;
 const ST_FESTIVITY_GENERATE_GOSSIP = 24;
 const ST_FESTIVITY_SELECT_WINNING_SET = 25;
 const ST_LOG_STEP = 26;
+const ST_FESTIVITY_CHOOSE_NEXT_FOILED_THREAT = 27;
+const ST_FESTIVITY_TAKE_MATCHING_CUBES = 28;
+const ST_FESTIVITY_FOIL_THREAT = 29;
+const ST_FESTIVITY_FOIL_THREAT_ADD_TO_SAFE_PILE = 30;
 
 /**
  * Game state names
@@ -82,6 +86,10 @@ const FESTIVITY_SCORE_BONUS = 'FestivityScoreBonus';
 const FESTIVITY_GENERATE_GOSSIP = 'FestivityGenerateGossip';
 const FESTIVITY_SELECT_WINNING_SET = 'FestivitySelectWinningSet';
 const LOG_STEP = 'LogStep';
+const FESTIVITY_CHOOSE_NEXT_FOILED_THREAT = 'FestivityChooseNextFoiledThreat';
+const FESTIVITY_TAKE_MATCHING_CUBES = 'FestivityTakeMatchingCubes';
+const FESTIVITY_FOIL_THREAT = 'FestivityFoilThreat';
+const FESTIVITY_FOIL_THREAT_ADD_TO_SAFE_PILE = 'FestivityFoilThreatAddToSafePile';
 
 /**
  * Card types
@@ -216,4 +224,13 @@ const FESTIVITIES = [
   CHRISTENING,
   DANCE,
   QUIET_GATHERING,
+];
+
+const RED = 'red'; // the other colors are also player colors
+
+const SUIT_COLOR_MAP = [
+  CUPS => BLUE,
+  PENTACLES => YELLOW,
+  FANS => GREEN,
+  HEARTS => RED,
 ];

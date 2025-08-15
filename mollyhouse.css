@@ -1504,8 +1504,17 @@ span[style*="color:#fcd873"] {
   gap: calc(var(--boardScale) * 4px);
 }
 #moho-festivity .moho-festivity-container span {
-  text-shadow: 1px 0 0 black, 0 1px 0 black, -1px 0 0 black, 0 -1px 0 black, 1px 1px 0 black, -1px 1px 0 black, 1px -1px 0 black, -1px -1px 0 black !important;
+  text-shadow: 1px 0 0 black, 0 1px 0 black, -1px 0 0 black, 0 -1px 0 black, 1px 1px 0 black, -1px 1px 0 black, 1px -1px 0 black, -1px -1px 0 black;
   font-size: calc(var(--boardScale) * 20px);
+}
+#moho-festivity .moho-festivity-container .moho-rogue-value {
+  position: absolute;
+  top: calc(var(--cardScale) * 1px);
+  left: calc(var(--cardScale) * 11px);
+  text-shadow: #fff 0 0 2px, #fff 0 0 2px, #fff 0 0 2px, #fff 0 0 2px, #fff 0 0 2px, #fff 0 0 2px !important;
+  color: black !important;
+  font-weight: bold;
+  font-size: calc(var(--boardScale) * 40px);
 }
 #moho-festivity .moho-festivity-container .moho-festivity-stock {
   height: calc(var(--cardScale) * 225px);

@@ -132,6 +132,11 @@ class Notifications
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
+  public static function tknCube($suit)
+  {
+    return implode(':', [SUIT_COLOR_MAP[$suit], 'cube']);
+  }
+
   protected static function tknDie($die)
   {
     return implode(':', [$die + 1, DIE_FACES[$die]]);
@@ -230,6 +235,30 @@ class Notifications
     ]);
   }
 
+  public static function foilThreat($playerOrCommunity, $card)
+  {
+    if ($playerOrCommunity === COMMUNITY) {
+      self::notifyAll('addCardToSafePile', clienttranslate('The ${tkn_boldText_community} foils a threat and adds it to the safe pile: ${tkn_boldText_cardValue} of ${tkn_suit} ${tkn_viceCard}'), [
+        'tkn_boldText_community' => clienttranslate('community'),
+        'card' => $card,
+        'tkn_viceCard' => self::tknViceCard($card),
+        'tkn_boldText_cardValue' => self::viceCardValueText($card->getDisplayValue()),
+        'tkn_suit' => $card->getSuit(),
+        'i18n' => ['tkn_boldText_cardValue'],
+      ]);
+      return;
+    }
+
+    self::notifyAll('addCardToSafePile', clienttranslate('${player_name} foils a threat and adds it to the safe pile: ${tkn_boldText_cardValue} of ${tkn_suit} ${tkn_viceCard}'), [
+      'player' => $playerOrCommunity,
+      'card' => $card,
+      'tkn_viceCard' => self::tknViceCard($card),
+      'tkn_boldText_cardValue' => self::viceCardValueText($card->getDisplayValue()),
+      'tkn_suit' => $card->getSuit(),
+      'i18n' => ['tkn_boldText_cardValue'],
+    ]);
+  }
+
   public static function addCardToSafePile($playerOrCommunity, $card)
   {
     if ($playerOrCommunity === COMMUNITY) {
@@ -316,11 +345,16 @@ class Notifications
 
   public static function festivityPlayCard($player, $card)
   {
-    self::notifyAll('festivityPlayCard', clienttranslate('${player_name} plays ${tkn_boldText_cardValue} of ${tkn_suit}${tkn_viceCard}'), [
+    $text = $card->isRogue()
+      ? clienttranslate('${player_name} plays ${tkn_boldText_cardValue} of ${tkn_suit} as ${tkn_boldText_valueForRogue}${tkn_viceCard}')
+      : clienttranslate('${player_name} plays ${tkn_boldText_cardValue} of ${tkn_suit}${tkn_viceCard}');
+
+    self::notifyAll('festivityPlayCard', $text, [
       'player' => $player,
-      'card' => $card,
+      'card' => $card->jsonSerialize(),
       'tkn_viceCard' => self::tknViceCard($card),
       'tkn_boldText_cardValue' => self::viceCardValueText($card->getDisplayValue()),
+      'tkn_boldText_valueForRogue' => $card->getFestivityValue(),
       'tkn_suit' => $card->getSuit(),
       'i18n' => ['tkn_boldText_cardValue'],
     ]);
@@ -378,14 +412,18 @@ class Notifications
     ]);
   }
 
-  public static function gainCubes($player, $suit, $numberOfCubes)
+  public static function gainCubes($player, $suit, $numberOfCubes, $take = false)
   {
-    self::notifyAll('gainCubes', clienttranslate('${player_name} gains ${tkn_boldText_numberOfCubes} cube(s) of ${tkn_suit}'), [
+    $text = $take
+      ? clienttranslate('${player_name} chooses to take ${tkn_boldText_numberOfCubes} ${tkn_cube}')
+      : clienttranslate('${player_name} gains ${tkn_boldText_numberOfCubes} ${tkn_cube}');
+
+    self::notifyAll('gainCubes', $text, [
       'player' => $player,
       'suit' => $suit,
       'numberOfCubes' => $numberOfCubes,
       'tkn_boldText_numberOfCubes' => $numberOfCubes,
-      'tkn_suit' => $suit,
+      'tkn_cube' => self::tknCube($suit),
     ]);
   }
 

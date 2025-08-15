@@ -40,10 +40,11 @@ class PlayerCubes
     }
   }
 
-  public static function gainCubes($playerId, $suit, $numberOfCubes)
+  public static function gainCubes($player, $suit, $numberOfCubes, $take = false)
   {
     $cubes = Globals::getPlayerCubes();
-    $cubes[$playerId][$suit] += $numberOfCubes;
+    $cubes[$player->getId()][$suit] += $numberOfCubes;
     Globals::setPlayerCubes($cubes);
+    Notifications::gainCubes($player, $suit, $numberOfCubes, $take);
   }
 }

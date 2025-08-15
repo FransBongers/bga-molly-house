@@ -1,35 +1,35 @@
-interface OnEnteringFestivityPlayCardArgs extends CommonStateArgs {
-  _private: ViceCardBase[];
+interface OnEnteringFestivityTakeMatchingCubesArgs extends CommonStateArgs {
+  number: number;
+  suit: Suit;
 }
 
-class FestivityPlayCard implements State {
-  private static instance: FestivityPlayCard;
-  private args: OnEnteringFestivityPlayCardArgs;
+class FestivityTakeMatchingCubes implements State {
+  private static instance: FestivityTakeMatchingCubes;
+  private args: OnEnteringFestivityTakeMatchingCubesArgs;
 
   constructor(private game: GameAlias) {}
 
   public static create(game: GameAlias) {
-    FestivityPlayCard.instance = new FestivityPlayCard(game);
+    FestivityTakeMatchingCubes.instance = new FestivityTakeMatchingCubes(game);
   }
 
   public static getInstance() {
-    return FestivityPlayCard.instance;
+    return FestivityTakeMatchingCubes.instance;
   }
 
-  onEnteringState(args: OnEnteringFestivityPlayCardArgs) {
-    debug('Entering FestivityPlayCard state');
+  onEnteringState(args: OnEnteringFestivityTakeMatchingCubesArgs) {
+    debug('Entering FestivityTakeMatchingCubes state');
     this.args = args;
-
     this.updateInterfaceInitialStep();
   }
 
   onLeavingState() {
-    debug('Leaving Indulge state');
+    debug('Leaving FestivityTakeMatchingCubes state');
   }
 
   setDescription(
     activePlayerIds: number,
-    args: OnEnteringFestivityPlayCardArgs
+    args: OnEnteringFestivityTakeMatchingCubesArgs
   ) {}
 
   //  .####.##....##.########.########.########..########....###.....######..########
@@ -50,80 +50,31 @@ class FestivityPlayCard implements State {
 
   private updateInterfaceInitialStep() {
     this.game.clearPossible();
-
-    if (this.args.optionalAction) {
-      updatePageTitle(_('${you} may play a card or pass'), {});
-    } else {
-      updatePageTitle(_('${you} must play a card'), {});
-    }
-
-    this.args._private.forEach((card) => {
-      onClick(card.id, () => {
-        if (getViceCard(card).displayValue === 'R') {
-          this.updateInterfaceSelectRogueValue(card);
-        } else {
-          this.updateInterfaceConfirm(card);
-        }
-      });
+    updatePageTitle(_('${you} may take ${number} ${tkn_cube}'), {
+      number: this.args.number,
+      tkn_cube: SUIT_COLOR_MAP[this.args.suit],
     });
 
-    addPassButton(this.args.optionalAction);
-  }
-
-  private updateInterfaceSelectRogueValue(card: ViceCardBase) {
-    clearPossible();
-    setSelected(card.id);
-
-    const { displayValue, suit } = getViceCard(card);
-
-    updatePageTitle(
-      _('${you} must select a value for ${value} of ${tkn_suit}'),
-      {
-        value: getViceCardValueText(displayValue),
-        tkn_suit: suit,
-      }
-    );
-    for (let i = 0; i <= 9; i++) {
-      addPrimaryActionButton({
-        id: `rogue-value-${i}`,
-        text: i.toString(),
-        callback: () => {
-          this.updateInterfaceConfirm(card, i);
-        },
-      });
-    }
-
-    addCancelButton();
-  }
-
-  private updateInterfaceConfirm(
-    card: ViceCardBase,
-    valueForRogue: number = 0
-  ) {
-    clearPossible();
-
-    setSelected(card.id);
-
-    const { displayValue, suit } = getViceCard(card);
-
-    const text =
-      displayValue === 'R'
-        ? _('Play ${value} of ${tkn_suit} as ${valueForRogue} ?')
-        : _('Play ${value} of ${tkn_suit} ?');
-    updatePageTitle(text, {
-      value: getViceCardValueText(displayValue),
-      tkn_suit: suit,
-      valueForRogue,
+    addPrimaryActionButton({
+      id: 'take_cubes_btn',
+      text: _('Take'),
+      callback: () => {
+        performAction('actFestivityTakeMatchingCubes', {
+          takeCubes: true,
+        });
+      },
     });
-
-    addConfirmButton(() => {
-      performAction('actFestivityPlayCard', {
-        cardId: card.id,
-        valueForRogue,
-      });
+    addSecondaryActionButton({
+      id: 'do_not_take_cubes_btn',
+      text: _('Do no take '),
+      callback: () => {
+        performAction('actFestivityTakeMatchingCubes', {
+          takeCubes: false,
+        });
+      },
     });
-    addCancelButton();
   }
+
 
   //  .##.....##.########.####.##.......####.########.##....##
   //  .##.....##....##.....##..##........##.....##.....##..##.

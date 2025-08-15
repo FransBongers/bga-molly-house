@@ -392,4 +392,44 @@ $machinestates = [
         ->type(StateType::GAME)
         ->action('stAtomicAction')
         ->build(),
+
+    ST_FESTIVITY_CHOOSE_NEXT_FOILED_THREAT => GameStateBuilder::create()
+        ->name(FESTIVITY_CHOOSE_NEXT_FOILED_THREAT)
+        ->description(clienttranslate('${actplayer} must choose the next threat to foil'))
+        ->descriptionmyturn(clienttranslate('${you}'))
+        ->type(StateType::ACTIVE_PLAYER)
+        ->args('argsAtomicAction')
+        ->possibleactions([
+            'actFestivityChooseNextFoiledThreat',
+            'actPass',
+            'actTakeAtomicAction',
+        ])
+        ->build(),
+
+    ST_FESTIVITY_TAKE_MATCHING_CUBES => GameStateBuilder::create()
+        ->name(FESTIVITY_TAKE_MATCHING_CUBES)
+        ->description(clienttranslate('${actplayer} may take matching cubes'))
+        ->descriptionmyturn(clienttranslate('${you}'))
+        ->type(StateType::ACTIVE_PLAYER)
+        ->args('argsAtomicAction')
+        ->possibleactions([
+            'actFestivityTakeMatchingCubes',
+            'actPass',
+            'actTakeAtomicAction',
+        ])
+        ->build(),
+
+    ST_FESTIVITY_FOIL_THREAT => GameStateBuilder::create()
+        ->name(FESTIVITY_FOIL_THREAT)
+        ->description('')
+        ->type(StateType::GAME)
+        ->action('stAtomicAction')
+        ->build(),
+
+    ST_FESTIVITY_FOIL_THREAT_ADD_TO_SAFE_PILE => GameStateBuilder::create()
+        ->name(FESTIVITY_FOIL_THREAT_ADD_TO_SAFE_PILE)
+        ->description('')
+        ->type(StateType::GAME)
+        ->action('stAtomicAction')
+        ->build(),
 ];

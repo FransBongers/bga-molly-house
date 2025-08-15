@@ -82,8 +82,21 @@ class FestivityScoreJoy extends \Bga\Games\MollyHouse\Models\AtomicAction
       }
     }
 
-    if (count($foiledThreats) > 0) {
-      // TODO: inset actions
+    if (count($foiledThreats) === 1) {
+      $cardPlayerdById = explode('_', $foiledThreats[0]->getLocation())[1];
+      $action = [
+        'action' => FESTIVITY_FOIL_THREAT,
+        'playerId' => $cardPlayerdById,
+        'cardId' => $foiledThreats[0]->getId(),
+      ];
+      $this->ctx->insertAsBrother(Engine::buildTree($action));
+    } else if (count($foiledThreats) > 1) {
+      $action = [
+        'action' => FESTIVITY_CHOOSE_NEXT_FOILED_THREAT,
+        'playerId' => Festivity::get()['runner'],
+        'cardIds' => Utils::returnIds($foiledThreats),
+      ];
+      $this->ctx->insertAsBrother(Engine::buildTree($action));
     }
 
     $this->resolveAction(['automatic' => true]);

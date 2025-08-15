@@ -42,7 +42,7 @@ class LogStep extends \Bga\Games\MollyHouse\Models\AtomicAction
 
     switch($stepToLog) {
       case FESTIVITY_DETERMINE_WINNING_SET:
-        Notifications::festivityPhase(clienttranslate('determine and score'));
+        Notifications::festivityPhase(clienttranslate('score'));
         break;
       case FESTIVITY_GENERATE_GOSSIP:
         Notifications::festivityPhase(clienttranslate('generate gossip'));

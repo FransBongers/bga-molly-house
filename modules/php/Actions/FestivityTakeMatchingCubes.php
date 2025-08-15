@@ -3,15 +3,13 @@
 namespace Bga\Games\MollyHouse\Actions;
 
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
-use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
-use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
-use Bga\Games\MollyHouse\Managers\Festivity;
+use Bga\Games\MollyHouse\Managers\PlayerCubes;
 
-class FestivityPlayCard extends \Bga\Games\MollyHouse\Models\AtomicAction
+class FestivityTakeMatchingCubes extends \Bga\Games\MollyHouse\Models\AtomicAction
 {
   public function getState()
   {
-    return ST_FESTIVITY_PLAY_CARD;
+    return ST_FESTIVITY_TAKE_MATCHING_CUBES;
   }
 
   // ....###....########...######....######.
@@ -22,15 +20,13 @@ class FestivityPlayCard extends \Bga\Games\MollyHouse\Models\AtomicAction
   // .##.....##.##....##..##....##..##....##
   // .##.....##.##.....##..######....######.
 
-  public function argsFestivityPlayCard()
+  public function argsFestivityTakeMatchingCubes()
   {
     $info = $this->ctx->getInfo();
-    $player = $this->getPlayer();
 
     $data = [
-      '_private' => [
-        $player->getId() => $player->getHand(),
-      ]
+      'suit' => $info['suit'],
+      'number' => $info['number'],
     ];
 
     return $data;
@@ -52,47 +48,35 @@ class FestivityPlayCard extends \Bga\Games\MollyHouse\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function actPassFestivityPlayCard()
+  public function actPassFestivityTakeMatchingCubes()
   {
     $player = self::getPlayer();
-    Notifications::message(clienttranslate('${player_name} passes'), [
-      'player' => $player
-    ]);
-
-    Festivity::pass($player->getId());
-
-    $this->resolveAction([]);
+    $this->resolveAction(PASS);
   }
 
-  public function actFestivityPlayCard($args)
+  public function actFestivityTakeMatchingCubes($args)
   {
-    self::checkAction('actFestivityPlayCard');
-    $cardId = $args->cardId;
-    $valueForRogue = $args->valueForRogue;
+    self::checkAction('actFestivityTakeMatchingCubes');
 
+    $takeCubes = $args->takeCubes;
+    Notifications::log('takeCubes', $takeCubes);
     $player = $this->getPlayer();
-    $playerId = $player->getId();
-    $stateArgs = $this->argsFestivityPlayCard();
 
-    $card = Utils::array_find($stateArgs['_private'][$playerId], function ($c) use ($cardId) {
-      return $c->getId() == $cardId;
-    });
+    $stateArgs = $this->argsFestivityTakeMatchingCubes();
+    $suit = $stateArgs['suit'];
+    $number = $stateArgs['number'];
 
-    if ($card === null) {
-      throw new \feException("ERROR_010");
+    if ($takeCubes) {
+      PlayerCubes::gainCubes($player, $suit, $number, true);
+    } else {
+      Notifications::message(clienttranslate('${player_name} chooses not to take ${tkn_boldText_number} ${tkn_cube}'), [
+        'player' => $player,
+        'tkn_boldText_number' => $number,
+        'tkn_cube' => Notifications::tknCube($suit),
+      ]);
     }
 
-    $card->insertOnTop(Locations::festivity($playerId));
-    if ($card->isRogue() && $valueForRogue >= 0 && $valueForRogue <= 9) {
-      $card->setFestivityValue($valueForRogue);
-    } elseif ($card->isRogue()) {
-      throw new \feException("ERROR_017");
-      
-    }
-
-    Notifications::festivityPlayCard($player, $card);
-
-    $this->resolveAction([]);
+    $this->resolveAction(['takeCubes' => $takeCubes]);
   }
 
   //  .##.....##.########.####.##.......####.########.##....##

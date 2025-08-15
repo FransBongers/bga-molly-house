@@ -3038,6 +3038,9 @@ var NotificationManager = (function () {
                         return [4, Festivity.getInstance().stocks[playerId].addCard(getViceCard(card))];
                     case 1:
                         _b.sent();
+                        if (getViceCard(card).displayValue === 'R') {
+                            Festivity.getInstance().addRogueValue(card.id, card.festivityValue);
+                        }
                         return [2];
                 }
             });
@@ -3944,6 +3947,8 @@ var MollyHouse = (function () {
             FestivityPlayCard: FestivityPlayCard,
             FestivityGenerateGossip: FestivityGenerateGossip,
             FestivitySelectWinningSet: FestivitySelectWinningSet,
+            FestivityChooseNextFoiledThreat: FestivityChooseNextFoiledThreat,
+            FestivityTakeMatchingCubes: FestivityTakeMatchingCubes,
         };
         console.log('MollyHouse constructor');
     }
@@ -4630,11 +4635,38 @@ var Festivity = (function () {
     };
     Festivity.prototype.updateFestivity = function (gamedatas) {
         var _this = this;
-        this.stocks[COMMUNITY].addCards(gamedatas.festivity.communityCards.map(getViceCard));
+        gamedatas.festivity.communityCards.map(getViceCard).forEach(function (card) {
+            _this.stocks[COMMUNITY].addCard(card);
+            if (card.displayValue === 'R') {
+                _this.addRogueValue(card.id, card.festivityValue);
+            }
+        });
         Object.entries(gamedatas.players).forEach(function (_a) {
             var playerId = _a[0], player = _a[1];
-            _this.stocks[playerId].addCards(player.festivity.map(getViceCard));
+            player.festivity.map(getViceCard).forEach(function (card) {
+                _this.stocks[playerId].addCard(card);
+                if (card.displayValue === 'R') {
+                    _this.addRogueValue(card.id, card.festivityValue);
+                }
+            });
         });
+    };
+    Festivity.prototype.addRogueValue = function (cardId, value) {
+        var frontElt = document.getElementById("".concat(cardId, "-front"));
+        if (!frontElt) {
+            return;
+        }
+        var roqgueValueElt = document.createElement('span');
+        roqgueValueElt.id = "".concat(cardId, "-rogue-value");
+        roqgueValueElt.classList.add('moho-rogue-value');
+        roqgueValueElt.innerHTML = value.toString();
+        frontElt.appendChild(roqgueValueElt);
+    };
+    Festivity.prototype.removeRogueValue = function (cardId) {
+        var rogueValueElt = document.getElementById("".concat(cardId, "-rogue-value"));
+        if (rogueValueElt) {
+            rogueValueElt.remove();
+        }
     };
     Festivity.prototype.setupFestivity = function (gamedatas) {
         var _this = this;
@@ -4761,6 +4793,7 @@ var LOG_TOKEN_BOLD_ITALIC_TEXT = 'boldItalicText';
 var LOG_TOKEN_NEW_LINE = 'newLine';
 var LOG_TOKEN_PLAYER_NAME = 'playerName';
 var LOG_TOKEN_DIE = 'die';
+var LOG_TOKEN_CUBE = 'cube';
 var LOG_TOKEN_PAWN = 'pawn';
 var LOG_TOKEN_SUIT = 'suit';
 var LOG_TOKEN_VICE_CARD = 'viceCard';
@@ -4775,6 +4808,8 @@ var getTokenDiv = function (_a) {
             return tlpLogTokenText({ text: value });
         case LOG_TOKEN_BOLD_ITALIC_TEXT:
             return tlpLogTokenText({ text: value, italic: true });
+        case LOG_TOKEN_CUBE:
+            return tplLogTokenCube(value.split(':')[0]);
         case LOG_TOKEN_DIE:
             return tplLogTokenDie(value.split(':')[0]);
         case LOG_TOKEN_NEW_LINE:
@@ -4809,6 +4844,9 @@ var tlpLogTokenText = function (_a) {
 var tplLogTokenPlayerName = function (_a) {
     var name = _a.name, color = _a.color;
     return "<span class=\"playername\" style=\"color:#".concat(color, ";\">").concat(name, "</span>");
+};
+var tplLogTokenCube = function (color) {
+    return "<div class=\"log-token moho-cube\" data-color=\"".concat(color, "\"></div>");
 };
 var tplLogTokenDie = function (dieFace) {
     return "<div class=\"log-token bga-dice_die-face\" data-face=\"".concat(dieFace, "\"></div>");
@@ -5653,22 +5691,56 @@ var FestivityPlayCard = (function () {
         }
         this.args._private.forEach(function (card) {
             onClick(card.id, function () {
-                _this.updateInterfaceConfirm(card);
+                if (getViceCard(card).displayValue === 'R') {
+                    _this.updateInterfaceSelectRogueValue(card);
+                }
+                else {
+                    _this.updateInterfaceConfirm(card);
+                }
             });
         });
         addPassButton(this.args.optionalAction);
     };
-    FestivityPlayCard.prototype.updateInterfaceConfirm = function (card) {
+    FestivityPlayCard.prototype.updateInterfaceSelectRogueValue = function (card) {
+        var _this = this;
         clearPossible();
         setSelected(card.id);
         var _a = getViceCard(card), displayValue = _a.displayValue, suit = _a.suit;
-        updatePageTitle(_('Play ${value} of ${tkn_suit}?'), {
+        updatePageTitle(_('${you} must select a value for ${value} of ${tkn_suit}'), {
             value: getViceCardValueText(displayValue),
             tkn_suit: suit,
+        });
+        var _loop_4 = function (i) {
+            addPrimaryActionButton({
+                id: "rogue-value-".concat(i),
+                text: i.toString(),
+                callback: function () {
+                    _this.updateInterfaceConfirm(card, i);
+                },
+            });
+        };
+        for (var i = 0; i <= 9; i++) {
+            _loop_4(i);
+        }
+        addCancelButton();
+    };
+    FestivityPlayCard.prototype.updateInterfaceConfirm = function (card, valueForRogue) {
+        if (valueForRogue === void 0) { valueForRogue = 0; }
+        clearPossible();
+        setSelected(card.id);
+        var _a = getViceCard(card), displayValue = _a.displayValue, suit = _a.suit;
+        var text = displayValue === 'R'
+            ? _('Play ${value} of ${tkn_suit} as ${valueForRogue} ?')
+            : _('Play ${value} of ${tkn_suit} ?');
+        updatePageTitle(text, {
+            value: getViceCardValueText(displayValue),
+            tkn_suit: suit,
+            valueForRogue: valueForRogue,
         });
         addConfirmButton(function () {
             performAction('actFestivityPlayCard', {
                 cardId: card.id,
+                valueForRogue: valueForRogue,
             });
         });
         addCancelButton();
@@ -5841,4 +5913,97 @@ var FestivitySelectWinningSet = (function () {
         this.updateInterfaceSelectCardsInSet();
     };
     return FestivitySelectWinningSet;
+}());
+var FestivityChooseNextFoiledThreat = (function () {
+    function FestivityChooseNextFoiledThreat(game) {
+        this.game = game;
+    }
+    FestivityChooseNextFoiledThreat.create = function (game) {
+        FestivityChooseNextFoiledThreat.instance =
+            new FestivityChooseNextFoiledThreat(game);
+    };
+    FestivityChooseNextFoiledThreat.getInstance = function () {
+        return FestivityChooseNextFoiledThreat.instance;
+    };
+    FestivityChooseNextFoiledThreat.prototype.onEnteringState = function (args) {
+        debug('Entering FestivityChooseNextFoiledThreat state');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    FestivityChooseNextFoiledThreat.prototype.onLeavingState = function () {
+        debug('Leaving Indulge state');
+    };
+    FestivityChooseNextFoiledThreat.prototype.setDescription = function (activePlayerIds, args) { };
+    FestivityChooseNextFoiledThreat.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        updatePageTitle(_('${you} must choose the next threat to foil'), {});
+        this.args.cards.forEach(function (card) {
+            onClick(card.id, function () {
+                _this.updateInterfaceConfirm(card);
+            });
+        });
+        addUndoButtons(this.args);
+    };
+    FestivityChooseNextFoiledThreat.prototype.updateInterfaceConfirm = function (card) {
+        clearPossible();
+        var _a = getViceCard(card), displayValue = _a.displayValue, suit = _a.suit;
+        updatePageTitle(_('Choose ${value} of ${tkn_suit} as the next threat to foil?'), {
+            value: getViceCardValueText(displayValue),
+            tkn_suit: suit,
+        });
+        addConfirmButton(function () {
+            performAction('actFestivityChooseNextFoiledThreat', {
+                cardId: card.id,
+            });
+        });
+        addCancelButton();
+    };
+    return FestivityChooseNextFoiledThreat;
+}());
+var FestivityTakeMatchingCubes = (function () {
+    function FestivityTakeMatchingCubes(game) {
+        this.game = game;
+    }
+    FestivityTakeMatchingCubes.create = function (game) {
+        FestivityTakeMatchingCubes.instance = new FestivityTakeMatchingCubes(game);
+    };
+    FestivityTakeMatchingCubes.getInstance = function () {
+        return FestivityTakeMatchingCubes.instance;
+    };
+    FestivityTakeMatchingCubes.prototype.onEnteringState = function (args) {
+        debug('Entering FestivityTakeMatchingCubes state');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    FestivityTakeMatchingCubes.prototype.onLeavingState = function () {
+        debug('Leaving FestivityTakeMatchingCubes state');
+    };
+    FestivityTakeMatchingCubes.prototype.setDescription = function (activePlayerIds, args) { };
+    FestivityTakeMatchingCubes.prototype.updateInterfaceInitialStep = function () {
+        this.game.clearPossible();
+        updatePageTitle(_('${you} may take ${number} ${tkn_cube}'), {
+            number: this.args.number,
+            tkn_cube: SUIT_COLOR_MAP[this.args.suit],
+        });
+        addPrimaryActionButton({
+            id: 'take_cubes_btn',
+            text: _('Take'),
+            callback: function () {
+                performAction('actFestivityTakeMatchingCubes', {
+                    takeCubes: true,
+                });
+            },
+        });
+        addSecondaryActionButton({
+            id: 'do_not_take_cubes_btn',
+            text: _('Do no take '),
+            callback: function () {
+                performAction('actFestivityTakeMatchingCubes', {
+                    takeCubes: false,
+                });
+            },
+        });
+    };
+    return FestivityTakeMatchingCubes;
 }());

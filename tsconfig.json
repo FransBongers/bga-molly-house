@@ -94,5 +94,7 @@
     "src/states/FestivityPlayCard.ts",
     "src/states/FestivityGenerateGossip.ts",
     "src/states/FestivitySelectWinningSet.ts",
+    "src/states/FestivityChooseNextFoiledThreat.ts",
+    "src/states/FestivityTakeMatchingCubes.ts",
   ]
 }

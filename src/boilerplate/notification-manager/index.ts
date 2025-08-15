@@ -284,6 +284,9 @@ class NotificationManager {
 
     this.getPlayer(playerId).counters[HAND].incValue(-1);
     await Festivity.getInstance().stocks[playerId].addCard(getViceCard(card));
+    if (getViceCard(card).displayValue === 'R') {
+      Festivity.getInstance().addRogueValue(card.id, card.festivityValue);
+    }
   }
 
   async notif_festivityRevealTopCardViceDeck(

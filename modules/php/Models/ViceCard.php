@@ -129,6 +129,15 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     }
   }
 
+  public function foilThreat($playerOrCommunity, $notify = true)
+  {
+    $this->addToSafePile($playerOrCommunity, false);
+    
+    if($notify) {
+      Notifications::foilThreat($playerOrCommunity, $this);
+    }
+  }
+
   public function addToSafePile($playerOrCommunity, $notify = true)
   {
     $state = ViceCards::insertOnTop($this->getId(), SAFE_PILE);

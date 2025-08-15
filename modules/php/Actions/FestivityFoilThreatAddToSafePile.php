@@ -11,12 +11,11 @@ use Bga\Games\MollyHouse\Managers\Festivity;
 use Bga\Games\MollyHouse\Managers\Players;
 use Bga\Games\MollyHouse\Managers\ViceCards;
 
-
-class FestivityCleanup extends \Bga\Games\MollyHouse\Models\AtomicAction
+class FestivityFoilThreatAddToSafePile extends \Bga\Games\MollyHouse\Models\AtomicAction
 {
   public function getState()
   {
-    return ST_FESTIVITY_CLEANUP;
+    return ST_FESTIVITY_FOIL_THREAT_ADD_TO_SAFE_PILE;
   }
 
   // ..######..########....###....########.########
@@ -35,14 +34,32 @@ class FestivityCleanup extends \Bga\Games\MollyHouse\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-
-  public function stFestivityCleanup()
+  public function stFestivityFoilThreatAddToSafePile()
   {
-    Festivity::end();
 
-    Notifications::festivityEnd();
+    $player = $this->getPlayer();
+    $suit = $this->ctx->getInfo()['suit'];
 
+    $cardsInReputation = $player->getCardsInReputation();
+    $total = 0;
 
+    foreach ($cardsInReputation as $card) {
+      if ($card->getSuit() !== $suit) {
+        continue;
+      }
+      $total += 1;
+      $card->addToSafePile($player);
+    }
+
+    if ($total > 0) {
+      $action = [
+        'action' => FESTIVITY_TAKE_MATCHING_CUBES,
+        'playerId' => $player->getId(),
+        'suit' => $suit,
+        'number' => $total,
+      ];
+      $this->ctx->insertAsBrother(Engine::buildTree($action));
+    }
 
     $this->resolveAction(['automatic' => true]);
   }

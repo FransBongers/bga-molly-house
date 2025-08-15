@@ -74,6 +74,8 @@ class MollyHouse implements Game {
     FestivityPlayCard,
     FestivityGenerateGossip,
     FestivitySelectWinningSet,
+    FestivityChooseNextFoiledThreat,
+    FestivityTakeMatchingCubes,
   };
 
   constructor() {

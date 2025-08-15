@@ -1,25 +1,26 @@
-interface OnEnteringFestivityPlayCardArgs extends CommonStateArgs {
-  _private: ViceCardBase[];
+interface OnEnteringFestivityChooseNextFoiledThreatArgs
+  extends CommonStateArgs {
+  cards: ViceCardBase[];
 }
 
-class FestivityPlayCard implements State {
-  private static instance: FestivityPlayCard;
-  private args: OnEnteringFestivityPlayCardArgs;
+class FestivityChooseNextFoiledThreat implements State {
+  private static instance: FestivityChooseNextFoiledThreat;
+  private args: OnEnteringFestivityChooseNextFoiledThreatArgs;
 
   constructor(private game: GameAlias) {}
 
   public static create(game: GameAlias) {
-    FestivityPlayCard.instance = new FestivityPlayCard(game);
+    FestivityChooseNextFoiledThreat.instance =
+      new FestivityChooseNextFoiledThreat(game);
   }
 
   public static getInstance() {
-    return FestivityPlayCard.instance;
+    return FestivityChooseNextFoiledThreat.instance;
   }
 
-  onEnteringState(args: OnEnteringFestivityPlayCardArgs) {
-    debug('Entering FestivityPlayCard state');
+  onEnteringState(args: OnEnteringFestivityChooseNextFoiledThreatArgs) {
+    debug('Entering FestivityChooseNextFoiledThreat state');
     this.args = args;
-
     this.updateInterfaceInitialStep();
   }
 
@@ -29,7 +30,7 @@ class FestivityPlayCard implements State {
 
   setDescription(
     activePlayerIds: number,
-    args: OnEnteringFestivityPlayCardArgs
+    args: OnEnteringFestivityChooseNextFoiledThreatArgs
   ) {}
 
   //  .####.##....##.########.########.########..########....###.....######..########
@@ -50,76 +51,29 @@ class FestivityPlayCard implements State {
 
   private updateInterfaceInitialStep() {
     this.game.clearPossible();
+    updatePageTitle(_('${you} must choose the next threat to foil'), {});
 
-    if (this.args.optionalAction) {
-      updatePageTitle(_('${you} may play a card or pass'), {});
-    } else {
-      updatePageTitle(_('${you} must play a card'), {});
-    }
-
-    this.args._private.forEach((card) => {
+    this.args.cards.forEach((card) => {
       onClick(card.id, () => {
-        if (getViceCard(card).displayValue === 'R') {
-          this.updateInterfaceSelectRogueValue(card);
-        } else {
-          this.updateInterfaceConfirm(card);
-        }
+        this.updateInterfaceConfirm(card);
       });
     });
 
-    addPassButton(this.args.optionalAction);
+    addUndoButtons(this.args);
   }
 
-  private updateInterfaceSelectRogueValue(card: ViceCardBase) {
-    clearPossible();
-    setSelected(card.id);
-
-    const { displayValue, suit } = getViceCard(card);
-
-    updatePageTitle(
-      _('${you} must select a value for ${value} of ${tkn_suit}'),
-      {
-        value: getViceCardValueText(displayValue),
-        tkn_suit: suit,
-      }
-    );
-    for (let i = 0; i <= 9; i++) {
-      addPrimaryActionButton({
-        id: `rogue-value-${i}`,
-        text: i.toString(),
-        callback: () => {
-          this.updateInterfaceConfirm(card, i);
-        },
-      });
-    }
-
-    addCancelButton();
-  }
-
-  private updateInterfaceConfirm(
-    card: ViceCardBase,
-    valueForRogue: number = 0
-  ) {
+  private updateInterfaceConfirm(card: ViceCardBase) {
     clearPossible();
 
-    setSelected(card.id);
-
     const { displayValue, suit } = getViceCard(card);
-
-    const text =
-      displayValue === 'R'
-        ? _('Play ${value} of ${tkn_suit} as ${valueForRogue} ?')
-        : _('Play ${value} of ${tkn_suit} ?');
-    updatePageTitle(text, {
+    updatePageTitle(_('Choose ${value} of ${tkn_suit} as the next threat to foil?'), {
       value: getViceCardValueText(displayValue),
       tkn_suit: suit,
-      valueForRogue,
     });
 
     addConfirmButton(() => {
-      performAction('actFestivityPlayCard', {
+      performAction('actFestivityChooseNextFoiledThreat', {
         cardId: card.id,
-        valueForRogue,
       });
     });
     addCancelButton();
