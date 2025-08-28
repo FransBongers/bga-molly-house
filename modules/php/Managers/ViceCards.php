@@ -145,4 +145,56 @@ class ViceCards extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
     self::pickOneForLocation(DECK, GOSSIP_PILE);
     self::dealCards(count($players));
   }
+
+  //  .##.....##.########.####.##.......####.########.##....##
+  //  .##.....##....##.....##..##........##.....##.....##..##.
+  //  .##.....##....##.....##..##........##.....##......####..
+  //  .##.....##....##.....##..##........##.....##.......##...
+  //  .##.....##....##.....##..##........##.....##.......##...
+  //  .##.....##....##.....##..##........##.....##.......##...
+  //  ..#######.....##....####.########.####....##.......##...
+
+  public static function refillMarket($player = null)
+  {
+    $reversedMarketSpots =  [
+      MARKET_3,
+      MARKET_2,
+      MARKET_1,
+      MARKET_0,
+    ];
+
+    $openSpots = [];
+    $movedCards = [];
+    $addedCards = [];
+
+    // Move cards
+    foreach ($reversedMarketSpots as $marketSpot) {
+      // TODO: can be done more efficiently?
+      $card = self::getTopOf($marketSpot);
+
+      if ($card === null) {
+        $openSpots[] = $marketSpot;
+      } else if ($card !== null && count($openSpots) > 0) {
+        // Move card to first open spot
+        $spot = array_shift($openSpots);
+        $card->setLocation($spot);
+        $movedCards[] = $card;
+        $openSpots[] = $marketSpot;
+      }
+    }
+
+    // Fill remaining open spots
+    foreach ($openSpots as $spot) {
+      $card = self::getTopOf(DECK);
+      if ($card === null) {
+        break;
+      }
+      $card->setLocation($spot);
+      $addedCards[] = $card;
+    }
+
+    if (count($movedCards) + count($addedCards) > 0) {
+      Notifications::refillMarket($player, $movedCards, $addedCards);
+    }
+  }
 }

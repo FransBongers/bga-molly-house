@@ -2,6 +2,8 @@
 
 namespace Bga\Games\MollyHouse\Models;
 
+use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
+
 class Site extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
 {
   protected $id;
@@ -49,5 +51,33 @@ class Site extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   public function isRaided()
   {
     return $this->raidedOrDangerous === 1;
+  }
+
+  public function generateEvidence($amount)
+  {
+    $this->incEvidence($amount);
+
+    Notifications::endOfWeekGenerateEvidence(
+      $this,
+      $amount
+    );
+  }
+
+  public function setRaided($isRaided)
+  {
+    if ($isRaided) {
+      $this->setRaidedOrDangerous(1);
+    } else {
+      $this->setRaidedOrDangerous(0);
+    }
+  }
+
+    public function setDangerousCruising($isRaided)
+  {
+    if ($isRaided) {
+      $this->setRaidedOrDangerous(1);
+    } else {
+      $this->setRaidedOrDangerous(0);
+    }
   }
 }

@@ -86,7 +86,6 @@ class FestivityScoreJoy extends \Bga\Games\MollyHouse\Models\AtomicAction
       $cardPlayerdById = explode('_', $foiledThreats[0]->getLocation())[1];
       $action = [
         'action' => FESTIVITY_FOIL_THREAT,
-        'playerId' => $cardPlayerdById,
         'cardId' => $foiledThreats[0]->getId(),
       ];
       $this->ctx->insertAsBrother(Engine::buildTree($action));

@@ -28,6 +28,7 @@ use Bga\Games\MollyHouse\Boilerplate\Core\Engine;
 use Bga\Games\MollyHouse\Boilerplate\Core\Engine\LeafNode;
 use Bga\Games\MollyHouse\Boilerplate\Core\Globals;
 use Bga\Games\MollyHouse\Boilerplate\Core\Stats;
+use Bga\Games\MollyHouse\Managers\Community;
 use Bga\Games\MollyHouse\Managers\DieManager;
 use Bga\Games\MollyHouse\Managers\Festivity;
 use Bga\Games\MollyHouse\Managers\IndictmentCards;
@@ -269,6 +270,8 @@ class Game extends \Bga\GameFramework\Table
                 'viceCards' => ViceCards::getStaticUiData(),
                 'sites' => Sites::getStaticUiData(),
             ],
+            'communityJoy' => Community::getJoy(),
+            'currentWeek' => Globals::getCurrentWeek(),
             'deckCount' => ViceCards::countInLocation(DECK),
             'dice' => DieManager::getValues(),
             'festivity' => Festivity::getGamedatas(),

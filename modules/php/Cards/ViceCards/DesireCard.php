@@ -27,8 +27,8 @@ class DesireCard extends \Bga\Games\MollyHouse\Models\ViceCard
       return;
     }
 
-    $playerOrCommunity->incScore($this->getJoy());
-    Notifications::scoreJoy($playerOrCommunity, $this->getJoy());
+    $total = $playerOrCommunity->incScore($this->getJoy());
+    Notifications::scoreJoy($playerOrCommunity, $this->getJoy(), $total);
 
     $reptution = $playerOrCommunity->getCardsInReputation();
     foreach ($reptution as $card) {

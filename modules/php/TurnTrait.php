@@ -7,7 +7,7 @@ use Bga\Games\MollyHouse\Boilerplate\Core\Globals;
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 use Bga\Games\MollyHouse\Managers\Players;
-
+use Bga\Games\MollyHouse\Managers\ViceCards;
 
 trait TurnTrait
 {
@@ -37,27 +37,55 @@ trait TurnTrait
     $playerId = $player->getId();
     self::giveExtraTime($playerId);
 
-    Notifications::startOfTurn($player);
+
+
+    $nodes = [];
+
+    if (ViceCards::countInLocation(DECK) === 0) {
+      Notifications::phase(clienttranslate('End of the Week'));
+      $player->takeCandelabra();
+      $nodes = [
+        [
+          'action' => END_OF_WEEK_REVEAL_THREATS,
+        ],
+        [
+          'action' => END_OF_WEEK_SOCIETY_INVESTIGATES,
+        ],
+        [
+          'action' => END_OF_WEEK_CHECK_FOR_RAIDS,
+        ],
+    [
+          'action' => END_OF_WEEK_CHECK_GAME_END,
+        ],
+      ];
+    }
+
+    $nodes = array_merge($nodes, [
+      [
+        'action' => LOG_PHASE,
+        'phase' => START_OF_TURN_MESSAGE,
+        'playerId' => $playerId,
+      ],
+      [
+        'action' => ROLL_DICE,
+        'playerId' => $playerId,
+      ],
+      [
+        'action' => MOVE_PAWN,
+        'playerId' => $playerId,
+      ],
+      [
+        'action' => TAKE_ACTION,
+        'playerId' => $playerId,
+      ],
+      [
+        'action' => CHECK_HAND_SIZE,
+        'playerId' => $playerId,
+      ],
+    ]);
 
     $node = [
-      'children' => [
-        [
-          'action' => ROLL_DICE,
-          'playerId' => $playerId,
-        ],
-        [
-          'action' => MOVE_PAWN,
-          'playerId' => $playerId,
-        ],
-        [
-          'action' => TAKE_ACTION,
-          'playerId' => $playerId,
-        ],
-        [
-          'action' => CHECK_HAND_SIZE,
-          'playerId' => $playerId,
-        ],
-      ],
+      'children' => $nodes,
     ];
 
     Engine::setup($node, ['method' => 'stSetupRefillMarket']);

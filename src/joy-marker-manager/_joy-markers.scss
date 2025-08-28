@@ -1,0 +1,78 @@
+.moho-joy-marker-stock {
+  position: absolute;
+  // background-color: yellow;
+  aspect-ratio: 1 / 1;
+  // width: calc(var(--boardScale) * 42px);
+  // flex-direction: row;
+
+  // .card {
+  //   position: absolute !important;
+  // }
+
+  .moho-joy-marker-container:not(:first-child) {
+    margin-left: calc(var(--tokenScale) * -40px);
+  }
+
+  .moho-joy-marker-container:nth-child(2) {
+    margin-top: calc(var(--tokenScale) * -5px);
+  }
+
+  .moho-joy-marker-container:nth-child(3) {
+    margin-top: calc(var(--tokenScale) * -10px);
+  }
+
+  .moho-joy-marker-container:nth-child(4) {
+    margin-top: calc(var(--tokenScale) * -15px);
+  }
+
+  .moho-joy-marker-container:nth-child(5) {
+    margin-top: calc(var(--tokenScale) * -20px);
+  }
+
+  .moho-joy-marker-container:nth-child(6) {
+    margin-top: calc(var(--tokenScale) * -25px);
+  }
+}
+
+.moho-joy-marker-container {
+  border-radius: 50%;
+}
+
+.moho-joy-marker {
+  position: absolute;
+  width: calc(var(--tokenScale) * 42px);
+  aspect-ratio: 1 / 1;
+  background-image: url('img/joy_markers.png');
+  background-size: 500% 300%;
+  background-position-y: 50%;
+  border-radius: 50%;
+}
+
+.moho-joy-marker[data-color='blue'] {
+  background-position-x: 0%;
+}
+
+.moho-joy-marker[data-color='green'] {
+  background-position-x: 25%;
+}
+
+.moho-joy-marker[data-color='pink'] {
+  background-position-x: 50%;
+}
+
+.moho-joy-marker[data-color='purple'] {
+  background-position-x: 75%;
+}
+
+.moho-joy-marker[data-color='yellow'] {
+  background-position-x: 100%;
+}
+
+.moho-joy-marker[data-color='communityJoyMarker'] {
+  background-position-x: 0%;
+  background-position-y: 100%;
+}
+
+.moho-joy-marker[data-hanged='true'] {
+  background-position-y: 0%;
+}

@@ -9,13 +9,15 @@ use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 use Bga\Games\MollyHouse\Managers\Festivity;
 use Bga\Games\MollyHouse\Managers\Players;
+use Bga\Games\MollyHouse\Managers\Sites;
 use Bga\Games\MollyHouse\Managers\ViceCards;
+use Bga\Games\MollyHouse\Models\Site;
 
-class FestivityFoilThreat extends \Bga\Games\MollyHouse\Models\AtomicAction
+class EndOfWeekSocietyInvestigates extends \Bga\Games\MollyHouse\Models\AtomicAction
 {
   public function getState()
   {
-    return ST_FESTIVITY_FOIL_THREAT;
+    return ST_END_OF_WEEK_SOCIETY_INVESTIGATES;
   }
 
   // ..######..########....###....########.########
@@ -34,43 +36,68 @@ class FestivityFoilThreat extends \Bga\Games\MollyHouse\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function stFestivityFoilThreat()
+  public function stEndOfWeekSocietyInvestigates()
   {
-    $info = $this->ctx->getInfo();
-    // $playerId = $this->ctx->getPlayerId();
+    Notifications::phase(clienttranslate('The Society Investigates'));
 
-    $card = ViceCards::get($info['cardId']);
-    $playerId = explode('_', $card->getLocation())[1];
-    $playerOrCommunity = $playerId === COMMUNITY ? COMMUNITY : Players::get(intval($playerId));
-    $card->foilThreat($playerOrCommunity);
+    ViceCards::shuffle(GOSSIP_PILE);
 
-    $suit = $card->getSuit();
-    if ($playerId === COMMUNITY) {
-      $playerOrder = Players::getTurnOrder(Festivity::get()['runner']);
-      $action = [
-        'children' => array_map(
-          function ($playerId) use ($suit) {
-            return [
-              'action' => FESTIVITY_FOIL_THREAT_ADD_TO_SAFE_PILE,
-              'playerId' => $playerId,
-              'suit' => $suit,
-            ];
-          },
-          $playerOrder
-        ),
-      ];
-      $this->ctx->insertAsBrother(Engine::buildTree($action));
-    } else {
-      $action = [
-        'action' => FESTIVITY_FOIL_THREAT_ADD_TO_SAFE_PILE,
-        'playerId' => $playerId,
-        'suit' => $suit,
-      ];
-      $this->ctx->insertAsBrother(Engine::buildTree($action));
+    $numberToDiscardToSafePile = floor(ViceCards::countInLocation(GOSSIP_PILE) / 3);
+
+    $cardsAddedToSafePile = ViceCards::pickForLocation($numberToDiscardToSafePile, GOSSIP_PILE, SAFE_PILE);
+
+    Notifications::endOfWeekDiscardToSafePile(
+      $cardsAddedToSafePile,
+      $numberToDiscardToSafePile
+    );
+
+    $cardsInGossip = ViceCards::getInLocationOrdered(GOSSIP_PILE);
+
+    $evidence = [
+      CUPS => [
+        'threats' => [],
+        'cards' => [],
+      ],
+      FANS => [
+        'threats' => [],
+        'cards' => [],
+      ],
+      HEARTS => [
+        'threats' => [],
+        'cards' => [],
+      ],
+      PENTACLES => [
+        'threats' => [],
+        'cards' => [],
+      ],
+    ];
+
+    foreach ($cardsInGossip as $card) {
+      if ($card->isThreat()) {
+        $evidence[$card->getSuit()]['threats'][] = $card;
+      } else {
+        $evidence[$card->getSuit()]['cards'][] = $card;
+      }
     }
+
+    $mollyHouses = Sites::getMany(MOLLY_HOUSES);
+
+    foreach($mollyHouses as $id => $mollyHouse) {
+      $threatCount = count($evidence[$mollyHouse->getSuit()]['threats']);
+      $cardCount = count($evidence[$mollyHouse->getSuit()]['cards']);
+      if ($threatCount === 0 || $cardCount === 0) {
+        continue;
+      }
+      $numberOfCubes = $threatCount * $cardCount;
+
+      $mollyHouse->generateEvidence($numberOfCubes);
+
+    }
+
 
     $this->resolveAction(['automatic' => true]);
   }
+
 
   //  .##.....##.########.####.##.......####.########.##....##
   //  .##.....##....##.....##..##........##.....##.....##..##.

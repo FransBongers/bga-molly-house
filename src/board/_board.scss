@@ -43,7 +43,6 @@
     // outline: 2px yellow solid;
     .card {
       position: absolute !important;
-
     }
   }
 
@@ -54,6 +53,32 @@
   #moho-dice-stock[data-festivity='true'] {
     display: none;
     pointer-events: none;
+  }
+
+  #moho-evidence-counters {
+    .icon-counter-container {
+      position: absolute;
+    }
+
+    #cubes-MotherClaps {
+      left: calc(var(--boardScale) * 125px);
+      top: calc(var(--boardScale) * 60px);
+    }
+
+    #cubes-MissMuffs {
+      left: calc(var(--boardScale) * 1123px);
+      top: calc(var(--boardScale) * 60px);
+    }
+
+    #cubes-SukeyBevells {
+      left: calc(var(--boardScale) * 1123px);
+      top: calc(var(--boardScale) * 1047px);
+    }
+
+    #cubes-JuliusCesarTaylors {
+      left: calc(var(--boardScale) * 125px);
+      top: calc(var(--boardScale) * 1047px);
+    }
   }
 }
 
@@ -87,6 +112,31 @@
   bottom: calc(var(--boardScale) * 0px);
 }
 
+.moho-dangerous-cruising-marker {
+  position: absolute;
+  width: calc(var(--boardScale) * 189px);
+  // height: calc(var(--boardScale) * 135px);
+  aspect-ratio: 400 / 109;
+  background-image: url('img/dangerous_cruising.png');
+  background-size: 100% 100%;
+}
+
+.moho-dangerous-cruising-marker[data-dangerous='false'] {
+  display: none;
+}
+
+.moho-dangerous-cruising-marker[data-side-of-board='left'] {
+  transform: rotate(90deg);
+}
+
+.moho-dangerous-cruising-marker[data-side-of-board='top'] {
+  transform: rotate(180deg);
+}
+
+.moho-dangerous-cruising-marker[data-side-of-board='right'] {
+  transform: rotate(270deg);
+}
+
 .moho-select-box {
   position: absolute;
   display: none;
@@ -113,3 +163,12 @@
 // .moho-select-box.selectable:hover {
 //   outline: calc(var(--boardScale) * 8px) solid base.$selected-color !important;
 // }
+
+#moho-week-marker {
+  position: absolute;
+  width: calc(var(--boardScale) * 31px);
+  background-image: url('img/week_marker.png');
+  background-size: 100% 100%;
+  aspect-ratio: 132 / 174;
+}
+

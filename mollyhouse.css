@@ -516,6 +516,25 @@ body > .bga-dice_die {
   display: none;
   pointer-events: none;
 }
+#moho-board #moho-evidence-counters .icon-counter-container {
+  position: absolute;
+}
+#moho-board #moho-evidence-counters #cubes-MotherClaps {
+  left: calc(var(--boardScale) * 125px);
+  top: calc(var(--boardScale) * 60px);
+}
+#moho-board #moho-evidence-counters #cubes-MissMuffs {
+  left: calc(var(--boardScale) * 1123px);
+  top: calc(var(--boardScale) * 60px);
+}
+#moho-board #moho-evidence-counters #cubes-SukeyBevells {
+  left: calc(var(--boardScale) * 1123px);
+  top: calc(var(--boardScale) * 1047px);
+}
+#moho-board #moho-evidence-counters #cubes-JuliusCesarTaylors {
+  left: calc(var(--boardScale) * 125px);
+  top: calc(var(--boardScale) * 1047px);
+}
 
 .moho-house-raided-marker {
   position: absolute;
@@ -550,6 +569,30 @@ body > .bga-dice_die {
   bottom: calc(var(--boardScale) * 0px);
 }
 
+.moho-dangerous-cruising-marker {
+  position: absolute;
+  width: calc(var(--boardScale) * 189px);
+  aspect-ratio: 400/109;
+  background-image: url("img/dangerous_cruising.png");
+  background-size: 100% 100%;
+}
+
+.moho-dangerous-cruising-marker[data-dangerous=false] {
+  display: none;
+}
+
+.moho-dangerous-cruising-marker[data-side-of-board=left] {
+  transform: rotate(90deg);
+}
+
+.moho-dangerous-cruising-marker[data-side-of-board=top] {
+  transform: rotate(180deg);
+}
+
+.moho-dangerous-cruising-marker[data-side-of-board=right] {
+  transform: rotate(270deg);
+}
+
 .moho-select-box {
   position: absolute;
   display: none;
@@ -566,6 +609,14 @@ body > .bga-dice_die {
   cursor: pointer;
   display: block;
   outline: calc(var(--boardScale) * 4px) solid blue !important;
+}
+
+#moho-week-marker {
+  position: absolute;
+  width: calc(var(--boardScale) * 31px);
+  background-image: url("img/week_marker.png");
+  background-size: 100% 100%;
+  aspect-ratio: 132/174;
 }
 
 #info-panel {
@@ -1610,6 +1661,72 @@ span[style*="color:#fcd873"] {
   background-repeat: no-repeat;
 }
 
+.moho-joy-marker-stock {
+  position: absolute;
+  aspect-ratio: 1/1;
+}
+.moho-joy-marker-stock .moho-joy-marker-container:not(:first-child) {
+  margin-left: calc(var(--tokenScale) * -40px);
+}
+.moho-joy-marker-stock .moho-joy-marker-container:nth-child(2) {
+  margin-top: calc(var(--tokenScale) * -5px);
+}
+.moho-joy-marker-stock .moho-joy-marker-container:nth-child(3) {
+  margin-top: calc(var(--tokenScale) * -10px);
+}
+.moho-joy-marker-stock .moho-joy-marker-container:nth-child(4) {
+  margin-top: calc(var(--tokenScale) * -15px);
+}
+.moho-joy-marker-stock .moho-joy-marker-container:nth-child(5) {
+  margin-top: calc(var(--tokenScale) * -20px);
+}
+.moho-joy-marker-stock .moho-joy-marker-container:nth-child(6) {
+  margin-top: calc(var(--tokenScale) * -25px);
+}
+
+.moho-joy-marker-container {
+  border-radius: 50%;
+}
+
+.moho-joy-marker {
+  position: absolute;
+  width: calc(var(--tokenScale) * 42px);
+  aspect-ratio: 1/1;
+  background-image: url("img/joy_markers.png");
+  background-size: 500% 300%;
+  background-position-y: 50%;
+  border-radius: 50%;
+}
+
+.moho-joy-marker[data-color=blue] {
+  background-position-x: 0%;
+}
+
+.moho-joy-marker[data-color=green] {
+  background-position-x: 25%;
+}
+
+.moho-joy-marker[data-color=pink] {
+  background-position-x: 50%;
+}
+
+.moho-joy-marker[data-color=purple] {
+  background-position-x: 75%;
+}
+
+.moho-joy-marker[data-color=yellow] {
+  background-position-x: 100%;
+}
+
+.moho-joy-marker[data-color=communityJoyMarker] {
+  background-position-x: 0%;
+  background-position-y: 100%;
+}
+
+.moho-joy-marker[data-hanged=true] {
+  background-position-y: 0%;
+}
+
 #moho-market {
   display: flex;
   flex-direction: row;
@@ -1870,16 +1987,16 @@ span[style*="color:#c0c0c0"] {
   --iconScale: 0.875;
 }
 
+.notif_phase .roundedboxinner,
+.notif_phase .roundedbox,
 .notif_festivityPhase .roundedboxinner,
-.notif_festivityPhase .roundedbox,
-.notif_startOfTurn .roundedboxinner,
-.notif_startOfTurn .roundedbox {
+.notif_festivityPhase .roundedbox {
   font-weight: bold;
   text-align: center;
 }
 
-.notif_festivityPhase .roundedbox,
-.notif_startOfTurn .roundedbox {
+.notif_phase .roundedbox,
+.notif_festivityPhase .roundedbox {
   border-top: 1px solid black;
   border-bottom: 1px solid black;
 }

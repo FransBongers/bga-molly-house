@@ -13,6 +13,11 @@ interface NotifWithPlayerArgs {
   player_name: string;
 }
 
+interface NotifPhase {
+  week?: number;
+  phase: string;
+}
+
 interface NotifAddCardToHand extends NotifWithPlayerArgs {
   card: ViceCardBase;
 }
@@ -52,6 +57,25 @@ interface NotifFestivityPlayCard extends NotifWithPlayerArgs {
   card: ViceCardBase;
 }
 
+interface NotifEndOfWeekCreateViceDeck {
+  cards: ViceCardBase[];
+}
+
+interface NotifEndOfWeekDiscardToSafePile {
+  cards: ViceCardBase[];
+  number: number;
+}
+
+interface NotifEndOfWeekGenerateEvidence {
+  site: MohoSiteBase;
+  number: number;
+}
+
+interface NotifEndOfWeekMollyHouseRaided {
+  mollyHouse: MohoSiteBase;
+  adjacentSites: MohoSiteBase[];
+}
+
 interface NotifFestivityRevealTopCardViceDeck {
   card: ViceCardBase;
 }
@@ -72,8 +96,17 @@ interface NotifGainCubes extends NotifWithPlayerArgs {
   numberOfCubes: number;
 }
 
+interface NotifGainIndictment extends NotifWithPlayerArgs {
+  majorOrMinor: 'major' | 'minor';
+}
+
+interface NotifGainIndictmentPrivate extends NotifWithPlayerArgs {
+  majorOrMinor: 'major' | 'minor';
+}
+
 interface NotifLoseJoy extends NotifWithPlayerArgs {
   amount: number;
+  total: number;
 }
 
 interface NotifLoseJoyCommunity {
@@ -101,10 +134,12 @@ interface NotifRollDice extends NotifWithPlayerArgs {
 
 interface NotifScoreBonusJoy extends NotifWithPlayerArgs {
   amount: number;
+  total: number;
 }
 
 interface NotifScoreJoy extends NotifWithPlayerArgs {
   amount: number;
+  total: number;
 }
 
 interface NotifScoreJoyCommunity {
@@ -127,6 +162,6 @@ interface NotifSetupRevealCard extends NotifWithPlayerArgs {
   card: ViceCardBase;
 }
 
-interface NotifStartOfTurn extends NotifWithPlayerArgs {}
+interface NotifTakeCandelabra extends NotifWithPlayerArgs {}
 
 interface NotifThrowFestivity extends NotifWithPlayerArgs {}

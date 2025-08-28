@@ -55,13 +55,13 @@ class Sites extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
   private static function setupLoadSites()
   {
     // Load list of cards
-    
+
     $sites = [];
-  
+
     foreach (SITES as $index => $siteId) {
       $sites[$siteId] = [
         'id' => $siteId,
-        'location' => 'board_'.$index,
+        'location' => 'board_' . $index,
         'raided_or_dangerous' => 0,
       ];
     }
@@ -75,5 +75,50 @@ class Sites extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
   public static function setupNewGame($players = null, $options = null)
   {
     self::setupLoadSites();
+  }
+
+  //  .##.....##.########.####.##.......####.########.##....##
+  //  .##.....##....##.....##..##........##.....##.....##..##.
+  //  .##.....##....##.....##..##........##.....##......####..
+  //  .##.....##....##.....##..##........##.....##.......##...
+  //  .##.....##....##.....##..##........##.....##.......##...
+  //  .##.....##....##.....##..##........##.....##.......##...
+  //  ..#######.....##....####.########.####....##.......##...
+
+  /**
+   * Get all sites
+   * @param stepsToTake array of steps to take, e.g. [1, 2, 3]
+   * @param fromSiteId the site id to start from, e.g. MOTHER_CLAPS
+   */
+  public static function getSitesAtDistance($stepsToTake, $fromSiteId)
+  {
+    $sites = self::getAll();
+    if (count($stepsToTake) === 0) {
+      return $sites;
+    }
+
+    $pawnIndex = array_search($fromSiteId, SITES);
+    $sitesToMoveTo = [];
+
+    foreach ($stepsToTake as $stepToTake) {
+      if ($stepToTake === 0) {
+        $sitesToMoveTo[$fromSiteId] = $sites[$fromSiteId];
+      }
+
+      foreach ([$stepToTake, -$stepToTake] as $steps) {
+        $highestIndex = count(SITES) - 1;
+        $toIndex = $pawnIndex + $steps;
+        if ($toIndex > $highestIndex) {
+          $toIndex = $toIndex - $highestIndex - 1;
+        } else if ($toIndex < 0) {
+          $toIndex = $highestIndex + $toIndex + 1;
+        }
+
+        $toSiteId = SITES[$toIndex];
+        $sitesToMoveTo[$toSiteId] = $sites[$toSiteId];
+      }
+    }
+
+    return $sitesToMoveTo;
   }
 }

@@ -2,19 +2,20 @@
 
 namespace Bga\Games\MollyHouse\Actions;
 
+use Bga\Games\MollyHouse\Boilerplate\Core\Engine;
 use Bga\Games\MollyHouse\Boilerplate\Core\Engine\LeafNode;
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
+use Bga\Games\MollyHouse\Managers\Festivity;
 use Bga\Games\MollyHouse\Managers\Players;
 use Bga\Games\MollyHouse\Managers\ViceCards;
 
-
-class RefillMarket extends \Bga\Games\MollyHouse\Models\AtomicAction
+class LogPhase extends \Bga\Games\MollyHouse\Models\AtomicAction
 {
   public function getState()
   {
-    return ST_REFILL_MARKET;
+    return ST_LOG_PHASE;
   }
 
   // ..######..########....###....########.########
@@ -33,58 +34,28 @@ class RefillMarket extends \Bga\Games\MollyHouse\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-
-  public function stRefillMarket()
+  public function stLogPhase()
   {
-    // $cardsInMarket = ViceCards::getMarket();
+    $info = $this->ctx->getInfo();
 
-    ViceCards::refillMarket($this->getPlayer());
+    $phase = $info['phase'];
 
-    // $reversedMarketSpots =  [
-    //   MARKET_3,
-    //   MARKET_2,
-    //   MARKET_1,
-    //   MARKET_0,
-    // ];
+    switch ($phase) {
+      case FESTIVITY_DETERMINE_WINNING_SET:
+        Notifications::festivityPhase(clienttranslate('score'));
+        break;
+      case FESTIVITY_GENERATE_GOSSIP:
+        Notifications::festivityPhase(clienttranslate('generate gossip'));
+        break;
+      case START_OF_TURN_MESSAGE:
+        Notifications::phase(clienttranslate('${player_name} starts their turn'), [
+          'player' => $this->getPlayer(),
+        ]);
+      default:
+    }
 
-    // $openSpots = [];
-    // $movedCards = [];
-    // $addedCards = [];
-
-    // // Move cards
-    // foreach ($reversedMarketSpots as $marketSpot) {
-    //   // TODO: can be done more efficiently?
-    //   $card = ViceCards::getTopOf($marketSpot);
-
-    //   if ($card === null) {
-    //     $openSpots[] = $marketSpot;
-    //   } else if ($card !== null && count($openSpots) > 0) {
-    //     // Move card to first open spot
-    //     $spot = array_shift($openSpots);
-    //     $card->setLocation($spot);
-    //     $movedCards[] = $card;
-    //     $openSpots[] = $marketSpot;
-    //   }
-    // }
-
-    // // Fill remaining open spots
-    // foreach ($openSpots as $spot) {
-    //   $card = ViceCards::getTopOf(DECK);
-    //   if ($card === null) {
-    //     break;
-    //   }
-    //   $card->setLocation($spot);
-    //   $addedCards[] = $card;
-    // }
-
-    // if (count($movedCards) + count($addedCards) > 0) {
-    //   Notifications::refillMarket($this->getPlayer(), $movedCards, $addedCards);
-    // }
-
-
-    $this->resolveAction(['automatic' => true], true);
+    $this->resolveAction(['automatic' => true]);
   }
-
 
   //  .##.....##.########.####.##.......####.########.##....##
   //  .##.....##....##.....##..##........##.....##.....##..##.

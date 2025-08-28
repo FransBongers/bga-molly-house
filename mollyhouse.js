@@ -27,8 +27,10 @@ var HEX_COLOR_COLOR_MAP = {
     '7f5574': PURPLE,
     fcd873: YELLOW,
 };
-var _a, _b, _c;
+var _a, _b, _c, _d;
 var COMMUNITY = 'community';
+var CURRENT_WEEK_MARKER = 'currentWeekMarker';
+var COMMUNITY_JOY_MARKER = 'communityJoyMarker';
 var INDULGE = 'Indulge';
 var LIE_LOW = 'LieLow';
 var ACCUSE = 'Accuse';
@@ -112,6 +114,20 @@ var SHOP_SITES = [
     CANNON_STREET,
     DUKE_STREET,
 ];
+var TOP = 'top';
+var BOTTOM = 'bottom';
+var LEFT = 'left';
+var RIGHT = 'right';
+var CRUISING_SITES = (_c = {},
+    _c[ST_PAULS_CATHEDRAL] = TOP,
+    _c[MOORFIELDS] = TOP,
+    _c[ROYAL_EXCHANGE] = RIGHT,
+    _c[LONDON_BRIDGE] = RIGHT,
+    _c[OLD_ROUND_COURT] = BOTTOM,
+    _c[ST_JAMESS_PARK] = BOTTOM,
+    _c[COVENT_GARDEN_PIAZZA] = LEFT,
+    _c[LINCOLNS_INN_BOGHOUSE] = LEFT,
+    _c);
 var NEWSPAPER_NOTICE = 'NewspaperNotice';
 var BRIBE = 'Bribe';
 var VIOLIN = 'Violin';
@@ -121,17 +137,17 @@ var DRESS_OF_CUPS = 'DressOfCups';
 var DRESS_OF_PENTACLES = 'DressOfPentacles';
 var DRESS_OF_FANS = 'DressOfFans';
 var DRESS_OF_HEARTS = 'DressOfHearts';
-var ITEM_DISTRIBUTIION = (_c = {},
-    _c[NEWSPAPER_NOTICE] = 3,
-    _c[BRIBE] = 3,
-    _c[VIOLIN] = 3,
-    _c[DOMINO] = 3,
-    _c[BOTTLE_OF_GIN] = 4,
-    _c[DRESS_OF_CUPS] = 1,
-    _c[DRESS_OF_PENTACLES] = 1,
-    _c[DRESS_OF_FANS] = 1,
-    _c[DRESS_OF_HEARTS] = 1,
-    _c);
+var ITEM_DISTRIBUTIION = (_d = {},
+    _d[NEWSPAPER_NOTICE] = 3,
+    _d[BRIBE] = 3,
+    _d[VIOLIN] = 3,
+    _d[DOMINO] = 3,
+    _d[BOTTLE_OF_GIN] = 4,
+    _d[DRESS_OF_CUPS] = 1,
+    _d[DRESS_OF_PENTACLES] = 1,
+    _d[DRESS_OF_FANS] = 1,
+    _d[DRESS_OF_HEARTS] = 1,
+    _d);
 var SURPRISE_BALL = 'SurpriseBall';
 var CHRISTENING = 'Christening';
 var DANCE = 'Dance';
@@ -142,6 +158,7 @@ var FESTIVITIES = [
     DANCE,
     QUIET_GATHERING,
 ];
+var MOVE_WEEK_MARKER = 'moveWeekMarker';
 var BgaAnimation = (function () {
     function BgaAnimation(animationFunction, settings) {
         this.animationFunction = animationFunction;
@@ -2797,6 +2814,13 @@ var NotificationManager = (function () {
             'addExcessCardsToGossipPrivate',
             'drawCards',
             'drawCardsPrivate',
+            'endOfWeekAddCardToGossipPile',
+            'endOfWeekCreateViceDeck',
+            'endOfWeekDiscardToSafePile',
+            'endOfWeekGenerateEvidence',
+            'endOfWeekMollyHouseRaided',
+            'gainIndictment',
+            'gainIndictmentPrivate',
             'festivityEnd',
             'festivityPlayCard',
             'festivityRevealTopCardViceDeck',
@@ -2807,6 +2831,7 @@ var NotificationManager = (function () {
             'loseJoy',
             'loseJoyCommunity',
             'movePawn',
+            'phase',
             'placePawn',
             'refillMarket',
             'rollDice',
@@ -2816,7 +2841,7 @@ var NotificationManager = (function () {
             'setupChooseCardPrivate',
             'setupChooseCard',
             'setupRevealCard',
-            'startOfTurn',
+            'takeCandelabra',
             'throwFestivity',
         ];
         notifs.forEach(function (notifName) {
@@ -2842,7 +2867,12 @@ var NotificationManager = (function () {
                 }
             }));
             _this.game.framework().notifqueue.setSynchronous(notifName, undefined);
-            ['addExcessCardsToGossip', 'drawCards', 'setupChooseCard'].forEach(function (notifId) {
+            [
+                'addExcessCardsToGossip',
+                'drawCards',
+                'gainIndictment',
+                'setupChooseCard',
+            ].forEach(function (notifId) {
                 _this.game
                     .framework()
                     .notifqueue.setIgnoreNotificationCheck(notifId, function (notif) {
@@ -2869,6 +2899,23 @@ var NotificationManager = (function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_phase = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, phase, week;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = notif.args, phase = _a.phase, week = _a.week;
+                        if (!(phase === MOVE_WEEK_MARKER && week)) return [3, 2];
+                        return [4, Board.getInstance().moveWeekMarker(week)];
+                    case 1:
+                        _b.sent();
+                        _b.label = 2;
+                    case 2: return [2];
+                }
             });
         });
     };
@@ -3058,6 +3105,121 @@ var NotificationManager = (function () {
             });
         });
     };
+    NotificationManager.prototype.notif_endOfWeekAddCardToGossipPile = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var fakeCard, market, board;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        fakeCard = {
+                            id: 'fakeCardId',
+                            location: DECK,
+                        };
+                        market = Market.getInstance();
+                        board = Board.getInstance();
+                        return [4, market.deck.addCard(fakeCard)];
+                    case 1:
+                        _a.sent();
+                        fakeCard.location = GOSSIP_PILE;
+                        market.counters[DECK].incValue(-1);
+                        return [4, board.gossipPile.addCard(fakeCard)];
+                    case 2:
+                        _a.sent();
+                        board.counters[GOSSIP_PILE].incValue(1);
+                        return [4, this.game.viceCardManager.removeCard(fakeCard)];
+                    case 3:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_endOfWeekCreateViceDeck = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var cards, market, board, promises;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        cards = notif.args.cards;
+                        market = Market.getInstance();
+                        board = Board.getInstance();
+                        promises = cards.map(function (card, index) { return __awaiter(_this, void 0, void 0, function () {
+                            var viceCard;
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0: return [4, Interaction.use().wait(index * 100)];
+                                    case 1:
+                                        _a.sent();
+                                        viceCard = getViceCard(card);
+                                        if (!(card.location === SAFE_PILE)) return [3, 3];
+                                        return [4, market.safePile.addCard(viceCard)];
+                                    case 2:
+                                        _a.sent();
+                                        market.counters[SAFE_PILE].incValue(-1);
+                                        _a.label = 3;
+                                    case 3:
+                                        if (!(card.location === GOSSIP_PILE)) return [3, 5];
+                                        return [4, board.gossipPile.addCard(viceCard)];
+                                    case 4:
+                                        _a.sent();
+                                        board.counters[GOSSIP_PILE].incValue(-1);
+                                        _a.label = 5;
+                                    case 5:
+                                        card.location = DECK;
+                                        return [4, market.deck.addCard(viceCard)];
+                                    case 6:
+                                        _a.sent();
+                                        market.counters[DECK].incValue(1);
+                                        this.game.viceCardManager.removeCard(viceCard);
+                                        return [2];
+                                }
+                            });
+                        }); });
+                        return [4, Promise.all(promises)];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_endOfWeekDiscardToSafePile = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, number, cards;
+            return __generator(this, function (_b) {
+                _a = notif.args, number = _a.number, cards = _a.cards;
+                Board.getInstance().counters[GOSSIP_PILE].incValue(-number);
+                Market.getInstance().counters[SAFE_PILE].incValue(number);
+                return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_endOfWeekGenerateEvidence = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, site, number;
+            return __generator(this, function (_b) {
+                _a = notif.args, site = _a.site, number = _a.number;
+                Board.getInstance().evidenceCounters[site.id].incValue(number);
+                return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_endOfWeekMollyHouseRaided = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, mollyHouse, adjacentSites, board;
+            return __generator(this, function (_b) {
+                _a = notif.args, mollyHouse = _a.mollyHouse, adjacentSites = _a.adjacentSites;
+                board = Board.getInstance();
+                board.setMollyHouseRaided(mollyHouse.id);
+                Object.keys(adjacentSites).forEach(function (siteId) {
+                    board.setCruisingSiteDangerous(siteId);
+                });
+                board.evidenceCounters[mollyHouse.id].incValue(-7);
+                return [2];
+            });
+        });
+    };
     NotificationManager.prototype.notif_festivityEnd = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
@@ -3083,6 +3245,24 @@ var NotificationManager = (function () {
                         }
                         return [2];
                 }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_gainIndictment = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var playerId;
+            return __generator(this, function (_a) {
+                playerId = notif.args.playerId;
+                return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_gainIndictmentPrivate = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var playerId;
+            return __generator(this, function (_a) {
+                playerId = notif.args.playerId;
+                return [2];
             });
         });
     };
@@ -3147,10 +3327,15 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_loseJoy = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, amount;
+            var _a, playerId, amount, total;
             return __generator(this, function (_b) {
-                _a = notif.args, playerId = _a.playerId, amount = _a.amount;
+                _a = notif.args, playerId = _a.playerId, amount = _a.amount, total = _a.total;
                 incScore(playerId, -amount);
+                Board.getInstance().joyMarkerStocks[total % 40].addCard({
+                    id: "".concat(playerId),
+                    hanged: false,
+                    color: HEX_COLOR_COLOR_MAP[this.getPlayer(playerId).getColor()],
+                });
                 return [2];
             });
         });
@@ -3160,6 +3345,11 @@ var NotificationManager = (function () {
             var _a, joyDecrease, joyTotal;
             return __generator(this, function (_b) {
                 _a = notif.args, joyDecrease = _a.joyDecrease, joyTotal = _a.joyTotal;
+                Board.getInstance().joyMarkerStocks[joyTotal % 40].addCard({
+                    id: COMMUNITY_JOY_MARKER,
+                    hanged: false,
+                    color: COMMUNITY_JOY_MARKER,
+                });
                 return [2];
             });
         });
@@ -3267,30 +3457,60 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_scoreBonusJoy = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, amount;
+            var _a, playerId, amount, total;
             return __generator(this, function (_b) {
-                _a = notif.args, playerId = _a.playerId, amount = _a.amount;
-                incScore(playerId, amount);
-                return [2];
+                switch (_b.label) {
+                    case 0:
+                        _a = notif.args, playerId = _a.playerId, amount = _a.amount, total = _a.total;
+                        incScore(playerId, amount);
+                        return [4, Board.getInstance().joyMarkerStocks[total % 40].addCard({
+                                id: "".concat(playerId),
+                                hanged: false,
+                                color: HEX_COLOR_COLOR_MAP[this.getPlayer(playerId).getColor()],
+                            })];
+                    case 1:
+                        _b.sent();
+                        return [2];
+                }
             });
         });
     };
     NotificationManager.prototype.notif_scoreJoy = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, amount;
+            var _a, playerId, amount, total;
             return __generator(this, function (_b) {
-                _a = notif.args, playerId = _a.playerId, amount = _a.amount;
-                incScore(playerId, amount);
-                return [2];
+                switch (_b.label) {
+                    case 0:
+                        _a = notif.args, playerId = _a.playerId, amount = _a.amount, total = _a.total;
+                        incScore(playerId, amount);
+                        return [4, Board.getInstance().joyMarkerStocks[total % 40].addCard({
+                                id: "".concat(playerId),
+                                hanged: false,
+                                color: HEX_COLOR_COLOR_MAP[this.getPlayer(playerId).getColor()],
+                            })];
+                    case 1:
+                        _b.sent();
+                        return [2];
+                }
             });
         });
     };
     NotificationManager.prototype.notif_scoreJoyCommunity = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, joyIncrease, joyTotal;
-            return __generator(this, function (_b) {
-                _a = notif.args, joyIncrease = _a.joyIncrease, joyTotal = _a.joyTotal;
-                return [2];
+            var joyTotal;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        joyTotal = notif.args.joyTotal;
+                        return [4, Board.getInstance().joyMarkerStocks[joyTotal % 40].addCard({
+                                id: COMMUNITY_JOY_MARKER,
+                                hanged: false,
+                                color: COMMUNITY_JOY_MARKER,
+                            })];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
             });
         });
     };
@@ -3340,10 +3560,14 @@ var NotificationManager = (function () {
             });
         });
     };
-    NotificationManager.prototype.notif_startOfTurn = function (notif) {
-        return __awaiter(this, void 0, void 0, function () { return __generator(this, function (_a) {
-            return [2];
-        }); });
+    NotificationManager.prototype.notif_takeCandelabra = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var playerId;
+            return __generator(this, function (_a) {
+                playerId = notif.args.playerId;
+                return [2];
+            });
+        });
     };
     NotificationManager.prototype.notif_throwFestivity = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
@@ -4029,6 +4253,7 @@ var MollyHouse = (function () {
             FestivitySelectWinningSet: FestivitySelectWinningSet,
             FestivityChooseNextFoiledThreat: FestivityChooseNextFoiledThreat,
             FestivityTakeMatchingCubes: FestivityTakeMatchingCubes,
+            EndOfWeekEncounterSociety: EndOfWeekEncounterSociety,
         };
         console.log('MollyHouse constructor');
     }
@@ -4059,6 +4284,7 @@ var MollyHouse = (function () {
         StaticData.create(this);
         this.diceManager = new MollyHouseDiceManager(this);
         this.viceCardManager = new ViceCardManager(this);
+        this.joyMarkerManager = new JoyMarkerManager(this);
         Interaction.create(this);
         PlayerManager.create(this);
         NotificationManager.create(this);
@@ -4359,7 +4585,7 @@ var MollyHouse = (function () {
     };
     return MollyHouse;
 }());
-var _a, _b;
+var _a, _b, _c;
 var getGroupPosition = function (top, left, index, rowSize) {
     var row = Math.floor(index / rowSize);
     var column = index % 4;
@@ -4386,6 +4612,16 @@ var SITE_POSITIONS = (_a = {},
     _a[DUKE_STREET] = { top: 486, left: 83 },
     _a[LINCOLNS_INN_BOGHOUSE] = { top: 288, left: 83 },
     _a);
+var DANGEROUS_CRUISING_MARKERS_POSITIONS = (_b = {},
+    _b[ST_PAULS_CATHEDRAL] = { top: 60, left: 355 },
+    _b[MOORFIELDS] = { top: 60, left: 745 },
+    _b[ROYAL_EXCHANGE] = { top: 355, left: 1107 },
+    _b[LONDON_BRIDGE] = { top: 746, left: 1107 },
+    _b[OLD_ROUND_COURT] = { top: 1041, left: 745 },
+    _b[ST_JAMESS_PARK] = { top: 1041, left: 355 },
+    _b[COVENT_GARDEN_PIAZZA] = { top: 746, left: -6 },
+    _b[LINCOLNS_INN_BOGHOUSE] = { top: 355, left: -6 },
+    _b);
 var getPawnPosition = function (location, index) {
     var position = { top: 0, left: 0 };
     var _a = SITE_POSITIONS[location] || { top: 0, left: 0 }, top = _a.top, left = _a.left;
@@ -4396,28 +4632,79 @@ var getPawnPosition = function (location, index) {
     }
     return position;
 };
-var SITE_SELECT_POSITIONS = (_b = {},
-    _b[MOTHER_CLAPS] = { top: 25, left: 28, width: 319, height: 253 },
-    _b[ST_PAULS_CATHEDRAL] = { top: 25, left: 357, width: 185, height: 169 },
-    _b[NOBLE_STREET] = { top: 25, left: 552, width: 185, height: 169 },
-    _b[MOORFIELDS] = { top: 25, left: 747, width: 185, height: 169 },
-    _b[MISS_MUFFS] = { top: 25, left: 942, width: 319, height: 253 },
-    _b[ROYAL_EXCHANGE] = { top: 289, left: 1093, width: 168, height: 185 },
-    _b[LEADENHALL_STREET] = { top: 485, left: 1093, width: 168, height: 185 },
-    _b[LONDON_BRIDGE] = { top: 680, left: 1093, width: 168, height: 185 },
-    _b[SUKEY_BEVELLS] = { top: 875, left: 943, width: 319, height: 253 },
-    _b[OLD_ROUND_COURT] = { top: 959, left: 747, width: 185, height: 169 },
-    _b[CANNON_STREET] = { top: 959, left: 552, width: 185, height: 169 },
-    _b[ST_JAMESS_PARK] = { top: 959, left: 357, width: 185, height: 169 },
-    _b[JULIUS_CESAR_TAYLORS] = { top: 875, left: 28, width: 319, height: 253 },
-    _b[COVENT_GARDEN_PIAZZA] = { top: 680, left: 28, width: 168, height: 185 },
-    _b[DUKE_STREET] = { top: 485, left: 28, width: 168, height: 185 },
-    _b[LINCOLNS_INN_BOGHOUSE] = { top: 289, left: 28, width: 168, height: 185 },
-    _b);
+var SITE_SELECT_POSITIONS = (_c = {},
+    _c[MOTHER_CLAPS] = { top: 25, left: 28, width: 319, height: 253 },
+    _c[ST_PAULS_CATHEDRAL] = { top: 25, left: 357, width: 185, height: 169 },
+    _c[NOBLE_STREET] = { top: 25, left: 552, width: 185, height: 169 },
+    _c[MOORFIELDS] = { top: 25, left: 747, width: 185, height: 169 },
+    _c[MISS_MUFFS] = { top: 25, left: 942, width: 319, height: 253 },
+    _c[ROYAL_EXCHANGE] = { top: 289, left: 1093, width: 168, height: 185 },
+    _c[LEADENHALL_STREET] = { top: 485, left: 1093, width: 168, height: 185 },
+    _c[LONDON_BRIDGE] = { top: 680, left: 1093, width: 168, height: 185 },
+    _c[SUKEY_BEVELLS] = { top: 875, left: 943, width: 319, height: 253 },
+    _c[OLD_ROUND_COURT] = { top: 959, left: 747, width: 185, height: 169 },
+    _c[CANNON_STREET] = { top: 959, left: 552, width: 185, height: 169 },
+    _c[ST_JAMESS_PARK] = { top: 959, left: 357, width: 185, height: 169 },
+    _c[JULIUS_CESAR_TAYLORS] = { top: 875, left: 28, width: 319, height: 253 },
+    _c[COVENT_GARDEN_PIAZZA] = { top: 680, left: 28, width: 168, height: 185 },
+    _c[DUKE_STREET] = { top: 485, left: 28, width: 168, height: 185 },
+    _c[LINCOLNS_INN_BOGHOUSE] = { top: 289, left: 28, width: 168, height: 185 },
+    _c);
+var CURRENT_WEEK_MARKER_POSITIONS = {
+    1: { top: 613, left: 1359 },
+    2: { top: 653, left: 1359 },
+    3: { top: 693, left: 1359 },
+    4: { top: 734, left: 1359 },
+    5: { top: 774, left: 1359 },
+};
+var JOY_MARKER_POSITIONS = {
+    0: { top: 20, left: 1304 },
+    1: { top: 20, left: 1354 },
+    2: { top: 24, left: 1404 },
+    3: { top: 71, left: 1417 },
+    4: { top: 102, left: 1377 },
+    5: { top: 105, left: 1325 },
+    6: { top: 142, left: 1288 },
+    7: { top: 184, left: 1319 },
+    8: { top: 194, left: 1370 },
+    9: { top: 178, left: 1419 },
+    10: { top: 228, left: 1431 },
+    11: { top: 274, left: 1412 },
+    12: { top: 268, left: 1363 },
+    13: { top: 258, left: 1314 },
+    14: { top: 306, left: 1293 },
+    15: { top: 356, left: 1289 },
+    16: { top: 395, left: 1325 },
+    17: { top: 359, left: 1363 },
+    18: { top: 353, left: 1414 },
+    19: { top: 401, left: 1428 },
+    20: { top: 454, left: 1427 },
+    21: { top: 451, left: 1375 },
+    22: { top: 492, left: 1346 },
+    23: { top: 485, left: 1296 },
+    24: { top: 534, left: 1286 },
+    25: { top: 585, left: 1304 },
+    26: { top: 565, left: 1349 },
+    27: { top: 551, left: 1391 },
+    28: { top: 576, left: 1428 },
+    29: { top: 620, left: 1431 },
+    30: { top: 662, left: 1415 },
+    31: { top: 706, left: 1423 },
+    32: { top: 750, left: 1427 },
+    33: { top: 795, left: 1433 },
+    34: { top: 823, left: 1399 },
+    35: { top: 825, left: 1353 },
+    36: { top: 816, left: 1309 },
+    37: { top: 778, left: 1286 },
+    38: { top: 733, left: 1288 },
+    39: { top: 688, left: 1293 },
+};
 var Board = (function () {
     function Board(game) {
         this.counters = {};
+        this.evidenceCounters = {};
         this.sites = {};
+        this.joyMarkerStocks = {};
         this.game = game;
         this.setup(game.gamedatas);
     }
@@ -4434,30 +4721,66 @@ var Board = (function () {
         this.ui = {
             containers: {
                 board: document.getElementById('moho-board'),
+                dangerousCruisingMarkers: document.getElementById('moho-dangerous-cruising-markers'),
+                evidenceCounters: document.getElementById('moho-evidence-counters'),
                 gossipPile: document.getElementById('moho-gossip-pile'),
+                markers: document.getElementById('moho-markers'),
                 pawns: document.getElementById('moho-pawns'),
                 tokens: {},
                 selectBoxes: document.getElementById('moho-select-boxes'),
                 houseRaidedMarkers: document.getElementById('house-raided-markers'),
             },
+            dangerousCruisingMarkers: {},
             diceStock: document.getElementById('moho-dice-stock'),
             houseRaidedMarkers: {},
+            markers: {},
             pawns: {},
             selectBoxes: {},
         };
+        this.setupDangerousCruisingMarkers(gamedatas);
+        this.setupEvidenceCounters(gamedatas);
         this.setupGossipPile(gamedatas);
-        this.setupHouseRaidedMarkers();
+        this.setupHouseRaidedMarkers(gamedatas);
+        this.setupWeekMarker(gamedatas);
+        this.setupJoyMarkers(gamedatas);
         this.setupDiceStock(gamedatas);
         this.setupSelectBoxes();
         this.setupSites();
         this.setupPawns(gamedatas);
-        this.setupTokens(gamedatas);
         this.setFestivityActive(gamedatas.festivity.active);
+    };
+    Board.prototype.setupDangerousCruisingMarkers = function (gamedatas) {
+        var _this = this;
+        Object.entries(CRUISING_SITES).forEach(function (_a) {
+            var siteId = _a[0], sideOfBoard = _a[1];
+            var elt = (_this.ui.dangerousCruisingMarkers[siteId] =
+                document.createElement('div'));
+            elt.classList.add('moho-dangerous-cruising-marker');
+            elt.setAttribute('data-site', siteId);
+            elt.setAttribute('data-dangerous', 'false');
+            elt.setAttribute('data-side-of-board', sideOfBoard);
+            setAbsolutePosition(elt, BOARD_SCALE, DANGEROUS_CRUISING_MARKERS_POSITIONS[siteId]);
+            _this.ui.containers.dangerousCruisingMarkers.appendChild(elt);
+        });
+        this.updateDangeousCruisingMarkers(gamedatas);
     };
     Board.prototype.setupDiceStock = function (gamedatas) {
         this.diceStock = new LineDiceStock(this.game.diceManager, this.ui.diceStock, { gap: 'calc(var(--boardScale) * 32px)' });
         this.ui.diceStock.dataset.place = "".concat(1);
         this.diceStock.addDice(getDice(gamedatas.dice));
+    };
+    Board.prototype.setupEvidenceCounters = function (gamedatas) {
+        var _this = this;
+        MOLLY_HOUSES.forEach(function (siteId) {
+            _this.evidenceCounters[siteId] = new CubeCounter({
+                id: "cubes-".concat(siteId),
+                initialValue: gamedatas.sites[siteId].evidence,
+                parentElement: _this.ui.containers.evidenceCounters,
+                color: SUIT_COLOR_MAP[StaticData.get().site(siteId).suit],
+                type: 'overlap',
+            });
+        });
+        this.updateEvidenceCounters(gamedatas);
     };
     Board.prototype.setupGossipPile = function (gamedatas) {
         this.gossipPile = new LineStock(this.game.viceCardManager, this.ui.containers.gossipPile);
@@ -4465,7 +4788,7 @@ var Board = (function () {
         this.counters[GOSSIP_PILE].create('moho-gossip-pile-counter');
         this.updateGossipPile(gamedatas);
     };
-    Board.prototype.setupHouseRaidedMarkers = function () {
+    Board.prototype.setupHouseRaidedMarkers = function (gamedatas) {
         var _this = this;
         MOLLY_HOUSES.forEach(function (house) {
             var elt = (_this.ui.houseRaidedMarkers[house] =
@@ -4475,6 +4798,27 @@ var Board = (function () {
             elt.setAttribute('data-raided', 'false');
             _this.ui.containers.houseRaidedMarkers.appendChild(elt);
         });
+        this.updateHouseRaidedMarkers(gamedatas);
+    };
+    Board.prototype.setupWeekMarker = function (gamedatas) {
+        var elt = (this.ui.markers[CURRENT_WEEK_MARKER] =
+            document.createElement('div'));
+        elt.id = 'moho-week-marker';
+        this.ui.containers.markers.appendChild(elt);
+        this.updateWeekMarker(gamedatas);
+    };
+    Board.prototype.setupJoyMarkers = function (gamedatas) {
+        for (var i = 0; i <= 39; i++) {
+            var elt = document.createElement('div');
+            elt.classList.add('moho-joy-marker-stock');
+            setAbsolutePosition(elt, BOARD_SCALE, JOY_MARKER_POSITIONS[i]);
+            this.ui.containers.markers.appendChild(elt);
+            this.joyMarkerStocks[i] = new LineStock(this.game.joyMarkerManager, elt, {
+                gap: '0',
+                direction: 'row',
+            });
+        }
+        this.updateJoyMarkers(gamedatas);
     };
     Board.prototype.setupPawns = function (gamedatas) {
         var _this = this;
@@ -4486,17 +4830,6 @@ var Board = (function () {
             elt.setAttribute('data-color', color);
         });
         this.updatePawns(pawns);
-    };
-    Board.prototype.setupTokens = function (gamedatas) {
-        var _this = this;
-        ['joy', 'week'].forEach(function (pawn) {
-            var elt = (_this.ui.containers.pawns[pawn] =
-                document.createElement('div'));
-            elt.id = pawn;
-            elt.classList.add('moho-token');
-            elt.setAttribute('data-type', pawn);
-            _this.ui.containers.board.appendChild(elt);
-        });
     };
     Board.prototype.setupSites = function () {
         var _this = this;
@@ -4588,14 +4921,76 @@ var Board = (function () {
         }
         setAbsolutePosition(this.ui.containers.pawns[type], BOARD_SCALE, position);
     };
+    Board.prototype.updateDangeousCruisingMarkers = function (gamedatas) {
+        var _this = this;
+        Object.keys(CRUISING_SITES).forEach(function (siteId) {
+            if (gamedatas.sites[siteId].raidedOrDangerous) {
+                _this.setCruisingSiteDangerous(siteId);
+            }
+        });
+    };
+    Board.prototype.updateEvidenceCounters = function (gamedatas) { };
     Board.prototype.updateGossipPile = function (gamedatas) {
         this.counters[GOSSIP_PILE].setValue(gamedatas.gossipPileCount);
+    };
+    Board.prototype.updateHouseRaidedMarkers = function (gamedatas) {
+        var _this = this;
+        MOLLY_HOUSES.forEach(function (siteId) {
+            if (gamedatas.sites[siteId].raidedOrDangerous) {
+                _this.setMollyHouseRaided(siteId);
+            }
+        });
+    };
+    Board.prototype.updateJoyMarkers = function (gamedatas) {
+        var _this = this;
+        this.joyMarkerStocks[gamedatas.communityJoy].addCard({
+            id: COMMUNITY_JOY_MARKER,
+            color: COMMUNITY_JOY_MARKER,
+            hanged: false,
+        });
+        Object.values(gamedatas.players).forEach(function (player) {
+            _this.joyMarkerStocks[player.score].addCard({
+                id: player.id,
+                color: HEX_COLOR_COLOR_MAP[player.color],
+                hanged: false,
+            });
+        });
+    };
+    Board.prototype.updateWeekMarker = function (gamedatas) {
+        var currentWeek = gamedatas.currentWeek;
+        setAbsolutePosition(this.ui.markers[CURRENT_WEEK_MARKER], BOARD_SCALE, CURRENT_WEEK_MARKER_POSITIONS[currentWeek]);
     };
     Board.prototype.updatePawns = function (pawns) {
         var _this = this;
         pawns.forEach(function (pawn) {
             _this.placePawn(pawn);
         });
+    };
+    Board.prototype.moveWeekMarker = function (week) {
+        return __awaiter(this, void 0, void 0, function () {
+            var fromRect;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        fromRect = this.ui.markers[CURRENT_WEEK_MARKER].getBoundingClientRect();
+                        setAbsolutePosition(this.ui.markers[CURRENT_WEEK_MARKER], BOARD_SCALE, CURRENT_WEEK_MARKER_POSITIONS[week]);
+                        return [4, this.game.animationManager.play(new BgaSlideAnimation({
+                                element: this.ui.markers[CURRENT_WEEK_MARKER],
+                                transitionTimingFunction: 'ease-in-out',
+                                fromRect: fromRect,
+                            }))];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    Board.prototype.setMollyHouseRaided = function (mollyHouseId) {
+        this.ui.houseRaidedMarkers[mollyHouseId].dataset.raided = 'true';
+    };
+    Board.prototype.setCruisingSiteDangerous = function (siteId) {
+        this.ui.dangerousCruisingMarkers[siteId].dataset.dangerous = 'true';
     };
     Board.prototype.pawnAlreadyOnSite = function (pawnId, location) {
         return this.sites[location].some(function (pawn) { return (pawn === null || pawn === void 0 ? void 0 : pawn.id) === pawnId; });
@@ -4634,7 +5029,13 @@ var Board = (function () {
     };
     return Board;
 }());
-var tplBoard = function (gamedatas) { return "<div id=\"moho-board\">\n<div id=\"moho-playmat\">\n  <div id=\"moho-festivity\"></div>\n  <div id=\"moho-dice-stock\"></div>\n</div>\n  <div id=\"house-raided-markers\"></div>\n  <div id=\"moho-select-boxes\"></div>\n  <div id=\"moho-pawns\"></div>\n  <div id=\"moho-gossip-pile\" class=\"moho-vice-card\" data-card-id=\"back\">\n    <span id=\"moho-gossip-pile-counter\" class=\"moho-deck-counter\">10</span>\n  </div>\n</div>"; };
+var tplBoard = function (gamedatas) { return "<div id=\"moho-board\">\n<div id=\"moho-playmat\">\n  <div id=\"moho-festivity\"></div>\n  <div id=\"moho-dice-stock\"></div>\n</div>\n  <div id=\"moho-dangerous-cruising-markers\"></div>\n  <div id=\"house-raided-markers\"></div>\n  <div id=\"moho-select-boxes\"></div>\n  <div id=\"moho-pawns\"></div>\n  <div id=\"moho-evidence-counters\"></div>\n  <div id=\"moho-gossip-pile\" class=\"moho-vice-card\" data-card-id=\"back\">\n    <span id=\"moho-gossip-pile-counter\" class=\"moho-deck-counter\">10</span>\n  </div>\n  <div id=\"moho-markers\"></div>\n</div>"; };
+var createJoyMarker = function (color) {
+    var elt = document.createElement('div');
+    elt.classList.add('moho-joy-marker');
+    elt.dataset.color = color;
+    return elt;
+};
 var ViceCardManager = (function (_super) {
     __extends(ViceCardManager, _super);
     function ViceCardManager(game) {
@@ -4877,6 +5278,46 @@ var Hand = (function () {
 var tplHand = function () {
     return "<div id=\"hand\"></div\n  ";
 };
+var JoyMarkerManager = (function (_super) {
+    __extends(JoyMarkerManager, _super);
+    function JoyMarkerManager(game) {
+        var _this = _super.call(this, game, {
+            getId: function (marker) { return marker.id; },
+            setupDiv: function (marker, div) { return _this.setupDiv(marker, div); },
+            setupFrontDiv: function (marker, div) {
+                return _this.setupFrontDiv(marker, div);
+            },
+            setupBackDiv: function (marker, div) {
+                return _this.setupBackDiv(marker, div);
+            },
+            isCardVisible: function (marker) { return _this.isCardVisible(marker); },
+            animationManager: game.animationManager,
+        }) || this;
+        _this.game = game;
+        return _this;
+    }
+    JoyMarkerManager.prototype.clearInterface = function () { };
+    JoyMarkerManager.prototype.setupDiv = function (marker, div) {
+        div.style.position = 'relative';
+        div.classList.add('moho-joy-marker-container');
+        div.style.width = 'calc(var(--tokenScale) * 42px)';
+    };
+    JoyMarkerManager.prototype.setupFrontDiv = function (marker, div) {
+        div.classList.add('moho-joy-marker');
+        div.setAttribute('data-color', marker.color);
+        div.style.width = 'calc(var(--tokenScale) * 42px)';
+    };
+    JoyMarkerManager.prototype.setupBackDiv = function (marker, div) {
+        div.classList.add('moho-joy-marker');
+        div.setAttribute('data-color', marker.color);
+        div.setAttribute('data-hanged', 'true');
+        div.style.width = 'calc(var(--tokenScale) * 42px)';
+    };
+    JoyMarkerManager.prototype.isCardVisible = function (card) {
+        return !card.hanged;
+    };
+    return JoyMarkerManager;
+}(CardManager));
 var LOG_TOKEN_BOLD_TEXT = 'boldText';
 var LOG_TOKEN_BOLD_ITALIC_TEXT = 'boldItalicText';
 var LOG_TOKEN_NEW_LINE = 'newLine';
@@ -6091,4 +6532,36 @@ var FestivityTakeMatchingCubes = (function () {
         });
     };
     return FestivityTakeMatchingCubes;
+}());
+var EndOfWeekEncounterSociety = (function () {
+    function EndOfWeekEncounterSociety(game) {
+        this.game = game;
+    }
+    EndOfWeekEncounterSociety.create = function (game) {
+        EndOfWeekEncounterSociety.instance = new EndOfWeekEncounterSociety(game);
+    };
+    EndOfWeekEncounterSociety.getInstance = function () {
+        return EndOfWeekEncounterSociety.instance;
+    };
+    EndOfWeekEncounterSociety.prototype.onEnteringState = function (args) {
+        debug('Entering EndOfWeekEncounterSociety state');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    EndOfWeekEncounterSociety.prototype.onLeavingState = function () {
+        debug('Leaving EndOfWeekEncounterSociety state');
+    };
+    EndOfWeekEncounterSociety.prototype.setDescription = function (activePlayerIds, args) { };
+    EndOfWeekEncounterSociety.prototype.updateInterfaceInitialStep = function () {
+        this.game.clearPossible();
+        updatePageTitle(_('${you} may perform an action'), {});
+    };
+    EndOfWeekEncounterSociety.prototype.updateInterfaceConfirm = function () {
+        clearPossible();
+        updatePageTitle(_('Confirm action'));
+        addConfirmButton(function () {
+            performAction('actEndOfWeekEncounterSociety', {});
+        });
+    };
+    return EndOfWeekEncounterSociety;
 }());

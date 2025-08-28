@@ -68,6 +68,7 @@
     "src/festivity/index.ts",
     "src/hand/index.ts",
     "src/hand/templates.ts",
+    "src/joy-marker-manager/index.ts",
     "src/logs/index.ts",
     "src/logs/templates.ts",
     "src/market/index.ts",
@@ -96,5 +97,6 @@
     "src/states/FestivitySelectWinningSet.ts",
     "src/states/FestivityChooseNextFoiledThreat.ts",
     "src/states/FestivityTakeMatchingCubes.ts",
+    "src/states/EndOfWeekEncounterSociety.ts"
   ]
 }

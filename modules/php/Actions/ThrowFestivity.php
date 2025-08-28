@@ -109,8 +109,8 @@ class ThrowFestivity extends \Bga\Games\MollyHouse\Models\AtomicAction
 
     $otherNodes = [
       [
-        'action' => LOG_STEP,
-        'stepToLog' => FESTIVITY_DETERMINE_WINNING_SET,
+        'action' => LOG_PHASE,
+        'phase' => FESTIVITY_DETERMINE_WINNING_SET,
       ],
       [
         'action' => FESTIVITY_DETERMINE_WINNING_SET,
@@ -119,8 +119,8 @@ class ThrowFestivity extends \Bga\Games\MollyHouse\Models\AtomicAction
         'action' => FESTIVITY_SCORE_JOY,
       ],
       [
-        'action' => LOG_STEP,
-        'stepToLog' => FESTIVITY_GENERATE_GOSSIP,
+        'action' => LOG_PHASE,
+        'phase' => FESTIVITY_GENERATE_GOSSIP,
       ],
       [
         'action' => FESTIVITY_GENERATE_GOSSIP,

@@ -39,18 +39,20 @@ interface MollyHouseGamedatas extends Gamedatas {
     viceCards: Record<string, ViceCardStaticData>;
   };
   // Game specific
+  communityJoy: number;
+  currentWeek: number;
   deckCount: number;
   dice: number[];
   festivity: {
     runner: number;
     active: boolean;
     communityCards: ViceCardBase[];
-  }
+  };
   gossipPileCount: number;
-  market: Record<string,ViceCardBase>;
-  pawns: Record<string,MohoPawn>;
+  market: Record<string, ViceCardBase>;
+  pawns: Record<string, MohoPawn>;
   safePile: ViceCardBase[];
-  sites: MohoSiteBase[]
+  sites: Record<string, MohoSiteBase>;
 }
 
 interface MollyHousePlayerData extends BgaPlayer {
@@ -72,6 +74,13 @@ interface MohoPawn extends GamePiece {
 
 interface MohoSiteBase extends GamePiece {
   raidedOrDangerous: boolean;
+  evidence: number;
+}
+
+interface MohoJoyMarker {
+  id: string;
+  color: string;
+  hanged: boolean;
 }
 
 interface MohoSiteStaticData {

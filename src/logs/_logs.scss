@@ -150,8 +150,8 @@ span[style*='color:#c0c0c0'] {
   }
 }
 
-.notif_festivityPhase,
-.notif_startOfTurn {
+.notif_phase,
+.notif_festivityPhase {
   .roundedboxinner,
   .roundedbox {
     // background-color: base.$light-blue;
@@ -161,8 +161,8 @@ span[style*='color:#c0c0c0'] {
   }
 }
 
-.notif_festivityPhase,
-.notif_startOfTurn {
+.notif_phase,
+.notif_festivityPhase {
   .roundedbox {
     border-top: 1px solid black;
     border-bottom: 1px solid black;

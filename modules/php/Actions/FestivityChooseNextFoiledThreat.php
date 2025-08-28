@@ -88,13 +88,15 @@ class FestivityChooseNextFoiledThreat extends \Bga\Games\MollyHouse\Models\Atomi
       }
     );
 
+    
+
     // Insert reamining first so current chosen is next
     if (count($remainingThreats) === 1) {
-      $cardPlayerdById = explode('_', $remainingThreats[0]->getLocation())[1];
+      // Notifications::log('remainingThreats', $remainingThreats[0]->getId());
+      $cardId = $remainingThreats[0]->getId();
       $action = [
         'action' => FESTIVITY_FOIL_THREAT,
-        'playerId' => $cardPlayerdById,
-        'cardId' => $remainingThreats[0]->getId(),
+        'cardId' => $cardId,
       ];
       $this->ctx->insertAsBrother(Engine::buildTree($action));
     } else if (count($remainingThreats) > 1) {
@@ -108,7 +110,6 @@ class FestivityChooseNextFoiledThreat extends \Bga\Games\MollyHouse\Models\Atomi
 
     $action = [
       'action' => FESTIVITY_FOIL_THREAT,
-      'playerId' => explode('_', $card->getLocation())[1],
       'cardId' => $card->getId(),
     ];
     $this->ctx->insertAsBrother(Engine::buildTree($action));

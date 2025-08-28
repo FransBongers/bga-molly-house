@@ -58,6 +58,7 @@ class MollyHouse implements Game {
   // Card managers
   public diceManager: MollyHouseDiceManager;
   public viceCardManager: ViceCardManager;
+  public joyMarkerManager: JoyMarkerManager;
 
   private states = {
     ConfirmPartialTurn,
@@ -76,6 +77,7 @@ class MollyHouse implements Game {
     FestivitySelectWinningSet,
     FestivityChooseNextFoiledThreat,
     FestivityTakeMatchingCubes,
+    EndOfWeekEncounterSociety,
   };
 
   constructor() {
@@ -135,6 +137,7 @@ class MollyHouse implements Game {
     StaticData.create(this);
     this.diceManager = new MollyHouseDiceManager(this);
     this.viceCardManager = new ViceCardManager(this);
+    this.joyMarkerManager = new JoyMarkerManager(this);
     Interaction.create(this);
     PlayerManager.create(this);
     NotificationManager.create(this);

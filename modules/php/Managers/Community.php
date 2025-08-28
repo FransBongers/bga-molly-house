@@ -22,4 +22,9 @@ class Community
      $joyTotal = Globals::incCommunityJoy(-$joyDecrease);
     Notifications::loseJoyCommunity($joyDecrease, $joyTotal);
   }
+
+  public static function getJoy()
+  {
+    return Globals::getCommunityJoy();
+  }
 }

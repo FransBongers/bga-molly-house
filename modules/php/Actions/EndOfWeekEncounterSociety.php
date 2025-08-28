@@ -2,14 +2,11 @@
 
 namespace Bga\Games\MollyHouse\Actions;
 
-use Bga\Games\MollyHouse\Managers\DieManager;
-use Bga\Games\MollyHouse\Managers\Sites;
-
-class MovePawn extends \Bga\Games\MollyHouse\Models\AtomicAction
+class EndOfWeekEncounterSociety extends \Bga\Games\MollyHouse\Models\AtomicAction
 {
   public function getState()
   {
-    return ST_MOVE_PAWN;
+    return ST_END_OF_WEEK_ENCOUNTER_SOCIETY;
   }
 
   // ....###....########...######....######.
@@ -21,48 +18,11 @@ class MovePawn extends \Bga\Games\MollyHouse\Models\AtomicAction
   // .##.....##.##.....##..######....######.
 
 
-  public function argsMovePawn()
+  public function argsEndOfWeekEncounterSociety()
   {
-    // $info = $this->ctx->getInfo();
+    $info = $this->ctx->getInfo();
 
-    $rolledFaces = DieManager::getFaces();
-
-    // Determine the exact number of steps the player can take
-    $stepsToTake = [];
-    $total = 0;
-    foreach ($rolledFaces as $dieFace) {
-
-      if ($dieFace === SINGLE_BOOT) {
-        $total += 1;
-
-        if (!in_array(1, $stepsToTake)) {
-          $stepsToTake[] = 1;
-        }
-      } else if ($dieFace === DOUBLE_BOOT) {
-        $total += 2;
-        if (!in_array(2, $stepsToTake)) {
-          $stepsToTake[] = 2;
-        }
-      }
-    }
-    $marketDiscardRolled = in_array(MARKET_DISCARD, $rolledFaces);
-    if (!$marketDiscardRolled) {
-      $stepsToTake[] = $total;
-    }
-    if (count($stepsToTake) > 0 && $marketDiscardRolled) {
-      $stepsToTake[] = 0;
-    }
-
-    $player = $this->getPlayer();
-    $pawn = $player->getPawn();
-
-    $data = [
-      // 'dice' => $rolledFaces,
-      // 'steps' => $stepsToTake,
-      'pawn' => $pawn,
-      'fancyFellow' => count($stepsToTake) === 0,
-      'sites' => Sites::getSitesAtDistance($stepsToTake, $pawn->getLocation()),
-    ];
+    $data = [];
 
     return $data;
   }
@@ -83,29 +43,20 @@ class MovePawn extends \Bga\Games\MollyHouse\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function actPassMovePawn()
+  public function actPassEndOfWeekEncounterSociety()
   {
     $player = self::getPlayer();
     $this->resolveAction(PASS);
   }
 
-  public function actMovePawn($args)
+  public function actEndOfWeekEncounterSociety($args)
   {
-    self::checkAction('actMovePawn');
+    self::checkAction('actEndOfWeekEncounterSociety');
 
-    $siteId = $args->siteId;
 
-    $stateArgs = $this->argsMovePawn();
 
-    if (!isset($stateArgs['sites'][$siteId])) {
-      throw new \feException("ERROR_003");
-    }
 
-    $pawn = $stateArgs['pawn'];
-
-    $pawn->move($this->getPlayer(), $siteId);
-
-    $this->resolveAction([]);
+    $this->resolveAction([], true);
   }
 
   //  .##.....##.########.####.##.......####.########.##....##

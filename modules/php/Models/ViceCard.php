@@ -4,6 +4,7 @@ namespace Bga\Games\MollyHouse\Models;
 
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
+use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 use Bga\Games\MollyHouse\Managers\Festivity;
 use Bga\Games\MollyHouse\Managers\ViceCards;
 
@@ -132,8 +133,8 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   public function foilThreat($playerOrCommunity, $notify = true)
   {
     $this->addToSafePile($playerOrCommunity, false);
-    
-    if($notify) {
+
+    if ($notify) {
       Notifications::foilThreat($playerOrCommunity, $this);
     }
   }
@@ -166,4 +167,18 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     $this->state = ViceCards::insertOnTop($this->getId(), $location);
   }
 
+  public function isInHand()
+  {
+    return Utils::startsWith($this->location, 'hand_');
+  }
+
+  public function isInReputation()
+  {
+    return Utils::startsWith($this->location, 'reputation_');
+  }
+
+  public function isInMarket()
+  {
+    return Utils::startsWith($this->location, 'market_');
+  }
 }

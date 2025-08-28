@@ -30,12 +30,10 @@ trait DebugTrait
 
   function debug_test()
   {
+    // Sites::get(SUKEY_BEVELLS)->setEvidence(6);
 
 
-
-    
-
-    // Notifications::log('bestSet', $bestSet);
+    Notifications::log('sites', AtomicActions::get(END_OF_WEEK_CHECK_FOR_RAIDS)->gainIndictments(Sites::get(MOTHER_CLAPS)));
 
     // DieManager::rollDice(Players::get());
     // Pawns::setupNewGame();

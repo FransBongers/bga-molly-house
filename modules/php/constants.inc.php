@@ -53,11 +53,17 @@ const ST_FESTIVITY_SCORE_JOY = 22;
 const ST_FESTIVITY_SCORE_BONUS = 23;
 const ST_FESTIVITY_GENERATE_GOSSIP = 24;
 const ST_FESTIVITY_SELECT_WINNING_SET = 25;
-const ST_LOG_STEP = 26;
+const ST_LOG_PHASE = 26;
 const ST_FESTIVITY_CHOOSE_NEXT_FOILED_THREAT = 27;
 const ST_FESTIVITY_TAKE_MATCHING_CUBES = 28;
 const ST_FESTIVITY_FOIL_THREAT = 29;
 const ST_FESTIVITY_FOIL_THREAT_ADD_TO_SAFE_PILE = 30;
+const ST_END_OF_WEEK_REVEAL_THREATS = 31;
+const ST_END_OF_WEEK_SOCIETY_INVESTIGATES = 32;
+const ST_END_OF_WEEK_CHECK_FOR_RAIDS = 33;
+const ST_END_OF_WEEK_CHECK_GAME_END = 34;
+const ST_END_OF_WEEK_ENCOUNTER_SOCIETY = 35;
+const ST_END_OF_WEEK_CLEANUP = 36;
 
 /**
  * Game state names
@@ -85,11 +91,17 @@ const FESTIVITY_SCORE_JOY = 'FestivityScoreJoy';
 const FESTIVITY_SCORE_BONUS = 'FestivityScoreBonus';
 const FESTIVITY_GENERATE_GOSSIP = 'FestivityGenerateGossip';
 const FESTIVITY_SELECT_WINNING_SET = 'FestivitySelectWinningSet';
-const LOG_STEP = 'LogStep';
+const LOG_PHASE = 'LogPhase';
 const FESTIVITY_CHOOSE_NEXT_FOILED_THREAT = 'FestivityChooseNextFoiledThreat';
 const FESTIVITY_TAKE_MATCHING_CUBES = 'FestivityTakeMatchingCubes';
 const FESTIVITY_FOIL_THREAT = 'FestivityFoilThreat';
 const FESTIVITY_FOIL_THREAT_ADD_TO_SAFE_PILE = 'FestivityFoilThreatAddToSafePile';
+const END_OF_WEEK_REVEAL_THREATS = 'EndOfWeekRevealThreats';
+const END_OF_WEEK_SOCIETY_INVESTIGATES = 'EndOfWeekSocietyInvestigates';
+const END_OF_WEEK_CHECK_FOR_RAIDS = 'EndOfWeekCheckForRaids';
+const END_OF_WEEK_CHECK_GAME_END = 'EndOfWeekCheckGameEnd';
+const END_OF_WEEK_ENCOUNTER_SOCIETY = 'EndOfWeekEncounterSociety';
+const END_OF_WEEK_CLEANUP = 'EndOfWeekCleanup';
 
 /**
  * Card types
@@ -234,3 +246,6 @@ const SUIT_COLOR_MAP = [
   FANS => GREEN,
   HEARTS => RED,
 ];
+
+const START_OF_TURN_MESSAGE = 'startOfTurnMessage';
+const MOVE_WEEK_MARKER = 'moveWeekMarker';

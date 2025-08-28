@@ -32,6 +32,17 @@ const SITE_POSITIONS: Record<string, AbsolutePosition> = {
   [LINCOLNS_INN_BOGHOUSE]: { top: 288, left: 83 },
 }
 
+const DANGEROUS_CRUISING_MARKERS_POSITIONS: Record<string, AbsolutePosition> = {
+  [ST_PAULS_CATHEDRAL]: { top: 60, left: 355 },
+  [MOORFIELDS]: { top: 60, left: 745 },
+  [ROYAL_EXCHANGE]: { top: 355, left:  1107},
+  [LONDON_BRIDGE]: { top: 746, left: 1107 },
+  [OLD_ROUND_COURT]: { top: 1041, left: 745 },
+  [ST_JAMESS_PARK]: { top: 1041, left: 355 },
+  [COVENT_GARDEN_PIAZZA]: { top: 746, left: -6 },
+  [LINCOLNS_INN_BOGHOUSE]: { top: 355, left: -6 },
+}
+
 const getPawnPosition = (location: string, index: number): AbsolutePosition => {
 
   let position = { top: 0, left: 0 };
@@ -74,3 +85,54 @@ const SITE_SELECT_POSITIONS: Record<string, AbsolutePosition & {width: number; h
   [DUKE_STREET]: { top: 485, left: 28, width: 168, height: 185 },
   [LINCOLNS_INN_BOGHOUSE]: { top: 289, left: 28, width: 168, height: 185 },
 };
+
+const CURRENT_WEEK_MARKER_POSITIONS: Record<number, AbsolutePosition> = {
+  1: { top: 613, left: 1359 },
+  2: { top: 653, left: 1359 },
+  3: { top: 693, left: 1359 },
+  4: { top: 734, left: 1359 },
+  5: { top: 774, left: 1359 },
+}
+
+const JOY_MARKER_POSITIONS: Record<number, AbsolutePosition> = {
+  0: { top: 20, left: 1304 },
+  1: { top: 20, left: 1354 },
+  2: { top: 24, left: 1404 },
+  3: { top: 71, left: 1417 },
+  4: { top: 102, left: 1377 },
+  5: { top: 105, left: 1325 },
+  6: { top: 142, left: 1288 },
+  7: { top: 184, left: 1319 },
+  8: { top: 194, left: 1370 },
+  9: { top: 178, left: 1419 },
+  10: { top: 228, left: 1431 },
+  11: { top: 274, left: 1412 },
+  12: { top: 268, left: 1363 },
+  13: { top: 258, left: 1314 },
+  14: { top: 306, left: 1293 },
+  15: { top: 356, left: 1289 },
+  16: { top: 395, left: 1325 },
+  17: { top: 359, left: 1363 },
+  18: { top: 353, left: 1414 },
+  19: { top: 401, left: 1428 },
+  20: { top: 454, left: 1427 },
+  21: { top: 451, left: 1375 },
+  22: { top: 492, left: 1346 },
+  23: { top: 485, left: 1296 },
+  24: { top: 534, left: 1286 },
+  25: { top: 585, left: 1304 },
+  26: { top: 565, left: 1349 },
+  27: { top: 551, left: 1391 },
+  28: { top: 576, left: 1428 },
+  29: { top: 620, left: 1431 },
+  30: { top: 662, left: 1415 },
+  31: { top: 706, left: 1423 },
+  32: { top: 750, left: 1427 },
+  33: { top: 795, left: 1433 },
+  34: { top: 823, left: 1399 },
+  35: { top: 825, left: 1353 },
+  36: { top: 816, left: 1309 },
+  37: { top: 778, left: 1286 },
+  38: { top: 733, left: 1288 },
+  39: { top: 688, left: 1293 },
+}

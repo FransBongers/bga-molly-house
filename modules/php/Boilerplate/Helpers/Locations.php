@@ -25,4 +25,9 @@ class Locations
   {
     return 'reputation_' . $playerId;
   }
+
+  public static function indictments($playerId)
+  {
+    return 'indictments_' . $playerId;
+  }
 }

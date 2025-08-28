@@ -2,10 +2,12 @@
 
 namespace Bga\Games\MollyHouse\Models;
 
+use Bga\Games\MollyHouse\Boilerplate\Core\Globals;
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
 use Bga\Games\MollyHouse\Boilerplate\Core\Preferences;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
+use Bga\Games\MollyHouse\Managers\IndictmentCards;
 use Bga\Games\MollyHouse\Managers\Pawns;
 use Bga\Games\MollyHouse\Managers\PlayerCubes;
 use Bga\Games\MollyHouse\Managers\ViceCards;
@@ -144,7 +146,6 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
       $viceCard->addToGossip($this);
     }
     PlayerCubes::gainCubes($this, $suit, $numberOfCubes);
-    
   }
 
   public function getReputationForSuit($suit)
@@ -169,13 +170,37 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     $currentScore = $this->getScore();
     $amount = $amount > $currentScore ? $currentScore : $amount;
 
-    $this->incScore(-$amount);
-    Notifications::loseJoy($this, $amount);
+    $total = $this->incScore(-$amount);
+    Notifications::loseJoy($this, $amount, $total);
   }
 
   public function scoreJoy($amount)
   {
-    $this->incScore($amount);
-    Notifications::scoreJoy($this, $amount);
+    $total = $this->incScore($amount);
+    Notifications::scoreJoy($this, $amount, $total);
+  }
+
+
+  public function gainIndictment($majorOrMinor)
+  {
+    $fromLocation = Locations::indicmentDeck($majorOrMinor);
+    $indictment = IndictmentCards::getTopOf($fromLocation);
+    if ($indictment === null) {
+      if ($majorOrMinor === MAJOR) {
+        $this->loseJoy(8);
+      } else {
+        $this->loseJoy(4);
+      }
+      return;
+    }
+    $indictment->setLocation(Locations::indictments($this->getId()));
+
+    Notifications::gainIndictment($this, $indictment, $majorOrMinor);
+  }
+
+  public function takeCandelabra()
+  {
+    Globals::setCandelabra($this->getId());
+    Notifications::takeCandelabra($this);
   }
 }

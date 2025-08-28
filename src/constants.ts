@@ -1,4 +1,6 @@
 const COMMUNITY = 'community';
+const CURRENT_WEEK_MARKER = 'currentWeekMarker';
+const COMMUNITY_JOY_MARKER = 'communityJoyMarker';
 
 /**
  * Actions
@@ -118,6 +120,22 @@ const SHOP_SITES = [
   DUKE_STREET,
 ];
 
+const TOP = 'top';
+const BOTTOM = 'bottom';
+const LEFT = 'left';
+const RIGHT = 'right';
+
+const CRUISING_SITES = {
+  [ST_PAULS_CATHEDRAL]: TOP,
+  [MOORFIELDS]: TOP,
+  [ROYAL_EXCHANGE]: RIGHT,
+  [LONDON_BRIDGE]: RIGHT,
+  [OLD_ROUND_COURT]: BOTTOM,
+  [ST_JAMESS_PARK]: BOTTOM,
+  [COVENT_GARDEN_PIAZZA]: LEFT,
+  [LINCOLNS_INN_BOGHOUSE]: LEFT,
+}
+
 /**
  * Items
  */
@@ -154,3 +172,5 @@ const FESTIVITIES = [
   DANCE,
   QUIET_GATHERING,
 ];
+
+const MOVE_WEEK_MARKER = 'moveWeekMarker';

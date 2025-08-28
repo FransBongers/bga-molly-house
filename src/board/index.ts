@@ -5,12 +5,16 @@ class Board {
   public diceStock: LineDiceStock;
   public gossipPile: LineStock<ViceCard>;
   public counters: Record<string, Counter> = {};
+  public evidenceCounters: Record<string, CubeCounter> = {};
 
   public ui: {
     containers: {
       board: HTMLElement;
+      dangerousCruisingMarkers: HTMLElement;
+      evidenceCounters: HTMLElement;
       gossipPile: HTMLElement;
       houseRaidedMarkers: HTMLElement;
+      markers: HTMLElement;
       pawns: HTMLElement;
       tokens: {
         joy?: HTMLElement;
@@ -19,11 +23,15 @@ class Board {
       selectBoxes: HTMLElement;
     };
     diceStock: HTMLElement;
+    dangerousCruisingMarkers: Record<string, HTMLElement>;
     houseRaidedMarkers: Record<string, HTMLElement>;
+    markers: Record<string, HTMLElement>;
     pawns: Record<string, HTMLElement>;
     selectBoxes: Record<string, HTMLElement>;
   };
   public sites: Record<string, MohoPawn[]> = {};
+
+  public joyMarkerStocks: Record<number, LineStock<MohoJoyMarker>> = {};
 
   constructor(game: GameAlias) {
     this.game = game;
@@ -55,28 +63,57 @@ class Board {
     this.ui = {
       containers: {
         board: document.getElementById('moho-board'),
+        dangerousCruisingMarkers: document.getElementById(
+          'moho-dangerous-cruising-markers'
+        ),
+        evidenceCounters: document.getElementById('moho-evidence-counters'),
         gossipPile: document.getElementById('moho-gossip-pile'),
+        markers: document.getElementById('moho-markers'),
         pawns: document.getElementById('moho-pawns'),
         tokens: {},
         selectBoxes: document.getElementById('moho-select-boxes'),
         houseRaidedMarkers: document.getElementById('house-raided-markers'),
       },
+      dangerousCruisingMarkers: {},
       diceStock: document.getElementById('moho-dice-stock'),
       houseRaidedMarkers: {},
+      markers: {},
       pawns: {},
       selectBoxes: {},
     };
 
+    this.setupDangerousCruisingMarkers(gamedatas);
+    this.setupEvidenceCounters(gamedatas);
     this.setupGossipPile(gamedatas);
-    this.setupHouseRaidedMarkers();
-
+    this.setupHouseRaidedMarkers(gamedatas);
+    this.setupWeekMarker(gamedatas);
+    this.setupJoyMarkers(gamedatas);
     this.setupDiceStock(gamedatas);
     this.setupSelectBoxes();
     this.setupSites();
     // Needs to happen aftert setupSites, as it uses the sites
     this.setupPawns(gamedatas);
-    this.setupTokens(gamedatas);
+    // this.setupTokens(gamedatas);
     this.setFestivityActive(gamedatas.festivity.active);
+  }
+
+  private setupDangerousCruisingMarkers(gamedatas: GamedatasAlias) {
+    Object.entries(CRUISING_SITES).forEach(([siteId, sideOfBoard]) => {
+      const elt = (this.ui.dangerousCruisingMarkers[siteId] =
+        document.createElement('div'));
+      elt.classList.add('moho-dangerous-cruising-marker');
+      elt.setAttribute('data-site', siteId);
+      elt.setAttribute('data-dangerous', 'false');
+      elt.setAttribute('data-side-of-board', sideOfBoard);
+      setAbsolutePosition(
+        elt,
+        BOARD_SCALE,
+        DANGEROUS_CRUISING_MARKERS_POSITIONS[siteId]
+      );
+      this.ui.containers.dangerousCruisingMarkers.appendChild(elt);
+    });
+
+    this.updateDangeousCruisingMarkers(gamedatas);
   }
 
   private setupDiceStock(gamedatas: GamedatasAlias) {
@@ -90,6 +127,22 @@ class Board {
     this.diceStock.addDice(getDice(gamedatas.dice));
   }
 
+  private setupEvidenceCounters(gamedatas: GamedatasAlias) {
+    MOLLY_HOUSES.forEach((siteId) => {
+      this.evidenceCounters[siteId] = new CubeCounter({
+        id: `cubes-${siteId}`,
+        initialValue: gamedatas.sites[siteId].evidence,
+        parentElement: this.ui.containers.evidenceCounters,
+        color: SUIT_COLOR_MAP[
+          StaticData.get().site(siteId).suit
+        ] as CubeCounterProps['color'],
+        type: 'overlap',
+      });
+    });
+
+    this.updateEvidenceCounters(gamedatas);
+  }
+
   private setupGossipPile(gamedatas: GamedatasAlias) {
     this.gossipPile = new LineStock<ViceCard>(
       this.game.viceCardManager,
@@ -100,7 +153,7 @@ class Board {
     this.updateGossipPile(gamedatas);
   }
 
-  private setupHouseRaidedMarkers() {
+  private setupHouseRaidedMarkers(gamedatas: GamedatasAlias) {
     MOLLY_HOUSES.forEach((house) => {
       const elt = (this.ui.houseRaidedMarkers[house] =
         document.createElement('div'));
@@ -109,6 +162,35 @@ class Board {
       elt.setAttribute('data-raided', 'false');
       this.ui.containers.houseRaidedMarkers.appendChild(elt);
     });
+
+    this.updateHouseRaidedMarkers(gamedatas);
+  }
+
+  private setupWeekMarker(gamedatas) {
+    const elt = (this.ui.markers[CURRENT_WEEK_MARKER] =
+      document.createElement('div'));
+    elt.id = 'moho-week-marker';
+    this.ui.containers.markers.appendChild(elt);
+
+    this.updateWeekMarker(gamedatas);
+  }
+
+  private setupJoyMarkers(gamedatas: GamedatasAlias) {
+    for (let i = 0; i <= 39; i++) {
+      const elt = document.createElement('div');
+      elt.classList.add('moho-joy-marker-stock');
+      setAbsolutePosition(elt, BOARD_SCALE, JOY_MARKER_POSITIONS[i]);
+      this.ui.containers.markers.appendChild(elt);
+      this.joyMarkerStocks[i] = new LineStock<MohoJoyMarker>(
+        this.game.joyMarkerManager,
+        elt,
+        {
+          gap: '0',
+          direction: 'row',
+        }
+      );
+    }
+    this.updateJoyMarkers(gamedatas);
   }
 
   private setupPawns(gamedatas: GamedatasAlias) {
@@ -121,18 +203,18 @@ class Board {
     this.updatePawns(pawns);
   }
 
-  private setupTokens(gamedatas: GamedatasAlias) {
-    ['joy', 'week'].forEach((pawn) => {
-      const elt = (this.ui.containers.pawns[pawn] =
-        document.createElement('div'));
-      elt.id = pawn;
-      elt.classList.add('moho-token');
-      elt.setAttribute('data-type', pawn);
-      this.ui.containers.board.appendChild(elt);
-    });
+  // private setupTokens(gamedatas: GamedatasAlias) {
+  //   ['joy', 'week'].forEach((pawn) => {
+  //     const elt = (this.ui.containers.pawns[pawn] =
+  //       document.createElement('div'));
+  //     elt.id = pawn;
+  //     elt.classList.add('moho-token');
+  //     elt.setAttribute('data-type', pawn);
+  //     this.ui.containers.board.appendChild(elt);
+  //   });
 
-    // this.updateTokens(gamedatas);
-  }
+  //   // this.updateTokens(gamedatas);
+  // }
 
   private setupSites() {
     SITES.forEach((site) => {
@@ -234,8 +316,51 @@ class Board {
     setAbsolutePosition(this.ui.containers.pawns[type], BOARD_SCALE, position);
   }
 
+  updateDangeousCruisingMarkers(gamedatas: GamedatasAlias) {
+    Object.keys(CRUISING_SITES).forEach((siteId) => {
+      if (gamedatas.sites[siteId].raidedOrDangerous) {
+        this.setCruisingSiteDangerous(siteId);
+      }
+    });
+  }
+
+  updateEvidenceCounters(gamedatas: GamedatasAlias) {}
+
   updateGossipPile(gamedatas: GamedatasAlias) {
     this.counters[GOSSIP_PILE].setValue(gamedatas.gossipPileCount);
+  }
+
+  updateHouseRaidedMarkers(gamedatas: GamedatasAlias) {
+    MOLLY_HOUSES.forEach((siteId) => {
+      if (gamedatas.sites[siteId].raidedOrDangerous) {
+        this.setMollyHouseRaided(siteId);
+      }
+    });
+  }
+
+  updateJoyMarkers(gamedatas: GamedatasAlias) {
+    this.joyMarkerStocks[gamedatas.communityJoy].addCard({
+      id: COMMUNITY_JOY_MARKER,
+      color: COMMUNITY_JOY_MARKER,
+      hanged: false,
+    });
+
+    Object.values(gamedatas.players).forEach((player) => {
+      this.joyMarkerStocks[player.score].addCard({
+        id: player.id,
+        color: HEX_COLOR_COLOR_MAP[player.color],
+        hanged: false,
+      });
+    });
+  }
+
+  updateWeekMarker(gamedatas: GamedatasAlias) {
+    const currentWeek = gamedatas.currentWeek;
+    setAbsolutePosition(
+      this.ui.markers[CURRENT_WEEK_MARKER],
+      BOARD_SCALE,
+      CURRENT_WEEK_MARKER_POSITIONS[currentWeek]
+    );
   }
 
   updatePawns(pawns: MohoPawn[]) {
@@ -251,6 +376,31 @@ class Board {
   //  .##.....##....##.....##..##........##.....##.......##...
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
+
+  public async moveWeekMarker(week: number) {
+    const fromRect =
+      this.ui.markers[CURRENT_WEEK_MARKER].getBoundingClientRect();
+    setAbsolutePosition(
+      this.ui.markers[CURRENT_WEEK_MARKER],
+      BOARD_SCALE,
+      CURRENT_WEEK_MARKER_POSITIONS[week]
+    );
+    await this.game.animationManager.play(
+      new BgaSlideAnimation({
+        element: this.ui.markers[CURRENT_WEEK_MARKER],
+        transitionTimingFunction: 'ease-in-out',
+        fromRect,
+      })
+    );
+  }
+
+  public setMollyHouseRaided(mollyHouseId: string) {
+    this.ui.houseRaidedMarkers[mollyHouseId].dataset.raided = 'true';
+  }
+
+  public setCruisingSiteDangerous(siteId: string) {
+    this.ui.dangerousCruisingMarkers[siteId].dataset.dangerous = 'true';
+  }
 
   public pawnAlreadyOnSite(pawnId: string, location: string) {
     return this.sites[location].some(

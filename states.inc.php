@@ -386,8 +386,8 @@ $machinestates = [
         ])
         ->build(),
 
-    ST_LOG_STEP => GameStateBuilder::create()
-        ->name(LOG_STEP)
+    ST_LOG_PHASE => GameStateBuilder::create()
+        ->name(LOG_PHASE)
         ->description('')
         ->type(StateType::GAME)
         ->action('stAtomicAction')
@@ -428,6 +428,53 @@ $machinestates = [
 
     ST_FESTIVITY_FOIL_THREAT_ADD_TO_SAFE_PILE => GameStateBuilder::create()
         ->name(FESTIVITY_FOIL_THREAT_ADD_TO_SAFE_PILE)
+        ->description('')
+        ->type(StateType::GAME)
+        ->action('stAtomicAction')
+        ->build(),
+
+    ST_END_OF_WEEK_REVEAL_THREATS => GameStateBuilder::create()
+        ->name(END_OF_WEEK_REVEAL_THREATS)
+        ->description('')
+        ->type(StateType::GAME)
+        ->action('stAtomicAction')
+        ->build(),
+
+    ST_END_OF_WEEK_SOCIETY_INVESTIGATES => GameStateBuilder::create()
+        ->name(END_OF_WEEK_SOCIETY_INVESTIGATES)
+        ->description('')
+        ->type(StateType::GAME)
+        ->action('stAtomicAction')
+        ->build(),
+
+    ST_END_OF_WEEK_CHECK_FOR_RAIDS => GameStateBuilder::create()
+        ->name(END_OF_WEEK_CHECK_FOR_RAIDS)
+        ->description('')
+        ->type(StateType::GAME)
+        ->action('stAtomicAction')
+        ->build(),
+
+    ST_END_OF_WEEK_CHECK_GAME_END => GameStateBuilder::create()
+        ->name(END_OF_WEEK_CHECK_GAME_END)
+        ->description('')
+        ->type(StateType::GAME)
+        ->action('stAtomicAction')
+        ->build(),
+
+    ST_END_OF_WEEK_ENCOUNTER_SOCIETY => GameStateBuilder::create()
+        ->name(END_OF_WEEK_ENCOUNTER_SOCIETY)
+        ->description(clienttranslate('${actplayer} must resolve their encounter with the Society'))
+        ->descriptionmyturn(clienttranslate('${you} must resolve your encounter with the Society'))
+        ->type(StateType::ACTIVE_PLAYER)
+        ->args('argsAtomicAction')
+        ->possibleactions([
+            'actEndOfWeekEncounterSociety',
+            'actPass',
+        ])
+        ->build(),
+
+    ST_END_OF_WEEK_CLEANUP => GameStateBuilder::create()
+        ->name(END_OF_WEEK_CLEANUP)
         ->description('')
         ->type(StateType::GAME)
         ->action('stAtomicAction')

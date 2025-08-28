@@ -23,8 +23,8 @@ class MollyCard extends \Bga\Games\MollyHouse\Models\ViceCard
   public function scoreBonusJoy($player)
   {
     $bonusJoy = $this->bonusJoy;
-    $player->incScore($bonusJoy);
-    Notifications::scoreBonusJoy($player, $bonusJoy, $this);
+    $totalScore = $player->incScore($bonusJoy);
+    Notifications::scoreBonusJoy($player, $bonusJoy, $this, $totalScore);
   }
 
   public function scoreJoy($playerOrCommunity)

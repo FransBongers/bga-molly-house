@@ -342,6 +342,55 @@ class Notifications
     ]);
   }
 
+  public static function endOfWeekAddCardToGossipPile()
+  {
+    self::notifyAll('endOfWeekAddCardToGossipPile', clienttranslate('A card is added to the gossip pile'), []);
+  }
+
+  public static function endOfWeekDiscardToSafePile($cards)
+  {
+    $number = count($cards);
+
+    self::notifyAll('endOfWeekDiscardToSafePile', clienttranslate('${tkn_boldText_number} cards from the gossip pile are added to the safe pile'), [
+      'cards' => $cards,
+      'number' => $number,
+      'tkn_boldText_number' => $number,
+    ]);
+  }
+
+  public static function endOfWeekMollyHouseRaided($site, $adjacentSites)
+  {
+    self::notifyAll('endOfWeekMollyHouseRaided', clienttranslate('${tkn_boldText_mollyHouse} is raided!'), [
+      'mollyHouse' => $site,
+      'adjacentSites' => $adjacentSites,
+      'tkn_boldText_mollyHouse' => $site->getName(),
+      'i18n' => ['tkn_boldText_mollyHouse'],
+    ]);
+  }
+
+  public static function endOfWeekCreateViceDeck($cards)
+  {
+
+    self::notifyAll('endOfWeekCreateViceDeck', clienttranslate('A new vice deck is created and shuffled'), [
+      'cards' => array_map(function ($card) {
+        return $card->jsonSerialize();
+      }, $cards),
+    ]);
+  }
+
+  public static function endOfWeekGenerateEvidence($site, $number)
+  {
+
+    self::notifyAll('endOfWeekGenerateEvidence', clienttranslate('Evidence generated against ${tkn_boldText_mollyHouse}: ${tkn_boldText_number} ${tkn_cube}'), [
+      'site' => $site,
+      'number' => $number,
+      'tkn_boldText_number' => $number,
+      'tkn_boldText_mollyHouse' => $site->getName(),
+      'tkn_cube' => self::tknCube($site->getSuit()),
+      'i18n' => ['tkn_boldText_number', 'tkn_boldText_mollyHouse'],
+    ]);
+  }
+
   public static function festivityEnd()
   {
     self::notifyAll('festivityEnd', '', []);
@@ -431,11 +480,30 @@ class Notifications
     ]);
   }
 
-  public static function loseJoy($player, $amount)
+  public static function gainIndictment($player, $indictment, $majorOrMinor)
+  {
+    $text = $majorOrMinor === MAJOR
+      ? clienttranslate('${player_name} gains a major indictment')
+      : clienttranslate('${player_name} gains a minor indictment');
+
+    self::notify($player, 'gainIndictmentPrivate', $text, [
+      'player' => $player,
+      'indictment' => $indictment,
+      'majorOrMinor' => $majorOrMinor,
+    ]);
+
+    self::notifyAll('gainIndictment', $text, [
+      'majorOrMinor' => $majorOrMinor,
+      'player' => $player,
+    ]);
+  }
+
+  public static function loseJoy($player, $amount, $total)
   {
     self::notifyAll('loseJoy', clienttranslate('${player_name} loses ${tkn_boldText_amount} joy'), [
       'player' => $player,
       'amount' => $amount,
+      'total' => $total,
       'tkn_boldText_amount' => $amount,
       'i18n' => ['tkn_boldText_amount'],
     ]);
@@ -449,6 +517,13 @@ class Notifications
       'tkn_boldText_community' => clienttranslate('community'),
       'tkn_boldText_amount' => $joyDecrease,
       'i18n' => ['tkn_boldText_amount', 'tkn_boldText_community'],
+    ]);
+  }
+
+  public static function takeCandelabra($player)
+  {
+    self::notifyAll('takeCandelabra', clienttranslate('${player_name} takes the candelabra'), [
+      'player' => $player,
     ]);
   }
 
@@ -475,12 +550,36 @@ class Notifications
     ]);
   }
 
+  public static function phase($text, $args = [])
+  {
+    self::notifyAll('phase', $text, $args);
+  }
+
   public static function refillMarket($player, $movedCards, $addedCards)
   {
-    self::notifyAll('refillMarket', clienttranslate('${player_name} refills the market'), [
-      'player' => $player,
+    $args = [
       'movedCards' => $movedCards,
       'addedCards' => $addedCards,
+    ];
+
+    if ($player !== null) {
+      $args['player'] = $player;
+    }
+
+    $text = $player === null ? clienttranslate('Vacant market spaces are refilled') : clienttranslate('${player_name} refills the market');
+
+    self::notifyAll('refillMarket', $text, $args);
+  }
+
+  public static function revealThreat($player, $card)
+  {
+    self::notifyAll('revealThreat', clienttranslate('${player_name} reveals ${tkn_boldText_cardValue} of ${tkn_suit}'), [
+      'player' => $player,
+      'card' => $card,
+      'tkn_viceCard' => self::tknViceCard($card),
+      'tkn_boldText_cardValue' => self::viceCardValueText($card->getDisplayValue()),
+      'tkn_suit' => $card->getSuit(),
+      'i18n' => ['tkn_boldText_cardValue'],
     ]);
   }
 
@@ -494,11 +593,12 @@ class Notifications
     ]);
   }
 
-  public static function scoreBonusJoy($player, $amount, $card)
+  public static function scoreBonusJoy($player, $amount, $card, $totalScore)
   {
     self::notifyAll('scoreBonusJoy', clienttranslate('${player_name} scores ${tkn_boldText_amount} bonus joy with ${tkn_boldText_cardValue} of ${tkn_suit}${tkn_viceCard}'), [
       'player' => $player,
       'amount' => $amount,
+      'total' => $totalScore,
       'tkn_boldText_amount' => $amount,
       'tkn_boldText_cardValue' => self::viceCardValueText($card->getDisplayValue()),
       'tkn_suit' => $card->getSuit(),
@@ -508,11 +608,12 @@ class Notifications
   }
 
 
-  public static function scoreJoy($player, $amount)
+  public static function scoreJoy($player, $amount, $total)
   {
     self::notifyAll('scoreJoy', clienttranslate('${player_name} scores ${tkn_boldText_amount} joy!'), [
       'player' => $player,
       'amount' => $amount,
+      'total' => $total,
       'tkn_boldText_amount' => $amount,
       'i18n' => ['tkn_boldText_amount'],
     ]);
@@ -560,13 +661,6 @@ class Notifications
       'tkn_suit' => $card->getSuit(),
       'you' => '${you}',
       'i18n' => ['tkn_boldText_cardValue'],
-    ]);
-  }
-
-  public static function startOfTurn($player)
-  {
-    self::notifyAll('startOfTurn', clienttranslate('${player_name} starts their turn'), [
-      'player' => $player,
     ]);
   }
 
