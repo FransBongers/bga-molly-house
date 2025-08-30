@@ -30,4 +30,9 @@ class Locations
   {
     return 'indictments_' . $playerId;
   }
+
+  public static function item($playerId, $spot)
+  {
+    return 'item_' . $spot . '_' . $playerId;
+  }
 }

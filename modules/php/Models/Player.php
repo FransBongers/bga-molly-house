@@ -8,6 +8,7 @@ use Bga\Games\MollyHouse\Boilerplate\Core\Preferences;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 use Bga\Games\MollyHouse\Managers\IndictmentCards;
+use Bga\Games\MollyHouse\Managers\Items;
 use Bga\Games\MollyHouse\Managers\Pawns;
 use Bga\Games\MollyHouse\Managers\PlayerCubes;
 use Bga\Games\MollyHouse\Managers\ViceCards;
@@ -66,6 +67,7 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
         'reputation' => ViceCards::getInLocationOrdered(Locations::reputation($this->getId()))->toArray(),
         'cubes' => PlayerCubes::getCubesForPlayer($this->getId()),
         // 'pawn' => Pawns::getPlayerPawn($this),
+        'items' => $this->getItems(),
       ],
     );
   }
@@ -202,5 +204,36 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   {
     Globals::setCandelabra($this->getId());
     Notifications::takeCandelabra($this);
+  }
+
+  public function getItems()
+  {
+    $items = [];
+    foreach([1,2] as $spot) {
+      $itemInSpot = Items::getInLocation(Locations::item($this->getId(), $spot))->toArray();
+      if (count($itemInSpot) > 0) {
+        $items[] = $itemInSpot[0];
+      }
+    }
+    return $items;
+  }
+
+  public function getEmptyItemSpot()
+  {
+    foreach([1,2] as $spot) {
+      $location = Locations::item($this->getId(), $spot);
+      $itemInSpot = Items::getInLocation($location)->toArray();
+      if (count($itemInSpot) === 0) {
+        return $location;
+      }
+    }
+    throw new \feException("ERROR_020");
+  }
+
+  public function takeItem($item, $site)
+  {
+    $location = $this->getEmptyItemSpot();
+    $item->setLocation($location);
+    Notifications::takeItem($this, $item, $site);
   }
 }

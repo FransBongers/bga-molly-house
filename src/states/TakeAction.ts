@@ -3,6 +3,7 @@ interface OnEnteringTakeActionArgs extends CommonStateArgs {
     Cruise?: Record<string, ViceCardBase>;
     Indulge: Record<string, ViceCardBase>;
     LieLow: boolean;
+    Shop?: MohoItemBase | null;
     ThrowFestivity?: boolean;
   };
   site: MohoSiteBase;
@@ -67,7 +68,7 @@ class TakeAction implements State {
         callback: () => {
           this.updateInterfaceConfirm(THROW_FESTIVITY, '');
         },
-      })
+      });
     }
 
     Object.values(this.args._private.Indulge || {}).forEach((card) => {
@@ -81,6 +82,11 @@ class TakeAction implements State {
         this.updateInterfaceConfirm(CRUISE, card.id)
       );
     });
+    if (this.args._private.Shop) {
+      onClick(document.getElementById(this.args._private.Shop.id), () =>
+        this.updateInterfaceConfirm(SHOP, this.args._private.Shop.id)
+      );
+    }
 
     // addPrimaryActionButton({
     //   id: 'continue_btn',
@@ -138,6 +144,9 @@ class TakeAction implements State {
       case LIE_LOW:
         setSelected(document.getElementById('moho-deck'));
         break;
+      case SHOP:
+        setSelected(document.getElementById(target));
+        break;
       default:
         break;
     }
@@ -145,7 +154,9 @@ class TakeAction implements State {
 
   private updateConfirmTitle(action: string, target: string) {
     const site = StaticData.get().site(this.args.site.id).name;
-    console.log(`Updating confirm title for action: ${action}, target: ${target}`);
+    console.log(
+      `Updating confirm title for action: ${action}, target: ${target}`
+    );
     switch (action) {
       case CRUISE:
         updatePageTitle(
@@ -161,9 +172,7 @@ class TakeAction implements State {
         break;
       case INDULGE:
         updatePageTitle(
-          _(
-            'Indulge at ${site} and add ${value} of ${tkn_suit} to your hand'
-          ),
+          _('Indulge at ${site} and add ${value} of ${tkn_suit} to your hand'),
           {
             site,
             value: StaticData.get().viceCard(target).displayValue,
@@ -179,13 +188,16 @@ class TakeAction implements State {
           }
         );
         break;
+      case SHOP:
+        updatePageTitle(_('Take ${itemName} at ${site}?'), {
+          site,
+          itemName: _(getItem(this.args._private.Shop).name),
+        });
+        break;
       case THROW_FESTIVITY:
-        updatePageTitle(
-          _('Throw a Festivity at ${site}?'),
-          {
-            site,
-          }
-        );
+        updatePageTitle(_('Throw a Festivity at ${site}?'), {
+          site,
+        });
         break;
       default:
         updatePageTitle(_('Confirm your action'));

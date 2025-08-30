@@ -1,5 +1,14 @@
 @use '../base';
 
+#item-discard {
+  position: absolute;
+  top: -400px;
+  left: 0px;
+  --cardScale: 1;
+  width: 178px;
+  aspect-ratio: 402 / 265;
+}
+
 #moho-board {
   --boardScale: var(--leftColumnScale);
   --tokenScale: var(--leftColumnScale);
@@ -44,6 +53,26 @@
     .card {
       position: absolute !important;
     }
+  }
+
+  .moho-shop {
+    position: absolute;
+  }
+  #CannonStreet {
+    left: calc(var(--boardScale) * 556px);
+    top: calc(var(--boardScale) * 973px);
+  }
+  #DukeStreet {
+    left: calc(var(--boardScale) * 48px);
+    top: calc(var(--boardScale) * 517px);
+  }
+  #NobleStreet {
+    left: calc(var(--boardScale) * 556px);
+    top: calc(var(--boardScale) * 65px);
+  }
+  #LeadenhallStreet {
+    left: calc(var(--boardScale) * 1063px);
+    top: calc(var(--boardScale) * 517px);
   }
 
   .moho-pawn {
@@ -171,4 +200,3 @@
   background-size: 100% 100%;
   aspect-ratio: 132 / 174;
 }
-

@@ -1,3 +1,10 @@
+const getItem = (base: MohoItemBase): MohoItem => {
+  return {
+    ...base,
+    ...StaticData.get().item(base.id),
+  };
+};
+
 const getViceCard = (base: ViceCardBase): ViceCard => {
   return {
     ...base,

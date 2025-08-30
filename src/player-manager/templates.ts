@@ -7,7 +7,10 @@ const tplPlayerBoard = ({
 }) => {
   return `
 <div id="moho-player-row-${playerId}" class="moho-player-row">
-  <div id="moho-player-board-${playerId}" class="moho-player-board" data-color="${color}"></div>
+  <div id="moho-player-board-${playerId}" class="moho-player-board" data-color="${color}">
+    <div id="item_1_${playerId}" class="moho-item-spot" data-spot="1"></div>
+    <div id="item_2_${playerId}" class="moho-item-spot" data-spot="2"></div>
+  </div>
   <div id="moho-reputation-${playerId}" class="moho-reputation"></div>
 </div>
 

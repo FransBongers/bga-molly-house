@@ -318,6 +318,32 @@ class Notifications
     ]);
   }
 
+  public static function dealItemToShop($item, $site)
+  {
+    self::notifyAll('dealItemToShop', clienttranslate('${tkn_boldText_itemName} is dealt to ${tkn_boldText_site}'), [
+      'item' => $item,
+      'tkn_boldText_itemName' => $item->getName(),
+      'tkn_boldText_site' => $site->getName(),
+      'i18n' => ['tkn_boldText_itemName', 'tkn_boldText_site'],
+    ]);
+  }
+
+  public static function discardItem($player, $item)
+  {
+    $text = clienttranslate('${tkn_boldText_itemName} is discarded');
+    $args = [
+      'item' => $item,
+      'tkn_boldText_itemName' => $item->getName(),
+      'i18n' => ['tkn_boldText_itemName'],
+    ];
+    if ($player !== null) {
+      $text = clienttranslate('${player_name} discards ${tkn_boldText_itemName}');
+      $args['player'] = $player;
+    }
+
+    self::notifyAll('discardItem', $text, $args);
+  }
+
   public static function drawCards($player, $cards)
   {
     // TODO: cardsLog ?
@@ -661,6 +687,17 @@ class Notifications
       'tkn_suit' => $card->getSuit(),
       'you' => '${you}',
       'i18n' => ['tkn_boldText_cardValue'],
+    ]);
+  }
+
+  public static function takeItem($player, $item, $site)
+  {
+    self::notifyAll('takeItem', clienttranslate('${player_name} takes ${tkn_boldText_itemName} from ${tkn_boldText_site}'), [
+      'player' => $player,
+      'item' => $item,
+      'tkn_boldText_itemName' => $item->getName(),
+      'tkn_boldText_site' => $site->getName(),
+      'i18n' => ['tkn_boldText_itemName', 'tkn_boldText_site'],
     ]);
   }
 

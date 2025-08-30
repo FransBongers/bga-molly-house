@@ -469,6 +469,15 @@ body > .bga-dice_die {
   position: absolute;
 }
 
+#item-discard {
+  position: absolute;
+  top: -400px;
+  left: 0px;
+  --cardScale: 1;
+  width: 178px;
+  aspect-ratio: 402/265;
+}
+
 #moho-board {
   --boardScale: var(--leftColumnScale);
   --tokenScale: var(--leftColumnScale);
@@ -508,6 +517,25 @@ body > .bga-dice_die {
 }
 #moho-board #moho-gossip-pile .card {
   position: absolute !important;
+}
+#moho-board .moho-shop {
+  position: absolute;
+}
+#moho-board #CannonStreet {
+  left: calc(var(--boardScale) * 556px);
+  top: calc(var(--boardScale) * 973px);
+}
+#moho-board #DukeStreet {
+  left: calc(var(--boardScale) * 48px);
+  top: calc(var(--boardScale) * 517px);
+}
+#moho-board #NobleStreet {
+  left: calc(var(--boardScale) * 556px);
+  top: calc(var(--boardScale) * 65px);
+}
+#moho-board #LeadenhallStreet {
+  left: calc(var(--boardScale) * 1063px);
+  top: calc(var(--boardScale) * 517px);
 }
 #moho-board .moho-pawn {
   position: absolute;
@@ -1197,6 +1225,75 @@ span[style*="color:#fcd873"] {
   flex-grow: 1;
 }
 
+.moho-item {
+  width: calc(var(--cardScale) * 178px);
+  aspect-ratio: 402/265;
+  box-sizing: border-box;
+  background-image: url("img/items.jpg");
+  background-size: 500% 200%;
+  background-repeat: no-repeat;
+  border: calc(var(--cardScale) * 1px) black solid;
+  border-radius: calc(var(--cardScale) * 5px);
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: high-quality;
+  position: relative;
+}
+
+.moho-item:hover {
+  transform: scale(1.1);
+  transition: transform 0.1s ease-in-out;
+}
+
+.moho-item[data-type=BottleOfGin] {
+  background-position-x: 0%;
+  background-position-y: 0%;
+}
+
+.moho-item[data-type=Bribe] {
+  background-position-x: 25%;
+  background-position-y: 0%;
+}
+
+.moho-item[data-type=Domino] {
+  background-position-x: 50%;
+  background-position-y: 0%;
+}
+
+.moho-item[data-type=DressOfFans] {
+  background-position-x: 75%;
+  background-position-y: 0%;
+}
+
+.moho-item[data-type=DressOfCups] {
+  background-position-x: 100%;
+  background-position-y: 0%;
+}
+
+.moho-item[data-type=DressOfHearts] {
+  background-position-x: 0%;
+  background-position-y: 100%;
+}
+
+.moho-item[data-type=DressOfPentacles] {
+  background-position-x: 25%;
+  background-position-y: 100%;
+}
+
+.moho-item[data-type=NewspaperNotice] {
+  background-position-x: 50%;
+  background-position-y: 100%;
+}
+
+.moho-item[data-type=Violin] {
+  background-position-x: 75%;
+  background-position-y: 100%;
+}
+
+.moho-item[data-type=Back] {
+  background-position-x: 100%;
+  background-position-y: 100%;
+}
+
 .moho-vice-card {
   width: calc(var(--cardScale) * 161px);
   height: calc(var(--cardScale) * 225px);
@@ -1789,13 +1886,25 @@ span[style*="color:#fcd873"] {
 }
 
 .moho-player-board {
-  --boardScale: var(--rightColumnScale);
+  --playerBoardScale: var(--rightColumnScale);
   --tokenScale: var(--rightColumnScale);
+  --cardScale: var(--rightColumnScale);
   position: relative;
   background-size: 100% 100%;
-  width: calc(var(--rightColumnScale) * 600px);
+  width: calc(var(--playerBoardScale) * 600px);
   aspect-ratio: 137/60;
   outline: 1px solid black;
+}
+.moho-player-board .moho-item-spot {
+  position: absolute;
+}
+.moho-player-board .moho-item-spot[data-spot="1"] {
+  left: calc(var(--playerBoardScale) * 201px);
+  top: calc(var(--playerBoardScale) * 13px);
+}
+.moho-player-board .moho-item-spot[data-spot="2"] {
+  left: calc(var(--playerBoardScale) * 407px);
+  top: calc(var(--playerBoardScale) * 13px);
 }
 
 .moho-reputation {

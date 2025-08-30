@@ -32,8 +32,10 @@ trait DebugTrait
   {
     // Sites::get(SUKEY_BEVELLS)->setEvidence(6);
 
-
-    Notifications::log('sites', AtomicActions::get(END_OF_WEEK_CHECK_FOR_RAIDS)->gainIndictments(Sites::get(MOTHER_CLAPS)));
+    // Items::setupNewGame();
+    // Notifications::log('itemsStatic', Items::getStaticUiData());
+    Items::pickOneForLocation(DECK, Locations::item(2371052,1));
+    Items::pickOneForLocation(DECK, Locations::item(2371052,2));
 
     // DieManager::rollDice(Players::get());
     // Pawns::setupNewGame();

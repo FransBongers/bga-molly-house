@@ -9,7 +9,9 @@ use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 use Bga\Games\MollyHouse\Managers\Festivity;
+use Bga\Games\MollyHouse\Managers\Items;
 use Bga\Games\MollyHouse\Managers\Players;
+use Bga\Games\MollyHouse\Managers\Sites;
 use Bga\Games\MollyHouse\Managers\ViceCards;
 
 class EndOfWeekCleanup extends \Bga\Games\MollyHouse\Models\AtomicAction
@@ -112,7 +114,16 @@ class EndOfWeekCleanup extends \Bga\Games\MollyHouse\Models\AtomicAction
    */
   private function refillShops()
   {
-    // TODO
+    $itemsOnShops = Items::getItemsOnShops();
+    foreach ($itemsOnShops as $item) {
+      $item->discard();
+    }
+    $sites = Sites::getMany(SHOP_SITES);
+    foreach ($sites as $site) {
+      $item = Items::getTopOf(DECK);
+      $item->setLocation($site->getId());
+      Notifications::dealItemToShop($item, $site);
+    }
   }
 
   /**

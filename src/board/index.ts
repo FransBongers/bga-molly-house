@@ -6,6 +6,7 @@ class Board {
   public gossipPile: LineStock<ViceCard>;
   public counters: Record<string, Counter> = {};
   public evidenceCounters: Record<string, CubeCounter> = {};
+  public itemDiscard: VoidStock<MohoItem>;
 
   public ui: {
     containers: {
@@ -32,6 +33,7 @@ class Board {
   public sites: Record<string, MohoPawn[]> = {};
 
   public joyMarkerStocks: Record<number, LineStock<MohoJoyMarker>> = {};
+  public shops: Record<string, LineStock<MohoItem>> = {};
 
   constructor(game: GameAlias) {
     this.game = game;
@@ -91,6 +93,7 @@ class Board {
     this.setupDiceStock(gamedatas);
     this.setupSelectBoxes();
     this.setupSites();
+    this.setupShops(gamedatas);
     // Needs to happen aftert setupSites, as it uses the sites
     this.setupPawns(gamedatas);
     // this.setupTokens(gamedatas);
@@ -215,6 +218,23 @@ class Board {
 
   //   // this.updateTokens(gamedatas);
   // }
+
+  private setupShops(gamedatas: GamedatasAlias) {
+    SHOP_SITES.forEach((site) => {
+      this.shops[site] = new LineStock<MohoItem>(
+        this.game.itemManager,
+        document.getElementById(site),
+        { gap: '0px' }
+      );
+    });
+
+    this.itemDiscard = new VoidStock(
+      this.game.itemManager,
+      document.getElementById('item-discard')
+    );
+
+    this.updateShops(gamedatas);
+  }
 
   private setupSites() {
     SITES.forEach((site) => {
@@ -366,6 +386,12 @@ class Board {
   updatePawns(pawns: MohoPawn[]) {
     pawns.forEach((pawn) => {
       this.placePawn(pawn);
+    });
+  }
+
+  updateShops(gamedatas: GamedatasAlias) {
+    gamedatas.itemsOnShops.forEach((item) => {
+      this.shops[item.location].addCard(getItem(item));
     });
   }
 

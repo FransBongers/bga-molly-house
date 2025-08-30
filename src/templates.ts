@@ -1,4 +1,5 @@
 const tplPlayArea = () => `
+  <div id="item-discard"></div>
   <div id="play-area-container">
     <div id="left-column"></div>
     <div id="right-column"></div>

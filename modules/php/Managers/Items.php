@@ -39,7 +39,6 @@ class Items extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
   public static function getStaticUiData()
   {
     $pieces = self::getAll()->toArray();
-
     $data = [];
     foreach ($pieces as $index => $piece) {
       $data[$piece->getId()] = $piece->getStaticData();
@@ -87,8 +86,28 @@ class Items extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
   {
     self::setupLoadCards();
 
-    foreach(SHOP_SITES as $site) {
+    foreach (SHOP_SITES as $site) {
       self::pickOneForLocation(DECK, $site);
     }
+  }
+
+  //  .##.....##.########.####.##.......####.########.##....##
+  //  .##.....##....##.....##..##........##.....##.....##..##.
+  //  .##.....##....##.....##..##........##.....##......####..
+  //  .##.....##....##.....##..##........##.....##.......##...
+  //  .##.....##....##.....##..##........##.....##.......##...
+  //  .##.....##....##.....##..##........##.....##.......##...
+  //  ..#######.....##....####.########.####....##.......##...
+
+  public static function getItemsOnShops()
+  {
+    $itemsOnShops = [];
+    $items = self::getAll();
+    foreach ($items as $item) {
+      if (in_array($item->getLocation(), SHOP_SITES)) {
+        $itemsOnShops[] = $item;
+      }
+    }
+    return $itemsOnShops;
   }
 }

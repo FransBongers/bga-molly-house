@@ -64,6 +64,7 @@ const ST_END_OF_WEEK_CHECK_FOR_RAIDS = 33;
 const ST_END_OF_WEEK_CHECK_GAME_END = 34;
 const ST_END_OF_WEEK_ENCOUNTER_SOCIETY = 35;
 const ST_END_OF_WEEK_CLEANUP = 36;
+const ST_DISCARD_ITEM = 37;
 
 /**
  * Game state names
@@ -102,6 +103,7 @@ const END_OF_WEEK_CHECK_FOR_RAIDS = 'EndOfWeekCheckForRaids';
 const END_OF_WEEK_CHECK_GAME_END = 'EndOfWeekCheckGameEnd';
 const END_OF_WEEK_ENCOUNTER_SOCIETY = 'EndOfWeekEncounterSociety';
 const END_OF_WEEK_CLEANUP = 'EndOfWeekCleanup';
+const DISCARD_ITEM = 'DiscardItem';
 
 /**
  * Card types

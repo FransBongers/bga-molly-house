@@ -67,6 +67,8 @@ class NotificationManager {
       'addCardToSafePile',
       'addExcessCardsToGossip',
       'addExcessCardsToGossipPrivate',
+      'dealItemToShop',
+      'discardItem',
       'drawCards',
       'drawCardsPrivate',
       'endOfWeekAddCardToGossipPile',
@@ -97,6 +99,7 @@ class NotificationManager {
       'setupChooseCard',
       'setupRevealCard',
       'takeCandelabra',
+      'takeItem',
       'throwFestivity',
     ];
 
@@ -194,7 +197,7 @@ class NotificationManager {
   }
 
   async notif_phase(notif: Notif<NotifPhase>) {
-    const {phase, week} = notif.args;
+    const { phase, week } = notif.args;
     if (phase === MOVE_WEEK_MARKER && week) {
       await Board.getInstance().moveWeekMarker(week);
     }
@@ -279,6 +282,17 @@ class NotificationManager {
     });
 
     await Promise.all(promises);
+  }
+
+  async notif_dealItemToShop(notif: Notif<NotifDealItemToShop>) {
+    const { item } = notif.args;
+    await Board.getInstance().shops[item.location].addCard(getItem(item));
+  }
+
+  async notif_discardItem(notif: Notif<NotifDiscardItem>) {
+    const { item } = notif.args;
+
+    await Board.getInstance().itemDiscard.addCard(getItem(item));
   }
 
   async notif_drawCards(notif: Notif<NotifDrawCards>) {
@@ -584,6 +598,14 @@ class NotificationManager {
   async notif_takeCandelabra(notif: Notif<NotifTakeCandelabra>) {
     const { playerId } = notif.args;
     // TODO
+  }
+
+  async notif_takeItem(notif: Notif<NotifTakeItem>) {
+    const { playerId, item } = notif.args;
+
+    const player = this.getPlayer(playerId);
+
+    await player.items[item.location].addCard(getItem(item));
   }
 
   async notif_throwFestivity(notif: Notif<NotifThrowFestivity>) {

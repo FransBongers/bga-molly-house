@@ -44,6 +44,7 @@ class AtomicActions
     END_OF_WEEK_CHECK_GAME_END => END_OF_WEEK_CHECK_GAME_END,
     END_OF_WEEK_ENCOUNTER_SOCIETY => END_OF_WEEK_ENCOUNTER_SOCIETY,
     END_OF_WEEK_CLEANUP => END_OF_WEEK_CLEANUP,
+    DISCARD_ITEM => DISCARD_ITEM,
   ];
 
   public static function get($actionId, $ctx = null)

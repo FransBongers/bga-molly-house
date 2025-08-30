@@ -15,6 +15,8 @@ class MohoPlayer {
 
   public ui: Record<string, HTMLElement> = {};
 
+  public items: Record<string, LineStock<MohoItem>> = {};
+
   constructor(private game: GameAlias, player: MollyHousePlayerData) {
     this.game = game;
     const playerId = player.id;
@@ -80,6 +82,16 @@ class MohoPlayer {
       }
     );
 
+    [1, 2].forEach((value) => {
+      this.items[`item_${value}_${this.playerId}`] = new LineStock<MohoItem>(
+        this.game.itemManager,
+        document.getElementById(`item_${value}_${this.playerId}`),
+        {
+          gap: '0px',
+        }
+      );
+    });
+
     this.updatePlayerBoard(playerGamedatas);
   }
 
@@ -130,8 +142,6 @@ class MohoPlayer {
       });
     });
 
-
-
     // node.insertAdjacentElement(
     //   'afterbegin',
     //   this.cubeCounters[RED].getElement()
@@ -142,6 +152,9 @@ class MohoPlayer {
 
   updatePlayerBoard(playerGamedatas: PlayerDataAlias) {
     this.reputation.addCards(playerGamedatas.reputation.map(getViceCard));
+    playerGamedatas.items.forEach((item) => {
+      this.items[item.location].addCard(getItem(item));
+    });
   }
 
   updatePlayerPanel(gamedatas: GamedatasAlias) {}

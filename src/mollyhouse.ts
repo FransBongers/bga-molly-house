@@ -57,6 +57,7 @@ class MollyHouse implements Game {
 
   // Card managers
   public diceManager: MollyHouseDiceManager;
+  public itemManager: ItemManager;
   public viceCardManager: ViceCardManager;
   public joyMarkerManager: JoyMarkerManager;
 
@@ -78,6 +79,7 @@ class MollyHouse implements Game {
     FestivityChooseNextFoiledThreat,
     FestivityTakeMatchingCubes,
     EndOfWeekEncounterSociety,
+    DiscardItem,
   };
 
   constructor() {
@@ -136,6 +138,7 @@ class MollyHouse implements Game {
 
     StaticData.create(this);
     this.diceManager = new MollyHouseDiceManager(this);
+    this.itemManager = new ItemManager(this);
     this.viceCardManager = new ViceCardManager(this);
     this.joyMarkerManager = new JoyMarkerManager(this);
     Interaction.create(this);

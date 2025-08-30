@@ -1,5 +1,5 @@
-@use "sass:math";
-@use "sass:map";
+@use 'sass:math';
+@use 'sass:map';
 
 .moho-player-row {
   width: calc(var(--rightColumnScale) * 1000px);
@@ -10,18 +10,34 @@
 }
 
 .moho-player-board {
-  --boardScale: var(--rightColumnScale);
+  // --boardScale: var(--rightColumnScale);
+  --playerBoardScale: var(--rightColumnScale);
   --tokenScale: var(--rightColumnScale);
+  --cardScale: var(--rightColumnScale);
   position: relative;
 
   background-size: 100% 100%;
   // height: calc(var(--rightColumnScale) * 300px);
   // min-height: calc(var(--rightColumnScale) * 300px);
-  width: calc(var(--rightColumnScale) * 600px);
+  width: calc(var(--playerBoardScale) * 600px);
   aspect-ratio: 137 / 60;
   outline: 1px solid black;
   // width: 100%;
   // aspect-ratio: 30 / 15;
+
+  .moho-item-spot {
+    position: absolute;
+  }
+
+  .moho-item-spot[data-spot='1'] {
+    left: calc(var(--playerBoardScale) * 201px);
+    top: calc(var(--playerBoardScale) * 13px);
+  }
+
+  .moho-item-spot[data-spot='2'] {
+    left: calc(var(--playerBoardScale) * 407px);
+    top: calc(var(--playerBoardScale) * 13px);
+  }
 }
 
 .moho-reputation {

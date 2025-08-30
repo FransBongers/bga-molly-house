@@ -479,4 +479,17 @@ $machinestates = [
         ->type(StateType::GAME)
         ->action('stAtomicAction')
         ->build(),
+
+    ST_DISCARD_ITEM => GameStateBuilder::create()
+        ->name(DISCARD_ITEM)
+        ->description(clienttranslate('${actplayer} must discard an item'))
+        ->descriptionmyturn(clienttranslate('${you}'))
+        ->type(StateType::ACTIVE_PLAYER)
+        ->args('argsAtomicAction')
+        ->possibleactions([
+            'actDiscardItem',
+            'actPass',
+            'actTakeAtomicAction',
+        ])
+        ->build(),
 ];

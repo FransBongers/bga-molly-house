@@ -63,11 +63,11 @@ CREATE TABLE IF NOT EXISTS `indictment_cards` (
   PRIMARY KEY (`card_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 CREATE TABLE IF NOT EXISTS `items` (
-  `card_id` varchar(100) NOT NULL,
-  `card_location` varchar(32) NOT NULL,
-  `card_state` int(10) DEFAULT 0,
+  `item_id` varchar(100) NOT NULL,
+  `item_location` varchar(32) NOT NULL,
+  `item_state` int(10) DEFAULT 0,
   `type` varchar(32) NOT NULL,
-  PRIMARY KEY (`card_id`)
+  PRIMARY KEY (`item_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 CREATE TABLE IF NOT EXISTS `vice_cards` (
   `card_id` varchar(100) NOT NULL,

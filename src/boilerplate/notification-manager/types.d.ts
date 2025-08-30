@@ -42,6 +42,14 @@ interface NotifAddExcessCardsToGossipPrivate extends NotifWithPlayerArgs {
   cards: ViceCardBase[];
 }
 
+interface NotifDealItemToShop {
+  item: MohoItemBase;
+}
+
+interface NotifDiscardItem {
+  item: MohoItemBase;
+}
+
 interface NotifDrawCards extends NotifWithPlayerArgs {
   number: number;
 }
@@ -163,5 +171,9 @@ interface NotifSetupRevealCard extends NotifWithPlayerArgs {
 }
 
 interface NotifTakeCandelabra extends NotifWithPlayerArgs {}
+
+interface NotifTakeItem extends NotifWithPlayerArgs {
+  item: MohoItemBase;
+}
 
 interface NotifThrowFestivity extends NotifWithPlayerArgs {}

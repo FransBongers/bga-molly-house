@@ -1,0 +1,42 @@
+@use 'sass:math';
+@use 'sass:map';
+
+.moho-item {
+  width: calc(var(--cardScale) * 178px);
+  aspect-ratio: 402 / 265;
+
+  box-sizing: border-box;
+  background-image: url('img/items.jpg');
+  background-size: 500% 200%;
+  background-repeat: no-repeat;
+  border: calc(var(--cardScale) * 1px) black solid;
+  border-radius: calc(var(--cardScale) * 5px);
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: high-quality;
+  position: relative;
+}
+
+.moho-item:hover {
+  transform: scale(1.1);
+  transition: transform 0.1s ease-in-out;
+}
+
+$items: (
+  1: 'BottleOfGin',
+  2: 'Bribe',
+  3: 'Domino',
+  4: 'DressOfFans',
+  5: 'DressOfCups',
+  6: 'DressOfHearts',
+  7: 'DressOfPentacles',
+  8: 'NewspaperNotice',
+  9: 'Violin',
+  10: 'Back',
+);
+
+@for $i from 1 through 10 {
+  .moho-item[data-type='#{map.get($items,$i)}'] {
+    background-position-x: math.div((($i - 1) % 5 * 100%), 4);
+    background-position-y: math.div(math.floor(calc(($i - 1) / 5)) * 100%, 1);
+  }
+}

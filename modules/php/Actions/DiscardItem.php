@@ -2,15 +2,15 @@
 
 namespace Bga\Games\MollyHouse\Actions;
 
-use Bga\Games\MollyHouse\Boilerplate\Core\Engine;
-use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
+use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 use Bga\Games\MollyHouse\Managers\Items;
+use Bga\Games\MollyHouse\Managers\Sites;
 
-class Shop extends \Bga\Games\MollyHouse\Models\AtomicAction
+class DiscardItem extends \Bga\Games\MollyHouse\Models\AtomicAction
 {
   public function getState()
   {
-    return ST_SHOP;
+    return ST_DISCARD_ITEM;
   }
 
   // ....###....########...######....######.
@@ -22,11 +22,17 @@ class Shop extends \Bga\Games\MollyHouse\Models\AtomicAction
   // .##.....##.##.....##..######....######.
 
 
-  public function argsShop()
+  public function argsDiscardItem()
   {
     $info = $this->ctx->getInfo();
 
-    $data = [];
+    $items = $this->getPlayer()->getItems();
+
+    $items[] = Items::get($info['takenItemId']);
+
+    $data = [
+      'items' => $items,
+    ];
 
     return $data;
   }
@@ -47,20 +53,35 @@ class Shop extends \Bga\Games\MollyHouse\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function actPassShop()
+  public function actPassDiscardItem()
   {
     $player = self::getPlayer();
     $this->resolveAction(PASS);
   }
 
-  public function actShop($args)
+  public function actDiscardItem($args)
   {
-    self::checkAction('actShop');
+    self::checkAction('actDiscardItem');
+    $itemId = $args->itemId;
 
+    $stateArgs = $this->argsDiscardItem();
+    $item = Utils::array_find($stateArgs['items'], fn($i) => $i->getId() == $itemId);
 
+    if ($item === null) {
+      throw new \feException("ERROR_021");
+    }
 
+    $item->discard($this->getPlayer());
 
-    $this->resolveAction([], true);
+    $takenItemId = $this->ctx->getInfo()['takenItemId'];
+
+    if ($item->getId() !== $takenItemId) {
+      $takenItem = Utils::array_find($stateArgs['items'], fn($i) => $i->getId() == $takenItemId);
+      $site = Sites::get($takenItem->getLocation());
+      $this->getPlayer()->takeItem($takenItem, $site);
+    }
+
+    $this->resolveAction([]);
   }
 
   //  .##.....##.########.####.##.......####.########.##....##
@@ -71,37 +92,5 @@ class Shop extends \Bga\Games\MollyHouse\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-  public function getOptions($player, $site)
-  {
-    return Items::getTopOf($site->getId());
-  }
 
-  public function performAction($ctx, $player, $site, $item)
-  {
-    // Insert market discard first so it ends up after discard item action if necessary
-    $action = [
-      'action' => RESOLVE_MARKET_DISCARD,
-      'playerId' => $player->getId(),
-    ];
-    $ctx->insertAsBrother(Engine::buildTree($action));
-
-    $items = $player->getItems();
-    if (count($items) === 2) {
-      Notifications::message(clienttranslate('${player_name} wants to take ${tkn_boldText_itemName} from ${tkn_boldText_site}'), [
-        'player' => $player,
-        'tkn_boldText_itemName' => $item->getName(),
-        'tkn_boldText_site' => $site->getName(),
-        'i18n' => ['tkn_boldText_itemName', 'tkn_boldText_site'],
-      ]);
-      $action = [
-        'action' => DISCARD_ITEM,
-        'playerId' => $player->getId(),
-        'takenItemId' => $item->getId()
-      ];
-      $ctx->insertAsBrother(Engine::buildTree($action));
-      // player must discard an item
-    } else {
-      $player->takeItem($item, $site);
-    }
-  }
 }

@@ -24,6 +24,14 @@ class StaticData {
   // .##....##.##..........##....##.....##.##.......
   // ..######..########....##.....#######..##.......
 
+  public item(id: string): MohoItemStatic {
+    const data = this.staticData.items[id];
+    if (!data) {
+      throw new Error('FE_ERROR_003');
+    }
+    return data;
+  }
+
   public viceCard(id: string): ViceCardStaticData {
     const data = this.staticData.viceCards[id];
     if (!data) {

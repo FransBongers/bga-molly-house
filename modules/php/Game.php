@@ -267,6 +267,7 @@ class Game extends \Bga\GameFramework\Table
             'playerOrder' => Players::getTurnOrder($playerId),
             'players' => Players::getUiData($playerId),
             'staticData' => [
+                'items' => Items::getStaticUiData(),
                 'viceCards' => ViceCards::getStaticUiData(),
                 'sites' => Sites::getStaticUiData(),
             ],
@@ -276,6 +277,7 @@ class Game extends \Bga\GameFramework\Table
             'dice' => DieManager::getValues(),
             'festivity' => Festivity::getGamedatas(),
             'gossipPileCount' => ViceCards::countInLocation(GOSSIP_PILE),
+            'itemsOnShops' => Items::getItemsOnShops(),
             'market' => ViceCards::getMarket(),
             'pawns' => Pawns::getAll(),
             'safePile' => ViceCards::getInLocation(SAFE_PILE),
@@ -301,8 +303,8 @@ class Game extends \Bga\GameFramework\Table
         Pawns::setupNewGame($players, $options);
         Sites::setupNewGame($players, $options);
         PlayerCubes::setupNewGame();
-        // IndictmentCards::setupNewGame($players, $options);
-        // Items::setupNewGame($players, $options);
+        IndictmentCards::setupNewGame($players, $options);
+        Items::setupNewGame($players, $options);
 
         $players = Players::getAll()->toArray();
 

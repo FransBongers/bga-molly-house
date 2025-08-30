@@ -98,6 +98,10 @@ class TakeAction extends \Bga\Games\MollyHouse\Models\AtomicAction
       throw new \feException("ERROR_008");
     }
 
+    if ($takenAction === SHOP && (!isset($options[SHOP]) || $options[SHOP]->getId() !== $target)) {
+      throw new \feException("ERROR_019");
+    }
+
     switch ($takenAction) {
       case ACCUSE:
         AtomicActions::get(ACCUSE)->actAccuse($args);
@@ -110,6 +114,9 @@ class TakeAction extends \Bga\Games\MollyHouse\Models\AtomicAction
         break;
       case CRUISE:
         AtomicActions::get(CRUISE)->performAction($player, $stateArgs['site'], $options[CRUISE][$target]);
+        break;
+      case SHOP:
+        AtomicActions::get(SHOP)->performAction($this->ctx, $player, $stateArgs['site'], $options[SHOP]);
         break;
       case THROW_FESTIVITY:
         AtomicActions::get(THROW_FESTIVITY)->performAction($this->ctx, $player, $stateArgs['site']);

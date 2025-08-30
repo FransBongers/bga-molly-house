@@ -68,6 +68,7 @@ var MARKET_SPOTS = [MARKET_0, MARKET_1, MARKET_2, MARKET_3];
 var GOSSIP_PILE = 'gossipPile';
 var SAFE_PILE = 'safePile';
 var DECK = 'deck';
+var DISCARD = 'discard';
 var MOTHER_CLAPS = 'MotherClaps';
 var ST_PAULS_CATHEDRAL = 'StPaulsCathedral';
 var NOBLE_STREET = 'NobleStreet';
@@ -2812,6 +2813,8 @@ var NotificationManager = (function () {
             'addCardToSafePile',
             'addExcessCardsToGossip',
             'addExcessCardsToGossipPrivate',
+            'dealItemToShop',
+            'discardItem',
             'drawCards',
             'drawCardsPrivate',
             'endOfWeekAddCardToGossipPile',
@@ -2842,6 +2845,7 @@ var NotificationManager = (function () {
             'setupChooseCard',
             'setupRevealCard',
             'takeCandelabra',
+            'takeItem',
             'throwFestivity',
         ];
         notifs.forEach(function (notifName) {
@@ -3048,6 +3052,36 @@ var NotificationManager = (function () {
                         return [4, Promise.all(promises)];
                     case 1:
                         _b.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_dealItemToShop = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var item;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        item = notif.args.item;
+                        return [4, Board.getInstance().shops[item.location].addCard(getItem(item))];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_discardItem = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var item;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        item = notif.args.item;
+                        return [4, Board.getInstance().itemDiscard.addCard(getItem(item))];
+                    case 1:
+                        _a.sent();
                         return [2];
                 }
             });
@@ -3566,6 +3600,22 @@ var NotificationManager = (function () {
             return __generator(this, function (_a) {
                 playerId = notif.args.playerId;
                 return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_takeItem = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, playerId, item, player;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = notif.args, playerId = _a.playerId, item = _a.item;
+                        player = this.getPlayer(playerId);
+                        return [4, player.items[item.location].addCard(getItem(item))];
+                    case 1:
+                        _b.sent();
+                        return [2];
+                }
             });
         });
     };
@@ -4254,6 +4304,7 @@ var MollyHouse = (function () {
             FestivityChooseNextFoiledThreat: FestivityChooseNextFoiledThreat,
             FestivityTakeMatchingCubes: FestivityTakeMatchingCubes,
             EndOfWeekEncounterSociety: EndOfWeekEncounterSociety,
+            DiscardItem: DiscardItem,
         };
         console.log('MollyHouse constructor');
     }
@@ -4283,6 +4334,7 @@ var MollyHouse = (function () {
         });
         StaticData.create(this);
         this.diceManager = new MollyHouseDiceManager(this);
+        this.itemManager = new ItemManager(this);
         this.viceCardManager = new ViceCardManager(this);
         this.joyMarkerManager = new JoyMarkerManager(this);
         Interaction.create(this);
@@ -4705,6 +4757,7 @@ var Board = (function () {
         this.evidenceCounters = {};
         this.sites = {};
         this.joyMarkerStocks = {};
+        this.shops = {};
         this.game = game;
         this.setup(game.gamedatas);
     }
@@ -4746,6 +4799,7 @@ var Board = (function () {
         this.setupDiceStock(gamedatas);
         this.setupSelectBoxes();
         this.setupSites();
+        this.setupShops(gamedatas);
         this.setupPawns(gamedatas);
         this.setFestivityActive(gamedatas.festivity.active);
     };
@@ -4830,6 +4884,14 @@ var Board = (function () {
             elt.setAttribute('data-color', color);
         });
         this.updatePawns(pawns);
+    };
+    Board.prototype.setupShops = function (gamedatas) {
+        var _this = this;
+        SHOP_SITES.forEach(function (site) {
+            _this.shops[site] = new LineStock(_this.game.itemManager, document.getElementById(site), { gap: '0px' });
+        });
+        this.itemDiscard = new VoidStock(this.game.itemManager, document.getElementById('item-discard'));
+        this.updateShops(gamedatas);
     };
     Board.prototype.setupSites = function () {
         var _this = this;
@@ -4966,6 +5028,12 @@ var Board = (function () {
             _this.placePawn(pawn);
         });
     };
+    Board.prototype.updateShops = function (gamedatas) {
+        var _this = this;
+        gamedatas.itemsOnShops.forEach(function (item) {
+            _this.shops[item.location].addCard(getItem(item));
+        });
+    };
     Board.prototype.moveWeekMarker = function (week) {
         return __awaiter(this, void 0, void 0, function () {
             var fromRect;
@@ -5029,13 +5097,50 @@ var Board = (function () {
     };
     return Board;
 }());
-var tplBoard = function (gamedatas) { return "<div id=\"moho-board\">\n<div id=\"moho-playmat\">\n  <div id=\"moho-festivity\"></div>\n  <div id=\"moho-dice-stock\"></div>\n</div>\n  <div id=\"moho-dangerous-cruising-markers\"></div>\n  <div id=\"house-raided-markers\"></div>\n  <div id=\"moho-select-boxes\"></div>\n  <div id=\"moho-pawns\"></div>\n  <div id=\"moho-evidence-counters\"></div>\n  <div id=\"moho-gossip-pile\" class=\"moho-vice-card\" data-card-id=\"back\">\n    <span id=\"moho-gossip-pile-counter\" class=\"moho-deck-counter\">10</span>\n  </div>\n  <div id=\"moho-markers\"></div>\n</div>"; };
+var tplBoard = function (gamedatas) { return "<div id=\"moho-board\">\n<div id=\"moho-playmat\">\n  <div id=\"moho-festivity\"></div>\n  <div id=\"moho-dice-stock\"></div>\n</div>\n  <div id=\"moho-shops\">\n    <div id=\"CannonStreet\" class=\"moho-shop\"></div>\n    <div id=\"DukeStreet\" class=\"moho-shop\"></div>\n    <div id=\"LeadenhallStreet\" class=\"moho-shop\"></div>\n    <div id=\"NobleStreet\" class=\"moho-shop\"></div>\n  </div>\n  <div id=\"moho-dangerous-cruising-markers\"></div>\n  <div id=\"house-raided-markers\"></div>\n  <div id=\"moho-select-boxes\"></div>\n  <div id=\"moho-pawns\"></div>\n  <div id=\"moho-evidence-counters\"></div>\n  <div id=\"moho-gossip-pile\" class=\"moho-vice-card\" data-card-id=\"back\">\n    <span id=\"moho-gossip-pile-counter\" class=\"moho-deck-counter\">10</span>\n  </div>\n  <div id=\"moho-markers\"></div>\n\n</div>"; };
 var createJoyMarker = function (color) {
     var elt = document.createElement('div');
     elt.classList.add('moho-joy-marker');
     elt.dataset.color = color;
     return elt;
 };
+var ItemManager = (function (_super) {
+    __extends(ItemManager, _super);
+    function ItemManager(game) {
+        var _this = _super.call(this, game, {
+            getId: function (card) { return card.id; },
+            setupDiv: function (card, div) { return _this.setupDiv(card, div); },
+            setupFrontDiv: function (card, div) { return _this.setupFrontDiv(card, div); },
+            setupBackDiv: function (card, div) { return _this.setupBackDiv(card, div); },
+            isCardVisible: function (card) { return _this.isCardVisible(card); },
+            animationManager: game.animationManager,
+            cardHeight: 225,
+            cardWidth: 161,
+        }) || this;
+        _this.game = game;
+        return _this;
+    }
+    ItemManager.prototype.clearInterface = function () { };
+    ItemManager.prototype.setupDiv = function (card, div) {
+        div.style.position = 'relative';
+        div.classList.add('moho-item-container');
+        div.style.width = 'calc(var(--cardScale) * 178px)';
+    };
+    ItemManager.prototype.setupFrontDiv = function (card, div) {
+        div.classList.add('moho-item');
+        div.setAttribute('data-type', card.type);
+        div.style.width = 'calc(var(--cardScale) * 178px)';
+    };
+    ItemManager.prototype.setupBackDiv = function (card, div) {
+        div.classList.add('moho-item');
+        div.setAttribute('data-type', 'Back');
+        div.style.width = 'calc(var(--cardScale) * 178px)';
+    };
+    ItemManager.prototype.isCardVisible = function (card) {
+        return ![DISCARD, DECK].includes(card.location);
+    };
+    return ItemManager;
+}(CardManager));
 var ViceCardManager = (function (_super) {
     __extends(ViceCardManager, _super);
     function ViceCardManager(game) {
@@ -5494,6 +5599,7 @@ var MohoPlayer = (function () {
         this.game = game;
         this.counters = {};
         this.ui = {};
+        this.items = {};
         this.game = game;
         var playerId = player.id;
         this.playerId = Number(playerId);
@@ -5511,6 +5617,7 @@ var MohoPlayer = (function () {
         this.setupPlayerPanel(gamedatas);
     };
     MohoPlayer.prototype.setupPlayerBoard = function (gamedatas) {
+        var _this = this;
         var playerGamedatas = gamedatas.players[this.playerId];
         var node = document.getElementById('right-column');
         if (!node) {
@@ -5522,6 +5629,11 @@ var MohoPlayer = (function () {
         }));
         this.reputation = new LineStock(this.game.viceCardManager, document.getElementById("moho-reputation-".concat(this.playerId)), {
             gap: '0px',
+        });
+        [1, 2].forEach(function (value) {
+            _this.items["item_".concat(value, "_").concat(_this.playerId)] = new LineStock(_this.game.itemManager, document.getElementById("item_".concat(value, "_").concat(_this.playerId)), {
+                gap: '0px',
+            });
         });
         this.updatePlayerBoard(playerGamedatas);
     };
@@ -5560,7 +5672,11 @@ var MohoPlayer = (function () {
         this.updatePlayerPanel(gamedatas);
     };
     MohoPlayer.prototype.updatePlayerBoard = function (playerGamedatas) {
+        var _this = this;
         this.reputation.addCards(playerGamedatas.reputation.map(getViceCard));
+        playerGamedatas.items.forEach(function (item) {
+            _this.items[item.location].addCard(getItem(item));
+        });
     };
     MohoPlayer.prototype.updatePlayerPanel = function (gamedatas) { };
     MohoPlayer.prototype.getColor = function () {
@@ -5576,7 +5692,7 @@ var MohoPlayer = (function () {
 }());
 var tplPlayerBoard = function (_a) {
     var playerId = _a.playerId, color = _a.color;
-    return "\n<div id=\"moho-player-row-".concat(playerId, "\" class=\"moho-player-row\">\n  <div id=\"moho-player-board-").concat(playerId, "\" class=\"moho-player-board\" data-color=\"").concat(color, "\"></div>\n  <div id=\"moho-reputation-").concat(playerId, "\" class=\"moho-reputation\"></div>\n</div>\n\n");
+    return "\n<div id=\"moho-player-row-".concat(playerId, "\" class=\"moho-player-row\">\n  <div id=\"moho-player-board-").concat(playerId, "\" class=\"moho-player-board\" data-color=\"").concat(color, "\">\n    <div id=\"item_1_").concat(playerId, "\" class=\"moho-item-spot\" data-spot=\"1\"></div>\n    <div id=\"item_2_").concat(playerId, "\" class=\"moho-item-spot\" data-spot=\"2\"></div>\n  </div>\n  <div id=\"moho-reputation-").concat(playerId, "\" class=\"moho-reputation\"></div>\n</div>\n\n");
 };
 var tplPlayerCounters = function (_a) {
     var playerId = _a.playerId;
@@ -5627,6 +5743,11 @@ var TakeAction = (function () {
                 return _this.updateInterfaceConfirm(CRUISE, card.id);
             });
         });
+        if (this.args._private.Shop) {
+            onClick(document.getElementById(this.args._private.Shop.id), function () {
+                return _this.updateInterfaceConfirm(SHOP, _this.args._private.Shop.id);
+            });
+        }
         addUndoButtons(this.args);
     };
     TakeAction.prototype.updateInterfaceConfirm = function (action, target) {
@@ -5649,6 +5770,9 @@ var TakeAction = (function () {
                 break;
             case LIE_LOW:
                 setSelected(document.getElementById('moho-deck'));
+                break;
+            case SHOP:
+                setSelected(document.getElementById(target));
                 break;
             default:
                 break;
@@ -5675,6 +5799,12 @@ var TakeAction = (function () {
             case LIE_LOW:
                 updatePageTitle(_('Lie Low at ${site} and draw a card from the vice deck?'), {
                     site: StaticData.get().site(this.args.site.id).name,
+                });
+                break;
+            case SHOP:
+                updatePageTitle(_('Take ${itemName} at ${site}?'), {
+                    site: site,
+                    itemName: _(getItem(this.args._private.Shop).name),
                 });
                 break;
             case THROW_FESTIVITY:
@@ -5808,6 +5938,13 @@ var StaticData = (function () {
     StaticData.get = function () {
         return StaticData.instance;
     };
+    StaticData.prototype.item = function (id) {
+        var data = this.staticData.items[id];
+        if (!data) {
+            throw new Error('FE_ERROR_003');
+        }
+        return data;
+    };
     StaticData.prototype.viceCard = function (id) {
         var data = this.staticData.viceCards[id];
         if (!data) {
@@ -5824,7 +5961,10 @@ var StaticData = (function () {
     };
     return StaticData;
 }());
-var tplPlayArea = function () { return "\n  <div id=\"play-area-container\">\n    <div id=\"left-column\"></div>\n    <div id=\"right-column\"></div>\n  </div>\n"; };
+var tplPlayArea = function () { return "\n  <div id=\"item-discard\"></div>\n  <div id=\"play-area-container\">\n    <div id=\"left-column\"></div>\n    <div id=\"right-column\"></div>\n  </div>\n"; };
+var getItem = function (base) {
+    return __assign(__assign({}, base), StaticData.get().item(base.id));
+};
 var getViceCard = function (base) {
     return __assign(__assign({}, base), StaticData.get().viceCard(base.id));
 };
@@ -6564,4 +6704,49 @@ var EndOfWeekEncounterSociety = (function () {
         });
     };
     return EndOfWeekEncounterSociety;
+}());
+var DiscardItem = (function () {
+    function DiscardItem(game) {
+        this.game = game;
+    }
+    DiscardItem.create = function (game) {
+        DiscardItem.instance = new DiscardItem(game);
+    };
+    DiscardItem.getInstance = function () {
+        return DiscardItem.instance;
+    };
+    DiscardItem.prototype.onEnteringState = function (args) {
+        debug('Entering DiscardItem state');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    DiscardItem.prototype.onLeavingState = function () {
+        debug('Leaving DiscardItem state');
+    };
+    DiscardItem.prototype.setDescription = function (activePlayerIds, args) { };
+    DiscardItem.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        updatePageTitle(_('${you} must discard an item'), {});
+        this.args.items.forEach(function (item) {
+            onClick(item.id, function () {
+                _this.updateInterfaceConfirm(item);
+            });
+        });
+        addUndoButtons(this.args);
+    };
+    DiscardItem.prototype.updateInterfaceConfirm = function (item) {
+        clearPossible();
+        updatePageTitle(_('Discard ${itemName}?'), {
+            itemName: getItem(item).name,
+        });
+        setSelected(item.id);
+        addConfirmButton(function () {
+            performAction('actDiscardItem', {
+                itemId: item.id,
+            });
+        });
+        addCancelButton();
+    };
+    return DiscardItem;
 }());

@@ -2,6 +2,8 @@
 
 namespace Bga\Games\MollyHouse\Models;
 
+use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
+
 class Item extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
 {
   protected $id;
@@ -11,7 +13,7 @@ class Item extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   protected $state;
   protected $type;
 
-  protected $name;
+  protected $name = '';
   protected $text;
 
   protected $attributes = [
@@ -37,4 +39,10 @@ class Item extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     return $this->jsonSerialize(); // Static datas are already in js file
   }
 
+  public function discard($player = null)
+  {
+    $this->setLocation(DISCARD);
+
+    Notifications::discardItem($player, $this);
+  }
 }
