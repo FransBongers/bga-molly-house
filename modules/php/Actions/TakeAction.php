@@ -37,14 +37,23 @@ class TakeAction extends \Bga\Games\MollyHouse\Models\AtomicAction
 
     $siteAction = $site->getAction();
 
+    $playerOptions = [
+      ACCUSE => AtomicActions::get(ACCUSE)->getOptions($player, $site),
+      INDULGE => AtomicActions::get(INDULGE)->getOptions($site),
+      LIE_LOW => AtomicActions::get(LIE_LOW)->getOptions($player, $site),
+      $siteAction => AtomicActions::get($siteAction)->getOptions($player, $site),
+      'items' => [],
+    ];
+
+    foreach ($player->getItems() as $item) {
+      if ($item->canBeUsedForAction($site)) {
+        $playerOptions['items'][$item->getId()] = $item;
+      }
+    }
+
     $data = [
       '_private' => [
-        $player->getId() => [
-          ACCUSE => AtomicActions::get(ACCUSE)->getOptions($player, $site),
-          INDULGE => AtomicActions::get(INDULGE)->getOptions($site),
-          LIE_LOW => AtomicActions::get(LIE_LOW)->getOptions($player, $site),
-          $siteAction => AtomicActions::get($siteAction)->getOptions($player, $site),
-        ],
+        $player->getId() => $playerOptions,
       ],
       'site' => $site,
     ];
@@ -86,7 +95,7 @@ class TakeAction extends \Bga\Games\MollyHouse\Models\AtomicAction
     $stateArgs = $this->argsTakeAction();
     $options = $stateArgs['_private'][$player->getId()];
 
-    if (!isset($options[$takenAction])) {
+    if ($takenAction !== USE_ITEM && !isset($options[$takenAction])) {
       throw new \feException("ERROR_004");
     }
 
@@ -102,6 +111,12 @@ class TakeAction extends \Bga\Games\MollyHouse\Models\AtomicAction
       throw new \feException("ERROR_019");
     }
 
+    if ($takenAction === USE_ITEM && !isset($options['items'][$target])) {
+      throw new \feException("ERROR_023");
+    }
+
+    $checkpoint = false;
+
     switch ($takenAction) {
       case ACCUSE:
         AtomicActions::get(ACCUSE)->actAccuse($args);
@@ -110,9 +125,11 @@ class TakeAction extends \Bga\Games\MollyHouse\Models\AtomicAction
         AtomicActions::get(INDULGE)->performAction($player, $stateArgs['site'], $options[INDULGE][$target]);
         break;
       case LIE_LOW:
+        $checkpoint = true;
         AtomicActions::get(LIE_LOW)->performAction($player, $stateArgs['site']);
         break;
       case CRUISE:
+        $checkpoint = true;
         AtomicActions::get(CRUISE)->performAction($player, $stateArgs['site'], $options[CRUISE][$target]);
         break;
       case SHOP:
@@ -121,13 +138,12 @@ class TakeAction extends \Bga\Games\MollyHouse\Models\AtomicAction
       case THROW_FESTIVITY:
         AtomicActions::get(THROW_FESTIVITY)->performAction($this->ctx, $player, $stateArgs['site']);
         break;
+      case USE_ITEM:
+        $checkpoint = $this->useItem($player, $options['items'][$target], $stateArgs['site']);
+        break;
       default:
         throw new \feException("ERROR_006");
     }
-
-
-
-    $checkpoint = in_array($takenAction, [CRUISE, LIE_LOW]);
 
     $this->resolveAction(['takenAction' => $takenAction, 'target' => $target], $checkpoint);
   }
@@ -140,5 +156,11 @@ class TakeAction extends \Bga\Games\MollyHouse\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
+  private function useItem($player, $item, $site)
+  {
+    $action = $item->useAction($player, $site);
+    $this->ctx->insertAsBrother(Engine::buildTree($action));
 
+    return $item->getType() === BRIBE;
+  }
 }

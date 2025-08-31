@@ -1,17 +1,19 @@
 const tplBoard = (gamedatas: GamedatasAlias) => `<div id="moho-board">
-<div id="moho-playmat">
-  <div id="moho-festivity"></div>
-  <div id="moho-dice-stock"></div>
-</div>
-  <div id="moho-shops">
+
+
+  <div id="moho-dangerous-cruising-markers"></div>
+  <div id="house-raided-markers"></div>
+  <div id="moho-select-boxes"></div>
+  <div id="moho-playmat">
+    <div id="moho-festivity"></div>
+    <div id="moho-dice-stock"></div>
+  </div>
+    <div id="moho-shops">
     <div id="CannonStreet" class="moho-shop"></div>
     <div id="DukeStreet" class="moho-shop"></div>
     <div id="LeadenhallStreet" class="moho-shop"></div>
     <div id="NobleStreet" class="moho-shop"></div>
   </div>
-  <div id="moho-dangerous-cruising-markers"></div>
-  <div id="house-raided-markers"></div>
-  <div id="moho-select-boxes"></div>
   <div id="moho-pawns"></div>
   <div id="moho-evidence-counters"></div>
   <div id="moho-gossip-pile" class="moho-vice-card" data-card-id="back">
@@ -26,4 +28,4 @@ const createJoyMarker = (color: string): HTMLElement => {
   elt.classList.add('moho-joy-marker');
   elt.dataset.color = color;
   return elt;
-}
+};

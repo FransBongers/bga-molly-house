@@ -5,6 +5,7 @@ interface OnEnteringTakeActionArgs extends CommonStateArgs {
     LieLow: boolean;
     Shop?: MohoItemBase | null;
     ThrowFestivity?: boolean;
+    items: Record<string, MohoItemBase>;
   };
   site: MohoSiteBase;
 }
@@ -88,6 +89,12 @@ class TakeAction implements State {
       );
     }
 
+    Object.entries(this.args._private.items).forEach(([itemId, item]) => {
+      onClick(document.getElementById(item.id), () =>
+        this.updateInterfaceConfirm(USE_ITEM, itemId)
+      );
+    });
+
     // addPrimaryActionButton({
     //   id: 'continue_btn',
     //   text: _('Roll dice'),
@@ -137,15 +144,14 @@ class TakeAction implements State {
 
   private updateConfirmTargetSelected(action: string, target: string) {
     switch (action) {
+      case SHOP:
       case CRUISE:
       case INDULGE:
+      case USE_ITEM:
         setSelected(document.getElementById(target));
         break;
       case LIE_LOW:
         setSelected(document.getElementById('moho-deck'));
-        break;
-      case SHOP:
-        setSelected(document.getElementById(target));
         break;
       default:
         break;
@@ -197,6 +203,11 @@ class TakeAction implements State {
       case THROW_FESTIVITY:
         updatePageTitle(_('Throw a Festivity at ${site}?'), {
           site,
+        });
+        break;
+      case USE_ITEM:
+        updatePageTitle(_('Use ${itemName}?'), {
+          itemName: _(getItem(this.args._private.items[target]).name),
         });
         break;
       default:

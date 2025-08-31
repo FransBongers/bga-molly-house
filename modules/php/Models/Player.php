@@ -7,6 +7,7 @@ use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
 use Bga\Games\MollyHouse\Boilerplate\Core\Preferences;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
+use Bga\Games\MollyHouse\Managers\EncounterTokens;
 use Bga\Games\MollyHouse\Managers\IndictmentCards;
 use Bga\Games\MollyHouse\Managers\Items;
 use Bga\Games\MollyHouse\Managers\Pawns;
@@ -57,6 +58,7 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     $isCurrentPlayer = intval($currentPlayerId) == $this->getId();
 
     $handCards =  ViceCards::getInLocation(Locations::hand($this->getId()))->toArray();
+    $encounterTokens = $this->getEncounterTokens();
 
     return array_merge(
       $data,
@@ -68,6 +70,11 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
         'cubes' => PlayerCubes::getCubesForPlayer($this->getId()),
         // 'pawn' => Pawns::getPlayerPawn($this),
         'items' => $this->getItems(),
+        'encounterTokens' => $isCurrentPlayer ? $encounterTokens : array_map(function ($token) {
+          $serializedTokens = $token->jsonSerialize();
+          $serializedTokens['type'] = null;
+          return $serializedTokens;
+        }, $encounterTokens),
       ],
     );
   }
@@ -209,7 +216,7 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   public function getItems()
   {
     $items = [];
-    foreach([1,2] as $spot) {
+    foreach ([1, 2] as $spot) {
       $itemInSpot = Items::getInLocation(Locations::item($this->getId(), $spot))->toArray();
       if (count($itemInSpot) > 0) {
         $items[] = $itemInSpot[0];
@@ -220,7 +227,7 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
 
   public function getEmptyItemSpot()
   {
-    foreach([1,2] as $spot) {
+    foreach ([1, 2] as $spot) {
       $location = Locations::item($this->getId(), $spot);
       $itemInSpot = Items::getInLocation($location)->toArray();
       if (count($itemInSpot) === 0) {
@@ -235,5 +242,10 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     $location = $this->getEmptyItemSpot();
     $item->setLocation($location);
     Notifications::takeItem($this, $item, $site);
+  }
+
+  public function getEncounterTokens()
+  {
+    return EncounterTokens::getInLocation(Locations::encounterTokens($this->getId()))->toArray();
   }
 }

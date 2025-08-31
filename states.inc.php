@@ -492,4 +492,30 @@ $machinestates = [
             'actTakeAtomicAction',
         ])
         ->build(),
+
+    ST_EXAMINE_GOSSIP_PILE => GameStateBuilder::create()
+        ->name(EXAMINE_GOSSIP_PILE)
+        ->description(clienttranslate('${actplayer} may take a card from the gossip pile'))
+        ->descriptionmyturn(clienttranslate('${you}'))
+        ->type(StateType::ACTIVE_PLAYER)
+        ->args('argsAtomicAction')
+        ->possibleactions([
+            'actExamineGossipPile',
+            'actPass',
+            'actTakeAtomicAction',
+        ])
+        ->build(),
+
+    ST_PLACE_ENCOUNTER_TOKEN => GameStateBuilder::create()
+        ->name(PLACE_ENCOUNTER_TOKEN)
+        ->description(clienttranslate('${actplayer} must place an encounter token'))
+        ->descriptionmyturn(clienttranslate('${you}'))
+        ->type(StateType::ACTIVE_PLAYER)
+        ->args('argsAtomicAction')
+        ->possibleactions([
+            'actPlaceEncounterToken',
+            'actPass',
+            'actTakeAtomicAction',
+        ])
+        ->build(),
 ];

@@ -57,6 +57,7 @@ class MollyHouse implements Game {
 
   // Card managers
   public diceManager: MollyHouseDiceManager;
+  public encounterTokenManager: EncounterTokenManager;
   public itemManager: ItemManager;
   public viceCardManager: ViceCardManager;
   public joyMarkerManager: JoyMarkerManager;
@@ -80,6 +81,8 @@ class MollyHouse implements Game {
     FestivityTakeMatchingCubes,
     EndOfWeekEncounterSociety,
     DiscardItem,
+    ExamineGossipPile,
+    PlaceEncounterToken,
   };
 
   constructor() {
@@ -120,8 +123,6 @@ class MollyHouse implements Game {
 
     this._connections = [];
 
-    Object.values(this.states).forEach((state) => state.create(this));
-
     InfoPanel.create(this);
 
     //  this.tooltipManager = new TooltipManager(this);
@@ -138,19 +139,26 @@ class MollyHouse implements Game {
 
     StaticData.create(this);
     this.diceManager = new MollyHouseDiceManager(this);
+    this.encounterTokenManager = new EncounterTokenManager(this);
     this.itemManager = new ItemManager(this);
     this.viceCardManager = new ViceCardManager(this);
     this.joyMarkerManager = new JoyMarkerManager(this);
     Interaction.create(this);
     PlayerManager.create(this);
     NotificationManager.create(this);
-    
+
     Board.create(this);
     Festivity.create(this);
     Market.create(this);
     if (this.playerOrder.includes(this.getPlayerId())) {
       Hand.create(this);
     }
+
+    Object.values(this.states).forEach((state) => state.create(this));
+
+    PlayerManager.getInstance().getPlayers().forEach((player) => {
+      player.updateEncounterTokens(this.gamedatas.players[player.getPlayerId()]);
+    });
 
     NotificationManager.getInstance().setupNotifications();
 

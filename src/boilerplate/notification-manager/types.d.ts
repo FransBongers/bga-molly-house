@@ -18,6 +18,12 @@ interface NotifPhase {
   phase: string;
 }
 
+interface NotifAddCardFromGossipPile extends NotifWithPlayerArgs {}
+
+interface NotifAddCardFromGossipPilePrivate extends NotifWithPlayerArgs {
+  card: ViceCardBase;
+}
+
 interface NotifAddCardToHand extends NotifWithPlayerArgs {
   card: ViceCardBase;
 }

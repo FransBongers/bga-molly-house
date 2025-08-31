@@ -66,6 +66,9 @@ const ST_END_OF_WEEK_ENCOUNTER_SOCIETY = 35;
 const ST_END_OF_WEEK_CLEANUP = 36;
 const ST_DISCARD_ITEM = 37;
 
+const ST_EXAMINE_GOSSIP_PILE = 38;
+const ST_PLACE_ENCOUNTER_TOKEN = 39;
+
 /**
  * Game state names
  */
@@ -105,6 +108,10 @@ const END_OF_WEEK_ENCOUNTER_SOCIETY = 'EndOfWeekEncounterSociety';
 const END_OF_WEEK_CLEANUP = 'EndOfWeekCleanup';
 const DISCARD_ITEM = 'DiscardItem';
 
+const EXAMINE_GOSSIP_PILE = 'ExamineGossipPile';
+const PLACE_ENCOUNTER_TOKEN = 'PlaceEncounterToken';
+
+const USE_ITEM = 'UseItem';
 /**
  * Card types
  */
@@ -251,3 +258,9 @@ const SUIT_COLOR_MAP = [
 
 const START_OF_TURN_MESSAGE = 'startOfTurnMessage';
 const MOVE_WEEK_MARKER = 'moveWeekMarker';
+
+/**
+ * Encounter tokens
+ */
+const LOYAL = 'Loyal';
+const INFORMER = 'Informer';

@@ -61,6 +61,8 @@ class NotificationManager {
       'log',
       'message',
       // Game specific
+      'addCardFromGossipPile',
+      'addCardFromGossipPilePrivate',
       'addCardToHand',
       'addCardToGossipPile',
       'addCardToReputation',
@@ -147,6 +149,7 @@ class NotificationManager {
 
       // Setup notifs that need to be ignored
       [
+        'addCardFromGossipPile',
         'addExcessCardsToGossip',
         'drawCards',
         'gainIndictment',
@@ -203,6 +206,24 @@ class NotificationManager {
     }
   }
 
+  async notif_addCardFromGossipPile(notif: Notif<NotifAddCardFromGossipPile>) {
+    const { playerId } = notif.args;
+
+    Board.getInstance().counters[GOSSIP_PILE].incValue(-1);
+    this.getPlayer(playerId).counters[HAND].incValue(1);
+  }
+
+  async notif_addCardFromGossipPilePrivate(
+    notif: Notif<NotifAddCardFromGossipPilePrivate>
+  ) {
+    const { playerId, card } = notif.args;
+    const player = this.getPlayer(playerId);
+    Board.getInstance().counters[GOSSIP_PILE].incValue(-1);
+    const hand = Hand.getInstance();
+    hand.addCard(getViceCard(card));
+    player.counters[HAND].incValue(1);
+  }
+
   async notif_addCardToHand(notif: Notif<NotifAddCardToHand>) {
     const { playerId, card } = notif.args;
 
@@ -248,7 +269,7 @@ class NotificationManager {
     const { card } = notif.args;
 
     const market = Market.getInstance();
-    await market.safePile.addCard(getViceCard(card));
+    await market.addCardToSafePile(getViceCard(card));
     market.counters[SAFE_PILE].incValue(1);
   }
 

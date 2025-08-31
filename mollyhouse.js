@@ -37,6 +37,7 @@ var ACCUSE = 'Accuse';
 var CRUISE = 'Cruise';
 var SHOP = 'Shop';
 var THROW_FESTIVITY = 'ThrowFestivity';
+var USE_ITEM = 'UseItem';
 var RED = 'red';
 var DESIRE = 'desire';
 var THREAT = 'threat';
@@ -153,13 +154,10 @@ var SURPRISE_BALL = 'SurpriseBall';
 var CHRISTENING = 'Christening';
 var DANCE = 'Dance';
 var QUIET_GATHERING = 'QuietGathering';
-var FESTIVITIES = [
-    SURPRISE_BALL,
-    CHRISTENING,
-    DANCE,
-    QUIET_GATHERING,
-];
+var FESTIVITIES = [SURPRISE_BALL, CHRISTENING, DANCE, QUIET_GATHERING];
 var MOVE_WEEK_MARKER = 'moveWeekMarker';
+var LOYAL = 'Loyal';
+var INFORMER = 'Informer';
 var BgaAnimation = (function () {
     function BgaAnimation(animationFunction, settings) {
         this.animationFunction = animationFunction;
@@ -2807,6 +2805,8 @@ var NotificationManager = (function () {
         var notifs = [
             'log',
             'message',
+            'addCardFromGossipPile',
+            'addCardFromGossipPilePrivate',
             'addCardToHand',
             'addCardToGossipPile',
             'addCardToReputation',
@@ -2872,6 +2872,7 @@ var NotificationManager = (function () {
             }));
             _this.game.framework().notifqueue.setSynchronous(notifName, undefined);
             [
+                'addCardFromGossipPile',
                 'addExcessCardsToGossip',
                 'drawCards',
                 'gainIndictment',
@@ -2920,6 +2921,31 @@ var NotificationManager = (function () {
                         _b.label = 2;
                     case 2: return [2];
                 }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_addCardFromGossipPile = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var playerId;
+            return __generator(this, function (_a) {
+                playerId = notif.args.playerId;
+                Board.getInstance().counters[GOSSIP_PILE].incValue(-1);
+                this.getPlayer(playerId).counters[HAND].incValue(1);
+                return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_addCardFromGossipPilePrivate = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, playerId, card, player, hand;
+            return __generator(this, function (_b) {
+                _a = notif.args, playerId = _a.playerId, card = _a.card;
+                player = this.getPlayer(playerId);
+                Board.getInstance().counters[GOSSIP_PILE].incValue(-1);
+                hand = Hand.getInstance();
+                hand.addCard(getViceCard(card));
+                player.counters[HAND].incValue(1);
+                return [2];
             });
         });
     };
@@ -2999,7 +3025,7 @@ var NotificationManager = (function () {
                     case 0:
                         card = notif.args.card;
                         market = Market.getInstance();
-                        return [4, market.safePile.addCard(getViceCard(card))];
+                        return [4, market.addCardToSafePile(getViceCard(card))];
                     case 1:
                         _a.sent();
                         market.counters[SAFE_PILE].incValue(1);
@@ -4305,6 +4331,8 @@ var MollyHouse = (function () {
             FestivityTakeMatchingCubes: FestivityTakeMatchingCubes,
             EndOfWeekEncounterSociety: EndOfWeekEncounterSociety,
             DiscardItem: DiscardItem,
+            ExamineGossipPile: ExamineGossipPile,
+            PlaceEncounterToken: PlaceEncounterToken,
         };
         console.log('MollyHouse constructor');
     }
@@ -4323,7 +4351,6 @@ var MollyHouse = (function () {
         this.setupPlayerOrder(gamedatas.playerOrder);
         debug('game', this);
         this._connections = [];
-        Object.values(this.states).forEach(function (state) { return state.create(_this); });
         InfoPanel.create(this);
         Settings.create(this);
         var settings = Settings.getInstance();
@@ -4334,6 +4361,7 @@ var MollyHouse = (function () {
         });
         StaticData.create(this);
         this.diceManager = new MollyHouseDiceManager(this);
+        this.encounterTokenManager = new EncounterTokenManager(this);
         this.itemManager = new ItemManager(this);
         this.viceCardManager = new ViceCardManager(this);
         this.joyMarkerManager = new JoyMarkerManager(this);
@@ -4346,6 +4374,10 @@ var MollyHouse = (function () {
         if (this.playerOrder.includes(this.getPlayerId())) {
             Hand.create(this);
         }
+        Object.values(this.states).forEach(function (state) { return state.create(_this); });
+        PlayerManager.getInstance().getPlayers().forEach(function (player) {
+            player.updateEncounterTokens(_this.gamedatas.players[player.getPlayerId()]);
+        });
         NotificationManager.getInstance().setupNotifications();
         debug('Ending game setup');
     };
@@ -5097,13 +5129,55 @@ var Board = (function () {
     };
     return Board;
 }());
-var tplBoard = function (gamedatas) { return "<div id=\"moho-board\">\n<div id=\"moho-playmat\">\n  <div id=\"moho-festivity\"></div>\n  <div id=\"moho-dice-stock\"></div>\n</div>\n  <div id=\"moho-shops\">\n    <div id=\"CannonStreet\" class=\"moho-shop\"></div>\n    <div id=\"DukeStreet\" class=\"moho-shop\"></div>\n    <div id=\"LeadenhallStreet\" class=\"moho-shop\"></div>\n    <div id=\"NobleStreet\" class=\"moho-shop\"></div>\n  </div>\n  <div id=\"moho-dangerous-cruising-markers\"></div>\n  <div id=\"house-raided-markers\"></div>\n  <div id=\"moho-select-boxes\"></div>\n  <div id=\"moho-pawns\"></div>\n  <div id=\"moho-evidence-counters\"></div>\n  <div id=\"moho-gossip-pile\" class=\"moho-vice-card\" data-card-id=\"back\">\n    <span id=\"moho-gossip-pile-counter\" class=\"moho-deck-counter\">10</span>\n  </div>\n  <div id=\"moho-markers\"></div>\n\n</div>"; };
+var tplBoard = function (gamedatas) { return "<div id=\"moho-board\">\n\n\n  <div id=\"moho-dangerous-cruising-markers\"></div>\n  <div id=\"house-raided-markers\"></div>\n  <div id=\"moho-select-boxes\"></div>\n  <div id=\"moho-playmat\">\n    <div id=\"moho-festivity\"></div>\n    <div id=\"moho-dice-stock\"></div>\n  </div>\n    <div id=\"moho-shops\">\n    <div id=\"CannonStreet\" class=\"moho-shop\"></div>\n    <div id=\"DukeStreet\" class=\"moho-shop\"></div>\n    <div id=\"LeadenhallStreet\" class=\"moho-shop\"></div>\n    <div id=\"NobleStreet\" class=\"moho-shop\"></div>\n  </div>\n  <div id=\"moho-pawns\"></div>\n  <div id=\"moho-evidence-counters\"></div>\n  <div id=\"moho-gossip-pile\" class=\"moho-vice-card\" data-card-id=\"back\">\n    <span id=\"moho-gossip-pile-counter\" class=\"moho-deck-counter\">10</span>\n  </div>\n  <div id=\"moho-markers\"></div>\n\n</div>"; };
 var createJoyMarker = function (color) {
     var elt = document.createElement('div');
     elt.classList.add('moho-joy-marker');
     elt.dataset.color = color;
     return elt;
 };
+var EncounterTokenManager = (function (_super) {
+    __extends(EncounterTokenManager, _super);
+    function EncounterTokenManager(game) {
+        var _this = _super.call(this, game, {
+            getId: function (card) { return card.id; },
+            setupDiv: function (card, div) { return _this.setupDiv(card, div); },
+            setupFrontDiv: function (card, div) { return _this.setupFrontDiv(card, div); },
+            setupBackDiv: function (card, div) { return _this.setupBackDiv(card, div); },
+            isCardVisible: function (card) { return _this.isCardVisible(card); },
+            animationManager: game.animationManager,
+        }) || this;
+        _this.game = game;
+        return _this;
+    }
+    EncounterTokenManager.prototype.clearInterface = function () { };
+    EncounterTokenManager.prototype.setupDiv = function (card, div) {
+        div.style.position = 'relative';
+        div.classList.add('moho-encounter-token-container');
+        div.style.width = 'calc(var(--tokenScale) * 75px)';
+        div.style.height = 'calc(var(--tokenScale) * 75px)';
+    };
+    EncounterTokenManager.prototype.setupFrontDiv = function (card, div) {
+        div.classList.add('moho-encounter-token');
+        div.setAttribute('data-type', card.type);
+        div.setAttribute('data-color', this.getPlayerColor(card));
+        div.style.width = 'calc(var(--tokenScale) * 75px)';
+    };
+    EncounterTokenManager.prototype.setupBackDiv = function (card, div) {
+        div.classList.add('moho-encounter-token');
+        div.setAttribute('data-type', 'back');
+        div.setAttribute('data-color', this.getPlayerColor(card));
+        div.style.width = 'calc(var(--tokenScale) * 75px)';
+    };
+    EncounterTokenManager.prototype.isCardVisible = function (card) {
+        return card.type !== null;
+    };
+    EncounterTokenManager.prototype.getPlayerColor = function (card) {
+        var playerId = Number(card.id.split('_')[1]);
+        return HEX_COLOR_COLOR_MAP[PlayerManager.getInstance().getPlayer(playerId).getColor()];
+    };
+    return EncounterTokenManager;
+}(CardManager));
 var ItemManager = (function (_super) {
     __extends(ItemManager, _super);
     function ItemManager(game) {
@@ -5188,6 +5262,71 @@ var ViceCardManager = (function (_super) {
     };
     return ViceCardManager;
 }(CardManager));
+var CardModal = (function () {
+    function CardModal(game, pile) {
+        this.game = game;
+        this.pile = pile;
+        var gamedatas = game.gamedatas;
+        this.setup(gamedatas);
+    }
+    CardModal.prototype.clearInterface = function () { };
+    CardModal.prototype.updateInterface = function (gamedatas) { };
+    CardModal.prototype.setupModal = function (gamedatas) {
+        this.modal = new Modal("moho-card-modal-".concat(this.pile), {
+            class: 'moho-card-modal',
+            closeIcon: 'fa-times',
+            titleTpl: '<h2 id="popin_${id}_title" class="${class}_title">${title}</h2>',
+            title: this.pile === GOSSIP_PILE ? _('Gossip Pile') : _('Safe Pile'),
+            contents: "<div id=\"moho-card-modal-content-".concat(this.pile, "\" class=\"moho-card-modal-content\"></div>"),
+            closeAction: 'hide',
+            verticalAlign: 'flex-start',
+            breakpoint: 740,
+        });
+    };
+    CardModal.prototype.setup = function (gamedatas) {
+        this.setupModal(gamedatas);
+        this.stock = new LineStock(this.game.viceCardManager, document.getElementById("moho-card-modal-content-".concat(this.pile)), { gap: '10px' });
+    };
+    CardModal.prototype.addCards = function (cards) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, this.stock.addCards(cards.map(function (card) { return (__assign(__assign({}, getViceCard(card)), { location: 'modal' })); }))];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    CardModal.prototype.addCard = function (card) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, this.stock.addCard(__assign(__assign({}, getViceCard(card)), { location: 'modal' }))];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    CardModal.prototype.removeCards = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                this.stock.removeAll();
+                return [2];
+            });
+        });
+    };
+    CardModal.prototype.open = function () {
+        this.modal.show();
+    };
+    CardModal.prototype.close = function () {
+        this.modal.hide();
+    };
+    return CardModal;
+}());
 var _a;
 var FESTIVITY_CONFIG_TWO_PLAYERS = (_a = {},
     _a[COMMUNITY] = {
@@ -5516,8 +5655,16 @@ var Market = (function () {
             safePile: document.getElementById('moho-safe-pile'),
             deck: document.getElementById('moho-deck'),
         };
+        this.setupModal();
         this.setupDecks(gamedatas);
         this.setupSlotStock(gamedatas);
+    };
+    Market.prototype.setupModal = function () {
+        var _this = this;
+        this.safePileModal = new CardModal(this.game, SAFE_PILE);
+        dojo.connect($("moho-safe-pile"), 'onclick', function () {
+            return _this.safePileModal.open();
+        });
     };
     Market.prototype.setupDecks = function (gamedatas) {
         this.deck = new LineStock(this.game.viceCardManager, this.ui.deck, {});
@@ -5547,12 +5694,32 @@ var Market = (function () {
         this.counters[DECK].setValue(gamedatas.deckCount);
     };
     Market.prototype.updateSafePile = function (gamedatas) {
-        this.safePile.addCards(Object.values(gamedatas.safePile).map(function (card) { return getViceCard(card); }));
+        this.safePileModal.addCards(Object.values(gamedatas.safePile));
         this.counters[SAFE_PILE].setValue(Object.keys(gamedatas.safePile).length);
+        this.ui.safePile.setAttribute('data-card-id', gamedatas.topOfSafePile ? gamedatas.topOfSafePile.id : 'none');
+    };
+    Market.prototype.addCardToSafePile = function (viceCard) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, this.safePile.addCard(getViceCard(viceCard))];
+                    case 1:
+                        _a.sent();
+                        this.ui.safePile.setAttribute('data-card-id', viceCard.id);
+                        return [4, this.safePile.removeCard(viceCard)];
+                    case 2:
+                        _a.sent();
+                        return [4, this.safePileModal.addCard(viceCard)];
+                    case 3:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
     };
     return Market;
 }());
-var tplMarket = function (gamedatas) { return "\n<div> \n  <div id=\"moho-market\">\n    <div id=\"moho-safe-pile\" class=\"moho-market-slot\">\n      <span id=\"moho-safe-pile-counter\" class=\"moho-deck-counter\"></span>\n    </div>\n    <div id=\"moho-deck\" class=\"moho-market-slot moho-vice-card\" data-card-id=\"back\">\n      <span id=\"moho-deck-counter\" class=\"moho-deck-counter\"></span>\n    </div>\n    <div id=\"moho-market-slots\"></div>\n\n  </div>\n  <div id=\"moho-market-bar\">\n    <span>".concat(_('Safe Pile'), "</span>\n    <span>").concat(_('Deck'), "</span>\n    <span class=\"moho-market-label\">").concat(_('Market'), "</span>\n  </div>\n</div>\n"); };
+var tplMarket = function (gamedatas) { return "\n<div> \n  <div id=\"moho-market\">\n    <div id=\"moho-safe-pile\" class=\"moho-market-slot moho-vice-card\">\n      <span id=\"moho-safe-pile-counter\" class=\"moho-deck-counter\"></span>\n    </div>\n    <div id=\"moho-deck\" class=\"moho-market-slot moho-vice-card\" data-card-id=\"back\">\n      <span id=\"moho-deck-counter\" class=\"moho-deck-counter\"></span>\n    </div>\n    <div id=\"moho-market-slots\"></div>\n\n  </div>\n  <div id=\"moho-market-bar\">\n    <span>".concat(_('Safe Pile'), "</span>\n    <span>").concat(_('Deck'), "</span>\n    <span class=\"moho-market-label\">").concat(_('Market'), "</span>\n  </div>\n</div>\n"); };
 var PlayerManager = (function () {
     function PlayerManager(game) {
         this.game = game;
@@ -5635,7 +5802,13 @@ var MohoPlayer = (function () {
                 gap: '0px',
             });
         });
+        this.setupEncounterTokens(gamedatas);
         this.updatePlayerBoard(playerGamedatas);
+    };
+    MohoPlayer.prototype.setupEncounterTokens = function (gamedatas) {
+        this.encounterTokens = new LineStock(this.game.encounterTokenManager, document.getElementById("moho-encounter-tokens-".concat(this.playerId)), {
+            gap: '0px',
+        });
     };
     MohoPlayer.prototype.setupPlayerPanel = function (gamedatas) {
         var _this = this;
@@ -5678,6 +5851,9 @@ var MohoPlayer = (function () {
             _this.items[item.location].addCard(getItem(item));
         });
     };
+    MohoPlayer.prototype.updateEncounterTokens = function (playerGamedatas) {
+        this.encounterTokens.addCards(playerGamedatas.encounterTokens);
+    };
     MohoPlayer.prototype.updatePlayerPanel = function (gamedatas) { };
     MohoPlayer.prototype.getColor = function () {
         return this.playerColor;
@@ -5692,7 +5868,7 @@ var MohoPlayer = (function () {
 }());
 var tplPlayerBoard = function (_a) {
     var playerId = _a.playerId, color = _a.color;
-    return "\n<div id=\"moho-player-row-".concat(playerId, "\" class=\"moho-player-row\">\n  <div id=\"moho-player-board-").concat(playerId, "\" class=\"moho-player-board\" data-color=\"").concat(color, "\">\n    <div id=\"item_1_").concat(playerId, "\" class=\"moho-item-spot\" data-spot=\"1\"></div>\n    <div id=\"item_2_").concat(playerId, "\" class=\"moho-item-spot\" data-spot=\"2\"></div>\n  </div>\n  <div id=\"moho-reputation-").concat(playerId, "\" class=\"moho-reputation\"></div>\n</div>\n\n");
+    return "\n<div id=\"moho-player-row-".concat(playerId, "\" class=\"moho-player-container\">\n  <div class=\"moho-player-row\">\n    <div id=\"moho-player-board-").concat(playerId, "\" class=\"moho-player-board\" data-color=\"").concat(color, "\">\n      <div id=\"item_1_").concat(playerId, "\" class=\"moho-item-spot\" data-spot=\"1\"></div>\n      <div id=\"item_2_").concat(playerId, "\" class=\"moho-item-spot\" data-spot=\"2\"></div>\n    </div>\n    <div id=\"moho-reputation-").concat(playerId, "\" class=\"moho-reputation\"></div>\n  </div>\n  <div class=\"moho-player-row\">\n    <div id=\"moho-encounter-tokens-").concat(playerId, "\" class=\"moho-encounter-tokens\"></div>\n  </div>\n</div>");
 };
 var tplPlayerCounters = function (_a) {
     var playerId = _a.playerId;
@@ -5748,6 +5924,12 @@ var TakeAction = (function () {
                 return _this.updateInterfaceConfirm(SHOP, _this.args._private.Shop.id);
             });
         }
+        Object.entries(this.args._private.items).forEach(function (_a) {
+            var itemId = _a[0], item = _a[1];
+            onClick(document.getElementById(item.id), function () {
+                return _this.updateInterfaceConfirm(USE_ITEM, itemId);
+            });
+        });
         addUndoButtons(this.args);
     };
     TakeAction.prototype.updateInterfaceConfirm = function (action, target) {
@@ -5764,15 +5946,14 @@ var TakeAction = (function () {
     };
     TakeAction.prototype.updateConfirmTargetSelected = function (action, target) {
         switch (action) {
+            case SHOP:
             case CRUISE:
             case INDULGE:
+            case USE_ITEM:
                 setSelected(document.getElementById(target));
                 break;
             case LIE_LOW:
                 setSelected(document.getElementById('moho-deck'));
-                break;
-            case SHOP:
-                setSelected(document.getElementById(target));
                 break;
             default:
                 break;
@@ -5810,6 +5991,11 @@ var TakeAction = (function () {
             case THROW_FESTIVITY:
                 updatePageTitle(_('Throw a Festivity at ${site}?'), {
                     site: site,
+                });
+                break;
+            case USE_ITEM:
+                updatePageTitle(_('Use ${itemName}?'), {
+                    itemName: _(getItem(this.args._private.items[target]).name),
                 });
                 break;
             default:
@@ -6749,4 +6935,95 @@ var DiscardItem = (function () {
         addCancelButton();
     };
     return DiscardItem;
+}());
+var ExamineGossipPile = (function () {
+    function ExamineGossipPile(game) {
+        this.game = game;
+        this.modal = new CardModal(game, GOSSIP_PILE);
+    }
+    ExamineGossipPile.create = function (game) {
+        ExamineGossipPile.instance = new ExamineGossipPile(game);
+    };
+    ExamineGossipPile.getInstance = function () {
+        return ExamineGossipPile.instance;
+    };
+    ExamineGossipPile.prototype.onEnteringState = function (args) {
+        debug('Entering ExamineGossipPile state');
+        this.args = args;
+        this.modal.addCards(Object.values(this.args._private));
+        this.updateInterfaceInitialStep();
+    };
+    ExamineGossipPile.prototype.onLeavingState = function () {
+        debug('Leaving ExamineGossipPile state');
+        this.modal.removeCards();
+    };
+    ExamineGossipPile.prototype.setDescription = function (activePlayerIds, args) { };
+    ExamineGossipPile.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        updatePageTitle(_('${you} may add a card from the gossip pile to your hand'), {});
+        addPrimaryActionButton({
+            id: 'open_btn',
+            text: _('Show Gossip Pile'),
+            callback: function () {
+                _this.modal.open();
+            },
+        });
+        Object.values(this.args._private).forEach(function (card) {
+            onClick(card.id, function () {
+                _this.updateInterfaceConfirm(card);
+                _this.modal.close();
+            });
+        });
+        this.modal.open();
+    };
+    ExamineGossipPile.prototype.updateInterfaceConfirm = function (card) {
+        var _this = this;
+        clearPossible();
+        var viceCard = getViceCard(card);
+        updatePageTitle(_('Add ${value} of ${tkn_suit} to your hand?'), {
+            value: getViceCardValueText(viceCard.displayValue),
+            tkn_suit: viceCard.suit,
+        });
+        addConfirmButton(function () {
+            performAction('actExamineGossipPile', {
+                cardId: card.id
+            });
+            _this.modal.removeCards();
+        });
+        addCancelButton();
+    };
+    return ExamineGossipPile;
+}());
+var PlaceEncounterToken = (function () {
+    function PlaceEncounterToken(game) {
+        this.game = game;
+    }
+    PlaceEncounterToken.create = function (game) {
+        PlaceEncounterToken.instance = new PlaceEncounterToken(game);
+    };
+    PlaceEncounterToken.getInstance = function () {
+        return PlaceEncounterToken.instance;
+    };
+    PlaceEncounterToken.prototype.onEnteringState = function (args) {
+        debug('Entering PlaceEncounterToken state');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    PlaceEncounterToken.prototype.onLeavingState = function () {
+        debug('Leaving PlaceEncounterToken state');
+    };
+    PlaceEncounterToken.prototype.setDescription = function (activePlayerIds, args) { };
+    PlaceEncounterToken.prototype.updateInterfaceInitialStep = function () {
+        this.game.clearPossible();
+        updatePageTitle(_('${you} may perform an action'), {});
+    };
+    PlaceEncounterToken.prototype.updateInterfaceConfirm = function () {
+        clearPossible();
+        updatePageTitle(_('Confirm action'));
+        addConfirmButton(function () {
+            performAction('actPlaceEncounterToken', {});
+        });
+    };
+    return PlaceEncounterToken;
 }());

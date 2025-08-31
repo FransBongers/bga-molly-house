@@ -6,6 +6,7 @@ class Market {
   public deck: LineStock<ViceCard>;
   public safePile: LineStock<ViceCard>;
   public counters: Record<string, Counter> = {};
+  public safePileModal: CardModal;
 
   public ui: {
     container: HTMLElement;
@@ -53,9 +54,17 @@ class Market {
       // market_2: document.getElementById('moho-market-2'),
       // market_3: document.getElementById('moho-market-3'),
     };
+    this.setupModal();
 
     this.setupDecks(gamedatas);
     this.setupSlotStock(gamedatas);
+  }
+
+  private setupModal() {
+    this.safePileModal = new CardModal(this.game, SAFE_PILE);
+    dojo.connect($(`moho-safe-pile`), 'onclick', () =>
+      this.safePileModal.open()
+    );
   }
 
   private setupDecks(gamedatas: GamedatasAlias) {
@@ -117,10 +126,20 @@ class Market {
   }
 
   private updateSafePile(gamedatas: GamedatasAlias) {
-    this.safePile.addCards(
-      Object.values(gamedatas.safePile).map((card) => getViceCard(card))
-    );
+    this.safePileModal.addCards(Object.values(gamedatas.safePile));
     this.counters[SAFE_PILE].setValue(Object.keys(gamedatas.safePile).length);
+
+    this.ui.safePile.setAttribute(
+      'data-card-id',
+      gamedatas.topOfSafePile ? gamedatas.topOfSafePile.id : 'none'
+    );
+  }
+
+  public async addCardToSafePile(viceCard: ViceCard) {
+    await this.safePile.addCard(getViceCard(viceCard));
+    this.ui.safePile.setAttribute('data-card-id', viceCard.id);
+    await this.safePile.removeCard(viceCard);
+    await this.safePileModal.addCard(viceCard);
   }
 
   //  .##.....##.########.####.##.......####.########.##....##

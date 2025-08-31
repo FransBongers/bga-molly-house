@@ -30,6 +30,7 @@ use Bga\Games\MollyHouse\Boilerplate\Core\Globals;
 use Bga\Games\MollyHouse\Boilerplate\Core\Stats;
 use Bga\Games\MollyHouse\Managers\Community;
 use Bga\Games\MollyHouse\Managers\DieManager;
+use Bga\Games\MollyHouse\Managers\EncounterTokens;
 use Bga\Games\MollyHouse\Managers\Festivity;
 use Bga\Games\MollyHouse\Managers\IndictmentCards;
 use Bga\Games\MollyHouse\Managers\Items;
@@ -282,6 +283,7 @@ class Game extends \Bga\GameFramework\Table
             'pawns' => Pawns::getAll(),
             'safePile' => ViceCards::getInLocation(SAFE_PILE),
             'sites' => Sites::getAll(),
+            'topOfSafePile' => ViceCards::getTopOf(SAFE_PILE)
         ];
 
 
@@ -305,7 +307,7 @@ class Game extends \Bga\GameFramework\Table
         PlayerCubes::setupNewGame();
         IndictmentCards::setupNewGame($players, $options);
         Items::setupNewGame($players, $options);
-
+        EncounterTokens::setupNewGame($players, $options);
         $players = Players::getAll()->toArray();
 
 

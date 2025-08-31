@@ -1,7 +1,7 @@
 const tplMarket = (gamedatas: GamedatasAlias) => `
 <div> 
   <div id="moho-market">
-    <div id="moho-safe-pile" class="moho-market-slot">
+    <div id="moho-safe-pile" class="moho-market-slot moho-vice-card">
       <span id="moho-safe-pile-counter" class="moho-deck-counter"></span>
     </div>
     <div id="moho-deck" class="moho-market-slot moho-vice-card" data-card-id="back">

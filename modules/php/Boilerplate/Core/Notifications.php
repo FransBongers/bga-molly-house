@@ -211,6 +211,22 @@ class Notifications
   // .##...###.##.....##....##.....##..##.......##....##
   // .##....##..#######.....##....####.##........######.
 
+  public static function addCardFromGossipPile($player, $card)
+  {
+    self::notify($player, 'addCardFromGossipPilePrivate', clienttranslate('${player_name} takes ${tkn_boldText_cardValue} of ${tkn_suit} from the gossip pile'), [
+      'player' => $player,
+      'card' => $card,
+      'tkn_boldText_cardValue' => self::viceCardValueText($card->getDisplayValue()),
+      'tkn_suit' => $card->getSuit(),
+      'i18n' => ['tkn_boldText_cardValue'],
+    ]);
+
+
+    self::notifyAll('addCardFromGossipPile', clienttranslate('${player_name} takes a card from the gossip pile'), [
+      'player' => $player,
+    ]);
+  }
+
   public static function addCardToHand($player, $card)
   {
     self::notifyAll('addCardToHand', clienttranslate('${player_name} adds ${tkn_boldText_cardValue} of ${tkn_suit} to their hand${tkn_viceCard}'), [
@@ -707,6 +723,15 @@ class Notifications
       'player' => $player,
       'tkn_boldText_site' => $site->getName(),
       'i18n' => ['tkn_boldText_site'],
+    ]);
+  }
+
+  public static function useItem($player, $item)
+  {
+    self::message(clienttranslate('${player_name} uses ${tkn_boldText_itemName}'), [
+      'player' => $player,
+      'tkn_boldText_itemName' => $item->getName(),
+      'i18n' => ['tkn_boldText_itemName'],
     ]);
   }
 }

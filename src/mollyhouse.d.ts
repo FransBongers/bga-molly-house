@@ -55,6 +55,7 @@ interface MollyHouseGamedatas extends Gamedatas {
   pawns: Record<string, MohoPawn>;
   safePile: ViceCardBase[];
   sites: Record<string, MohoSiteBase>;
+  topOfSafePile: ViceCardBase | null;
 }
 
 interface MollyHousePlayerData extends BgaPlayer {
@@ -64,12 +65,18 @@ interface MollyHousePlayerData extends BgaPlayer {
   reputation: ViceCardBase[];
   cubes: Record<Suit, number>;
   items: MohoItemBase[];
+  encounterTokens: MohoEncounterToken[];
 }
 
 type GameAlias = MollyHouse;
 type GamedatasAlias = MollyHouseGamedatas;
 type PlayerAlias = MohoPlayer;
 type PlayerDataAlias = MollyHousePlayerData;
+
+interface MohoEncounterToken extends GamePiece {
+  type: 'Loyal' | 'Informer' | null;
+  hidden: boolean;
+}
 
 interface MohoItemBase extends GamePiece {
   type: string;

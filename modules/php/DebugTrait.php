@@ -12,6 +12,7 @@ use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 
 use Bga\Games\MollyHouse\Managers\AtomicActions;
 use Bga\Games\MollyHouse\Managers\DieManager;
+use Bga\Games\MollyHouse\Managers\EncounterTokens;
 use Bga\Games\MollyHouse\Managers\Festivity;
 use Bga\Games\MollyHouse\Managers\IndictmentCards;
 use Bga\Games\MollyHouse\Managers\Items;
@@ -32,10 +33,12 @@ trait DebugTrait
   {
     // Sites::get(SUKEY_BEVELLS)->setEvidence(6);
 
+    EncounterTokens::setupNewGame();
+
     // Items::setupNewGame();
     // Notifications::log('itemsStatic', Items::getStaticUiData());
-    Items::pickOneForLocation(DECK, Locations::item(2371052,1));
-    Items::pickOneForLocation(DECK, Locations::item(2371052,2));
+    // Items::pickOneForLocation(DECK, Locations::item(2371052,1));
+    // Items::pickOneForLocation(DECK, Locations::item(2371052,2));
 
     // DieManager::rollDice(Players::get());
     // Pawns::setupNewGame();

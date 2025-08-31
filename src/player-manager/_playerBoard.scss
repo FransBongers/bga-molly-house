@@ -1,12 +1,27 @@
 @use 'sass:math';
 @use 'sass:map';
 
-.moho-player-row {
+.moho-player-container {
   width: calc(var(--rightColumnScale) * 1000px);
+  gap: calc(var(--rightColumnScale) * 4px);
   display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  gap: calc(var(--rightColumnScale) * 8px);
+  flex-direction: column;
+
+  .moho-player-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: calc(var(--rightColumnScale) * 8px);
+  }
+
+  .moho-encounter-tokens {
+    --tokenScale: var(--rightColumnScale);
+    height: fit-content;
+
+    .moho-encounter-token-container:not(:first-child) {
+      margin-left: calc(var(--tokenScale) * -40px);
+    }
+  }
 }
 
 .moho-player-board {

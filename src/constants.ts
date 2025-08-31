@@ -11,6 +11,7 @@ const ACCUSE = 'Accuse';
 const CRUISE = 'Cruise';
 const SHOP = 'Shop';
 const THROW_FESTIVITY = 'ThrowFestivity';
+const USE_ITEM = 'UseItem';
 
 /**
  * Colors
@@ -49,8 +50,6 @@ const COLOR_SUIT_MAP = {
   [GREEN]: FANS,
   [RED]: HEARTS,
 };
-
-
 
 /**
  * Market locations
@@ -135,7 +134,7 @@ const CRUISING_SITES = {
   [ST_JAMESS_PARK]: BOTTOM,
   [COVENT_GARDEN_PIAZZA]: LEFT,
   [LINCOLNS_INN_BOGHOUSE]: LEFT,
-}
+};
 
 /**
  * Items
@@ -167,11 +166,12 @@ const CHRISTENING = 'Christening';
 const DANCE = 'Dance';
 const QUIET_GATHERING = 'QuietGathering';
 
-const FESTIVITIES = [
-  SURPRISE_BALL,
-  CHRISTENING,
-  DANCE,
-  QUIET_GATHERING,
-];
+const FESTIVITIES = [SURPRISE_BALL, CHRISTENING, DANCE, QUIET_GATHERING];
 
 const MOVE_WEEK_MARKER = 'moveWeekMarker';
+
+/**
+ * Encounter tokens
+ */
+const LOYAL = 'Loyal';
+const INFORMER = 'Informer';

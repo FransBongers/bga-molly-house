@@ -35,4 +35,9 @@ class Locations
   {
     return 'item_' . $spot . '_' . $playerId;
   }
+
+  public static function encounterTokens($playerId)
+  {
+    return 'encounterTokens_' . $playerId;
+  }
 }

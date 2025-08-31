@@ -1,0 +1,54 @@
+.moho-encounter-token {
+  width: calc(var(--tokenScale) * 75px);
+  aspect-ratio: 1 / 1;
+
+  box-sizing: border-box;
+  background-image: url('img/encounter-tokens-150.png');
+  background-size: 300% 500%;
+  background-repeat: no-repeat;
+
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: high-quality;
+  position: relative;
+}
+
+.moho-encounter-token.card-side {
+  box-shadow: none !important;
+}
+
+.moho-encounter-token[data-type='Informer'] {
+  background-position-x: 50%;
+}
+
+.moho-encounter-token[data-type='Loyal'] {
+  background-position-x: 100%;
+}
+
+.moho-encounter-token[data-type='Loyal'] {
+  background-position-x: 100%;
+}
+
+.moho-encounter-token[data-color='blue'] {
+  background-position-y: 0%;
+}
+
+.moho-encounter-token[data-color='green'] {
+  background-position-y: 25%;
+}
+
+.moho-encounter-token[data-color='pink'] {
+  background-position-y: 50%;
+}
+
+.moho-encounter-token[data-color='purple'] {
+  background-position-y: 75%;
+}
+
+.moho-encounter-token[data-color='yellow'] {
+  background-position-y: 100%;
+}
+
+// .moho-encounter-token[data-type='back'] {
+//   background-image: url('img/back.jpg');
+//   background-size: 100% 100%;
+// }

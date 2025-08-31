@@ -91,3 +91,11 @@ CREATE TABLE IF NOT EXISTS `pawns` (
   `pawn_state` int(10) DEFAULT 0,
   PRIMARY KEY (`pawn_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+CREATE TABLE IF NOT EXISTS `encounter_tokens` (
+  `token_id` varchar(100) NOT NULL,
+  `token_location` varchar(32) NOT NULL,
+  `token_state` int(10) DEFAULT 0,
+  `hidden` tinyint(1) DEFAULT 1,
+  `type` varchar(32) NOT NULL,
+  PRIMARY KEY (`token_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;

@@ -45,4 +45,14 @@ class Item extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
 
     Notifications::discardItem($player, $this);
   }
+
+  public function canBeUsedForAction($site)
+  {
+    return false;
+  }
+
+  public function useAction($player, $site)
+  {
+    throw new \feException("ERROR_022");
+  }
 }
