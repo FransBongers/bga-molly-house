@@ -4160,6 +4160,133 @@ var ConfirmTurn = (function () {
     };
     return ConfirmTurn;
 }());
+var TooltipManager = (function () {
+    function TooltipManager(game) {
+        this._customTooltipIdCounter = 0;
+        this._registeredCustomTooltips = {};
+        this.game = game;
+    }
+    TooltipManager.create = function (game) {
+        TooltipManager.instance = new TooltipManager(game);
+    };
+    TooltipManager.getInstance = function () {
+        return TooltipManager.instance;
+    };
+    TooltipManager.prototype.addTextToolTip = function (_a) {
+        var nodeId = _a.nodeId, text = _a.text, _b = _a.custom, custom = _b === void 0 ? true : _b;
+        if (custom) {
+            this.addCustomTooltip(nodeId, tplTextTooltip({
+                text: text,
+            }));
+        }
+        else {
+            this.game.framework().addTooltipHtml(nodeId, tplTextTooltip({
+                text: text,
+            }), 400);
+        }
+    };
+    TooltipManager.prototype.removeTooltip = function (nodeId) {
+        this.game.framework().removeTooltip(nodeId);
+    };
+    TooltipManager.prototype.setupTooltips = function () { };
+    TooltipManager.prototype.addCardTooltip = function (_a) {
+        var nodeId = _a.nodeId, cardId = _a.cardId;
+    };
+    TooltipManager.prototype.addBoardTooltips = function () { };
+    TooltipManager.prototype.registerCustomTooltip = function (html, id) {
+        if (id === void 0) { id = null; }
+        id =
+            id ||
+                this.game.framework().game_name +
+                    '-tooltipable-' +
+                    this._customTooltipIdCounter++;
+        this._registeredCustomTooltips[id] = html;
+        return id;
+    };
+    TooltipManager.prototype.attachRegisteredTooltips = function () {
+        var _this = this;
+        Object.keys(this._registeredCustomTooltips).forEach(function (id) {
+            if ($(id)) {
+                _this.addCustomTooltip(id, _this._registeredCustomTooltips[id], {
+                    forceRecreate: true,
+                });
+            }
+        });
+        this._registeredCustomTooltips = {};
+    };
+    TooltipManager.prototype.addCustomTooltip = function (id, html, config) {
+        var _this = this;
+        if (config === void 0) { config = {}; }
+        if (!document.getElementById(id)) {
+            return;
+        }
+        config = Object.assign({
+            delay: 400,
+            midSize: true,
+            forceRecreate: false,
+        }, config);
+        var getContent = function () {
+            var content = typeof html === 'function' ? html() : html;
+            if (config.midSize) {
+                content = '<div class="midSizeDialog">' + content + '</div>';
+            }
+            return content;
+        };
+        if (this.game.framework().tooltips[id] && !config.forceRecreate) {
+            this.game.framework().tooltips[id].getContent = getContent;
+            return;
+        }
+        var tooltip = new dijit.Tooltip({
+            getContent: getContent,
+            position: this.game.framework().defaultTooltipPosition,
+            showDelay: config.delay,
+        });
+        this.game.framework().tooltips[id] = tooltip;
+        dojo.addClass(id, 'tooltipable');
+        dojo.place("<div class='help-marker'>\n            <svg><use href=\"#help-marker-svg\" /></svg>\n          </div>", id);
+        dojo.connect($(id), 'click', function (evt) {
+            if (!_this.game._helpMode) {
+                tooltip.close();
+            }
+            else {
+                evt.stopPropagation();
+                if (tooltip.state == 'SHOWING') {
+                    _this.game.closeCurrentTooltip();
+                }
+                else {
+                    _this.game.closeCurrentTooltip();
+                    tooltip.open($(id));
+                    _this.game._displayedTooltip = tooltip;
+                }
+            }
+        });
+        tooltip.showTimeout = null;
+        dojo.connect($(id), 'mouseenter', function (evt) {
+            evt.stopPropagation();
+            if (!_this.game._helpMode && !_this.game._dragndropMode) {
+                if (tooltip.showTimeout != null)
+                    clearTimeout(tooltip.showTimeout);
+                tooltip.showTimeout = setTimeout(function () {
+                    if ($(id))
+                        tooltip.open($(id));
+                }, config.delay);
+            }
+        });
+        dojo.connect($(id), 'mouseleave', function (evt) {
+            evt.stopPropagation();
+            if (!_this.game._helpMode && !_this.game._dragndropMode) {
+                tooltip.close();
+                if (tooltip.showTimeout != null)
+                    clearTimeout(tooltip.showTimeout);
+            }
+        });
+    };
+    return TooltipManager;
+}());
+var tplTextTooltip = function (_a) {
+    var text = _a.text;
+    return "<span class=\"text-tooltip\">".concat(text, "</span>");
+};
 var IconCounter = (function () {
     function IconCounter(config) {
         this.setupIconCounter(config);
@@ -4305,6 +4432,8 @@ function sleep(ms) {
 }
 var MollyHouse = (function () {
     function MollyHouse() {
+        this._displayedTooltip = null;
+        this._dragndropMode = false;
         this._helpMode = false;
         this._last_notif = null;
         this._notif_uid_to_log_id = {};
@@ -4352,6 +4481,7 @@ var MollyHouse = (function () {
         debug('game', this);
         this._connections = [];
         InfoPanel.create(this);
+        TooltipManager.create(this);
         Settings.create(this);
         var settings = Settings.getInstance();
         this.animationManager = new AnimationManager(this, {
@@ -4429,6 +4559,16 @@ var MollyHouse = (function () {
         this.clearPossible();
     };
     MollyHouse.prototype.onUpdateActionButtons = function (stateName, args) {
+    };
+    MollyHouse.prototype.closeCurrentTooltip = function () {
+        if (!this._helpMode)
+            return;
+        if (this._displayedTooltip == null)
+            return;
+        else {
+            this._displayedTooltip.close();
+            this._displayedTooltip = null;
+        }
     };
     MollyHouse.prototype.destroy = function (elem) {
         if (this.framework().tooltips[elem.id]) {
@@ -4669,7 +4809,7 @@ var MollyHouse = (function () {
     };
     return MollyHouse;
 }());
-var _a, _b, _c;
+var _a, _b, _c, _d;
 var getGroupPosition = function (top, left, index, rowSize) {
     var row = Math.floor(index / rowSize);
     var column = index % 4;
@@ -4783,10 +4923,17 @@ var JOY_MARKER_POSITIONS = {
     38: { top: 733, left: 1288 },
     39: { top: 688, left: 1293 },
 };
+var ENCOUNTER_TOKENS_CONFIG = (_d = {},
+    _d[MOTHER_CLAPS] = { top: 200, left: 65 },
+    _d[MISS_MUFFS] = { top: 200, left: 1090 },
+    _d[SUKEY_BEVELLS] = { top: 875, left: 1090 },
+    _d[JULIUS_CESAR_TAYLORS] = { top: 875, left: 65 },
+    _d);
 var Board = (function () {
     function Board(game) {
         this.counters = {};
         this.evidenceCounters = {};
+        this.encounterTokens = {};
         this.sites = {};
         this.joyMarkerStocks = {};
         this.shops = {};
@@ -4807,6 +4954,7 @@ var Board = (function () {
             containers: {
                 board: document.getElementById('moho-board'),
                 dangerousCruisingMarkers: document.getElementById('moho-dangerous-cruising-markers'),
+                encounterTokens: document.getElementById('moho-encounter-tokens'),
                 evidenceCounters: document.getElementById('moho-evidence-counters'),
                 gossipPile: document.getElementById('moho-gossip-pile'),
                 markers: document.getElementById('moho-markers'),
@@ -4834,6 +4982,7 @@ var Board = (function () {
         this.setupShops(gamedatas);
         this.setupPawns(gamedatas);
         this.setFestivityActive(gamedatas.festivity.active);
+        this.setupEncounterTokens(gamedatas);
     };
     Board.prototype.setupDangerousCruisingMarkers = function (gamedatas) {
         var _this = this;
@@ -4854,6 +5003,20 @@ var Board = (function () {
         this.diceStock = new LineDiceStock(this.game.diceManager, this.ui.diceStock, { gap: 'calc(var(--boardScale) * 32px)' });
         this.ui.diceStock.dataset.place = "".concat(1);
         this.diceStock.addDice(getDice(gamedatas.dice));
+    };
+    Board.prototype.setupEncounterTokens = function (gamedatas) {
+        var _this = this;
+        MOLLY_HOUSES.forEach(function (siteId) {
+            var elt = document.createElement('div');
+            elt.id = "moho-encounter-tokens-".concat(siteId);
+            setAbsolutePosition(elt, BOARD_SCALE, ENCOUNTER_TOKENS_CONFIG[siteId]);
+            elt.classList.add('moho-encounter-tokens-molly-house');
+            _this.ui.containers.encounterTokens.appendChild(elt);
+            _this.encounterTokens[siteId] = new LineStock(_this.game.encounterTokenManager, elt, {
+                gap: '0px',
+            });
+        });
+        this.updateEncounterTokens(gamedatas);
     };
     Board.prototype.setupEvidenceCounters = function (gamedatas) {
         var _this = this;
@@ -5023,6 +5186,12 @@ var Board = (function () {
             }
         });
     };
+    Board.prototype.updateEncounterTokens = function (gamedatas) {
+        var _this = this;
+        gamedatas.encounterTokens.forEach(function (token) {
+            _this.encounterTokens[token.location].addCard(token);
+        });
+    };
     Board.prototype.updateEvidenceCounters = function (gamedatas) { };
     Board.prototype.updateGossipPile = function (gamedatas) {
         this.counters[GOSSIP_PILE].setValue(gamedatas.gossipPileCount);
@@ -5129,7 +5298,7 @@ var Board = (function () {
     };
     return Board;
 }());
-var tplBoard = function (gamedatas) { return "<div id=\"moho-board\">\n\n\n  <div id=\"moho-dangerous-cruising-markers\"></div>\n  <div id=\"house-raided-markers\"></div>\n  <div id=\"moho-select-boxes\"></div>\n  <div id=\"moho-playmat\">\n    <div id=\"moho-festivity\"></div>\n    <div id=\"moho-dice-stock\"></div>\n  </div>\n    <div id=\"moho-shops\">\n    <div id=\"CannonStreet\" class=\"moho-shop\"></div>\n    <div id=\"DukeStreet\" class=\"moho-shop\"></div>\n    <div id=\"LeadenhallStreet\" class=\"moho-shop\"></div>\n    <div id=\"NobleStreet\" class=\"moho-shop\"></div>\n  </div>\n  <div id=\"moho-pawns\"></div>\n  <div id=\"moho-evidence-counters\"></div>\n  <div id=\"moho-gossip-pile\" class=\"moho-vice-card\" data-card-id=\"back\">\n    <span id=\"moho-gossip-pile-counter\" class=\"moho-deck-counter\">10</span>\n  </div>\n  <div id=\"moho-markers\"></div>\n\n</div>"; };
+var tplBoard = function (gamedatas) { return "<div id=\"moho-board\">\n\n\n  <div id=\"moho-dangerous-cruising-markers\"></div>\n  <div id=\"house-raided-markers\"></div>\n  <div id=\"moho-select-boxes\"></div>\n  <div id=\"moho-playmat\">\n    <div id=\"moho-festivity\"></div>\n    <div id=\"moho-dice-stock\"></div>\n  </div>\n    <div id=\"moho-shops\">\n    <div id=\"CannonStreet\" class=\"moho-shop\"></div>\n    <div id=\"DukeStreet\" class=\"moho-shop\"></div>\n    <div id=\"LeadenhallStreet\" class=\"moho-shop\"></div>\n    <div id=\"NobleStreet\" class=\"moho-shop\"></div>\n  </div>\n  <div id=\"moho-encounter-tokens\"></div>\n  <div id=\"moho-pawns\"></div>\n  <div id=\"moho-evidence-counters\"></div>\n  <div id=\"moho-gossip-pile\" class=\"moho-vice-card\" data-card-id=\"back\">\n    <span id=\"moho-gossip-pile-counter\" class=\"moho-deck-counter\">10</span>\n  </div>\n  <div id=\"moho-markers\"></div>\n\n</div>"; };
 var createJoyMarker = function (color) {
     var elt = document.createElement('div');
     elt.classList.add('moho-joy-marker');
@@ -5168,9 +5337,21 @@ var EncounterTokenManager = (function (_super) {
         div.setAttribute('data-type', 'back');
         div.setAttribute('data-color', this.getPlayerColor(card));
         div.style.width = 'calc(var(--tokenScale) * 75px)';
+        if (card.type !== null) {
+            TooltipManager.getInstance().addTextToolTip({
+                nodeId: card.id,
+                text: card.type,
+            });
+        }
     };
     EncounterTokenManager.prototype.isCardVisible = function (card) {
-        return card.type !== null;
+        if (card.type === null) {
+            return false;
+        }
+        if (MOLLY_HOUSES.includes(card.location) && card.hidden) {
+            return false;
+        }
+        return true;
     };
     EncounterTokenManager.prototype.getPlayerColor = function (card) {
         var playerId = Number(card.id.split('_')[1]);

@@ -33,7 +33,12 @@ trait DebugTrait
   {
     // Sites::get(SUKEY_BEVELLS)->setEvidence(6);
 
-    EncounterTokens::setupNewGame();
+    $encounterTokens = EncounterTokens::getAll()->toArray();
+    shuffle($encounterTokens);
+
+    foreach (MOLLY_HOUSES as $i => $siteId) {
+      $encounterTokens[$i]->setLocation($siteId);
+    }
 
     // Items::setupNewGame();
     // Notifications::log('itemsStatic', Items::getStaticUiData());

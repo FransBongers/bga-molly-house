@@ -43,4 +43,14 @@ class EncounterToken extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     // Notifications::log('getUiData card model', []);
     return $this->jsonSerialize(); // Static datas are already in js file
   }
+
+  public function isOwnedBy($playerId)
+  {
+    return intval(explode('_', $this->getId())[1]) == $playerId;
+  }
+
+  public function isHidden()
+  {
+    return $this->hidden === 1;
+  }
 }

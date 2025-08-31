@@ -7,11 +7,13 @@ class Board {
   public counters: Record<string, Counter> = {};
   public evidenceCounters: Record<string, CubeCounter> = {};
   public itemDiscard: VoidStock<MohoItem>;
+  public encounterTokens: Record<string, LineStock<MohoEncounterToken>> = {};
 
   public ui: {
     containers: {
       board: HTMLElement;
       dangerousCruisingMarkers: HTMLElement;
+      encounterTokens: HTMLElement;
       evidenceCounters: HTMLElement;
       gossipPile: HTMLElement;
       houseRaidedMarkers: HTMLElement;
@@ -68,6 +70,7 @@ class Board {
         dangerousCruisingMarkers: document.getElementById(
           'moho-dangerous-cruising-markers'
         ),
+        encounterTokens: document.getElementById('moho-encounter-tokens'),
         evidenceCounters: document.getElementById('moho-evidence-counters'),
         gossipPile: document.getElementById('moho-gossip-pile'),
         markers: document.getElementById('moho-markers'),
@@ -98,6 +101,7 @@ class Board {
     this.setupPawns(gamedatas);
     // this.setupTokens(gamedatas);
     this.setFestivityActive(gamedatas.festivity.active);
+    this.setupEncounterTokens(gamedatas);
   }
 
   private setupDangerousCruisingMarkers(gamedatas: GamedatasAlias) {
@@ -128,6 +132,27 @@ class Board {
     this.ui.diceStock.dataset.place = `${1}`;
 
     this.diceStock.addDice(getDice(gamedatas.dice));
+  }
+
+  private setupEncounterTokens(gamedatas: GamedatasAlias) {
+    MOLLY_HOUSES.forEach((siteId) => {
+      const elt = document.createElement('div');
+      elt.id = `moho-encounter-tokens-${siteId}`;
+      setAbsolutePosition(elt, BOARD_SCALE, ENCOUNTER_TOKENS_CONFIG[siteId]);
+      elt.classList.add('moho-encounter-tokens-molly-house');
+
+      this.ui.containers.encounterTokens.appendChild(elt);
+
+      this.encounterTokens[siteId] = new LineStock<MohoEncounterToken>(
+        this.game.encounterTokenManager,
+        elt,
+        {
+          gap: '0px',
+        }
+      );
+    });
+
+    this.updateEncounterTokens(gamedatas);
   }
 
   private setupEvidenceCounters(gamedatas: GamedatasAlias) {
@@ -341,6 +366,12 @@ class Board {
       if (gamedatas.sites[siteId].raidedOrDangerous) {
         this.setCruisingSiteDangerous(siteId);
       }
+    });
+  }
+
+  updateEncounterTokens(gamedatas: GamedatasAlias) {
+    gamedatas.encounterTokens.forEach((token) => {
+      this.encounterTokens[token.location].addCard(token);
     });
   }
 

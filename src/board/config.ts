@@ -1,4 +1,3 @@
-
 const getGroupPosition = (
   top: number,
   left: number,
@@ -19,7 +18,7 @@ const SITE_POSITIONS: Record<string, AbsolutePosition> = {
   [NOBLE_STREET]: { top: 98, left: 557 },
   [MOORFIELDS]: { top: 98, left: 752 },
   [MISS_MUFFS]: { top: 98, left: 948 },
-  [ROYAL_EXCHANGE]: { top: 291, left:  1088},
+  [ROYAL_EXCHANGE]: { top: 291, left: 1088 },
   [LEADENHALL_STREET]: { top: 487, left: 1088 },
   [LONDON_BRIDGE]: { top: 678, left: 1088 },
   [SUKEY_BEVELLS]: { top: 991, left: 937 },
@@ -30,23 +29,22 @@ const SITE_POSITIONS: Record<string, AbsolutePosition> = {
   [COVENT_GARDEN_PIAZZA]: { top: 680, left: 83 },
   [DUKE_STREET]: { top: 486, left: 83 },
   [LINCOLNS_INN_BOGHOUSE]: { top: 288, left: 83 },
-}
+};
 
 const DANGEROUS_CRUISING_MARKERS_POSITIONS: Record<string, AbsolutePosition> = {
   [ST_PAULS_CATHEDRAL]: { top: 60, left: 355 },
   [MOORFIELDS]: { top: 60, left: 745 },
-  [ROYAL_EXCHANGE]: { top: 355, left:  1107},
+  [ROYAL_EXCHANGE]: { top: 355, left: 1107 },
   [LONDON_BRIDGE]: { top: 746, left: 1107 },
   [OLD_ROUND_COURT]: { top: 1041, left: 745 },
   [ST_JAMESS_PARK]: { top: 1041, left: 355 },
   [COVENT_GARDEN_PIAZZA]: { top: 746, left: -6 },
   [LINCOLNS_INN_BOGHOUSE]: { top: 355, left: -6 },
-}
+};
 
 const getPawnPosition = (location: string, index: number): AbsolutePosition => {
-
   let position = { top: 0, left: 0 };
-  const {top, left} = SITE_POSITIONS[location] || { top: 0, left: 0 };
+  const { top, left } = SITE_POSITIONS[location] || { top: 0, left: 0 };
   switch (location) {
     //   case WEST_INDIAN:
     //     position = WEST_INDIAN_POSITIONS[positionIndex];
@@ -67,13 +65,16 @@ const getPawnPosition = (location: string, index: number): AbsolutePosition => {
   return position;
 };
 
-const SITE_SELECT_POSITIONS: Record<string, AbsolutePosition & {width: number; height: number}> = {
+const SITE_SELECT_POSITIONS: Record<
+  string,
+  AbsolutePosition & { width: number; height: number }
+> = {
   [MOTHER_CLAPS]: { top: 25, left: 28, width: 319, height: 253 },
   [ST_PAULS_CATHEDRAL]: { top: 25, left: 357, width: 185, height: 169 },
   [NOBLE_STREET]: { top: 25, left: 552, width: 185, height: 169 },
   [MOORFIELDS]: { top: 25, left: 747, width: 185, height: 169 },
   [MISS_MUFFS]: { top: 25, left: 942, width: 319, height: 253 },
-  [ROYAL_EXCHANGE]: { top: 289, left:  1093, width: 168, height: 185 },
+  [ROYAL_EXCHANGE]: { top: 289, left: 1093, width: 168, height: 185 },
   [LEADENHALL_STREET]: { top: 485, left: 1093, width: 168, height: 185 },
   [LONDON_BRIDGE]: { top: 680, left: 1093, width: 168, height: 185 },
   [SUKEY_BEVELLS]: { top: 875, left: 943, width: 319, height: 253 },
@@ -92,7 +93,7 @@ const CURRENT_WEEK_MARKER_POSITIONS: Record<number, AbsolutePosition> = {
   3: { top: 693, left: 1359 },
   4: { top: 734, left: 1359 },
   5: { top: 774, left: 1359 },
-}
+};
 
 const JOY_MARKER_POSITIONS: Record<number, AbsolutePosition> = {
   0: { top: 20, left: 1304 },
@@ -135,4 +136,11 @@ const JOY_MARKER_POSITIONS: Record<number, AbsolutePosition> = {
   37: { top: 778, left: 1286 },
   38: { top: 733, left: 1288 },
   39: { top: 688, left: 1293 },
-}
+};
+
+const ENCOUNTER_TOKENS_CONFIG: Record<string, AbsolutePosition> = {
+  [MOTHER_CLAPS]: { top: 200, left: 65 },
+  [MISS_MUFFS]: { top: 200, left: 1090 },
+  [SUKEY_BEVELLS]: { top: 875, left: 1090 },
+  [JULIUS_CESAR_TAYLORS]: { top: 875, left: 65 },
+};

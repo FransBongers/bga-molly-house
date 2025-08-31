@@ -44,8 +44,8 @@ class MollyHouse implements Game {
   //  private alwaysFixTopActionsMaximum: number;
   //  public tooltipsToMap: [tooltipId: number, card_id: string][] = [];
   public _connections: unknown[];
-  //  public _displayedTooltip = null;
-  //  public _dragndropMode = false; // Not used but present in boiler plate code
+   public _displayedTooltip = null;
+   public _dragndropMode = false; // Not used but present in boiler plate code
   public _helpMode = false; // Use to implement help mode
   private _last_notif = null;
   //  public _last_tooltip_id = 0;
@@ -125,7 +125,7 @@ class MollyHouse implements Game {
 
     InfoPanel.create(this);
 
-    //  this.tooltipManager = new TooltipManager(this);
+    TooltipManager.create(this);
     Settings.create(this);
     const settings = Settings.getInstance();
     //  this.informationModal = new InformationModal(this);
@@ -304,15 +304,15 @@ class MollyHouse implements Game {
   // 	 );
   //  }
 
-  //  closeCurrentTooltip() {
-  // 	 if (!this._helpMode) return;
+   closeCurrentTooltip() {
+  	 if (!this._helpMode) return;
 
-  // 	 if (this._displayedTooltip == null) return;
-  // 	 else {
-  // 		 this._displayedTooltip.close();
-  // 		 this._displayedTooltip = null;
-  // 	 }
-  //  }
+  	 if (this._displayedTooltip == null) return;
+  	 else {
+  		 this._displayedTooltip.close();
+  		 this._displayedTooltip = null;
+  	 }
+   }
 
   destroy(elem: HTMLElement) {
     if (this.framework().tooltips[elem.id]) {

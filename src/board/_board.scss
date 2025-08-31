@@ -24,6 +24,14 @@
   // aspect-ratio: 30 / 15;
   outline: 1px solid black;
 
+  #moho-encounter-tokens {
+    position: absolute;
+
+    .moho-encounter-tokens-molly-house {
+      position: absolute;
+    }
+  }
+
   #moho-playmat {
     position: relative;
     background-image: url('img/playmat.jpg');

@@ -14,6 +14,7 @@ const tplBoard = (gamedatas: GamedatasAlias) => `<div id="moho-board">
     <div id="LeadenhallStreet" class="moho-shop"></div>
     <div id="NobleStreet" class="moho-shop"></div>
   </div>
+  <div id="moho-encounter-tokens"></div>
   <div id="moho-pawns"></div>
   <div id="moho-evidence-counters"></div>
   <div id="moho-gossip-pile" class="moho-vice-card" data-card-id="back">

@@ -491,6 +491,12 @@ body > .bga-dice_die {
   width: calc(var(--leftColumnScale) * 1500px);
   outline: 1px solid black;
 }
+#moho-board #moho-encounter-tokens {
+  position: absolute;
+}
+#moho-board #moho-encounter-tokens .moho-encounter-tokens-molly-house {
+  position: absolute;
+}
 #moho-board #moho-playmat {
   position: relative;
   background-image: url("img/playmat.jpg");

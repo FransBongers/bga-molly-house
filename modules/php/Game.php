@@ -283,7 +283,8 @@ class Game extends \Bga\GameFramework\Table
             'pawns' => Pawns::getAll(),
             'safePile' => ViceCards::getInLocation(SAFE_PILE),
             'sites' => Sites::getAll(),
-            'topOfSafePile' => ViceCards::getTopOf(SAFE_PILE)
+            'topOfSafePile' => ViceCards::getTopOf(SAFE_PILE),
+            'encounterTokens' => EncounterTokens::getEncounterTokensOnMollyHouses($playerId),
         ];
 
 

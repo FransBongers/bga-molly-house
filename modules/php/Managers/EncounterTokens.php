@@ -106,5 +106,18 @@ class EncounterTokens extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-
+  public static function getEncounterTokensOnMollyHouses($currentPlayerId)
+  {
+    $tokens = Utils::filter(self::getAll()->toArray(), function ($token) {
+      return in_array($token->getLocation(), MOLLY_HOUSES);
+    });
+    return array_map(function ($token) use ($currentPlayerId) {
+      $isOwnedByCurrentPlayer = $token->isOwnedBy($currentPlayerId);
+      $serializedToken = $token->jsonSerialize();
+      if (!$isOwnedByCurrentPlayer && $token->isHidden()) {
+        $serializedToken['type'] = null;
+      }
+      return $serializedToken;
+    }, $tokens);
+  }
 }

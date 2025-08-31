@@ -44,6 +44,7 @@ interface MollyHouseGamedatas extends Gamedatas {
   currentWeek: number;
   deckCount: number;
   dice: number[];
+  encounterTokens: MohoEncounterToken[];
   festivity: {
     runner: number;
     active: boolean;

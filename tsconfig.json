@@ -54,6 +54,8 @@
     "src/boilerplate/states/ConfirmPartialTurn.ts",
     "src/boilerplate/states/ConfirmTurn.ts",
     "src/boilerplate/states/types.d.ts",
+    "src/boilerplate/tooltip-manager/index.ts",
+    "src/boilerplate/tooltip-manager/templates.ts",
     "src/boilerplate/ui-components/icon-counter/index.ts",
     "src/boilerplate/utility.ts",
     "src/dice-manager/index.ts",

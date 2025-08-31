@@ -25,8 +25,6 @@ class EncounterTokenManager extends CardManager<MohoEncounterToken> {
     div.setAttribute('data-type', card.type);
     div.setAttribute('data-color', this.getPlayerColor(card));
     div.style.width = 'calc(var(--tokenScale) * 75px)';
-
-    // this.game.tooltipManager.addCardTooltip({ nodeId: card.id, cardId: card.id });
   }
 
   setupBackDiv(card: MohoEncounterToken, div: HTMLElement) {
@@ -34,10 +32,24 @@ class EncounterTokenManager extends CardManager<MohoEncounterToken> {
     div.setAttribute('data-type', 'back');
     div.setAttribute('data-color', this.getPlayerColor(card));
     div.style.width = 'calc(var(--tokenScale) * 75px)';
+
+    if (card.type !== null) {
+      TooltipManager.getInstance().addTextToolTip({
+        nodeId: card.id,
+        text: card.type,
+      });
+    }
   }
 
   isCardVisible(card: MohoEncounterToken) {
-    return card.type !== null;
+    if (card.type === null) {
+      return false;
+    }
+    if (MOLLY_HOUSES.includes(card.location) && card.hidden) {
+      return false;
+    }
+
+    return true;
   }
 
   getPlayerColor(card: MohoEncounterToken) {
