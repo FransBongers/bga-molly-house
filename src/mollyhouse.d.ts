@@ -113,6 +113,8 @@ interface MohoSiteStaticData {
   locationOrder: number;
 }
 
+type MohoSite = MohoSiteBase & MohoSiteStaticData;
+
 type ViceCardType = 'desire' | 'treat' | 'molly';
 type Suit = 'hearts' | 'cups' | 'fans' | 'pentacles';
 

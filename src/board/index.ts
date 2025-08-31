@@ -148,6 +148,8 @@ class Board {
         elt,
         {
           gap: '0px',
+          direction: 'row',
+          wrap: 'nowrap'
         }
       );
     });

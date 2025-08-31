@@ -133,6 +133,13 @@ interface NotifMovePawn extends NotifWithPlayerArgs {
   from: string;
 }
 
+interface NotifPlaceEncounterToken extends NotifWithPlayerArgs {
+  siteId: string;
+  token: MohoEncounterToken;
+}
+
+type NotifPlaceEncounterTokenPrivate = NotifPlaceEncounterToken;
+
 interface NotifPlacePawn extends NotifWithPlayerArgs {
   pawn: MohoPawn;
 }

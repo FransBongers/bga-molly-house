@@ -2835,6 +2835,8 @@ var NotificationManager = (function () {
             'loseJoyCommunity',
             'movePawn',
             'phase',
+            'placeEncounterToken',
+            'placeEncounterTokenPrivate',
             'placePawn',
             'refillMarket',
             'rollDice',
@@ -2877,6 +2879,7 @@ var NotificationManager = (function () {
                 'drawCards',
                 'gainIndictment',
                 'setupChooseCard',
+                'placeEncounterToken',
             ].forEach(function (notifId) {
                 _this.game
                     .framework()
@@ -3426,6 +3429,36 @@ var NotificationManager = (function () {
                                 pawn: pawn,
                                 from: from,
                             })];
+                    case 1:
+                        _b.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_placeEncounterToken = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, siteId, token;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = notif.args, siteId = _a.siteId, token = _a.token;
+                        return [4, Board.getInstance().encounterTokens[siteId].addCard(token)];
+                    case 1:
+                        _b.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_placeEncounterTokenPrivate = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, siteId, token;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = notif.args, siteId = _a.siteId, token = _a.token;
+                        return [4, Board.getInstance().encounterTokens[siteId].addCard(token)];
                     case 1:
                         _b.sent();
                         return [2];
@@ -5014,6 +5047,8 @@ var Board = (function () {
             _this.ui.containers.encounterTokens.appendChild(elt);
             _this.encounterTokens[siteId] = new LineStock(_this.game.encounterTokenManager, elt, {
                 gap: '0px',
+                direction: 'row',
+                wrap: 'nowrap'
             });
         });
         this.updateEncounterTokens(gamedatas);
@@ -5749,6 +5784,7 @@ var LOG_TOKEN_NEW_LINE = 'newLine';
 var LOG_TOKEN_PLAYER_NAME = 'playerName';
 var LOG_TOKEN_DIE = 'die';
 var LOG_TOKEN_CUBE = 'cube';
+var LOG_TOKEN_ENCOUNTER_TOKEN = 'encounterToken';
 var LOG_TOKEN_PAWN = 'pawn';
 var LOG_TOKEN_SUIT = 'suit';
 var LOG_TOKEN_VICE_CARD = 'viceCard';
@@ -5785,6 +5821,9 @@ var getTokenDiv = function (_a) {
             return tplLogTokenSuit(value);
         case LOG_TOKEN_VICE_CARD:
             return tplLogTokenViceCard(value);
+        case LOG_TOKEN_ENCOUNTER_TOKEN:
+            var _b = value.split(':'), etColor = _b[0], etType = _b[1];
+            return tplLogTokenEncounterToken(etColor, etType);
         default:
             return value;
     }
@@ -5814,6 +5853,9 @@ var tplLogTokenSuit = function (suit) {
 };
 var tplLogTokenViceCard = function (cardId) {
     return "<div class=\"log-token moho-vice-card\" data-card-id=\"".concat(cardId, "\"></div>");
+};
+var tplLogTokenEncounterToken = function (color, type) {
+    return "<div class=\"log-token moho-encounter-token\" data-color=\"".concat(color, "\" data-type=\"").concat(type, "\"></div>");
 };
 var Market = (function () {
     function Market(game) {
@@ -6334,6 +6376,23 @@ var getItem = function (base) {
 };
 var getViceCard = function (base) {
     return __assign(__assign({}, base), StaticData.get().viceCard(base.id));
+};
+var getSite = function (base) {
+    return __assign(__assign({}, base), StaticData.get().site(base.id));
+};
+var getPlayerColor = function (playerId) {
+    var playerManager = PlayerManager.getInstance();
+    return HEX_COLOR_COLOR_MAP[playerManager.getPlayer(playerId).getColor()];
+};
+var getEncounterTokenTypeText = function (type) {
+    switch (type) {
+        case 'Loyal':
+            return _('Loyal');
+        case 'Informer':
+            return _('Informer');
+        default:
+            return _('Unknown');
+    }
 };
 var getViceCardValueText = function (value) {
     switch (value) {
@@ -7196,15 +7255,33 @@ var PlaceEncounterToken = (function () {
     };
     PlaceEncounterToken.prototype.setDescription = function (activePlayerIds, args) { };
     PlaceEncounterToken.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
         this.game.clearPossible();
-        updatePageTitle(_('${you} may perform an action'), {});
-    };
-    PlaceEncounterToken.prototype.updateInterfaceConfirm = function () {
-        clearPossible();
-        updatePageTitle(_('Confirm action'));
-        addConfirmButton(function () {
-            performAction('actPlaceEncounterToken', {});
+        updatePageTitle(_('${you} may place an encounter token face up on ${site}'), {
+            site: _(StaticData.get().site(this.args.site.id).name),
         });
+        this.args._private.forEach(function (token) {
+            onClick(token.id, function () {
+                _this.updateInterfaceConfirm(token);
+            });
+        });
+        addUndoButtons(this.args);
+    };
+    PlaceEncounterToken.prototype.updateInterfaceConfirm = function (token) {
+        clearPossible();
+        var site = getSite(this.args.site);
+        var playerColor = getPlayerColor(PlayerManager.getInstance().getCurrentPlayerId());
+        updatePageTitle(_('Place ${tkn_encounterToken} face up on ${site}?'), {
+            tkn_encounterToken: "".concat(playerColor, ":").concat(token.type),
+            site: _(site.name),
+        });
+        setSelected(token.id);
+        addConfirmButton(function () {
+            performAction('actPlaceEncounterToken', {
+                tokenId: token.id,
+            });
+        });
+        addCancelButton();
     };
     return PlaceEncounterToken;
 }());

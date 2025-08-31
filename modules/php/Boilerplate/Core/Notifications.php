@@ -224,6 +224,7 @@ class Notifications
 
     self::notifyAll('addCardFromGossipPile', clienttranslate('${player_name} takes a card from the gossip pile'), [
       'player' => $player,
+      'preserve' => ['playerId'],
     ]);
   }
 
@@ -537,6 +538,7 @@ class Notifications
     self::notifyAll('gainIndictment', $text, [
       'majorOrMinor' => $majorOrMinor,
       'player' => $player,
+      'preserve' => ['playerId'],
     ]);
   }
 
@@ -578,6 +580,35 @@ class Notifications
       'tkn_pawn' => self::tknPawn($player),
       'tkn_boldText_location' => Sites::get($pawn->getLocation())->getName(),
       'i18n' => ['tkn_boldText_location'],
+    ]);
+  }
+
+  public static function placeEncounterToken($player, $site, $token)
+  {
+    $text = clienttranslate('${player_name} places ${tkn_encounterToken} on ${tkn_boldText_site}');
+
+    $publicToken = $token->jsonSerialize();
+    if ($token->isHidden()) {
+      $publicToken['type'] = null;
+    }
+
+    self::notify($player, 'placeEncounterTokenPrivate', $text, [
+      'player' => $player,
+      'siteId' => $site->getId(),
+      'token' => $token,
+      'tkn_encounterToken' => implode(':', [$player->getColor(), $token->getType()]),
+      'tkn_boldText_site' => $site->getName(),
+      'i18n' => ['tkn_boldText_site'],
+    ]);
+
+    self::notifyAll('placeEncounterToken', $text, [
+      'player' => $player,
+      'siteId' => $site->getId(),
+      'token' => $publicToken,
+      'tkn_encounterToken' => implode(':', [$player->getColor(), $publicToken['type']]),
+      'tkn_boldText_site' => $site->getName(),
+      'i18n' => ['tkn_boldText_site'],
+      'preserve' => ['playerId'],
     ]);
   }
 

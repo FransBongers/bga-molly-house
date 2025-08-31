@@ -1,3 +1,5 @@
+@use '../../base';
+
 .moho-encounter-token {
   width: calc(var(--tokenScale) * 75px);
   aspect-ratio: 1 / 1;
@@ -10,6 +12,27 @@
   image-rendering: -webkit-optimize-contrast;
   image-rendering: high-quality;
   position: relative;
+}
+
+.moho-encounter-token-container.selectable {
+  .moho-encounter-token {
+    cursor: pointer;
+    filter: drop-shadow(2px 0px 0px base.$selectable-color)
+      drop-shadow(-2px 0px 0px base.$selectable-color)
+      drop-shadow(0px 2px 0px base.$selectable-color)
+      drop-shadow(0px -2px 0px base.$selectable-color);
+  }
+}
+
+.moho-encounter-token-container.selectable:hover,
+.moho-encounter-token-container.selected {
+  .moho-encounter-token {
+    cursor: pointer;
+    filter: drop-shadow(2px 0px 0px base.$selected-color)
+      drop-shadow(-2px 0px 0px base.$selected-color)
+      drop-shadow(0px 2px 0px base.$selected-color)
+      drop-shadow(0px -2px 0px base.$selected-color);
+  }
 }
 
 .moho-encounter-token.card-side {

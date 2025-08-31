@@ -91,6 +91,8 @@ class NotificationManager {
       'loseJoyCommunity',
       'movePawn',
       'phase',
+      'placeEncounterToken',
+      'placeEncounterTokenPrivate',
       'placePawn',
       'refillMarket',
       'rollDice',
@@ -154,6 +156,7 @@ class NotificationManager {
         'drawCards',
         'gainIndictment',
         'setupChooseCard',
+        'placeEncounterToken',
       ].forEach((notifId) => {
         this.game
           .framework()
@@ -514,6 +517,18 @@ class NotificationManager {
       pawn,
       from,
     });
+  }
+
+  async notif_placeEncounterToken(notif: Notif<NotifPlaceEncounterToken>) {
+    const { siteId, token } = notif.args;
+    await Board.getInstance().encounterTokens[siteId].addCard(token);
+  }
+
+  async notif_placeEncounterTokenPrivate(
+    notif: Notif<NotifPlaceEncounterTokenPrivate>
+  ) {
+    const { siteId, token } = notif.args;
+    await Board.getInstance().encounterTokens[siteId].addCard(token);
   }
 
   async notif_placePawn(notif: Notif<NotifPlacePawn>) {

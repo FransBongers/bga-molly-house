@@ -503,6 +503,7 @@ $machinestates = [
             'actExamineGossipPile',
             'actPass',
             'actTakeAtomicAction',
+
         ])
         ->build(),
 
@@ -516,6 +517,8 @@ $machinestates = [
             'actPlaceEncounterToken',
             'actPass',
             'actTakeAtomicAction',
+            'actRestart',
+            'actUndoToStep',
         ])
         ->build(),
 ];

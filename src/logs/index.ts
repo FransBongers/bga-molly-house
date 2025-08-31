@@ -5,10 +5,10 @@ const LOG_TOKEN_PLAYER_NAME = 'playerName';
 // Game specific
 const LOG_TOKEN_DIE = 'die';
 const LOG_TOKEN_CUBE = 'cube';
+const LOG_TOKEN_ENCOUNTER_TOKEN = 'encounterToken';
 const LOG_TOKEN_PAWN = 'pawn';
 const LOG_TOKEN_SUIT = 'suit';
 const LOG_TOKEN_VICE_CARD = 'viceCard';
-
 
 const CLASS_LOG_TOKEN = 'log-token';
 
@@ -52,6 +52,12 @@ const getTokenDiv = ({
       return tplLogTokenSuit(value as Suit);
     case LOG_TOKEN_VICE_CARD:
       return tplLogTokenViceCard(value);
+    case LOG_TOKEN_ENCOUNTER_TOKEN:
+      const [etColor, etType] = value.split(':');
+      return tplLogTokenEncounterToken(
+        etColor,
+        etType
+      );
     default:
       return value;
   }

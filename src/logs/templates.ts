@@ -39,3 +39,7 @@ const tplLogTokenSuit = (suit: Suit) =>
 
 const tplLogTokenViceCard = (cardId: string) =>
   `<div class="log-token moho-vice-card" data-card-id="${cardId}"></div>`;
+
+
+const tplLogTokenEncounterToken = (color: string, type: string) =>
+  `<div class="log-token moho-encounter-token" data-color="${color}" data-type="${type}"></div>`;

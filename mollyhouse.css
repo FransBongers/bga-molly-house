@@ -497,6 +497,9 @@ body > .bga-dice_die {
 #moho-board #moho-encounter-tokens .moho-encounter-tokens-molly-house {
   position: absolute;
 }
+#moho-board #moho-encounter-tokens .moho-encounter-tokens-molly-house .moho-encounter-token-container:not(:first-child) {
+  margin-left: calc(var(--tokenScale) * -40px);
+}
 #moho-board #moho-playmat {
   position: relative;
   background-image: url("img/playmat.jpg");
@@ -1241,6 +1244,17 @@ span[style*="color:#fcd873"] {
   image-rendering: -webkit-optimize-contrast;
   image-rendering: high-quality;
   position: relative;
+}
+
+.moho-encounter-token-container.selectable .moho-encounter-token {
+  cursor: pointer;
+  filter: drop-shadow(2px 0px 0px yellow) drop-shadow(-2px 0px 0px yellow) drop-shadow(0px 2px 0px yellow) drop-shadow(0px -2px 0px yellow);
+}
+
+.moho-encounter-token-container.selectable:hover .moho-encounter-token,
+.moho-encounter-token-container.selected .moho-encounter-token {
+  cursor: pointer;
+  filter: drop-shadow(2px 0px 0px blue) drop-shadow(-2px 0px 0px blue) drop-shadow(0px 2px 0px blue) drop-shadow(0px -2px 0px blue);
 }
 
 .moho-encounter-token.card-side {

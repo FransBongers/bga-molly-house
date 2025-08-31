@@ -29,6 +29,10 @@
 
     .moho-encounter-tokens-molly-house {
       position: absolute;
+
+      .moho-encounter-token-container:not(:first-child) {
+        margin-left: calc(var(--tokenScale) * -40px);
+      }
     }
   }
 

@@ -12,6 +12,31 @@ const getViceCard = (base: ViceCardBase): ViceCard => {
   };
 };
 
+const getSite = (base: MohoSiteBase): MohoSite => {
+  return {
+    ...base,
+    ...StaticData.get().site(base.id),
+  };
+};
+
+const getPlayerColor = (playerId: number) => {
+  const playerManager = PlayerManager.getInstance();
+  return HEX_COLOR_COLOR_MAP[playerManager.getPlayer(playerId).getColor()];
+};
+
+const getEncounterTokenTypeText = (
+  type: 'Loyal' | 'Informer' | null
+): string => {
+  switch (type) {
+    case 'Loyal':
+      return _('Loyal');
+    case 'Informer':
+      return _('Informer');
+    default:
+      return _('Unknown');
+  }
+};
+
 const getViceCardValueText = (value: string | number): string => {
   switch (value) {
     case 'Q':

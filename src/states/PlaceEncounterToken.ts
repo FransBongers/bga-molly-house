@@ -1,4 +1,7 @@
-interface OnEnteringPlaceEncounterTokenArgs extends CommonStateArgs {}
+interface OnEnteringPlaceEncounterTokenArgs extends CommonStateArgs {
+  site: MohoSiteBase;
+  _private: MohoEncounterToken[];
+}
 
 class PlaceEncounterToken implements State {
   private static instance: PlaceEncounterToken;
@@ -25,7 +28,10 @@ class PlaceEncounterToken implements State {
     debug('Leaving PlaceEncounterToken state');
   }
 
-  setDescription(activePlayerIds: number, args: OnEnteringPlaceEncounterTokenArgs) {}
+  setDescription(
+    activePlayerIds: number,
+    args: OnEnteringPlaceEncounterTokenArgs
+  ) {}
 
   //  .####.##....##.########.########.########..########....###.....######..########
   //  ..##..###...##....##....##.......##.....##.##.........##.##...##....##.##......
@@ -46,17 +52,41 @@ class PlaceEncounterToken implements State {
   private updateInterfaceInitialStep() {
     this.game.clearPossible();
 
-    updatePageTitle(_('${you} may perform an action'), {});
+    updatePageTitle(
+      _('${you} may place an encounter token face up on ${site}'),
+      {
+        site: _(StaticData.get().site(this.args.site.id).name),
+      }
+    );
+    this.args._private.forEach((token) => {
+      onClick(token.id, () => {
+        this.updateInterfaceConfirm(token);
+      });
+    });
+
+    addUndoButtons(this.args);
   }
 
-  private updateInterfaceConfirm() {
+  private updateInterfaceConfirm(token: MohoEncounterToken) {
     clearPossible();
 
-    updatePageTitle(_('Confirm action'));
+    const site = getSite(this.args.site);
+    const playerColor = getPlayerColor(
+      PlayerManager.getInstance().getCurrentPlayerId()
+    );
+
+    updatePageTitle(_('Place ${tkn_encounterToken} face up on ${site}?'), {
+      tkn_encounterToken: `${playerColor}:${token.type}`,
+      site: _(site.name),
+    });
+    setSelected(token.id);
 
     addConfirmButton(() => {
-      performAction('actPlaceEncounterToken', {});
+      performAction('actPlaceEncounterToken', {
+        tokenId: token.id,
+      });
     });
+    addCancelButton();
   }
 
   //  .##.....##.########.####.##.......####.########.##....##

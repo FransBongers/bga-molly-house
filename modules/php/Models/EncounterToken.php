@@ -46,11 +46,25 @@ class EncounterToken extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
 
   public function isOwnedBy($playerId)
   {
-    return intval(explode('_', $this->getId())[1]) == $playerId;
+    return $this->getOwnerId() == $playerId;
   }
 
   public function isHidden()
   {
     return $this->hidden === 1;
+  }
+
+  public function getOwnerId()
+  {
+    return intval(explode('_', $this->getId())[1]);
+  }
+
+  public function placeOnSite($player, $site, $faceUp = false)
+  {
+    $this->setLocation($site->getId());
+    if ($faceUp) {
+      $this->setHidden(0);
+    }
+    Notifications::placeEncounterToken($player, $site, $this);
   }
 }
