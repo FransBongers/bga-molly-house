@@ -115,11 +115,16 @@ class TakeAction extends \Bga\Games\MollyHouse\Models\AtomicAction
       throw new \feException("ERROR_023");
     }
 
+    if ($takenAction === ACCUSE && !isset($options[ACCUSE][$target])) {
+      throw new \feException("ERROR_026");
+    }
+
     $checkpoint = false;
 
     switch ($takenAction) {
       case ACCUSE:
-        AtomicActions::get(ACCUSE)->actAccuse($args);
+        $checkpoint = true;
+        AtomicActions::get(ACCUSE)->performAction($player, $stateArgs['site'], $options[ACCUSE][$target]);
         break;
       case INDULGE:
         AtomicActions::get(INDULGE)->performAction($player, $stateArgs['site'], $options[INDULGE][$target]);

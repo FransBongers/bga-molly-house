@@ -77,6 +77,7 @@ type PlayerDataAlias = MollyHousePlayerData;
 interface MohoEncounterToken extends GamePiece {
   type: 'Loyal' | 'Informer' | null;
   hidden: boolean;
+  color: string;
 }
 
 interface MohoItemBase extends GamePiece {

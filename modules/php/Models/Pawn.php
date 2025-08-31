@@ -3,6 +3,7 @@
 namespace Bga\Games\MollyHouse\Models;
 
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
+use Bga\Games\MollyHouse\Managers\Players;
 use Bga\Games\MollyHouse\Managers\Sites;
 
 class Pawn extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
@@ -51,7 +52,8 @@ class Pawn extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     );
   }
 
-  public function getSite() {
+  public function getSite()
+  {
     return Sites::get($this->getLocation());
   }
 
@@ -72,5 +74,15 @@ class Pawn extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   public function getColor()
   {
     return explode('_', $this->getId())[1];
+  }
+
+  public function isOwnedBy($player)
+  {
+    return $this->getColor() === $player->getColor();
+  }
+
+  public function getOwner()
+  {
+    return Players::getPlayerForColor($this->getColor());
   }
 }

@@ -3,7 +3,8 @@
 namespace Bga\Games\MollyHouse\Models;
 
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
-
+use Bga\Games\MollyHouse\Managers\Players;
+use Bga\Games\MollyHouse\Managers\Sites;
 
 class EncounterToken extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
 {
@@ -13,13 +14,12 @@ class EncounterToken extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   protected $location;
   protected $state;
   protected $hidden;
-  protected $festivityValue;
-
   protected $type;
-  protected $suit;
-  protected $displayValue;
-  protected $joy;
-  protected $minPlayers = 1;
+  protected $color;
+
+
+
+
 
   protected $attributes = [
     'id' => ['token_id', 'str'],
@@ -27,6 +27,7 @@ class EncounterToken extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     'state' => ['token_state', 'int'],
     'type' => ['type', 'str'],
     'hidden' => ['hidden', 'int'],
+    'color' => ['color', 'str'],
   ];
 
   protected $staticAttributes = [];
@@ -54,6 +55,16 @@ class EncounterToken extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     return $this->hidden === 1;
   }
 
+  public function isOnMollyHouse()
+  {
+    return in_array($this->getLocation(), MOLLY_HOUSES);
+  }
+
+  public function getOwner()
+  {
+    return Players::get($this->getOwnerId());
+  }
+
   public function getOwnerId()
   {
     return intval(explode('_', $this->getId())[1]);
@@ -66,5 +77,12 @@ class EncounterToken extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
       $this->setHidden(0);
     }
     Notifications::placeEncounterToken($player, $site, $this);
+  }
+
+  public function reveal($player)
+  {
+    $this->setHidden(0);
+    $site = Sites::get($this->getLocation());
+    Notifications::revealEncounterToken($player, $site, $this);
   }
 }

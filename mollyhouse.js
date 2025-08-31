@@ -2839,6 +2839,7 @@ var NotificationManager = (function () {
             'placeEncounterTokenPrivate',
             'placePawn',
             'refillMarket',
+            'revealEncounterToken',
             'rollDice',
             'scoreBonusJoy',
             'scoreJoy',
@@ -3526,6 +3527,16 @@ var NotificationManager = (function () {
                         _b.sent();
                         return [2];
                 }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_revealEncounterToken = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, siteId, token;
+            return __generator(this, function (_b) {
+                _a = notif.args, siteId = _a.siteId, token = _a.token;
+                this.game.encounterTokenManager.updateCardInformations(token);
+                return [2];
             });
         });
     };
@@ -5333,7 +5344,7 @@ var Board = (function () {
     };
     return Board;
 }());
-var tplBoard = function (gamedatas) { return "<div id=\"moho-board\">\n\n\n  <div id=\"moho-dangerous-cruising-markers\"></div>\n  <div id=\"house-raided-markers\"></div>\n  <div id=\"moho-select-boxes\"></div>\n  <div id=\"moho-playmat\">\n    <div id=\"moho-festivity\"></div>\n    <div id=\"moho-dice-stock\"></div>\n  </div>\n    <div id=\"moho-shops\">\n    <div id=\"CannonStreet\" class=\"moho-shop\"></div>\n    <div id=\"DukeStreet\" class=\"moho-shop\"></div>\n    <div id=\"LeadenhallStreet\" class=\"moho-shop\"></div>\n    <div id=\"NobleStreet\" class=\"moho-shop\"></div>\n  </div>\n  <div id=\"moho-encounter-tokens\"></div>\n  <div id=\"moho-pawns\"></div>\n  <div id=\"moho-evidence-counters\"></div>\n  <div id=\"moho-gossip-pile\" class=\"moho-vice-card\" data-card-id=\"back\">\n    <span id=\"moho-gossip-pile-counter\" class=\"moho-deck-counter\">10</span>\n  </div>\n  <div id=\"moho-markers\"></div>\n\n</div>"; };
+var tplBoard = function (gamedatas) { return "<div id=\"moho-board\">\n\n\n  <div id=\"moho-dangerous-cruising-markers\"></div>\n  <div id=\"house-raided-markers\"></div>\n\n  <div id=\"moho-encounter-tokens\"></div>\n  \n  <div id=\"moho-evidence-counters\"></div>\n  <div id=\"moho-gossip-pile\" class=\"moho-vice-card\" data-card-id=\"back\">\n    <span id=\"moho-gossip-pile-counter\" class=\"moho-deck-counter\">10</span>\n  </div>\n  <div id=\"moho-markers\"></div>\n    <div id=\"moho-select-boxes\"></div>\n  <div id=\"moho-playmat\">\n    <div id=\"moho-festivity\"></div>\n    <div id=\"moho-dice-stock\"></div>\n  </div>\n    <div id=\"moho-shops\">\n    <div id=\"CannonStreet\" class=\"moho-shop\"></div>\n    <div id=\"DukeStreet\" class=\"moho-shop\"></div>\n    <div id=\"LeadenhallStreet\" class=\"moho-shop\"></div>\n    <div id=\"NobleStreet\" class=\"moho-shop\"></div>\n  </div>\n  <div id=\"moho-pawns\"></div>\n</div>"; };
 var createJoyMarker = function (color) {
     var elt = document.createElement('div');
     elt.classList.add('moho-joy-marker');
@@ -6132,6 +6143,11 @@ var TakeAction = (function () {
                 },
             });
         }
+        Object.values(this.args._private.Accuse).forEach(function (encounterToken) {
+            onClick(document.getElementById(encounterToken.id), function () {
+                return _this.updateInterfaceConfirm(ACCUSE, encounterToken.id);
+            });
+        });
         Object.values(this.args._private.Indulge || {}).forEach(function (card) {
             onClick(document.getElementById(card.id), function () {
                 return _this.updateInterfaceConfirm(INDULGE, card.id);
@@ -6169,6 +6185,7 @@ var TakeAction = (function () {
     };
     TakeAction.prototype.updateConfirmTargetSelected = function (action, target) {
         switch (action) {
+            case ACCUSE:
             case SHOP:
             case CRUISE:
             case INDULGE:
@@ -6186,6 +6203,17 @@ var TakeAction = (function () {
         var site = StaticData.get().site(this.args.site.id).name;
         console.log("Updating confirm title for action: ".concat(action, ", target: ").concat(target));
         switch (action) {
+            case ACCUSE:
+                updatePageTitle(_('Accuse ${player_name} and reveal ${tkn_encounterToken} ?'), {
+                    player_name: PlayerManager.getInstance()
+                        .getPlayer(Number(target.split('_')[1]))
+                        .getName(),
+                    tkn_encounterToken: [
+                        this.args._private.Accuse[target].color,
+                        null,
+                    ].join(':'),
+                });
+                break;
             case CRUISE:
                 updatePageTitle(_('Cruise at ${site} and add ${value} of ${tkn_suit} to your reputation'), {
                     site: site,

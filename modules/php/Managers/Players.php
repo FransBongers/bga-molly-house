@@ -204,6 +204,13 @@ class Players extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Manager
     Game::get()->gamestate->changeActivePlayer($playerId);
   }
 
+  public static function getPlayerForColor($color)
+  {
+    $players = self::getAll()->toArray();
+    return Utils::array_find($players, function ($player) use ($color) {
+      return $player->getColor() === $color;
+    });
+  }
 
   // ..######......###....##.....##.########
   // .##....##....##.##...###...###.##......

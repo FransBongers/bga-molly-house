@@ -95,6 +95,7 @@ class NotificationManager {
       'placeEncounterTokenPrivate',
       'placePawn',
       'refillMarket',
+      'revealEncounterToken',
       'rollDice',
       'scoreBonusJoy',
       'scoreJoy',
@@ -565,6 +566,11 @@ class NotificationManager {
     });
 
     await Promise.all(promises);
+  }
+
+  async notif_revealEncounterToken(notif: Notif<NotifRevealEncounterToken>) {
+    const { siteId, token } = notif.args;
+    this.game.encounterTokenManager.updateCardInformations(token);
   }
 
   async notif_rollDice(notif: Notif<NotifRollDice>) {

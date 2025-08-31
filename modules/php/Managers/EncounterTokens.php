@@ -16,6 +16,7 @@ class EncounterTokens extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
   protected static $table = 'encounter_tokens';
   protected static $prefix = 'token_';
   protected static $customFields = [
+    'color',
     'type',
     'hidden',
   ];
@@ -82,7 +83,8 @@ class EncounterTokens extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
           'id' => $tokenId,
           'type' => $distribution[$i],
           'hidden' => 1,
-          'location' => Locations::encounterTokens($playerId)
+          'location' => Locations::encounterTokens($playerId),
+          'color' => $player->getColor()
         ];
       }
     }
@@ -106,11 +108,16 @@ class EncounterTokens extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-  public static function getEncounterTokensOnMollyHouses($currentPlayerId)
+  public static function getEncounterTokensOnMollyHouses($currentPlayerId = null)
   {
     $tokens = Utils::filter(self::getAll()->toArray(), function ($token) {
       return in_array($token->getLocation(), MOLLY_HOUSES);
     });
+
+    if ($currentPlayerId === null) {
+      return $tokens;
+    }
+
     return array_map(function ($token) use ($currentPlayerId) {
       $isOwnedByCurrentPlayer = $token->isOwnedBy($currentPlayerId);
       $serializedToken = $token->jsonSerialize();

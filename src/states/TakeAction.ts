@@ -1,5 +1,6 @@
 interface OnEnteringTakeActionArgs extends CommonStateArgs {
   _private: {
+    Accuse: Record<string, MohoEncounterToken>;
     Cruise?: Record<string, ViceCardBase>;
     Indulge: Record<string, ViceCardBase>;
     LieLow: boolean;
@@ -71,6 +72,12 @@ class TakeAction implements State {
         },
       });
     }
+
+    Object.values(this.args._private.Accuse).forEach((encounterToken) => {
+      onClick(document.getElementById(encounterToken.id), () =>
+        this.updateInterfaceConfirm(ACCUSE, encounterToken.id)
+      );
+    });
 
     Object.values(this.args._private.Indulge || {}).forEach((card) => {
       onClick(document.getElementById(card.id), () =>
@@ -144,6 +151,7 @@ class TakeAction implements State {
 
   private updateConfirmTargetSelected(action: string, target: string) {
     switch (action) {
+      case ACCUSE:
       case SHOP:
       case CRUISE:
       case INDULGE:
@@ -164,6 +172,20 @@ class TakeAction implements State {
       `Updating confirm title for action: ${action}, target: ${target}`
     );
     switch (action) {
+      case ACCUSE:
+        updatePageTitle(
+          _('Accuse ${player_name} and reveal ${tkn_encounterToken} ?'),
+          {
+            player_name: PlayerManager.getInstance()
+              .getPlayer(Number(target.split('_')[1]))
+              .getName(),
+            tkn_encounterToken: [
+              this.args._private.Accuse[target].color,
+              null,
+            ].join(':'),
+          }
+        );
+        break;
       case CRUISE:
         updatePageTitle(
           _(

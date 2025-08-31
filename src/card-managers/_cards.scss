@@ -11,8 +11,7 @@
   cursor: pointer !important;
   .card-sides {
     .card-side {
-      box-shadow: 0px 0px 0px calc(var(--cardScale) * 4px)
-        base.$selectable-color !important;
+      outline: solid calc(var(--cardScale) * 4px) base.$selectable-color;
     }
   }
 }
@@ -22,18 +21,18 @@
   cursor: pointer !important;
   .card-sides {
     .card-side {
-      box-shadow: 0px 0px 0px calc(var(--cardScale) * 4px) base.$selected-color !important;
+      outline: solid calc(var(--cardScale) * 4px) base.$selected-color;
     }
   }
 }
 
 #moho-deck.selectable {
   cursor: pointer !important;
-  box-shadow: 0px 0px 0px calc(var(--cardScale) * 4px) base.$selectable-color !important;
+  outline: solid calc(var(--cardScale) * 4px) base.$selectable-color;
 }
 
 #moho-deck.selectable:hover,
 #moho-deck.selected {
   cursor: pointer !important;
-  box-shadow: 0px 0px 0px calc(var(--cardScale) * 4px) base.$selected-color !important;
+  outline: solid calc(var(--cardScale) * 4px) base.$selected-color;
 }

@@ -1249,12 +1249,14 @@ span[style*="color:#fcd873"] {
 .moho-encounter-token-container.selectable .moho-encounter-token {
   cursor: pointer;
   filter: drop-shadow(2px 0px 0px yellow) drop-shadow(-2px 0px 0px yellow) drop-shadow(0px 2px 0px yellow) drop-shadow(0px -2px 0px yellow);
+  outline: none !important;
 }
 
 .moho-encounter-token-container.selectable:hover .moho-encounter-token,
 .moho-encounter-token-container.selected .moho-encounter-token {
   cursor: pointer;
   filter: drop-shadow(2px 0px 0px blue) drop-shadow(-2px 0px 0px blue) drop-shadow(0px 2px 0px blue) drop-shadow(0px -2px 0px blue);
+  outline: none !important;
 }
 
 .moho-encounter-token.card-side {
@@ -1654,7 +1656,7 @@ span[style*="color:#fcd873"] {
   cursor: pointer !important;
 }
 .card.selectable .card-sides .card-side {
-  box-shadow: 0px 0px 0px calc(var(--cardScale) * 4px) yellow !important;
+  outline: solid calc(var(--cardScale) * 4px) yellow;
 }
 
 .card.selectable:hover,
@@ -1663,18 +1665,18 @@ span[style*="color:#fcd873"] {
 }
 .card.selectable:hover .card-sides .card-side,
 .card.selected .card-sides .card-side {
-  box-shadow: 0px 0px 0px calc(var(--cardScale) * 4px) blue !important;
+  outline: solid calc(var(--cardScale) * 4px) blue;
 }
 
 #moho-deck.selectable {
   cursor: pointer !important;
-  box-shadow: 0px 0px 0px calc(var(--cardScale) * 4px) yellow !important;
+  outline: solid calc(var(--cardScale) * 4px) yellow;
 }
 
 #moho-deck.selectable:hover,
 #moho-deck.selected {
   cursor: pointer !important;
-  box-shadow: 0px 0px 0px calc(var(--cardScale) * 4px) blue !important;
+  outline: solid calc(var(--cardScale) * 4px) blue;
 }
 
 #popin_moho-card-modal-gossipPile_underlay,

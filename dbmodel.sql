@@ -97,5 +97,6 @@ CREATE TABLE IF NOT EXISTS `encounter_tokens` (
   `token_state` int(10) DEFAULT 0,
   `hidden` tinyint(1) DEFAULT 1,
   `type` varchar(32) NOT NULL,
+  `color` varchar(32) NOT NULL,
   PRIMARY KEY (`token_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;

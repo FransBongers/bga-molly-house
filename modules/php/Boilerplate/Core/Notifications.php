@@ -644,6 +644,18 @@ class Notifications
     self::notifyAll('refillMarket', $text, $args);
   }
 
+  public static function revealEncounterToken($player, $site, $token)
+  {
+    self::notifyAll('revealEncounterToken', clienttranslate('${player_name} reveals ${tkn_encounterToken} at ${tkn_boldText_site}'), [
+      'player' => $player,
+      'siteId' => $site->getId(),
+      'token' => $token,
+      'tkn_encounterToken' => implode(':', [$token->getColor(), $token->getType()]),
+      'tkn_boldText_site' => $site->getName(),
+      'i18n' => ['tkn_boldText_site'],
+    ]);
+  }
+
   public static function revealThreat($player, $card)
   {
     self::notifyAll('revealThreat', clienttranslate('${player_name} reveals ${tkn_boldText_cardValue} of ${tkn_suit}'), [

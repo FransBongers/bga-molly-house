@@ -180,7 +180,10 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     $amount = $amount > $currentScore ? $currentScore : $amount;
 
     $total = $this->incScore(-$amount);
-    Notifications::loseJoy($this, $amount, $total);
+
+    if ($amount > 0) {
+      Notifications::loseJoy($this, $amount, $total);
+    }
   }
 
   public function scoreJoy($amount)

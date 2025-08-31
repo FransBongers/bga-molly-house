@@ -4,6 +4,7 @@ namespace Bga\Games\MollyHouse\Actions;
 
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 use Bga\Games\MollyHouse\Managers\EncounterTokens;
+use Bga\Games\MollyHouse\Managers\Items;
 use Bga\Games\MollyHouse\Managers\Sites;
 use Bga\Games\MollyHouse\Managers\ViceCards;
 
@@ -96,6 +97,9 @@ class PlaceEncounterToken extends \Bga\Games\MollyHouse\Models\AtomicAction
     if ($cardsAddedToGossip > 0 && $token->getType() === LOYAL) {
       $player->scoreJoy($cardsAddedToGossip * 2);
     }
+
+    $item = Items::get($this->ctx->getInfo()['itemId']);
+    $item->discard($player);
 
     $this->resolveAction([]);
   }

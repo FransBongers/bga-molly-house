@@ -81,7 +81,7 @@ class FestivityScoreBonus extends \Bga\Games\MollyHouse\Models\AtomicAction
         Community::scoreJoy(1);
         break;
       case QUIET_GATHERING:
-        Community::loseJoy(-1);
+        Community::loseJoy(1);
         break;
     }
 

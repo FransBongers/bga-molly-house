@@ -149,6 +149,11 @@ interface NotifRefillMarket extends NotifWithPlayerArgs {
   addedCards: ViceCardBase[];
 }
 
+interface NotifRevealEncounterToken extends NotifWithPlayerArgs {
+  siteId: string;
+  token: MohoEncounterToken;
+}
+
 interface NotifRollDice extends NotifWithPlayerArgs {
   diceResults: number[];
 }

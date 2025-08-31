@@ -39,6 +39,7 @@ trait DebugTrait
     foreach (MOLLY_HOUSES as $i => $siteId) {
       $encounterTokens[$i]->setLocation($siteId);
     }
+    // Notifications::log('accuse', AtomicActions::get(ACCUSE)->getOptions(Players::get(2371053), Sites::get(JULIUS_CESAR_TAYLORS)));
 
     // Items::setupNewGame();
     // Notifications::log('itemsStatic', Items::getStaticUiData());
