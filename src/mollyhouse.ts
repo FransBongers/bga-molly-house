@@ -83,6 +83,7 @@ class MollyHouse implements Game {
     DiscardItem,
     ExamineGossipPile,
     PlaceEncounterToken,
+    FestivityUseBottleOfGin,
   };
 
   constructor() {

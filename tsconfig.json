@@ -95,6 +95,7 @@
     "src/states/MovePawn.ts",
     "src/states/AddExcessCardsToGossip.ts",
     "src/ui-components/cube-counter.ts",
+    "src/ui-components/draw-token-counter.ts",
     "src/ui-components/hand-counter.ts",
     "src/ui-components/suit-counter.ts",
     "src/states/FestivityPlayCard.ts",
@@ -105,6 +106,7 @@
     "src/states/EndOfWeekEncounterSociety.ts",
     "src/states/DiscardItem.ts",
     "src/states/ExamineGossipPile.ts",
-    "src/states/PlaceEncounterToken.ts"
+    "src/states/PlaceEncounterToken.ts",
+    "src/states/FestivityUseBottleOfGin.ts"
   ]
 }

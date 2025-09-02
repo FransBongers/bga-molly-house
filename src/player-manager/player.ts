@@ -126,7 +126,6 @@ class MohoPlayer {
     //   // color: YELLOW,
     // });
 
-    console.log('CubeCounter yellow');
     [PENTACLES, FANS, CUPS, HEARTS].forEach((suit) => {
       this.counters[suit] = new SuitCounter({
         id: `cards-${suit}-${this.playerId}`,
@@ -152,6 +151,12 @@ class MohoPlayer {
         color: color as CubeCounterProps['color'],
         type: 'overlap',
       });
+    });
+    this.counters[DRAW_TOKEN] = new DrawTokenCounter({
+      id: `draw-tokens-${this.playerId}`,
+      initialValue: playerGamedatas.drawTokens,
+      parentElement: node,
+      type: 'overlap',
     });
 
     // node.insertAdjacentElement(

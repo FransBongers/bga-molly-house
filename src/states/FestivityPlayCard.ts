@@ -1,5 +1,6 @@
 interface OnEnteringFestivityPlayCardArgs extends CommonStateArgs {
   _private: ViceCardBase[];
+  hasViolin: boolean;
 }
 
 class FestivityPlayCard implements State {
@@ -51,11 +52,7 @@ class FestivityPlayCard implements State {
   private updateInterfaceInitialStep() {
     this.game.clearPossible();
 
-    if (this.args.optionalAction) {
-      updatePageTitle(_('${you} may play a card or pass'), {});
-    } else {
-      updatePageTitle(_('${you} must play a card'), {});
-    }
+    this.updatePageTitle();
 
     this.args._private.forEach((card) => {
       onClick(card.id, () => {
@@ -66,6 +63,20 @@ class FestivityPlayCard implements State {
         }
       });
     });
+
+    if (this.args.hasViolin) {
+      addPrimaryActionButton({
+        id: 'play-violin',
+        text: _('Play Violin'),
+        callback: () => {
+          performAction('actFestivityPlayCard', {
+            cardId: null,
+            valueForRogue: 0,
+            playViolin: true,
+          });
+        },
+      });
+    }
 
     addPassButton(this.args.optionalAction);
   }
@@ -120,6 +131,7 @@ class FestivityPlayCard implements State {
       performAction('actFestivityPlayCard', {
         cardId: card.id,
         valueForRogue,
+        playViolin: false,
       });
     });
     addCancelButton();
@@ -132,6 +144,18 @@ class FestivityPlayCard implements State {
   //  .##.....##....##.....##..##........##.....##.......##...
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
+
+  updatePageTitle() {
+    if (this.args.optionalAction && this.args.hasViolin) {
+      updatePageTitle(_('${you} may play a card, play the Violin or pass'), {});
+    } else if (this.args.optionalAction) {
+      updatePageTitle(_('${you} may play a card or pass'), {});
+    } else if (this.args.hasViolin) {
+      updatePageTitle(_('${you} must play a card or may play the Violin'), {});
+    } else {
+      updatePageTitle(_('${you} must play a card'), {});
+    }
+  }
 
   //  ..######..##.......####..######..##....##
   //  .##....##.##........##..##....##.##...##.

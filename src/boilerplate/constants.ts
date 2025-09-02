@@ -7,6 +7,9 @@ const SELECTED = 'selected';
 
 const HAND = 'hand';
 
+const DRAW_TOKEN = 'drawToken';
+const ADDITIONAL_ROUND = 'additionalRound';
+
 /**
  * Setting ids
  */

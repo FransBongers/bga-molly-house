@@ -58,10 +58,12 @@ interface NotifDiscardItem {
 
 interface NotifDrawCards extends NotifWithPlayerArgs {
   number: number;
+  numberOfDrawTokenToReturn: number;
 }
 
 interface NotifDrawCardsPrivate extends NotifWithPlayerArgs {
   number: number;
+  numberOfDrawTokenToReturn: number;
   cards: ViceCardBase[];
 }
 
@@ -92,6 +94,7 @@ interface NotifEndOfWeekMollyHouseRaided {
 
 interface NotifFestivityRevealTopCardViceDeck {
   card: ViceCardBase;
+  cardDrawnFromGossipPile: boolean;
 }
 
 interface NotifFestivityPhase {}
@@ -108,6 +111,10 @@ interface NotifFestivityWinningSet {
 interface NotifGainCubes extends NotifWithPlayerArgs {
   suit: Suit;
   numberOfCubes: number;
+}
+
+interface NotifGainDrawTokens extends NotifWithPlayerArgs {
+  number: number;
 }
 
 interface NotifGainIndictment extends NotifWithPlayerArgs {

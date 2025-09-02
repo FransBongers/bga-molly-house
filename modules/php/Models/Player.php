@@ -12,6 +12,7 @@ use Bga\Games\MollyHouse\Managers\IndictmentCards;
 use Bga\Games\MollyHouse\Managers\Items;
 use Bga\Games\MollyHouse\Managers\Pawns;
 use Bga\Games\MollyHouse\Managers\PlayerCubes;
+use Bga\Games\MollyHouse\Managers\PlayersExtra;
 use Bga\Games\MollyHouse\Managers\ViceCards;
 
 /*
@@ -60,6 +61,8 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     $handCards =  ViceCards::getInLocation(Locations::hand($this->getId()))->toArray();
     $encounterTokens = $this->getEncounterTokens();
 
+    $playerExtra = $this->getExtra();
+
     return array_merge(
       $data,
       [
@@ -67,7 +70,13 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
         'handCardCount' => count($handCards),
         'hand' => $isCurrentPlayer ? $handCards : [],
         'reputation' => ViceCards::getInLocationOrdered(Locations::reputation($this->getId()))->toArray(),
-        'cubes' => PlayerCubes::getCubesForPlayer($this->getId()),
+        'cubes' => [
+          PENTACLES => $playerExtra->getCubesPentacles(),
+          CUPS => $playerExtra->getCubesCups(),
+          HEARTS => $playerExtra->getCubesHearts(),
+          FANS => $playerExtra->getCubesFans(),
+        ],
+        'drawTokens' => $playerExtra->getDrawTokens(),
         // 'pawn' => Pawns::getPlayerPawn($this),
         'items' => $this->getItems(),
         'encounterTokens' => $isCurrentPlayer ? $encounterTokens : array_map(function ($token) {
@@ -104,22 +113,18 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     return $this->hexColorMap[$this->getHexColor()];
   }
 
-  public function drawCards($amount)
+  public function drawCards($number, $numberOfDrawTokenToReturn = 0)
   {
-    $cards = ViceCards::pickForLocation($amount, DECK, Locations::hand($this->getId()))->toArray();
+    $cards = ViceCards::pickForLocation($number, DECK, Locations::hand($this->getId()))->toArray();
 
-    Notifications::drawCards($this, $cards);
+    Notifications::drawCards($this, $cards, $numberOfDrawTokenToReturn);
 
-    $drawTokens = $amount - count($cards);
+    $drawTokens = $number - count($cards);
     if ($drawTokens > 0) {
-      Notifications::message(
-        clienttranslate('${player_name} gains ${tkn_boldText_drawTokens} draw tokens (TODO)'),
-        [
-          'player' => $this,
-          'tkn_boldText_drawTokens' => $drawTokens
-        ],
-      );
+      $this->getExtra()->incDrawTokens($drawTokens);
+      Notifications::gainDrawTokens($this, $drawTokens);
     }
+
     // TODO: Add checkpoint
   }
 
@@ -154,12 +159,33 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
       $numberOfCubes += 1;
       $viceCard->addToGossip($this);
     }
-    PlayerCubes::gainCubes($this, $suit, $numberOfCubes);
+    $this->gainCubes($suit, $numberOfCubes);
+  }
+
+  public function getCubes()
+  {
+    $playerExtra = $this->getExtra();
+    return
+      [
+        PENTACLES => $playerExtra->getCubesPentacles(),
+        CUPS => $playerExtra->getCubesCups(),
+        HEARTS => $playerExtra->getCubesHearts(),
+        FANS => $playerExtra->getCubesFans(),
+      ];
+  }
+
+  public function gainCubes($suit, $numberOfCubes, $take = false)
+  {
+    $playerExtra = $this->getExtra();
+    $methodName = 'incCubes' . ucfirst($suit);
+    $playerExtra->$methodName($numberOfCubes);
+
+    Notifications::gainCubes($this, $suit, $numberOfCubes, $take);
   }
 
   public function getReputationForSuit($suit)
   {
-    $reputation = PlayerCubes::getReputationForSuit($this->getId(), $suit);
+    $reputation = $this->getCubesForSuit($suit);
     $cards = $this->getCardsInReputation();
     foreach ($cards as $card) {
       if ($card->getSuit() === $suit) {
@@ -169,9 +195,28 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     return $reputation;
   }
 
+  public function getCubesForSuit($suit)
+  {
+    $playerExtra = $this->getExtra();
+    $method = 'getCubes' . ucfirst($suit);
+    return $playerExtra->$method();
+  }
+
   public function getCardsPlayedInFestivity()
   {
     return ViceCards::getInLocationOrdered(Locations::festivity($this->getId()))->toArray();
+  }
+
+  public function getItemOfType($type)
+  {
+    $items = $this->getItems();
+
+    return Utils::array_find($items, fn($item) => $item->getType() === $type);
+  }
+
+  public function hasItem($type)
+  {
+    return $this->getItemOfType($type) !== null;
   }
 
   public function loseJoy($amount)
@@ -250,5 +295,10 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   public function getEncounterTokens()
   {
     return EncounterTokens::getInLocation(Locations::encounterTokens($this->getId()))->toArray();
+  }
+
+  public function getExtra()
+  {
+    return PlayersExtra::get($this->getId());
   }
 }

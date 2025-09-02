@@ -112,17 +112,18 @@ class EndOfWeekCheckForRaids extends \Bga\Games\MollyHouse\Models\AtomicAction
 
     $playersWhoGainedIndictment = [];
 
-    Notifications::log('Reputation levels: ', $reptutationLevels);
     foreach ($reptutationLevels as $index => $reputation) {
       if ($index > 1) {
         continue;
       }
-      foreach ($reputationPlayers as $playerId) {
+      foreach ($reputationPlayers[$reputation] as $playerId) {
         $players[$playerId]->gainIndictment($index === 0 ? MAJOR : MINOR);
         $playersWhoGainedIndictment[] = $playerId;
       }
     }
 
-    Globals::setPlayersWhoGainedIndictment($playersWhoGainedIndictment);
+    $playersWhoAlreadyGainedIndictment = Globals::getPlayersWhoGainedIndictment();
+
+    Globals::setPlayersWhoGainedIndictment(array_merge($playersWhoAlreadyGainedIndictment, $playersWhoGainedIndictment));
   }
 }

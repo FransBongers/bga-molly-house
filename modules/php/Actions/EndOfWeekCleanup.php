@@ -104,7 +104,19 @@ class EndOfWeekCleanup extends \Bga\Games\MollyHouse\Models\AtomicAction
    */
   private function drawCardsForDrawTokens()
   {
-    // TODO
+    $players = Players::getAll();
+    $playerOrder = Players::getTurnOrder(Globals::getCandelabra());
+
+    foreach ($playerOrder as $playerId) {
+      $player = $players[$playerId];
+      $playerExtra = $player->getExtra();
+      $drawTokens = $playerExtra->getDrawTokens();
+
+      if ($drawTokens > 0) {
+        $player->drawCards($drawTokens, $drawTokens);
+        $playerExtra->setDrawTokens(0);
+      }
+    }
   }
 
   /**

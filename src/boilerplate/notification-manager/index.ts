@@ -87,6 +87,7 @@ class NotificationManager {
       'festivitySetRogueValue',
       'festivityWinningSet',
       'gainCubes',
+      'gainDrawTokens',
       'loseJoy',
       'loseJoyCommunity',
       'movePawn',
@@ -321,20 +322,23 @@ class NotificationManager {
   }
 
   async notif_drawCards(notif: Notif<NotifDrawCards>) {
-    const { playerId, number } = notif.args;
+    const { playerId, number, numberOfDrawTokenToReturn } = notif.args;
 
     Market.getInstance().counters[DECK].incValue(-number);
-    this.getPlayer(playerId).counters[HAND].incValue(number);
+    const player = this.getPlayer(playerId);
+    player.counters[DRAW_TOKEN].incValue(-numberOfDrawTokenToReturn);
+    player.counters[HAND].incValue(number);
   }
 
   async notif_drawCardsPrivate(notif: Notif<NotifDrawCardsPrivate>) {
-    const { cards, playerId } = notif.args;
+    const { cards, playerId, numberOfDrawTokenToReturn } = notif.args;
 
     const viceCards = cards.map((card) => getViceCard(card));
     const hand = Hand.getInstance();
     const market = Market.getInstance();
     const player = this.getPlayer(playerId);
 
+    player.counters[DRAW_TOKEN].incValue(-numberOfDrawTokenToReturn);
     const promises = viceCards.map(async (card, index) => {
       Interaction.use().wait(index * 150);
       const location = card.location;
@@ -445,6 +449,12 @@ class NotificationManager {
     }
   }
 
+  async notif_gainDrawTokens(notif: Notif<NotifGainDrawTokens>) {
+    const { playerId, number } = notif.args;
+    const player = this.getPlayer(playerId);
+    player.counters[DRAW_TOKEN].incValue(number);
+  }
+
   async notif_gainIndictment(notif: Notif<NotifGainIndictment>) {
     const { playerId } = notif.args;
   }
@@ -456,17 +466,26 @@ class NotificationManager {
   async notif_festivityRevealTopCardViceDeck(
     notif: Notif<NotifFestivityRevealTopCardViceDeck>
   ) {
-    const { card } = notif.args;
+    const { card, cardDrawnFromGossipPile } = notif.args;
     const viceCard = getViceCard(card);
     const location = viceCard.location;
     // Add card to deck
-    viceCard.location = DECK;
+    viceCard.location = cardDrawnFromGossipPile ? GOSSIP_PILE : DECK;
     const market = Market.getInstance();
-    await market.deck.addCard(viceCard);
+    if (cardDrawnFromGossipPile) {
+      Board.getInstance().gossipPile.addCard(viceCard);
+    } else {
+      await market.deck.addCard(viceCard);
+    }
 
     // Play card to festivity
     viceCard.location = location;
-    market.counters[DECK].incValue(-1);
+    if (cardDrawnFromGossipPile) {
+      Board.getInstance().counters[GOSSIP_PILE].incValue(-1);
+    } else {
+      market.counters[DECK].incValue(-1);
+    }
+
     await Festivity.getInstance().stocks[COMMUNITY].addCard(viceCard);
   }
 

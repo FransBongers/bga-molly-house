@@ -37,6 +37,7 @@ use Bga\Games\MollyHouse\Managers\Items;
 use Bga\Games\MollyHouse\Managers\Pawns;
 use Bga\Games\MollyHouse\Managers\PlayerCubes;
 use Bga\Games\MollyHouse\Managers\Players;
+use Bga\Games\MollyHouse\Managers\PlayersExtra;
 use Bga\Games\MollyHouse\Managers\Sites;
 use Bga\Games\MollyHouse\Managers\ViceCards;;
 
@@ -302,10 +303,10 @@ class Game extends \Bga\GameFramework\Table
         Festivity::setupNewGame();
         DieManager::setupNewGame();
         Players::setupNewGame($players, $options);
+        PlayersExtra::setupNewGame($players, $options);
         ViceCards::setupNewGame($players, $options);
         Pawns::setupNewGame($players, $options);
         Sites::setupNewGame($players, $options);
-        PlayerCubes::setupNewGame();
         IndictmentCards::setupNewGame($players, $options);
         Items::setupNewGame($players, $options);
         EncounterTokens::setupNewGame($players, $options);

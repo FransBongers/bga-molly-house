@@ -7,17 +7,17 @@ use Bga\Games\MollyHouse\Boilerplate\Core\Engine\LeafNode;
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
-use Bga\Games\MollyHouse\Managers\Community;
 use Bga\Games\MollyHouse\Managers\Festivity;
+use Bga\Games\MollyHouse\Managers\Items;
 use Bga\Games\MollyHouse\Managers\Players;
-use Bga\Games\MollyHouse\Managers\Sites;
 use Bga\Games\MollyHouse\Managers\ViceCards;
 
-class FestivityScoreBonus extends \Bga\Games\MollyHouse\Models\AtomicAction
+
+class PlayViolin extends \Bga\Games\MollyHouse\Models\AtomicAction
 {
   public function getState()
   {
-    return ST_FESTIVITY_SCORE_BONUS;
+    return ST_PLAY_VIOLIN;
   }
 
   // ..######..########....###....########.########
@@ -36,57 +36,29 @@ class FestivityScoreBonus extends \Bga\Games\MollyHouse\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function stFestivityScoreBonus()
+
+  public function stPlayViolin()
   {
-    Notifications::phase(clienttranslate('Festivity: bonuses'));
+    $info = $this->ctx->getInfo();
 
-    $festivity = Festivity::get();
-    $player = Players::get($festivity['runner']);
+    $itemId = $info['itemId'];
+    $player = $this->getPlayer();
+    $item = Items::get($itemId);
 
-    $pawn = $player->getPawn();
+    Notifications::message(clienttranslate('${player_name} plays the ${tkn_boldText_violin}'), [
+      'player' => $player,
+      'tkn_boldText_violin' => $item->getName(),
+      'i18n' => ['tkn_boldText_violin']
+    ]);
 
-    $site = Sites::get($pawn->getLocation());
+    Festivity::revealTopCardViceDeck($player);
+    Festivity::revealTopCardViceDeck($player);
 
-    $suit = $site->getSuit();
-    $reputationForSuit = $player->getReputationForSuit($suit);
+    $item->discard($player);
 
-    $ranking = $festivity['winningSet']['ranking'];
-
-    if ($reputationForSuit > 0) {
-      switch ($ranking) {
-        case SURPRISE_BALL:
-        case CHRISTENING:
-        case DANCE:
-          $player->scoreJoy($reputationForSuit);
-          break;
-        case QUIET_GATHERING:
-          $player->loseJoy($reputationForSuit);
-          break;
-      }
-    } else {
-      Notifications::message(clienttranslate('${player_name} does not score any joy'), [
-        'player' => $player,
-      ]);
-    }
-
-
-    switch ($ranking) {
-      case SURPRISE_BALL:
-        Community::scoreJoy(3);
-        break;
-      case CHRISTENING:
-        Community::scoreJoy(2);
-        break;
-      case DANCE:
-        Community::scoreJoy(1);
-        break;
-      case QUIET_GATHERING:
-        Community::loseJoy(1);
-        break;
-    }
-
-    $this->resolveAction(['automatic' => true]);
+    $this->resolveAction(['automatic' => true], true);
   }
+
 
   //  .##.....##.########.####.##.......####.########.##....##
   //  .##.....##....##.....##..##........##.....##.....##..##.

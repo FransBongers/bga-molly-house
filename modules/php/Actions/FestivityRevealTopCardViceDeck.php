@@ -39,27 +39,7 @@ class FestivityRevealTopCardViceDeck extends \Bga\Games\MollyHouse\Models\Atomic
   {
     $player = $this->getPlayer();
 
-    $card = ViceCards::getTopOf(DECK);
-
-    if ($card === null) {
-      // TODO: check if this is what needs to happen
-      Notifications::message(clienttranslate('There are no cards left in the vice deck to reveal'),[]);
-      $this->resolveAction(['automatic' => true]);
-      return;
-    }
-
-    $location = Locations::festivity(COMMUNITY);
-    ViceCards::insertOnTop($card->getId(), $location);
-
-    $card->setLocation($location);
-
-    Notifications::festivityRevealTopCardViceDeck($player, $card);
-
-    if ($card->isRogue()) {
-      $value = bga_rand(0, 9);
-      $card->setFestivityValue($value);
-      Notifications::festivitySetRogueValue($player, $card, $value, true);
-    }
+    Festivity::revealTopCardViceDeck($player);
 
     $this->resolveAction(['automatic' => true]);
   }

@@ -2,6 +2,8 @@ var DISABLED = 'disabled';
 var SELECTABLE = 'selectable';
 var SELECTED = 'selected';
 var HAND = 'hand';
+var DRAW_TOKEN = 'drawToken';
+var ADDITIONAL_ROUND = 'additionalRound';
 var PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY = 'confirmEndOfTurnPlayerSwitchOnly';
 var PREF_SHOW_ANIMATIONS = 'showAnimations';
 var PREF_ANIMATION_SPEED = 'animationSpeed';
@@ -2831,6 +2833,7 @@ var NotificationManager = (function () {
             'festivitySetRogueValue',
             'festivityWinningSet',
             'gainCubes',
+            'gainDrawTokens',
             'loseJoy',
             'loseJoyCommunity',
             'movePawn',
@@ -3119,27 +3122,30 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_drawCards = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, number;
+            var _a, playerId, number, numberOfDrawTokenToReturn, player;
             return __generator(this, function (_b) {
-                _a = notif.args, playerId = _a.playerId, number = _a.number;
+                _a = notif.args, playerId = _a.playerId, number = _a.number, numberOfDrawTokenToReturn = _a.numberOfDrawTokenToReturn;
                 Market.getInstance().counters[DECK].incValue(-number);
-                this.getPlayer(playerId).counters[HAND].incValue(number);
+                player = this.getPlayer(playerId);
+                player.counters[DRAW_TOKEN].incValue(-numberOfDrawTokenToReturn);
+                player.counters[HAND].incValue(number);
                 return [2];
             });
         });
     };
     NotificationManager.prototype.notif_drawCardsPrivate = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, cards, playerId, viceCards, hand, market, player, promises;
+            var _a, cards, playerId, numberOfDrawTokenToReturn, viceCards, hand, market, player, promises;
             var _this = this;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _a = notif.args, cards = _a.cards, playerId = _a.playerId;
+                        _a = notif.args, cards = _a.cards, playerId = _a.playerId, numberOfDrawTokenToReturn = _a.numberOfDrawTokenToReturn;
                         viceCards = cards.map(function (card) { return getViceCard(card); });
                         hand = Hand.getInstance();
                         market = Market.getInstance();
                         player = this.getPlayer(playerId);
+                        player.counters[DRAW_TOKEN].incValue(-numberOfDrawTokenToReturn);
                         promises = viceCards.map(function (card, index) { return __awaiter(_this, void 0, void 0, function () {
                             var location;
                             return __generator(this, function (_a) {
@@ -3312,6 +3318,17 @@ var NotificationManager = (function () {
             });
         });
     };
+    NotificationManager.prototype.notif_gainDrawTokens = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, playerId, number, player;
+            return __generator(this, function (_b) {
+                _a = notif.args, playerId = _a.playerId, number = _a.number;
+                player = this.getPlayer(playerId);
+                player.counters[DRAW_TOKEN].incValue(number);
+                return [2];
+            });
+        });
+    };
     NotificationManager.prototype.notif_gainIndictment = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
             var playerId;
@@ -3332,23 +3349,33 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_festivityRevealTopCardViceDeck = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var card, viceCard, location, market;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var _a, card, cardDrawnFromGossipPile, viceCard, location, market;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        card = notif.args.card;
+                        _a = notif.args, card = _a.card, cardDrawnFromGossipPile = _a.cardDrawnFromGossipPile;
                         viceCard = getViceCard(card);
                         location = viceCard.location;
-                        viceCard.location = DECK;
+                        viceCard.location = cardDrawnFromGossipPile ? GOSSIP_PILE : DECK;
                         market = Market.getInstance();
-                        return [4, market.deck.addCard(viceCard)];
-                    case 1:
-                        _a.sent();
-                        viceCard.location = location;
-                        market.counters[DECK].incValue(-1);
-                        return [4, Festivity.getInstance().stocks[COMMUNITY].addCard(viceCard)];
+                        if (!cardDrawnFromGossipPile) return [3, 1];
+                        Board.getInstance().gossipPile.addCard(viceCard);
+                        return [3, 3];
+                    case 1: return [4, market.deck.addCard(viceCard)];
                     case 2:
-                        _a.sent();
+                        _b.sent();
+                        _b.label = 3;
+                    case 3:
+                        viceCard.location = location;
+                        if (cardDrawnFromGossipPile) {
+                            Board.getInstance().counters[GOSSIP_PILE].incValue(-1);
+                        }
+                        else {
+                            market.counters[DECK].incValue(-1);
+                        }
+                        return [4, Festivity.getInstance().stocks[COMMUNITY].addCard(viceCard)];
+                    case 4:
+                        _b.sent();
                         return [2];
                 }
             });
@@ -4506,6 +4533,7 @@ var MollyHouse = (function () {
             DiscardItem: DiscardItem,
             ExamineGossipPile: ExamineGossipPile,
             PlaceEncounterToken: PlaceEncounterToken,
+            FestivityUseBottleOfGin: FestivityUseBottleOfGin,
         };
         console.log('MollyHouse constructor');
     }
@@ -5795,6 +5823,7 @@ var LOG_TOKEN_NEW_LINE = 'newLine';
 var LOG_TOKEN_PLAYER_NAME = 'playerName';
 var LOG_TOKEN_DIE = 'die';
 var LOG_TOKEN_CUBE = 'cube';
+var LOG_TOKEN_DRAW_TOKEN = 'drawToken';
 var LOG_TOKEN_ENCOUNTER_TOKEN = 'encounterToken';
 var LOG_TOKEN_PAWN = 'pawn';
 var LOG_TOKEN_SUIT = 'suit';
@@ -5812,6 +5841,8 @@ var getTokenDiv = function (_a) {
             return tlpLogTokenText({ text: value, italic: true });
         case LOG_TOKEN_CUBE:
             return tplLogTokenCube(value.split(':')[0]);
+        case LOG_TOKEN_DRAW_TOKEN:
+            return tplLogTokenDrawToken();
         case LOG_TOKEN_DIE:
             return tplLogTokenDie(value.split(':')[0]);
         case LOG_TOKEN_NEW_LINE:
@@ -5852,6 +5883,9 @@ var tplLogTokenPlayerName = function (_a) {
 };
 var tplLogTokenCube = function (color) {
     return "<div class=\"log-token moho-cube\" data-color=\"".concat(color, "\"></div>");
+};
+var tplLogTokenDrawToken = function () {
+    return "<div class=\"log-token moho-draw-token\"></div>";
 };
 var tplLogTokenDie = function (dieFace) {
     return "<div class=\"log-token bga-dice_die-face\" data-face=\"".concat(dieFace, "\"></div>");
@@ -6051,7 +6085,6 @@ var MohoPlayer = (function () {
         if (!node) {
             return;
         }
-        console.log('CubeCounter yellow');
         [PENTACLES, FANS, CUPS, HEARTS].forEach(function (suit) {
             _this.counters[suit] = new SuitCounter({
                 id: "cards-".concat(suit, "-").concat(_this.playerId),
@@ -6075,6 +6108,12 @@ var MohoPlayer = (function () {
                 color: color,
                 type: 'overlap',
             });
+        });
+        this.counters[DRAW_TOKEN] = new DrawTokenCounter({
+            id: "draw-tokens-".concat(this.playerId),
+            initialValue: playerGamedatas.drawTokens,
+            parentElement: node,
+            type: 'overlap',
         });
         this.updatePlayerPanel(gamedatas);
     };
@@ -6755,6 +6794,18 @@ var CubeCounter = (function (_super) {
     };
     return CubeCounter;
 }(IconCounter));
+var DrawTokenCounter = (function (_super) {
+    __extends(DrawTokenCounter, _super);
+    function DrawTokenCounter(props) {
+        var _this = _super.call(this, props) || this;
+        _this.setup(props);
+        return _this;
+    }
+    DrawTokenCounter.prototype.setup = function (_a) {
+        this.iconElement.classList.add("moho-draw-token");
+    };
+    return DrawTokenCounter;
+}(IconCounter));
 var HandCounter = (function (_super) {
     __extends(HandCounter, _super);
     function HandCounter(props) {
@@ -6803,12 +6854,7 @@ var FestivityPlayCard = (function () {
     FestivityPlayCard.prototype.updateInterfaceInitialStep = function () {
         var _this = this;
         this.game.clearPossible();
-        if (this.args.optionalAction) {
-            updatePageTitle(_('${you} may play a card or pass'), {});
-        }
-        else {
-            updatePageTitle(_('${you} must play a card'), {});
-        }
+        this.updatePageTitle();
         this.args._private.forEach(function (card) {
             onClick(card.id, function () {
                 if (getViceCard(card).displayValue === 'R') {
@@ -6819,6 +6865,19 @@ var FestivityPlayCard = (function () {
                 }
             });
         });
+        if (this.args.hasViolin) {
+            addPrimaryActionButton({
+                id: 'play-violin',
+                text: _('Play Violin'),
+                callback: function () {
+                    performAction('actFestivityPlayCard', {
+                        cardId: null,
+                        valueForRogue: 0,
+                        playViolin: true,
+                    });
+                },
+            });
+        }
         addPassButton(this.args.optionalAction);
     };
     FestivityPlayCard.prototype.updateInterfaceSelectRogueValue = function (card) {
@@ -6861,9 +6920,24 @@ var FestivityPlayCard = (function () {
             performAction('actFestivityPlayCard', {
                 cardId: card.id,
                 valueForRogue: valueForRogue,
+                playViolin: false,
             });
         });
         addCancelButton();
+    };
+    FestivityPlayCard.prototype.updatePageTitle = function () {
+        if (this.args.optionalAction && this.args.hasViolin) {
+            updatePageTitle(_('${you} may play a card, play the Violin or pass'), {});
+        }
+        else if (this.args.optionalAction) {
+            updatePageTitle(_('${you} may play a card or pass'), {});
+        }
+        else if (this.args.hasViolin) {
+            updatePageTitle(_('${you} must play a card or may play the Violin'), {});
+        }
+        else {
+            updatePageTitle(_('${you} must play a card'), {});
+        }
     };
     return FestivityPlayCard;
 }());
@@ -7148,7 +7222,7 @@ var EndOfWeekEncounterSociety = (function () {
     EndOfWeekEncounterSociety.prototype.setDescription = function (activePlayerIds, args) { };
     EndOfWeekEncounterSociety.prototype.updateInterfaceInitialStep = function () {
         this.game.clearPossible();
-        updatePageTitle(_('${you} may perform an action'), {});
+        updatePageTitle(_('${you} must place an encounter token'), {});
     };
     EndOfWeekEncounterSociety.prototype.updateInterfaceConfirm = function () {
         clearPossible();
@@ -7312,4 +7386,54 @@ var PlaceEncounterToken = (function () {
         addCancelButton();
     };
     return PlaceEncounterToken;
+}());
+var FestivityUseBottleOfGin = (function () {
+    function FestivityUseBottleOfGin(game) {
+        this.game = game;
+    }
+    FestivityUseBottleOfGin.create = function (game) {
+        FestivityUseBottleOfGin.instance = new FestivityUseBottleOfGin(game);
+    };
+    FestivityUseBottleOfGin.getInstance = function () {
+        return FestivityUseBottleOfGin.instance;
+    };
+    FestivityUseBottleOfGin.prototype.onEnteringState = function (args) {
+        debug('Entering FestivityUseBottleOfGin state');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    FestivityUseBottleOfGin.prototype.onLeavingState = function () {
+        debug('Leaving FestivityUseBottleOfGin state');
+    };
+    FestivityUseBottleOfGin.prototype.setDescription = function (activePlayerIds, args) { };
+    FestivityUseBottleOfGin.prototype.updateInterfaceInitialStep = function () {
+        this.game.clearPossible();
+        updatePageTitle(_('${you} may use Bottle of Gin to play an addittional round'), {});
+        addPrimaryActionButton({
+            id: 'use_btn',
+            text: _('Use Bottle of Gin'),
+            callback: function () {
+                performAction('actFestivityUseBottleOfGin', {
+                    useBottleOfGin: true,
+                });
+            },
+        });
+        addSecondaryActionButton({
+            id: 'do_not_use_btn',
+            text: _('Do not use Bottle of Gin'),
+            callback: function () {
+                performAction('actFestivityUseBottleOfGin', {
+                    useBottleOfGin: false,
+                });
+            },
+        });
+    };
+    FestivityUseBottleOfGin.prototype.updateInterfaceConfirm = function () {
+        clearPossible();
+        updatePageTitle(_('Confirm action'));
+        addConfirmButton(function () {
+            performAction('actFestivityUseBottleOfGin', {});
+        });
+    };
+    return FestivityUseBottleOfGin;
 }());

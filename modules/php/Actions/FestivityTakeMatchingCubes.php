@@ -67,7 +67,7 @@ class FestivityTakeMatchingCubes extends \Bga\Games\MollyHouse\Models\AtomicActi
     $number = $stateArgs['number'];
 
     if ($takeCubes) {
-      PlayerCubes::gainCubes($player, $suit, $number, true);
+      $player->gainCubes($suit, $number, true);
     } else {
       Notifications::message(clienttranslate('${player_name} chooses not to take ${tkn_boldText_number} ${tkn_cube}'), [
         'player' => $player,

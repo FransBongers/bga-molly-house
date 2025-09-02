@@ -42,10 +42,10 @@ class LogPhase extends \Bga\Games\MollyHouse\Models\AtomicAction
 
     switch ($phase) {
       case FESTIVITY_DETERMINE_WINNING_SET:
-        Notifications::festivityPhase(clienttranslate('score'));
+        Notifications::phase(clienttranslate('Festivity: score'));
         break;
       case FESTIVITY_GENERATE_GOSSIP:
-        Notifications::festivityPhase(clienttranslate('generate gossip'));
+        Notifications::phase(clienttranslate('Festivity: generate gossip'));
         break;
       case START_OF_TURN_MESSAGE:
         Notifications::phase(clienttranslate('${player_name} starts their turn'), [

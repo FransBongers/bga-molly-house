@@ -60,6 +60,7 @@ interface MollyHouseGamedatas extends Gamedatas {
 }
 
 interface MollyHousePlayerData extends BgaPlayer {
+  drawTokens: number;
   festivity: ViceCardBase[];
   hand: ViceCardBase[];
   handCardCount: number;

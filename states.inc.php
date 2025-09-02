@@ -74,6 +74,13 @@ $machinestates = [
         ->type(StateType::GAME)
         ->build(),
 
+    ST_END_OF_WEEK_DOMINO_CHECK => GameStateBuilder::create()
+        ->name(END_OF_WEEK_DOMINO_CHECK)
+        ->description('')
+        ->type(StateType::GAME)
+        ->action('stAtomicAction')
+        ->build(),
+
     ST_RESOLVE_STACK => GameStateBuilder::create()
         ->name(START_GAME_ENGINE)
         ->description('')
@@ -465,7 +472,7 @@ $machinestates = [
         ->name(END_OF_WEEK_ENCOUNTER_SOCIETY)
         ->description(clienttranslate('${actplayer} must resolve their encounter with the Society'))
         ->descriptionmyturn(clienttranslate('${you} must resolve your encounter with the Society'))
-        ->type(StateType::ACTIVE_PLAYER)
+        ->type(StateType::MULTIPLE_ACTIVE_PLAYER)
         ->args('argsAtomicAction')
         ->possibleactions([
             'actEndOfWeekEncounterSociety',
@@ -519,6 +526,52 @@ $machinestates = [
             'actTakeAtomicAction',
             'actRestart',
             'actUndoToStep',
+        ])
+        ->build(),
+
+    ST_FESTIVITY_BOTTLE_OF_GIN_CHECK => GameStateBuilder::create()
+        ->name(FESTIVITY_BOTTLE_OF_GIN_CHECK)
+        ->description('')
+        ->type(StateType::GAME)
+        ->action('stAtomicAction')
+        ->build(),
+
+    ST_FESTIVITY_USE_BOTTLE_OF_GIN => GameStateBuilder::create()
+        ->name(FESTIVITY_USE_BOTTLE_OF_GIN)
+        ->description(clienttranslate('${actplayer} may use a Bottle of Gin'))
+        ->descriptionmyturn(clienttranslate('${you}'))
+        ->type(StateType::MULTIPLE_ACTIVE_PLAYER)
+        ->args('argsAtomicAction')
+        ->possibleactions([
+            'actFestivityUseBottleOfGin',
+            'actPass',
+            'actTakeAtomicAction',
+        ])
+        ->transitions([
+            'next' => ST_RESOLVE_STACK
+        ])
+        ->build(),
+
+    ST_PLAY_VIOLIN => GameStateBuilder::create()
+        ->name(PLAY_VIOLIN)
+        ->description('')
+        ->type(StateType::GAME)
+        ->action('stAtomicAction')
+        ->build(),
+
+    ST_END_OF_WEEK_USE_DOMINO => GameStateBuilder::create()
+        ->name(END_OF_WEEK_USE_DOMINO)
+        ->description(clienttranslate('${actplayer} may use a Domino'))
+        ->descriptionmyturn(clienttranslate('${you}'))
+        ->type(StateType::MULTIPLE_ACTIVE_PLAYER)
+        ->args('argsAtomicAction')
+        ->possibleactions([
+            'actEndOfWeekUseDomino',
+            'actPass',
+            'actTakeAtomicAction',
+        ])
+        ->transitions([
+            'next' => ST_RESOLVE_STACK
         ])
         ->build(),
 ];

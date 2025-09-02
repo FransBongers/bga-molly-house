@@ -11,6 +11,9 @@ const SUPPLY = 'supply';
 const PAWN = 'pawn';
 const COMMUNITY = 'community';
 
+const DRAW_TOKEN = 'drawToken';
+const ADDITIONAL_ROUND = 'additionalRound';
+
 /**
  * Dice
  */
@@ -67,6 +70,12 @@ const ST_END_OF_WEEK_CLEANUP = 36;
 const ST_DISCARD_ITEM = 37;
 
 const ST_EXAMINE_GOSSIP_PILE = 38;
+
+const ST_FESTIVITY_BOTTLE_OF_GIN_CHECK = 40;
+const ST_FESTIVITY_USE_BOTTLE_OF_GIN = 41;
+const ST_END_OF_WEEK_DOMINO_CHECK = 42;
+const ST_END_OF_WEEK_USE_DOMINO = 43;
+const ST_PLAY_VIOLIN = 44;
 const ST_PLACE_ENCOUNTER_TOKEN = 39;
 
 /**
@@ -109,6 +118,12 @@ const END_OF_WEEK_CLEANUP = 'EndOfWeekCleanup';
 const DISCARD_ITEM = 'DiscardItem';
 
 const EXAMINE_GOSSIP_PILE = 'ExamineGossipPile';
+
+const FESTIVITY_BOTTLE_OF_GIN_CHECK = 'FestivityBottleOfGinCheck';
+const FESTIVITY_USE_BOTTLE_OF_GIN = 'FestivityUseBottleOfGin';
+const END_OF_WEEK_DOMINO_CHECK = 'EndOfWeekDominoCheck';
+const END_OF_WEEK_USE_DOMINO = 'EndOfWeekUseDomino';
+const PLAY_VIOLIN = 'PlayViolin';
 const PLACE_ENCOUNTER_TOKEN = 'PlaceEncounterToken';
 
 const USE_ITEM = 'UseItem';

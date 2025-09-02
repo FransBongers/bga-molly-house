@@ -4,15 +4,16 @@ namespace Bga\Games\MollyHouse\Actions;
 
 use Bga\Games\MollyHouse\Boilerplate\Core\Engine;
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
+use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
+use Bga\Games\MollyHouse\Game;
 use Bga\Games\MollyHouse\Managers\Festivity;
 use Bga\Games\MollyHouse\Managers\Players;
-use Bga\Games\MollyHouse\Models\Player;
 
-class ThrowFestivity extends \Bga\Games\MollyHouse\Models\AtomicAction
+class FestivityUseBottleOfGin extends \Bga\Games\MollyHouse\Models\AtomicAction
 {
   public function getState()
   {
-    return ST_THROW_FESTIVITY;
+    return ST_FESTIVITY_USE_BOTTLE_OF_GIN;
   }
 
   // ....###....########...######....######.
@@ -23,7 +24,8 @@ class ThrowFestivity extends \Bga\Games\MollyHouse\Models\AtomicAction
   // .##.....##.##....##..##....##..##....##
   // .##.....##.##.....##..######....######.
 
-  public function argsThrowFestivity()
+
+  public function argsFestivityUseBottleOfGin()
   {
     $info = $this->ctx->getInfo();
 
@@ -48,15 +50,26 @@ class ThrowFestivity extends \Bga\Games\MollyHouse\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function actPassThrowFestivity()
+  public function actPassFestivityUseBottleOfGin()
   {
     $player = self::getPlayer();
     $this->resolveAction(PASS);
   }
 
-  public function actThrowFestivity($args)
+  public function actFestivityUseBottleOfGin($args)
   {
-    self::checkAction('actThrowFestivity');
+    self::checkAction('actFestivityUseBottleOfGin');
+    $useBottleOfGin = $args->useBottleOfGin;
+
+    $player = Players::getCurrent();
+
+    $game = Game::get();
+    if ($useBottleOfGin) {
+      // Handle the case where the player uses the bottle of gin
+      $this->useBottleOfGin($game, $player);
+    } else {
+      $this->handleSkip($game, $player);
+    }
 
     $this->resolveAction([], true);
   }
@@ -69,76 +82,47 @@ class ThrowFestivity extends \Bga\Games\MollyHouse\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-  public function getOptions($player, $site)
+  private function handleSkip($game, $player)
   {
-    if ($site->isRaided()) {
-      return false;
-    }
-
-    $playerHand = $player->getHand();
-
-    $numberOfPlayers = count(Players::getAll());
-
-    $requiredHandSize = $numberOfPlayers === 2 ? 3 : 2;
-
-    if (count($playerHand) < $requiredHandSize) {
-      return false;
-    }
-
-    return true;
+    Notifications::message(
+      clienttranslate('${player_name} does not use their ${tkn_boldText_bottleOfGin}'),
+      [
+        'player' => $player,
+        'tkn_boldText_bottleOfGin' => _('Bottle of Gin'),
+        'i18n' => ['tkn_boldText_bottleOfGin']
+      ]
+    );
+    $game->gamestate->setPlayerNonMultiactive($player->getId(), 'next');
   }
 
-  public function performAction($ctx, $player, $site)
+  public function useBottleOfGin($game, $player)
   {
-    Notifications::throwFestivity($player, $site);
+    $items = $player->getItems();
 
+    $bottleOfGin = Utils::array_find($items, fn($item) => $item->getType() === BOTTLE_OF_GIN);
 
-    Festivity::start($player);
-
-    $nodes = [];
-
-    $playerCount = count(Players::getAll());
-    $numberOfRounds = $playerCount === 2 ? 3 : 2;
-    for ($index = 0; $index < $numberOfRounds; $index++) {
-      $nodes[] = [
-        'action' => FESTIVITY_SETUP_ROUND,
-        'round' => $index + 1,
-        'playerId' => $player->getId(),
-      ];
+    if ($bottleOfGin === null) {
+      throw new \feException("ERROR_028");
     }
-
-    $otherNodes = [
+    Notifications::message(
+      clienttranslate('${player_name} uses their ${tkn_boldText_bottleOfGin}'),
       [
-        'action' => FESTIVITY_BOTTLE_OF_GIN_CHECK,
-      ],
-      [
-        'action' => LOG_PHASE,
-        'phase' => FESTIVITY_DETERMINE_WINNING_SET,
-      ],
-      [
-        'action' => FESTIVITY_DETERMINE_WINNING_SET,
-      ],
-      [
-        'action' => FESTIVITY_SCORE_JOY,
-      ],
-      [
-        'action' => LOG_PHASE,
-        'phase' => FESTIVITY_GENERATE_GOSSIP,
-      ],
-      [
-        'action' => FESTIVITY_GENERATE_GOSSIP,
-        'playerId' => $player->getId(),
-      ],
-      [
-        'action' => FESTIVITY_SCORE_BONUS,
-      ],
-      [
-        'action' => FESTIVITY_CLEANUP,
+        'player' => $player,
+        'tkn_boldText_bottleOfGin' => _('Bottle of Gin'),
+        'i18n' => ['tkn_boldText_bottleOfGin']
       ]
-    ];
+    );
 
-    $ctx->insertAsBrother(Engine::buildTree([
-      'children' => array_merge($nodes, $otherNodes),
-    ]));
+    $game->gamestate->setAllPlayersNonMultiactive('next');
+
+    $bottleOfGin->discard($player);
+
+    $action = [
+      'action' => FESTIVITY_BOTTLE_OF_GIN_CHECK,
+    ];
+    $this->ctx->insertAsBrother(Engine::buildTree($action));
+
+
+    Festivity::setupRound($this->ctx, ADDITIONAL_ROUND);
   }
 }

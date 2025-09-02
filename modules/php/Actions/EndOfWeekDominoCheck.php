@@ -7,17 +7,17 @@ use Bga\Games\MollyHouse\Boilerplate\Core\Engine\LeafNode;
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
-use Bga\Games\MollyHouse\Managers\Community;
 use Bga\Games\MollyHouse\Managers\Festivity;
+use Bga\Games\MollyHouse\Managers\Items;
 use Bga\Games\MollyHouse\Managers\Players;
-use Bga\Games\MollyHouse\Managers\Sites;
 use Bga\Games\MollyHouse\Managers\ViceCards;
 
-class FestivityScoreBonus extends \Bga\Games\MollyHouse\Models\AtomicAction
+
+class EndOfWeekDominoCheck extends \Bga\Games\MollyHouse\Models\AtomicAction
 {
   public function getState()
   {
-    return ST_FESTIVITY_SCORE_BONUS;
+    return ST_END_OF_WEEK_DOMINO_CHECK;
   }
 
   // ..######..########....###....########.########
@@ -36,57 +36,32 @@ class FestivityScoreBonus extends \Bga\Games\MollyHouse\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function stFestivityScoreBonus()
+
+  public function stEndOfWeekDominoCheck()
   {
-    Notifications::phase(clienttranslate('Festivity: bonuses'));
 
-    $festivity = Festivity::get();
-    $player = Players::get($festivity['runner']);
+    $items = Items::getAll();
 
-    $pawn = $player->getPawn();
+    $dominosInPlay = [];
 
-    $site = Sites::get($pawn->getLocation());
-
-    $suit = $site->getSuit();
-    $reputationForSuit = $player->getReputationForSuit($suit);
-
-    $ranking = $festivity['winningSet']['ranking'];
-
-    if ($reputationForSuit > 0) {
-      switch ($ranking) {
-        case SURPRISE_BALL:
-        case CHRISTENING:
-        case DANCE:
-          $player->scoreJoy($reputationForSuit);
-          break;
-        case QUIET_GATHERING:
-          $player->loseJoy($reputationForSuit);
-          break;
+    foreach ($items as $item) {
+      if ($item->getType() === DOMINO && Utils::startsWith($item->getLocation(), 'item_')) {
+        $dominosInPlay[] = $item;
       }
-    } else {
-      Notifications::message(clienttranslate('${player_name} does not score any joy'), [
-        'player' => $player,
-      ]);
     }
 
-
-    switch ($ranking) {
-      case SURPRISE_BALL:
-        Community::scoreJoy(3);
-        break;
-      case CHRISTENING:
-        Community::scoreJoy(2);
-        break;
-      case DANCE:
-        Community::scoreJoy(1);
-        break;
-      case QUIET_GATHERING:
-        Community::loseJoy(1);
-        break;
+    if (count($dominosInPlay) > 0) {
+      $action = [
+        'action' => END_OF_WEEK_USE_DOMINO,
+        'playerId' => 'some',
+        'activePlayerIds' => array_map(fn($i) => $i->getOwnerId(), $dominosInPlay),
+      ];
+      $this->ctx->insertAsBrother(Engine::buildTree($action));
     }
 
     $this->resolveAction(['automatic' => true]);
   }
+
 
   //  .##.....##.########.####.##.......####.########.##....##
   //  .##.....##....##.....##..##........##.....##.....##..##.

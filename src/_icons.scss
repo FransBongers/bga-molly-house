@@ -50,3 +50,12 @@
   background-size: 100% 100%;
   background-repeat: no-repeat;
 }
+
+.moho-draw-token {
+  width: calc(var(--iconScale) * 40px);
+  aspect-ratio: 1 / 1;
+  // height: calc(var(--iconScale) * 50px);
+  background-image: url('img/draw_token.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}

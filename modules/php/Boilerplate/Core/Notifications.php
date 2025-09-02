@@ -361,7 +361,7 @@ class Notifications
     self::notifyAll('discardItem', $text, $args);
   }
 
-  public static function drawCards($player, $cards)
+  public static function drawCards($player, $cards, $numberOfDrawTokenToReturn)
   {
     // TODO: cardsLog ?
     $text = count($cards) === 1
@@ -374,6 +374,7 @@ class Notifications
       'player' => $player,
       'cards' => $cards,
       'number' => $number,
+      'numberOfDrawTokenToReturn' => $numberOfDrawTokenToReturn,
       'tkn_boldText_number' => $number,
     ]);
 
@@ -381,7 +382,18 @@ class Notifications
       'player' => $player,
       'number' => $number,
       'tkn_boldText_number' => $number,
+      'numberOfDrawTokenToReturn' => $numberOfDrawTokenToReturn,
       'preserve' => ['playerId'],
+    ]);
+  }
+
+  public static function gainDrawTokens($player, $number)
+  {
+    self::notifyAll('gainDrawTokens', clienttranslate('${player_name} gains ${tkn_boldText_number} ${tkn_drawTokens}'), [
+      'player' => $player,
+      'tkn_boldText_number' => $number,
+      'number' => $number,
+      'tkn_drawTokens' => DRAW_TOKEN,
     ]);
   }
 
@@ -456,11 +468,16 @@ class Notifications
     ]);
   }
 
-  public static function festivityRevealTopCardViceDeck($player, $card)
+  public static function festivityRevealTopCardViceDeck($player, $card, $cardDrawnFromGossipPile)
   {
-    self::notifyAll('festivityRevealTopCardViceDeck', clienttranslate('The ${tkn_boldText_community} plays ${tkn_boldText_cardValue} of ${tkn_suit}${tkn_viceCard}'), [
+    $text = $cardDrawnFromGossipPile
+      ? clienttranslate('The ${tkn_boldText_community} plays ${tkn_boldText_cardValue} of ${tkn_suit}${tkn_viceCard} from the gossip pile')
+      : clienttranslate('The ${tkn_boldText_community} plays ${tkn_boldText_cardValue} of ${tkn_suit}${tkn_viceCard}');
+
+    self::notifyAll('festivityRevealTopCardViceDeck', $text, [
       'player' => $player,
       'card' => $card,
+      'cardDrawnFromGossipPile' => $cardDrawnFromGossipPile,
       'tkn_viceCard' => self::tknViceCard($card),
       'tkn_boldText_cardValue' => self::viceCardValueText($card->getDisplayValue()),
       'tkn_boldText_community' => clienttranslate('community'),
@@ -469,12 +486,12 @@ class Notifications
     ]);
   }
 
-  public static function festivityPhase($phase)
-  {
-    self::notifyAll('festivityPhase', clienttranslate('Festivity - ${phase}'), [
-      'phase' => $phase,
-    ]);
-  }
+  // public static function festivityPhase($phase)
+  // {
+  //   self::notifyAll('festivityPhase', clienttranslate('Festivity - ${phase}'), [
+  //     'phase' => $phase,
+  //   ]);
+  // }
 
   public static function festivitySetRogueValue($player, $card, $value, $isCommunityCard = false)
   {

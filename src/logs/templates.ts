@@ -28,6 +28,9 @@ const tplLogTokenPlayerName = ({
 const tplLogTokenCube = (color: string) =>
   `<div class="log-token moho-cube" data-color="${color}"></div>`;
 
+const tplLogTokenDrawToken = () =>
+  `<div class="log-token moho-draw-token"></div>`;
+
 const tplLogTokenDie = (dieFace: string) =>
   `<div class="log-token bga-dice_die-face" data-face="${dieFace}"></div>`;
 
@@ -39,7 +42,6 @@ const tplLogTokenSuit = (suit: Suit) =>
 
 const tplLogTokenViceCard = (cardId: string) =>
   `<div class="log-token moho-vice-card" data-card-id="${cardId}"></div>`;
-
 
 const tplLogTokenEncounterToken = (color: string, type: string) =>
   `<div class="log-token moho-encounter-token" data-color="${color}" data-type="${type}"></div>`;

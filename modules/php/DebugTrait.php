@@ -19,6 +19,7 @@ use Bga\Games\MollyHouse\Managers\Items;
 use Bga\Games\MollyHouse\Managers\Pawns;
 use Bga\Games\MollyHouse\Managers\PlayerCubes;
 use Bga\Games\MollyHouse\Managers\Players;
+use Bga\Games\MollyHouse\Managers\PlayersExtra;
 use Bga\Games\MollyHouse\Managers\Sites;
 use Bga\Games\MollyHouse\Managers\ViceCards;
 
@@ -31,14 +32,13 @@ trait DebugTrait
 
   function debug_test()
   {
+
+    Sites::get(MOTHER_CLAPS)->setEvidence(6);
+    Sites::get(MISS_MUFFS)->setEvidence(6);
     // Sites::get(SUKEY_BEVELLS)->setEvidence(6);
 
-    $encounterTokens = EncounterTokens::getAll()->toArray();
-    shuffle($encounterTokens);
+    // AtomicActions::get(END_OF_WEEK_CHECK_FOR_RAIDS)->gainIndictments(Sites::get(MOTHER_CLAPS));
 
-    foreach (MOLLY_HOUSES as $i => $siteId) {
-      $encounterTokens[$i]->setLocation($siteId);
-    }
     // Notifications::log('accuse', AtomicActions::get(ACCUSE)->getOptions(Players::get(2371053), Sites::get(JULIUS_CESAR_TAYLORS)));
 
     // Items::setupNewGame();

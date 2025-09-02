@@ -3,6 +3,7 @@
 namespace Bga\Games\MollyHouse\Models;
 
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
+use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 
 class Item extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
 {
@@ -54,5 +55,13 @@ class Item extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   public function useAction($player, $site)
   {
     throw new \feException("ERROR_022");
+  }
+
+  public function getOwnerId()
+  {
+    if (!Utils::startsWith($this->getLocation(), 'item_')) {
+      throw new \feException("ERROR_027");
+    }
+    return intval(explode('_', $this->getLocation())[2]);
   }
 }

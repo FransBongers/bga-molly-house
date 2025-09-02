@@ -81,14 +81,14 @@ class FestivityChooseNextFoiledThreat extends \Bga\Games\MollyHouse\Models\Atomi
       throw new \feException("ERROR_018");
     }
 
-    $remainingThreats = array_filter(
+    $remainingThreats = Utils::filter(
       $stateArgs['cards'],
       function ($card) use ($cardId) {
         return $card->getId() !== $cardId;
       }
     );
 
-    
+
 
     // Insert reamining first so current chosen is next
     if (count($remainingThreats) === 1) {

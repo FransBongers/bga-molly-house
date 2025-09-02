@@ -5,6 +5,7 @@ const LOG_TOKEN_PLAYER_NAME = 'playerName';
 // Game specific
 const LOG_TOKEN_DIE = 'die';
 const LOG_TOKEN_CUBE = 'cube';
+const LOG_TOKEN_DRAW_TOKEN = 'drawToken';
 const LOG_TOKEN_ENCOUNTER_TOKEN = 'encounterToken';
 const LOG_TOKEN_PAWN = 'pawn';
 const LOG_TOKEN_SUIT = 'suit';
@@ -32,6 +33,8 @@ const getTokenDiv = ({
       return tlpLogTokenText({ text: value, italic: true });
     case LOG_TOKEN_CUBE:
       return tplLogTokenCube(value.split(':')[0]);
+    case LOG_TOKEN_DRAW_TOKEN:
+      return tplLogTokenDrawToken();
     case LOG_TOKEN_DIE:
       return tplLogTokenDie(value.split(':')[0]);
     case LOG_TOKEN_NEW_LINE:

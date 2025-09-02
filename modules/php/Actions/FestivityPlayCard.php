@@ -2,6 +2,7 @@
 
 namespace Bga\Games\MollyHouse\Actions;
 
+use Bga\Games\MollyHouse\Boilerplate\Core\Engine;
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
@@ -30,7 +31,8 @@ class FestivityPlayCard extends \Bga\Games\MollyHouse\Models\AtomicAction
     $data = [
       '_private' => [
         $player->getId() => $player->getHand(),
-      ]
+      ],
+      'hasViolin' => $player->hasItem(VIOLIN)
     ];
 
     return $data;
@@ -69,10 +71,43 @@ class FestivityPlayCard extends \Bga\Games\MollyHouse\Models\AtomicAction
     self::checkAction('actFestivityPlayCard');
     $cardId = $args->cardId;
     $valueForRogue = $args->valueForRogue;
+    $playViolin = $args->playViolin;
 
     $player = $this->getPlayer();
     $playerId = $player->getId();
+
     $stateArgs = $this->argsFestivityPlayCard();
+
+    if ($playViolin && !$stateArgs['hasViolin']) {
+      throw new \feException("ERROR_029");
+    }
+
+    if ($playViolin) {
+
+      $violin = $player->getItemOfType(VIOLIN);
+      if ($violin === null) {
+        throw new \feException("ERROR_030");
+      }
+
+      $action = [
+        'action' => FESTIVITY_PLAY_CARD,
+        'playerId' => $playerId,
+        'optional' => $this->isOptional(),
+      ];
+      $this->ctx->insertAsBrother(Engine::buildTree($action));
+      $action = [
+        'action' => PLAY_VIOLIN,
+        'playerId' => $playerId,
+        'itemId' => $violin->getId()
+      ];
+      $this->ctx->insertAsBrother(Engine::buildTree($action));
+
+      $this->resolveAction([]);
+      return;
+    }
+
+
+
 
     $card = Utils::array_find($stateArgs['_private'][$playerId], function ($c) use ($cardId) {
       return $c->getId() == $cardId;
@@ -87,7 +122,6 @@ class FestivityPlayCard extends \Bga\Games\MollyHouse\Models\AtomicAction
       $card->setFestivityValue($valueForRogue);
     } elseif ($card->isRogue()) {
       throw new \feException("ERROR_017");
-      
     }
 
     Notifications::festivityPlayCard($player, $card);

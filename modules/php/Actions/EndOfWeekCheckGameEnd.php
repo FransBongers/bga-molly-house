@@ -61,12 +61,12 @@ class EndOfWeekCheckGameEnd extends \Bga\Games\MollyHouse\Models\AtomicAction
       return;
     }
 
-    // TODO: check encounter the society
-
     $action = [
       'action' => END_OF_WEEK_CLEANUP,
     ];
     $this->ctx->insertAsBrother(Engine::buildTree($action));
+
+    $this->checkEncounterTheSociety();
 
 
     $this->resolveAction(['automatic' => true], true);
@@ -80,6 +80,32 @@ class EndOfWeekCheckGameEnd extends \Bga\Games\MollyHouse\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
+
+  private function checkEncounterTheSociety()
+  {
+    $playersWhoGainedIndictment =  array_values(array_unique(Globals::getPlayersWhoGainedIndictment()));
+
+    if (count($playersWhoGainedIndictment) === 0) {
+      return;
+    }
+
+    $players = Players::getAll();
+
+    $playersWhoGainedIndictment = Utils::filter($playersWhoGainedIndictment, function ($playerId) use ($players) {
+      $encounterTokens = $players[$playerId]->getEncounterTokens();
+      return count($encounterTokens) > 0;
+    });
+
+    if (count($playersWhoGainedIndictment) > 0) {
+      $action = [
+        'action' => END_OF_WEEK_ENCOUNTER_SOCIETY,
+        'playerId' => 'some',
+        'activePlayerIds' => $playersWhoGainedIndictment,
+
+      ];
+      $this->ctx->insertAsBrother(Engine::buildTree($action));
+    }
+  }
 
   /**
    * If all four houses have been raided or a raided house has accumulated

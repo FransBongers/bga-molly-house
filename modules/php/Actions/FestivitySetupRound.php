@@ -41,41 +41,7 @@ class FestivitySetupRound extends \Bga\Games\MollyHouse\Models\AtomicAction
     $info = $this->ctx->getInfo();
     $round = $info['round'];
 
-    Festivity::setRound($round);
-    Notifications::festivityPhase([
-      'log' => clienttranslate('round ${roundNumber}'),
-      'args' => [
-        'roundNumber' => $round,
-      ],
-    ]);
-
-    $festivity = Festivity::get();
-
-    $runnerPlayerId = $festivity['runner'];
-
-    $playerOrder = Players::getTurnOrder($runnerPlayerId);
-    $playerOrder = Utils::filter($playerOrder, function ($p) use ($festivity) {
-      return !in_array($p, $festivity['passed']);
-    });
-
-    $nodes = [
-      [
-        'action' => FESTIVITY_REVEAL_TOP_CARD_VICE_DECK,
-        'playerId' => $runnerPlayerId,
-      ]
-    ];
-
-    foreach ($playerOrder as $playerId) {
-      $nodes[] = [
-        'action' => FESTIVITY_PLAY_CARD,
-        'playerId' => $playerId,
-        'optional' => $playerId !== $runnerPlayerId,
-      ];
-    }
-
-    $this->ctx->insertAsBrother(Engine::buildTree([
-      'children' => $nodes,
-    ]));
+    Festivity::setupRound($this->ctx, $round);
 
     $this->resolveAction(['automatic' => true]);
   }

@@ -2,15 +2,11 @@
 
 namespace Bga\Games\MollyHouse\Actions;
 
-use Bga\Games\MollyHouse\Managers\Pawns;
-use Bga\Games\MollyHouse\Managers\Players;
-use Bga\Games\MollyHouse\Managers\Sites;
-
-class EndOfWeekEncounterSociety extends \Bga\Games\MollyHouse\Models\AtomicAction
+class EndOfWeekUseDomino extends \Bga\Games\MollyHouse\Models\AtomicAction
 {
   public function getState()
   {
-    return ST_END_OF_WEEK_ENCOUNTER_SOCIETY;
+    return ST_END_OF_WEEK_USE_DOMINO;
   }
 
   // ....###....########...######....######.
@@ -22,24 +18,11 @@ class EndOfWeekEncounterSociety extends \Bga\Games\MollyHouse\Models\AtomicActio
   // .##.....##.##.....##..######....######.
 
 
-  public function argsEndOfWeekEncounterSociety()
+  public function argsEndOfWeekUseDomino()
   {
     $info = $this->ctx->getInfo();
-    $activePlayerIds = $info['activePlayerIds'];
 
-    $players = Players::getAll();
-
-    $data = [
-      '_private' => [],
-    ];
-
-    foreach ($activePlayerIds as $playerId) {
-      $encounterTokens = $players[$playerId]->getEncounterTokens();
-      $data['_private'][$playerId] = [
-        'encounterTokens' => $encounterTokens,
-        'site' => Sites::get(Pawns::getPlayerPawn($players[$playerId])->getLocation())
-      ];
-    }
+    $data = [];
 
     return $data;
   }
@@ -60,15 +43,15 @@ class EndOfWeekEncounterSociety extends \Bga\Games\MollyHouse\Models\AtomicActio
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function actPassEndOfWeekEncounterSociety()
+  public function actPassEndOfWeekUseDomino()
   {
     $player = self::getPlayer();
     $this->resolveAction(PASS);
   }
 
-  public function actEndOfWeekEncounterSociety($args)
+  public function actEndOfWeekUseDomino($args)
   {
-    self::checkAction('actEndOfWeekEncounterSociety');
+    self::checkAction('actEndOfWeekUseDomino');
 
 
 

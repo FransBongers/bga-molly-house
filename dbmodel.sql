@@ -100,3 +100,14 @@ CREATE TABLE IF NOT EXISTS `encounter_tokens` (
   `color` varchar(32) NOT NULL,
   PRIMARY KEY (`token_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+CREATE TABLE IF NOT EXISTS `players_extra` (
+  `player_extra_id` varchar(32) NOT NULL,
+  `player_extra_location` varchar(32) NOT NULL,
+  `player_extra_state` int(10) DEFAULT 0,
+  `cubes_cups` int(10) DEFAULT 0,
+  `cubes_pentacles` int(10) DEFAULT 0,
+  `cubes_fans` int(10) DEFAULT 0,
+  `cubes_hearts` int(10) DEFAULT 0,
+  `draw_tokens` int(10) DEFAULT 0,
+  PRIMARY KEY (`player_extra_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;
