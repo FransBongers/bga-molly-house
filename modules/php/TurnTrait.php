@@ -49,6 +49,9 @@ trait TurnTrait
           'action' => END_OF_WEEK_REVEAL_THREATS,
         ],
         [
+          'action' => END_OF_WEEK_DOMINO_CHECK,
+        ],
+        [
           'action' => END_OF_WEEK_SOCIETY_INVESTIGATES,
         ],
         [

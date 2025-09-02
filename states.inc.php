@@ -477,6 +477,10 @@ $machinestates = [
         ->possibleactions([
             'actEndOfWeekEncounterSociety',
             'actPass',
+            'actTakeAtomicAction',
+        ])
+        ->transitions([
+            'next' => ST_RESOLVE_STACK
         ])
         ->build(),
 
@@ -561,7 +565,7 @@ $machinestates = [
 
     ST_END_OF_WEEK_USE_DOMINO => GameStateBuilder::create()
         ->name(END_OF_WEEK_USE_DOMINO)
-        ->description(clienttranslate('${actplayer} may use a Domino'))
+        ->description(clienttranslate('${actplayer} may play Domino'))
         ->descriptionmyturn(clienttranslate('${you}'))
         ->type(StateType::MULTIPLE_ACTIVE_PLAYER)
         ->args('argsAtomicAction')

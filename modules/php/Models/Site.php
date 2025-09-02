@@ -53,6 +53,16 @@ class Site extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     return $this->raidedOrDangerous === 1;
   }
 
+  public function isOpen()
+  {
+    return !$this->isRaided();
+  }
+
+  public function isMollyHouse()
+  {
+    return in_array($this->getId(), MOLLY_HOUSES);
+  }
+
   public function generateEvidence($amount)
   {
     $this->incEvidence($amount);

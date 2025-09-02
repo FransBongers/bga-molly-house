@@ -84,6 +84,7 @@ class MollyHouse implements Game {
     ExamineGossipPile,
     PlaceEncounterToken,
     FestivityUseBottleOfGin,
+    EndOfWeekUseDomino,
   };
 
   constructor() {

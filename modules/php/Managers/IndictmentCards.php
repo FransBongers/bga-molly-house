@@ -15,7 +15,9 @@ class IndictmentCards extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
 {
   protected static $table = 'indictment_cards';
   protected static $prefix = 'card_';
-  protected static $customFields = [];
+  protected static $customFields = [
+    'indictment_id'
+  ];
   protected static $autoremovePrefix = false;
   protected static $autoreshuffle = false;
   protected static $autoIncrement = false;
@@ -28,8 +30,9 @@ class IndictmentCards extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
   public static function getCardInstance($id, $data = null)
   {
     // $prefix = self::getClassPrefix($id);
+    $indictmentId = $data['indictment_id'];
 
-    $className = "\Bga\Games\MollyHouse\Cards\IndictmentCards\\$id";
+    $className = "\Bga\Games\MollyHouse\Cards\IndictmentCards\\$indictmentId";
     return new $className($data);
   }
 
@@ -64,12 +67,15 @@ class IndictmentCards extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
 
     $cards = [];
 
-    foreach ($indicmentCardIds as $index => $cId) {
-      $card = self::getCardInstance($cId);
+    shuffle($indicmentCardIds);
 
-      $cards[$cId] = [
-        'id' => $cId,
+    foreach ($indicmentCardIds as $index => $indictmentId) {
+      $card = self::getCardInstance('', ['indictment_id' => $indictmentId]);
+      $cardId = 'card_' . ($index + 1);
+      $cards[$cardId] = [
+        'id' => $cardId,
         'location' => Locations::indicmentDeck($card->getType()),
+        'indictment_id' => $indictmentId
       ];
     }
 

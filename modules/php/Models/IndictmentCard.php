@@ -9,7 +9,7 @@ class IndictmentCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   protected $primary = 'card_id';
   protected $location;
   protected $state;
-  protected $used;
+  protected $indictmentId;
 
   protected $acquittedResult;
   protected $convictedValue;
@@ -17,10 +17,12 @@ class IndictmentCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   protected $text;
   protected $type;
 
+
   protected $attributes = [
     'id' => ['card_id', 'str'],
     'location' => 'card_location',
     'state' => ['card_state', 'int'],
+    'indictmentId' => ['indictment_id', 'str']
   ];
 
   protected $staticAttributes = [
@@ -41,5 +43,4 @@ class IndictmentCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     // Notifications::log('getUiData card model', []);
     return $this->jsonSerialize(); // Static datas are already in js file
   }
-
 }

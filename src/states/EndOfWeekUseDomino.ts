@@ -1,38 +1,33 @@
-interface OnEnteringEndOfWeekEncounterSocietyArgs extends CommonStateArgs {
-  _private: {
-    encounterTokens: MohoEncounterToken[];
-    site: MohoSiteBase;
-  };
-}
+interface OnEnteringEndOfWeekUseDominoArgs extends CommonStateArgs {}
 
-class EndOfWeekEncounterSociety implements State {
-  private static instance: EndOfWeekEncounterSociety;
-  private args: OnEnteringEndOfWeekEncounterSocietyArgs;
+class EndOfWeekUseDomino implements State {
+  private static instance: EndOfWeekUseDomino;
+  private args: OnEnteringEndOfWeekUseDominoArgs;
 
   constructor(private game: GameAlias) {}
 
   public static create(game: GameAlias) {
-    EndOfWeekEncounterSociety.instance = new EndOfWeekEncounterSociety(game);
+    EndOfWeekUseDomino.instance = new EndOfWeekUseDomino(game);
   }
 
   public static getInstance() {
-    return EndOfWeekEncounterSociety.instance;
+    return EndOfWeekUseDomino.instance;
   }
 
-  onEnteringState(args: OnEnteringEndOfWeekEncounterSocietyArgs) {
-    debug('Entering EndOfWeekEncounterSociety state');
+  onEnteringState(args: OnEnteringEndOfWeekUseDominoArgs) {
+    debug('Entering EndOfWeekUseDomino state');
     this.args = args;
 
     this.updateInterfaceInitialStep();
   }
 
   onLeavingState() {
-    debug('Leaving EndOfWeekEncounterSociety state');
+    debug('Leaving EndOfWeekUseDomino state');
   }
 
   setDescription(
     activePlayerIds: number,
-    args: OnEnteringEndOfWeekEncounterSocietyArgs
+    args: OnEnteringEndOfWeekUseDominoArgs
   ) {}
 
   //  .####.##....##.########.########.########..########....###.....######..########
@@ -54,35 +49,42 @@ class EndOfWeekEncounterSociety implements State {
   private updateInterfaceInitialStep() {
     this.game.clearPossible();
 
-    updatePageTitle(_('${you} must place an encounter token on ${siteName}'), {
-      siteName: getSite(this.args._private.site).name,
+    updatePageTitle(
+      _(
+        '${you} may play Domino to ignore your reputation during Society Investigates'
+      ),
+      {}
+    );
+
+    addPrimaryActionButton({
+      id: 'play_btn',
+      text: _('Play Domino'),
+      callback: () => {
+        performAction('actEndOfWeekUseDomino', {
+          playDomino: true,
+        });
+      },
     });
 
-    setSelected(Board.getInstance().ui.selectBoxes[this.args._private.site.id]);
-
-    this.args._private.encounterTokens.forEach((token) => {
-      onClick(token.id, () => {
-        this.updateInterfaceConfirm(token);
-      });
+    addSecondaryActionButton({
+      id: 'do_not_play_btn',
+      text: _('Do not play Domino'),
+      callback: () => {
+        performAction('actEndOfWeekUseDomino', {
+          playDomino: false,
+        });
+      },
     });
   }
 
-  private updateInterfaceConfirm(token: MohoEncounterToken) {
+  private updateInterfaceConfirm() {
     clearPossible();
 
-    updatePageTitle(_('Place ${tkn_encounterToken} on ${siteName}'), {
-      tkn_encounterToken: [token.color, token.type].join(':'),
-      siteName: getSite(this.args._private.site).name,
-    });
-    setSelected(Board.getInstance().ui.selectBoxes[this.args._private.site.id]);
+    updatePageTitle(_('Confirm action'));
 
     addConfirmButton(() => {
-      performAction('actEndOfWeekEncounterSociety', {
-        encounterTokenId: token.id,
-      });
+      performAction('actEndOfWeekUseDomino', {});
     });
-
-    addCancelButton();
   }
 
   //  .##.....##.########.####.##.......####.########.##....##

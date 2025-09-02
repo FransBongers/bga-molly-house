@@ -50,6 +50,8 @@ class EndOfWeekDominoCheck extends \Bga\Games\MollyHouse\Models\AtomicAction
       }
     }
 
+    Notifications::log('dominosInPlay', $dominosInPlay);
+
     if (count($dominosInPlay) > 0) {
       $action = [
         'action' => END_OF_WEEK_USE_DOMINO,

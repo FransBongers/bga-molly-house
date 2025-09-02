@@ -31,6 +31,7 @@ class Globals extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Manager
     'playerCubes' => 'obj',
     'festivity' => 'obj',
     'playersWhoGainedIndictment' => 'obj',
+    'playersWhoPlayedDomino' => 'obj',
   ];
 
   protected static $table = 'global_variables';
@@ -158,7 +159,8 @@ class Globals extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Manager
   {
     self::setCommunityJoy(0);
     self::setCurrentWeek(1);
- 
+    self::setPlayersWhoPlayedDomino([]);
+    self::setPlayersWhoGainedIndictment([]);
   }
 
 

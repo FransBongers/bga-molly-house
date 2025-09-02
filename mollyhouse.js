@@ -4534,6 +4534,7 @@ var MollyHouse = (function () {
             ExamineGossipPile: ExamineGossipPile,
             PlaceEncounterToken: PlaceEncounterToken,
             FestivityUseBottleOfGin: FestivityUseBottleOfGin,
+            EndOfWeekUseDomino: EndOfWeekUseDomino,
         };
         console.log('MollyHouse constructor');
     }
@@ -7221,15 +7222,31 @@ var EndOfWeekEncounterSociety = (function () {
     };
     EndOfWeekEncounterSociety.prototype.setDescription = function (activePlayerIds, args) { };
     EndOfWeekEncounterSociety.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
         this.game.clearPossible();
-        updatePageTitle(_('${you} must place an encounter token'), {});
-    };
-    EndOfWeekEncounterSociety.prototype.updateInterfaceConfirm = function () {
-        clearPossible();
-        updatePageTitle(_('Confirm action'));
-        addConfirmButton(function () {
-            performAction('actEndOfWeekEncounterSociety', {});
+        updatePageTitle(_('${you} must place an encounter token on ${siteName}'), {
+            siteName: getSite(this.args._private.site).name,
         });
+        setSelected(Board.getInstance().ui.selectBoxes[this.args._private.site.id]);
+        this.args._private.encounterTokens.forEach(function (token) {
+            onClick(token.id, function () {
+                _this.updateInterfaceConfirm(token);
+            });
+        });
+    };
+    EndOfWeekEncounterSociety.prototype.updateInterfaceConfirm = function (token) {
+        clearPossible();
+        updatePageTitle(_('Place ${tkn_encounterToken} on ${siteName}'), {
+            tkn_encounterToken: [token.color, token.type].join(':'),
+            siteName: getSite(this.args._private.site).name,
+        });
+        setSelected(Board.getInstance().ui.selectBoxes[this.args._private.site.id]);
+        addConfirmButton(function () {
+            performAction('actEndOfWeekEncounterSociety', {
+                encounterTokenId: token.id,
+            });
+        });
+        addCancelButton();
     };
     return EndOfWeekEncounterSociety;
 }());
@@ -7436,4 +7453,54 @@ var FestivityUseBottleOfGin = (function () {
         });
     };
     return FestivityUseBottleOfGin;
+}());
+var EndOfWeekUseDomino = (function () {
+    function EndOfWeekUseDomino(game) {
+        this.game = game;
+    }
+    EndOfWeekUseDomino.create = function (game) {
+        EndOfWeekUseDomino.instance = new EndOfWeekUseDomino(game);
+    };
+    EndOfWeekUseDomino.getInstance = function () {
+        return EndOfWeekUseDomino.instance;
+    };
+    EndOfWeekUseDomino.prototype.onEnteringState = function (args) {
+        debug('Entering EndOfWeekUseDomino state');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    EndOfWeekUseDomino.prototype.onLeavingState = function () {
+        debug('Leaving EndOfWeekUseDomino state');
+    };
+    EndOfWeekUseDomino.prototype.setDescription = function (activePlayerIds, args) { };
+    EndOfWeekUseDomino.prototype.updateInterfaceInitialStep = function () {
+        this.game.clearPossible();
+        updatePageTitle(_('${you} may play Domino to ignore your reputation during Society Investigates'), {});
+        addPrimaryActionButton({
+            id: 'play_btn',
+            text: _('Play Domino'),
+            callback: function () {
+                performAction('actEndOfWeekUseDomino', {
+                    playDomino: true,
+                });
+            },
+        });
+        addSecondaryActionButton({
+            id: 'do_not_play_btn',
+            text: _('Do not play Domino'),
+            callback: function () {
+                performAction('actEndOfWeekUseDomino', {
+                    playDomino: false,
+                });
+            },
+        });
+    };
+    EndOfWeekUseDomino.prototype.updateInterfaceConfirm = function () {
+        clearPossible();
+        updatePageTitle(_('Confirm action'));
+        addConfirmButton(function () {
+            performAction('actEndOfWeekUseDomino', {});
+        });
+    };
+    return EndOfWeekUseDomino;
 }());

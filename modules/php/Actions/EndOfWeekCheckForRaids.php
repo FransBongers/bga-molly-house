@@ -85,6 +85,7 @@ class EndOfWeekCheckForRaids extends \Bga\Games\MollyHouse\Models\AtomicAction
   {
     $players = Players::getAll();
     $suit = $mollyHouse->getSuit();
+    $playersWhoPlayedDomino = Globals::getPlayersWhoPlayedDomino();
 
     /**
      * $reputationPlayers
@@ -93,6 +94,10 @@ class EndOfWeekCheckForRaids extends \Bga\Games\MollyHouse\Models\AtomicAction
      */
     $reputationPlayers = [];
     foreach ($players as $player) {
+      if (in_array($player->getId(), $playersWhoPlayedDomino)) {
+        continue;
+      }
+
       $reputation = $player->getReputationForSuit($suit);
       if ($reputation === 0) {
         continue;

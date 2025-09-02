@@ -71,6 +71,9 @@ class FestivityUseBottleOfGin extends \Bga\Games\MollyHouse\Models\AtomicAction
       $this->handleSkip($game, $player);
     }
 
+    if (count($game->gamestate->getActivePlayerList()) > 0) {
+      return;
+    }
     $this->resolveAction([], true);
   }
 

@@ -107,6 +107,7 @@
     "src/states/DiscardItem.ts",
     "src/states/ExamineGossipPile.ts",
     "src/states/PlaceEncounterToken.ts",
-    "src/states/FestivityUseBottleOfGin.ts"
+    "src/states/FestivityUseBottleOfGin.ts",
+    "src/states/EndOfWeekUseDomino.ts"
   ]
 }

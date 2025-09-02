@@ -32,9 +32,12 @@ trait DebugTrait
 
   function debug_test()
   {
+    Notifications::log('closest', AtomicActions::get(END_OF_WEEK_ENCOUNTER_SOCIETY)->getClosestOpenMollyHouse(CANNON_STREET));
 
-    Sites::get(MOTHER_CLAPS)->setEvidence(6);
-    Sites::get(MISS_MUFFS)->setEvidence(6);
+    // IndictmentCards::setupNewGame();
+
+    // Sites::get(MOTHER_CLAPS)->setEvidence(6);
+    // Sites::get(MISS_MUFFS)->setEvidence(6);
     // Sites::get(SUKEY_BEVELLS)->setEvidence(6);
 
     // AtomicActions::get(END_OF_WEEK_CHECK_FOR_RAIDS)->gainIndictments(Sites::get(MOTHER_CLAPS));
