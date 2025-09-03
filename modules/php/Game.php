@@ -234,13 +234,11 @@ class Game extends \Bga\GameFramework\Table
      */
     public function upgradeTableDb($from_version)
     {
-              if ($from_version <= 2509012241)
-              {
-                   // ! important ! Use `DBPREFIX_<table_name>` for all tables
-        
-                   $sql = "ALTER TABLE `DBPREFIX_indictment_cards` ADD COLUMN `indictment_id` VARCHAR(32) NOT NULL;";
-                   $this->applyDbUpgradeToAllDB( $sql );
-              }
+        // if ($from_version <= 2509012241) {
+        //     // ! important ! Use `DBPREFIX_<table_name>` for all tables
+        //     $sql = "ALTER TABLE `DBPREFIX_indictment_cards` ADD `indictment_id` VARCHAR(32) NOT NULL;";
+        //     $this->applyDbUpgradeToAllDB($sql);
+        // }
         //
         //       if ($from_version <= 1405061421)
         //       {

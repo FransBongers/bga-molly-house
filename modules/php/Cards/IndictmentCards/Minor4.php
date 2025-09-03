@@ -7,7 +7,6 @@ class Minor4 extends \Bga\Games\MollyHouse\Cards\IndictmentCards\MinorIndictment
   public function __construct($row)
   {
     parent::__construct($row);
-    $this->id = 'Minor4';
     $this->convictedValue = 5;
     $this->acquittedResult = -2;
     $this->convictedResult = -4;

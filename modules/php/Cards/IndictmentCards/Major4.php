@@ -7,7 +7,6 @@ class Major4 extends \Bga\Games\MollyHouse\Cards\IndictmentCards\MajorIndictment
   public function __construct($row)
   {
     parent::__construct($row);
-    $this->id = 'Major4';
     $this->convictedValue = 5;
     $this->acquittedResult = -4;
     $this->convictedResult = -10;
