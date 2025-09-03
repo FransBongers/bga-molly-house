@@ -301,4 +301,15 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   {
     return PlayersExtra::get($this->getId());
   }
+
+  public function getDressOfSuit($suit)
+  {
+    $items = $this->getItems();
+
+    return Utils::array_find(
+      $items,
+      fn($pItem) =>
+      $pItem->isDress() && $pItem->getSuit() === $suit
+    );
+  }
 }

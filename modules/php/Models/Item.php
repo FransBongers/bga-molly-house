@@ -14,8 +14,10 @@ class Item extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   protected $state;
   protected $type;
 
+
   protected $name = '';
   protected $text;
+  protected $suit = null;
 
   protected $attributes = [
     'id' => ['item_id', 'str'],
@@ -27,6 +29,7 @@ class Item extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   protected $staticAttributes = [
     'name',
     'text',
+    'suit',
   ];
   public function jsonSerialize(): array
   {
@@ -63,5 +66,10 @@ class Item extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
       throw new \feException("ERROR_027");
     }
     return intval(explode('_', $this->getLocation())[2]);
+  }
+
+  public function isDress()
+  {
+    return false;
   }
 }

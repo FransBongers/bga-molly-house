@@ -126,6 +126,16 @@ class FestivityPlayCard extends \Bga\Games\MollyHouse\Models\AtomicAction
 
     Notifications::festivityPlayCard($player, $card);
 
+    $dress = $player->getDressOfSuit($card->getSuit());
+    if ($dress !== null) {
+      $action = [
+        'action' => FESTIVITY_PLAY_DRESS,
+        'playerId' => $playerId,
+        'itemId' => $dress->getId()
+      ];
+      $this->ctx->insertAsBrother(Engine::buildTree($action));
+    }
+
     $this->resolveAction([]);
   }
 

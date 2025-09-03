@@ -11,6 +11,7 @@ class Festivity {
   private game: GameAlias;
   public stocks: Record<string | number, LineStock<ViceCard>> = {};
   private festivityContainer: HTMLElement;
+  public playedDresses: LineStock<MohoItem>;
 
   constructor(game: GameAlias) {
     this.game = game;
@@ -44,6 +45,7 @@ class Festivity {
         }
       });
     });
+    this.playedDresses.addCards(gamedatas.festivity.playedDresses.map(getItem));
   }
 
   public addRogueValue(cardId: string, value: number) {
@@ -100,22 +102,24 @@ class Festivity {
         CARD_SCALE,
         getFestivityPosition(playerCount, index)
       );
-      // const playerId = player.getPlayerId();
-      // const playerElt = document.createElement('div');
-      // playerElt.id = `moho-festivity-${playerId}`;
-      // this.festivityContainer.appendChild(playerElt);
-      // playerElt.classList.add('moho-festivity-stock');
-
-      // this.stocks[playerId] = new LineStock<ViceCard>(
-      //   this.game.viceCardManager,
-      //   playerElt,
-      //   {
-      //     gap: '0px',
-      //   }
-      // );
     });
 
-    // Board.getInstance().ui.containers.board.appendChild(elt);
+    const dressesContainerElt = document.createElement('div');
+    dressesContainerElt.id = 'moho-festivity-played-dresses';
+    this.festivityContainer.appendChild(dressesContainerElt);
+    setAbsolutePosition(
+      dressesContainerElt,
+      CARD_SCALE,
+      getFestivityPosition(playerCount, PLAYED_DRESSES)
+    );
+    this.playedDresses = new LineStock<MohoItem>(
+      this.game.itemManager,
+      dressesContainerElt,
+      {
+        gap: '0px',
+        wrap: 'nowrap',
+      }
+    );
   }
 
   private createPlayerElement(playerId: string | number, playerName: string) {

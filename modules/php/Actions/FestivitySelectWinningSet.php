@@ -40,10 +40,12 @@ class FestivitySelectWinningSet extends \Bga\Games\MollyHouse\Models\AtomicActio
 
     $data = [
       // 'cardsInSet'
-      'options' => $this->getOptions($info['ranking'], $sets),
+      'options' => $this->getOptions($sets),
       'numberToSelect' => 4,
       'ranking' => $info['ranking'],
+      'sets' => $sets
     ];
+
 
     return $data;
   }
@@ -119,7 +121,7 @@ class FestivitySelectWinningSet extends \Bga\Games\MollyHouse\Models\AtomicActio
     Festivity::setWinningSet(
       [
         'ranking' => $stateArgs['ranking'],
-        'cardsIds' => Utils::returnIds($winningSet),
+        'cardIds' => Utils::returnIds($winningSet),
       ]
     );
 
@@ -135,48 +137,46 @@ class FestivitySelectWinningSet extends \Bga\Games\MollyHouse\Models\AtomicActio
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-  private function getSurpriseBallOptions($sets)
+  // Here set is an object with values and arrays of cards
+  private function getSurpriseBallOptions($cardSet)
   {
     $cards = ViceCards::getAll();
 
-    $options = [];
-    foreach ($sets as $set) {
-      $suit = $cards[$set[array_keys($set)[0]]]->getSuit();
-      $setOptions = [
-        'suit' => $suit,
-        'selected' => [],
-        'choices' => [],
-      ];
-      foreach ($set as $value => $cardIds) {
-        // only one card for value, no choice
-        if (count($cardIds) === 1) {
-          $setOptions['selected'][] = $cards[$cardIds[0]];
-        } else {
-          $setOptions['choices'][] = [
-            'value' => $value,
-            'cards' => $this->returnCards($cards, $cardIds),
-            'numberToSelect' => 1,
-          ];
-        }
-      }
-      $options[] = $setOptions;
-    }
+    $suit = $cards[$cardSet[array_keys($cardSet)[0]]]->getSuit();
+    // TODO update this to work with multiple suits, or differentiate for suprise ball with dresses, probably better
 
-    return $options;
+    $setOptions = [
+      'suit' => $suit,
+      'selected' => [],
+      'choices' => [],
+      'ranking' => SURPRISE_BALL,
+    ];
+    foreach ($cardSet as $value => $cardIds) {
+      // only one card for value, no choice
+      if (count($cardIds) === 1) {
+        $setOptions['selected'][] = $cards[$cardIds[0]];
+      } else {
+        $setOptions['choices'][] = [
+          'value' => $value,
+          'cards' => $this->returnCards($cards, $cardIds),
+          'numberToSelect' => 1,
+        ];
+      }
+    }
+    return $setOptions;
   }
 
-  private function getChristeningOptions($sets)
+  private function getChristeningOptions($cardSet)
   {
     $cards = ViceCards::getAll();
-
-    $options = [];
 
     $setOptions = [
       'selected' => [],
       'choices' => [],
+      'ranking' => CHRISTENING,
     ];
 
-    foreach ($sets[0] as $value => $cardIds) {
+    foreach ($cardSet as $value => $cardIds) {
 
       if ($value === 'queens' && count($cardIds) > 1) {
         $setOptions['choices'][] = [
@@ -196,23 +196,22 @@ class FestivitySelectWinningSet extends \Bga\Games\MollyHouse\Models\AtomicActio
         $setOptions['selected'] = array_merge($setOptions['selected'], $this->returnCards($cards, $cardIds));
       }
     }
-    $options[] = $setOptions;
 
-    return $options;
+
+    return $setOptions;
   }
 
-  private function getDanceOptions($sets)
+  private function getDanceOptions($cardSet)
   {
     $cards = ViceCards::getAll();
-
-    $options = [];
 
     $setOptions = [
       'selected' => [],
       'choices' => [],
+      'ranking' => DANCE,
     ];
 
-    foreach ($sets[0] as $value => $cardIds) {
+    foreach ($cardSet as $value => $cardIds) {
       if (count($cardIds) > 1) {
         $setOptions['choices'][] = [
           'value' => $value,
@@ -223,30 +222,27 @@ class FestivitySelectWinningSet extends \Bga\Games\MollyHouse\Models\AtomicActio
         $setOptions['selected'][] = $cards[$cardIds[0]];
       }
     }
-    $options[] = $setOptions;
-
-    return $options;
+    return $setOptions;
   }
 
-  private function getQuietGatheringOptions($sets)
+  private function getSurpriseBallWithDressOptions($cardSet)
   {
     $cards = ViceCards::getAll();
-
-    $options = [];
 
     $setOptions = [
       'selected' => [],
       'choices' => [],
+      'ranking' => SURPRISE_BALL_WITH_DRESS,
     ];
 
-    $set = $sets[0];
+    $cardValues = array_keys($cardSet);
+    // sort in descending order
+    usort($cardValues, function ($a, $b) {
+      return $b <=> $a;
+    });
 
-    if (isset($set['constables'])) {
-      $setOptions['selected'] = $this->returnCards($cards, $set['constables']);
-      unset($set['constables']);
-    }
-
-    foreach ($set as $value => $cardIds) {
+    foreach ($cardValues as $value) {
+      $cardIds = $cardSet[$value];
       if (count($setOptions['selected']) + count($cardIds) <= 4) {
         $setOptions['selected'] = array_merge($setOptions['selected'], $this->returnCards($cards, $cardIds));
         continue;
@@ -257,9 +253,36 @@ class FestivitySelectWinningSet extends \Bga\Games\MollyHouse\Models\AtomicActio
         'numberToSelect' => 4 - count($setOptions['selected']),
       ];
     }
-    $options[] = $setOptions;
+    return $setOptions;
+  }
 
-    return $options;
+  private function getQuietGatheringOptions($cardSet)
+  {
+    $cards = ViceCards::getAll();
+
+    $setOptions = [
+      'selected' => [],
+      'choices' => [],
+      'ranking' => QUIET_GATHERING,
+    ];
+
+    if (isset($cardSet['constables'])) {
+      $setOptions['selected'] = $this->returnCards($cards, $cardSet['constables']);
+      unset($cardSet['constables']);
+    }
+
+    foreach ($cardSet as $value => $cardIds) {
+      if (count($setOptions['selected']) + count($cardIds) <= 4) {
+        $setOptions['selected'] = array_merge($setOptions['selected'], $this->returnCards($cards, $cardIds));
+        continue;
+      }
+      $setOptions['choices'][] = [
+        'value' => $value,
+        'cards' => $this->returnCards($cards, $cardIds),
+        'numberToSelect' => 4 - count($setOptions['selected']),
+      ];
+    }
+    return $setOptions;
   }
 
   private function returnCards($cards, $cardIds)
@@ -269,17 +292,28 @@ class FestivitySelectWinningSet extends \Bga\Games\MollyHouse\Models\AtomicActio
     }, $cardIds);
   }
 
-  private function getOptions($ranking, $sets)
+  private function getOptions($sets)
+  {
+    $options = [];
+    foreach ($sets as $set) {
+      $options[] = $this->getOptionsForSet($set['ranking'], $set['cardIds']);
+    }
+    return $options;
+  }
+
+  private function getOptionsForSet($ranking, $cards)
   {
     switch ($ranking) {
       case SURPRISE_BALL:
-        return $this->getSurpriseBallOptions($sets);
+        return $this->getSurpriseBallOptions($cards);
+      case SURPRISE_BALL_WITH_DRESS:
+        return $this->getSurpriseBallWithDressOptions($cards);
       case CHRISTENING:
-        return $this->getChristeningOptions($sets);
+        return $this->getChristeningOptions($cards);
       case DANCE:
-        return $this->getDanceOptions($sets);
+        return $this->getDanceOptions($cards);
       case QUIET_GATHERING:
-        return $this->getQuietGatheringOptions($sets);
+        return $this->getQuietGatheringOptions($cards);
       default:
         throw new \feException("ERROR_014");
     }

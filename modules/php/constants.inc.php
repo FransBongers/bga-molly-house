@@ -76,6 +76,7 @@ const ST_FESTIVITY_USE_BOTTLE_OF_GIN = 41;
 const ST_END_OF_WEEK_DOMINO_CHECK = 42;
 const ST_END_OF_WEEK_USE_DOMINO = 43;
 const ST_PLAY_VIOLIN = 44;
+const ST_FESTIVITY_PLAY_DRESS = 45;
 const ST_PLACE_ENCOUNTER_TOKEN = 39;
 
 /**
@@ -124,6 +125,7 @@ const FESTIVITY_USE_BOTTLE_OF_GIN = 'FestivityUseBottleOfGin';
 const END_OF_WEEK_DOMINO_CHECK = 'EndOfWeekDominoCheck';
 const END_OF_WEEK_USE_DOMINO = 'EndOfWeekUseDomino';
 const PLAY_VIOLIN = 'PlayViolin';
+const FESTIVITY_PLAY_DRESS = 'FestivityPlayDress';
 const PLACE_ENCOUNTER_TOKEN = 'PlaceEncounterToken';
 
 const USE_ITEM = 'UseItem';
@@ -145,6 +147,9 @@ const CUPS = 'cups';
 const PENTACLES = 'pentacles';
 const FANS = 'fans';
 const HEARTS = 'hearts';
+const DRESSES = 'dresses';
+
+const PLAYED_DRESSES = 'playedDresses';
 
 /**
  * Market locations
@@ -251,6 +256,7 @@ const ITEM_DISTRIBUTIION = [
 ];
 
 const SURPRISE_BALL = 'SurpriseBall';
+const SURPRISE_BALL_WITH_DRESS = 'SurpriseBallWithDress';
 const CHRISTENING = 'Christening';
 const DANCE = 'Dance';
 const QUIET_GATHERING = 'QuietGathering';

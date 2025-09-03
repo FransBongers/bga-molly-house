@@ -32,7 +32,9 @@ trait DebugTrait
 
   function debug_test()
   {
-    Notifications::log('closest', AtomicActions::get(END_OF_WEEK_ENCOUNTER_SOCIETY)->getClosestOpenMollyHouse(CANNON_STREET));
+    // Notifications::log('closest', ->getBestSetOfCards(Festivity::getPlayedCards()));
+
+    AtomicActions::get(FESTIVITY_DETERMINE_WINNING_SET)->stFestivityDetermineWinningSet();
 
     // IndictmentCards::setupNewGame();
 

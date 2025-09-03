@@ -44,8 +44,8 @@ class MollyHouse implements Game {
   //  private alwaysFixTopActionsMaximum: number;
   //  public tooltipsToMap: [tooltipId: number, card_id: string][] = [];
   public _connections: unknown[];
-   public _displayedTooltip = null;
-   public _dragndropMode = false; // Not used but present in boiler plate code
+  public _displayedTooltip = null;
+  public _dragndropMode = false; // Not used but present in boiler plate code
   public _helpMode = false; // Use to implement help mode
   private _last_notif = null;
   //  public _last_tooltip_id = 0;
@@ -85,6 +85,7 @@ class MollyHouse implements Game {
     PlaceEncounterToken,
     FestivityUseBottleOfGin,
     EndOfWeekUseDomino,
+    FestivityPlayDress,
   };
 
   constructor() {
@@ -158,9 +159,13 @@ class MollyHouse implements Game {
 
     Object.values(this.states).forEach((state) => state.create(this));
 
-    PlayerManager.getInstance().getPlayers().forEach((player) => {
-      player.updateEncounterTokens(this.gamedatas.players[player.getPlayerId()]);
-    });
+    PlayerManager.getInstance()
+      .getPlayers()
+      .forEach((player) => {
+        player.updateEncounterTokens(
+          this.gamedatas.players[player.getPlayerId()]
+        );
+      });
 
     NotificationManager.getInstance().setupNotifications();
 
@@ -306,15 +311,15 @@ class MollyHouse implements Game {
   // 	 );
   //  }
 
-   closeCurrentTooltip() {
-  	 if (!this._helpMode) return;
+  closeCurrentTooltip() {
+    if (!this._helpMode) return;
 
-  	 if (this._displayedTooltip == null) return;
-  	 else {
-  		 this._displayedTooltip.close();
-  		 this._displayedTooltip = null;
-  	 }
-   }
+    if (this._displayedTooltip == null) return;
+    else {
+      this._displayedTooltip.close();
+      this._displayedTooltip = null;
+    }
+  }
 
   destroy(elem: HTMLElement) {
     if (this.framework().tooltips[elem.id]) {

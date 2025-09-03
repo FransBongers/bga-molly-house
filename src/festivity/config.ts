@@ -12,11 +12,15 @@ const FESTIVITY_CONFIG_TWO_PLAYERS: Record<string | number, AbsolutePosition> =
       top: 10,
       left: 530,
     },
+    [PLAYED_DRESSES]: {
+      top: 250,
+      left: 305,
+    },
   };
 
 const getFestivityPosition = (
   playerCount: number,
-  position: 'community' | number
+  position: 'playedDresses' | 'community' | number
 ) => {
   switch (playerCount) {
     case 2:

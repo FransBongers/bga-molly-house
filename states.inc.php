@@ -563,6 +563,19 @@ $machinestates = [
         ->action('stAtomicAction')
         ->build(),
 
+    ST_FESTIVITY_PLAY_DRESS => GameStateBuilder::create()
+        ->name(FESTIVITY_PLAY_DRESS)
+        ->description(clienttranslate('${actplayer} may play a Dress'))
+        ->descriptionmyturn(clienttranslate('${you}'))
+        ->type(StateType::ACTIVE_PLAYER)
+        ->args('argsAtomicAction')
+        ->possibleactions([
+            'actFestivityPlayDress',
+            'actPassFestivityPlayDress',
+            'actTakeAtomicAction',
+        ])
+        ->build(),
+
     ST_END_OF_WEEK_USE_DOMINO => GameStateBuilder::create()
         ->name(END_OF_WEEK_USE_DOMINO)
         ->description(clienttranslate('${actplayer} may play Domino'))

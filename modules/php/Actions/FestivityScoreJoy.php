@@ -40,7 +40,7 @@ class FestivityScoreJoy extends \Bga\Games\MollyHouse\Models\AtomicAction
 
     $cardsPerPlayer = [];
     $foiledThreats = [];
-    $cards = ViceCards::getMany($winningSet['cardsIds']);
+    $cards = ViceCards::getMany($winningSet['cardIds']);
 
     foreach ($cards as $card) {
       if ($card->isThreat()) {

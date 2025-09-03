@@ -151,6 +151,10 @@ interface NotifPlacePawn extends NotifWithPlayerArgs {
   pawn: MohoPawn;
 }
 
+interface NotifPlayDress extends NotifWithPlayerArgs {
+  item: MohoItemBase;
+}
+
 interface NotifRefillMarket extends NotifWithPlayerArgs {
   movedCards: ViceCardBase[];
   addedCards: ViceCardBase[];

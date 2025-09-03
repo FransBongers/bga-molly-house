@@ -645,6 +645,16 @@ class Notifications
     self::notifyAll('phase', $text, $args);
   }
 
+  public static function playDress($player, $item)
+  {
+    self::notifyAll('playDress', clienttranslate('${player_name} plays their ${tkn_boldText_dress}'), [
+      'player' => $player,
+      'item' => $item,
+      'tkn_boldText_dress' => $item->getName(),
+      'i18n' => ['tkn_boldText_dress'],
+    ]);
+  }
+
   public static function refillMarket($player, $movedCards, $addedCards)
   {
     $args = [

@@ -40,6 +40,7 @@ var CRUISE = 'Cruise';
 var SHOP = 'Shop';
 var THROW_FESTIVITY = 'ThrowFestivity';
 var USE_ITEM = 'UseItem';
+var PLAYED_DRESSES = 'playedDresses';
 var RED = 'red';
 var DESIRE = 'desire';
 var THREAT = 'threat';
@@ -2841,6 +2842,7 @@ var NotificationManager = (function () {
             'placeEncounterToken',
             'placeEncounterTokenPrivate',
             'placePawn',
+            'playDress',
             'refillMarket',
             'revealEncounterToken',
             'rollDice',
@@ -3459,6 +3461,21 @@ var NotificationManager = (function () {
                             })];
                     case 1:
                         _b.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_playDress = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var item;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        item = notif.args.item;
+                        return [4, Festivity.getInstance().playedDresses.addCard(getItem(item))];
+                    case 1:
+                        _a.sent();
                         return [2];
                 }
             });
@@ -4535,6 +4552,7 @@ var MollyHouse = (function () {
             PlaceEncounterToken: PlaceEncounterToken,
             FestivityUseBottleOfGin: FestivityUseBottleOfGin,
             EndOfWeekUseDomino: EndOfWeekUseDomino,
+            FestivityPlayDress: FestivityPlayDress,
         };
         console.log('MollyHouse constructor');
     }
@@ -4578,7 +4596,9 @@ var MollyHouse = (function () {
             Hand.create(this);
         }
         Object.values(this.states).forEach(function (state) { return state.create(_this); });
-        PlayerManager.getInstance().getPlayers().forEach(function (player) {
+        PlayerManager.getInstance()
+            .getPlayers()
+            .forEach(function (player) {
             player.updateEncounterTokens(_this.gamedatas.players[player.getPlayerId()]);
         });
         NotificationManager.getInstance().setupNotifications();
@@ -5597,6 +5617,10 @@ var FESTIVITY_CONFIG_TWO_PLAYERS = (_a = {},
         top: 10,
         left: 530,
     },
+    _a[PLAYED_DRESSES] = {
+        top: 250,
+        left: 305,
+    },
     _a);
 var getFestivityPosition = function (playerCount, position) {
     switch (playerCount) {
@@ -5640,6 +5664,7 @@ var Festivity = (function () {
                 }
             });
         });
+        this.playedDresses.addCards(gamedatas.festivity.playedDresses.map(getItem));
     };
     Festivity.prototype.addRogueValue = function (cardId, value) {
         var frontElt = document.getElementById("".concat(cardId, "-front"));
@@ -5671,6 +5696,14 @@ var Festivity = (function () {
                 tkn_playerName: playerManager.getPlayer(playerId).getName(),
             }));
             setAbsolutePosition(containerElt, CARD_SCALE, getFestivityPosition(playerCount, index));
+        });
+        var dressesContainerElt = document.createElement('div');
+        dressesContainerElt.id = 'moho-festivity-played-dresses';
+        this.festivityContainer.appendChild(dressesContainerElt);
+        setAbsolutePosition(dressesContainerElt, CARD_SCALE, getFestivityPosition(playerCount, PLAYED_DRESSES));
+        this.playedDresses = new LineStock(this.game.itemManager, dressesContainerElt, {
+            gap: '0px',
+            wrap: 'nowrap',
         });
     };
     Festivity.prototype.createPlayerElement = function (playerId, playerName) {
@@ -7503,4 +7536,48 @@ var EndOfWeekUseDomino = (function () {
         });
     };
     return EndOfWeekUseDomino;
+}());
+var FestivityPlayDress = (function () {
+    function FestivityPlayDress(game) {
+        this.game = game;
+    }
+    FestivityPlayDress.create = function (game) {
+        FestivityPlayDress.instance = new FestivityPlayDress(game);
+    };
+    FestivityPlayDress.getInstance = function () {
+        return FestivityPlayDress.instance;
+    };
+    FestivityPlayDress.prototype.onEnteringState = function (args) {
+        debug('Entering FestivityPlayDress state');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    FestivityPlayDress.prototype.onLeavingState = function () {
+        debug('Leaving Indulge state');
+    };
+    FestivityPlayDress.prototype.setDescription = function (activePlayerIds, args) { };
+    FestivityPlayDress.prototype.updateInterfaceInitialStep = function () {
+        this.game.clearPossible();
+        updatePageTitle(_('${you} may play your matching Dress'), {});
+        setSelected(this.args.dress.id);
+        addPrimaryActionButton({
+            id: 'play_btn',
+            text: _('Play Dress'),
+            callback: function () {
+                performAction('actFestivityPlayDress', {
+                    playDress: true,
+                });
+            },
+        });
+        addSecondaryActionButton({
+            id: 'do_not_play_btn',
+            text: _('Do not play Dress'),
+            callback: function () {
+                performAction('actFestivityPlayDress', {
+                    playDress: false,
+                });
+            },
+        });
+    };
+    return FestivityPlayDress;
 }());

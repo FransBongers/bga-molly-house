@@ -8,6 +8,7 @@ use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 use Bga\Games\MollyHouse\Managers\Festivity;
+use Bga\Games\MollyHouse\Managers\Items;
 use Bga\Games\MollyHouse\Managers\Players;
 use Bga\Games\MollyHouse\Managers\ViceCards;
 
@@ -36,20 +37,20 @@ class FestivityDetermineWinningSet extends \Bga\Games\MollyHouse\Models\AtomicAc
 
   public function stFestivityDetermineWinningSet()
   {
-    $result = $this->getBestSetOfCards(
+    $results = $this->getBestSetOfCards(
       Festivity::getPlayedCards()
     );
-    $sets = $result['sets'];
-    $ranking = $result['ranking'];
+    // $sets = $result['sets'];
+    // $ranking = $result['ranking'];
 
     // If multiple sets of same rank can be made, runner decides
-    $multipeSets = count($sets) > 1 || $this->getCountOfValues($sets[0]) > 4;
+    $multipeSets = count($results) > 1 || $this->getCountOfValues($results[0]['cards']) > 4;
     if ($multipeSets) {
       $action = [
         'action' => FESTIVITY_SELECT_WINNING_SET,
         'playerId' => Festivity::get()['runner'],
-        'ranking' => $ranking,
-        'sets' => $this->returnSetsWithIds($sets)
+        'ranking' => $results[0]['ranking'] === SURPRISE_BALL_WITH_DRESS ? SURPRISE_BALL : $results[0]['ranking'],
+        'sets' => $this->returnSetsWithIds($results)
       ];
       $this->ctx->insertAsBrother(Engine::buildTree($action));
       $this->resolveAction(['automatic' => true]);
@@ -57,7 +58,7 @@ class FestivityDetermineWinningSet extends \Bga\Games\MollyHouse\Models\AtomicAc
     }
 
     $winningSet = [];
-    foreach ($sets[0] as $value => $cards) {
+    foreach ($results[0]['cards'] as $value => $cards) {
       foreach ($cards as $card) {
         $winningSet[] = $card;
       }
@@ -70,12 +71,10 @@ class FestivityDetermineWinningSet extends \Bga\Games\MollyHouse\Models\AtomicAc
     Notifications::festivityWinningSet($winningSet);
     Festivity::setWinningSet(
       [
-        'ranking' => $ranking,
-        'cardsIds' => Utils::returnIds($winningSet),
+        'ranking' => $results[0]['ranking'],
+        'cardIds' => Utils::returnIds($winningSet),
       ]
     );
-
-
 
     $this->resolveAction(['automatic' => true]);
   }
@@ -90,14 +89,17 @@ class FestivityDetermineWinningSet extends \Bga\Games\MollyHouse\Models\AtomicAc
 
   private function returnSetsWithIds($sets)
   {
-
-
     return array_map(function ($set) {
-      $setWithIds = [];
-      foreach ($set as $value => $cards) {
-        $setWithIds[$value] = Utils::returnIds($cards);
+      $cards = $set['cards'];
+      $ranking = $set['ranking'];
+      $cardIds = [];
+      foreach ($cards as $value => $cards) {
+        $cardIds[$value] = Utils::returnIds($cards);
       }
-      return $setWithIds;
+      return [
+        'ranking' => $ranking,
+        'cardIds' => $cardIds
+      ];
     }, $sets);
   }
 
@@ -116,10 +118,7 @@ class FestivityDetermineWinningSet extends \Bga\Games\MollyHouse\Models\AtomicAc
     foreach (FESTIVITIES as $rank) {
       $sets = $this->getSetsForRank($rank, $cards);
       if (count($sets) > 0) {
-        return [
-          'ranking' => $rank,
-          'sets' => $sets
-        ];
+        return $sets;
       }
     }
   }
@@ -142,25 +141,40 @@ class FestivityDetermineWinningSet extends \Bga\Games\MollyHouse\Models\AtomicAc
   }
 
   // Surprise Ball: Four desire cards of the same suit in sequential order.
-  private function getSupriseBallSets($cards)
+  public function getSupriseBallSets($cards)
   {
+    $playedDresses = array_map(function ($item) {
+      return $item->getSuit();
+    }, Items::getInLocation(PLAYED_DRESSES)->toArray());
+    // TODO: return whether is is Suprise Ball with Dresses or not
     // TODO: dresses
     $cardsSortedBySuit = [
       CUPS => [],
       PENTACLES => [],
       FANS => [],
       HEARTS => [],
+      DRESSES => [],
     ];
 
     // Don't check Queens, Jacks or Constables
     foreach ($cards as $card) {
+      $suit = $card->getSuit();
       if ($card->isDesire() || $card->isRogue()) {
-        $cardsSortedBySuit[$card->getSuit()][] = $card;
+        $cardsSortedBySuit[$suit][] = $card;
+      }
+      if (in_array($suit, $playedDresses)) {
+        $cardsSortedBySuit[DRESSES][] = $card;
       }
     }
 
     $sets = [];
     foreach ($cardsSortedBySuit as $suit => $suitCards) {
+      if ($suit === DRESSES && count($suitCards) >= 4) {
+        $set = $this->getHighestValueDresses($suitCards);
+        $sets[] = $this->createSetData(SURPRISE_BALL_WITH_DRESS, $set);
+        continue;
+      }
+
       if (count($suitCards) < 4) {
         continue;
       }
@@ -172,7 +186,7 @@ class FestivityDetermineWinningSet extends \Bga\Games\MollyHouse\Models\AtomicAc
 
       if (count($set) === 4) {
         // Valid set
-        $sets[] = $set;
+        $sets[] = $this->createSetData(SURPRISE_BALL, $set);
       }
     }
 
@@ -181,14 +195,14 @@ class FestivityDetermineWinningSet extends \Bga\Games\MollyHouse\Models\AtomicAc
       return $sets;
     }
     foreach ($sets as $i => $set) {
-      $highestIndexSuit = max(array_keys($set));
+      $highestIndexSuit = max(array_keys($set['cards']));
       if ($highestIndexSuit > $highestIndex) {
         $highestIndex = $highestIndexSuit;
       }
     }
 
     $sets = Utils::filter($sets, function ($set) use ($highestIndex) {
-      return max(array_keys($set)) === $highestIndex;
+      return max(array_keys($set['cards'])) === $highestIndex;
     });
 
     return $sets;
@@ -229,7 +243,7 @@ class FestivityDetermineWinningSet extends \Bga\Games\MollyHouse\Models\AtomicAc
     foreach ($cardValues as $value) {
       if (count($desireCards[$value]) >= 3) {
         $set[$value] = $desireCards[$value];
-        return [$set];
+        return [$this->createSetData(CHRISTENING, $set)];
       }
     }
 
@@ -262,9 +276,43 @@ class FestivityDetermineWinningSet extends \Bga\Games\MollyHouse\Models\AtomicAc
       foreach ($desireCardsInSequentialOrder as $value => $cards) {
         $set[$value] = $cards;
       }
-      return [$set];
+      return [
+        $this->createSetData(DANCE, $set)
+      ];
     }
     return [];
+  }
+
+  public function getHighestValueDresses($cards)
+  {
+    $desireCards = [];
+    foreach ($cards as $card) {
+
+      $value = $card->getFestivityValue();
+      if (!isset($desireCards[$value])) {
+        $desireCards[$value] = [];
+      }
+
+      $desireCards[$value][] = $card;
+    }
+
+    $cardValues = array_keys($desireCards);
+
+    // sort in ascending order
+    usort($cardValues, function ($a, $b) {
+      return $b <=> $a;
+    });
+
+    $set = [];
+
+    foreach ($cardValues as $value) {
+      $set[$value] = $desireCards[$value];
+      if ($this->getCountOfValues($set) >= 4) {
+        return $set;
+      }
+    }
+
+    return $set;
   }
 
   public function getCountOfValues($input)
@@ -302,7 +350,9 @@ class FestivityDetermineWinningSet extends \Bga\Games\MollyHouse\Models\AtomicAc
 
     // Four constables were played
     if ($this->getCountOfValues($set) >= 4) {
-      return [$set];
+      return [
+        $this->createSetData(QUIET_GATHERING, $set)
+      ];
     }
 
     $cardValues = array_keys($desireCards);
@@ -315,11 +365,11 @@ class FestivityDetermineWinningSet extends \Bga\Games\MollyHouse\Models\AtomicAc
     foreach ($cardValues as $value) {
       $set[$value] = $desireCards[$value];
       if ($this->getCountOfValues($set) >= 4) {
-        return [$set];
+        return [$this->createSetData(QUIET_GATHERING, $set)];
       }
     }
-    $this->getCountOfValues($set);
-    return [$set];
+    // $this->getCountOfValues($set);
+    return [$this->createSetData(QUIET_GATHERING, $set)];
   }
 
   /**
@@ -376,5 +426,13 @@ class FestivityDetermineWinningSet extends \Bga\Games\MollyHouse\Models\AtomicAc
     }
 
     return [];
+  }
+
+  private function createSetData($ranking, $cards)
+  {
+    return [
+      'ranking' => $ranking,
+      'cards' => $cards
+    ];
   }
 }

@@ -52,6 +52,7 @@ class AtomicActions
   END_OF_WEEK_DOMINO_CHECK => END_OF_WEEK_DOMINO_CHECK,
   END_OF_WEEK_USE_DOMINO => END_OF_WEEK_USE_DOMINO,
   PLAY_VIOLIN => PLAY_VIOLIN,
+  FESTIVITY_PLAY_DRESS => FESTIVITY_PLAY_DRESS,
   ];
 
   public static function get($actionId, $ctx = null)

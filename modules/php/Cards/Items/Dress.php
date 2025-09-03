@@ -13,4 +13,9 @@ class Dress extends \Bga\Games\MollyHouse\Models\Item
       'Play alongside a matching card in a festivity. The Surprise Ball is now considered four desires that match any played dress.'
     );
   }
+
+  public function isDress()
+  {
+    return true;
+  }
 }

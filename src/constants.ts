@@ -13,6 +13,7 @@ const SHOP = 'Shop';
 const THROW_FESTIVITY = 'ThrowFestivity';
 const USE_ITEM = 'UseItem';
 
+const PLAYED_DRESSES = 'playedDresses';
 /**
  * Colors
  */

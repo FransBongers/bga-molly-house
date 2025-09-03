@@ -1802,6 +1802,9 @@ span[style*="color:#fcd873"] {
 #moho-festivity #moho-festivity-community span {
   color: ivory;
 }
+#moho-festivity #moho-festivity-played-dresses {
+  position: absolute;
+}
 
 #moho-festivity[data-active=false] {
   display: none;

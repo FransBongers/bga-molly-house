@@ -2,6 +2,7 @@ interface SetChoice {
   value: number | 'Q' | 'J';
   numberToSelect: number;
   cards: ViceCardBase[];
+  ranking: string;
 }
 
 interface SetOpions {

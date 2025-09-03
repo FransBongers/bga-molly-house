@@ -8,6 +8,7 @@ use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 use Bga\Games\MollyHouse\Managers\Festivity;
+use Bga\Games\MollyHouse\Managers\Items;
 use Bga\Games\MollyHouse\Managers\Players;
 use Bga\Games\MollyHouse\Managers\ViceCards;
 
@@ -38,6 +39,11 @@ class FestivityCleanup extends \Bga\Games\MollyHouse\Models\AtomicAction
 
   public function stFestivityCleanup()
   {
+    $playedDresses = Items::getInLocation(PLAYED_DRESSES);
+    foreach ($playedDresses as $dress) {
+      $dress->discard();
+    }
+
     Festivity::end();
 
     Notifications::festivityEnd();

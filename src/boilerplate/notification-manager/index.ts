@@ -95,6 +95,7 @@ class NotificationManager {
       'placeEncounterToken',
       'placeEncounterTokenPrivate',
       'placePawn',
+      'playDress',
       'refillMarket',
       'revealEncounterToken',
       'rollDice',
@@ -537,6 +538,12 @@ class NotificationManager {
       pawn,
       from,
     });
+  }
+
+  async notif_playDress(notif: Notif<NotifPlayDress>) {
+    const { item } = notif.args;
+
+    await Festivity.getInstance().playedDresses.addCard(getItem(item));
   }
 
   async notif_placeEncounterToken(notif: Notif<NotifPlaceEncounterToken>) {

@@ -64,6 +64,7 @@ class Festivity
       'passed' => $festivity['passed'],
       // 'round' => $festivity['round'],
       'communityCards' => ViceCards::getInLocationOrdered(Locations::festivity(COMMUNITY))->toArray(),
+      'playedDresses' => Items::getInLocation(PLAYED_DRESSES)->toArray(),
     ];
 
     return $gamedatas;
