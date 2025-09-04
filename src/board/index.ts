@@ -34,7 +34,7 @@ class Board {
   };
   public sites: Record<string, MohoPawn[]> = {};
 
-  public joyMarkerStocks: Record<number, LineStock<MohoJoyMarker>> = {};
+  public joyMarkerStocks: Record<string, LineStock<MohoJoyMarker>> = {};
   public shops: Record<string, LineStock<MohoItem>> = {};
 
   constructor(game: GameAlias) {
@@ -149,7 +149,7 @@ class Board {
         {
           gap: '0px',
           direction: 'row',
-          wrap: 'nowrap'
+          wrap: 'nowrap',
         }
       );
     });
@@ -211,7 +211,7 @@ class Board {
       elt.classList.add('moho-joy-marker-stock');
       setAbsolutePosition(elt, BOARD_SCALE, JOY_MARKER_POSITIONS[i]);
       this.ui.containers.markers.appendChild(elt);
-      this.joyMarkerStocks[i] = new LineStock<MohoJoyMarker>(
+      this.joyMarkerStocks[`${i}`] = new LineStock<MohoJoyMarker>(
         this.game.joyMarkerManager,
         elt,
         {
@@ -373,7 +373,9 @@ class Board {
 
   updateEncounterTokens(gamedatas: GamedatasAlias) {
     gamedatas.encounterTokens.forEach((token) => {
-      this.encounterTokens[token.location].addCard(token);
+      if (this.encounterTokens[token.location]) {
+        this.encounterTokens[token.location].addCard(token);
+      }
     });
   }
 
@@ -392,18 +394,8 @@ class Board {
   }
 
   updateJoyMarkers(gamedatas: GamedatasAlias) {
-    this.joyMarkerStocks[gamedatas.communityJoy].addCard({
-      id: COMMUNITY_JOY_MARKER,
-      color: COMMUNITY_JOY_MARKER,
-      hanged: false,
-    });
-
-    Object.values(gamedatas.players).forEach((player) => {
-      this.joyMarkerStocks[player.score].addCard({
-        id: player.id,
-        color: HEX_COLOR_COLOR_MAP[player.color],
-        hanged: false,
-      });
+    Object.values(gamedatas.joyMarkers).forEach((joyMarker) => {
+      this.joyMarkerStocks[Number(joyMarker.location) % 40].addCard(joyMarker);
     });
   }
 

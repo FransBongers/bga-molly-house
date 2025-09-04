@@ -16,6 +16,7 @@ use Bga\Games\MollyHouse\Managers\EncounterTokens;
 use Bga\Games\MollyHouse\Managers\Festivity;
 use Bga\Games\MollyHouse\Managers\IndictmentCards;
 use Bga\Games\MollyHouse\Managers\Items;
+use Bga\Games\MollyHouse\Managers\JoyMarkers;
 use Bga\Games\MollyHouse\Managers\Pawns;
 use Bga\Games\MollyHouse\Managers\PlayerCubes;
 use Bga\Games\MollyHouse\Managers\Players;
@@ -34,7 +35,9 @@ trait DebugTrait
   {
     // Notifications::log('closest', ->getBestSetOfCards(Festivity::getPlayedCards()));
 
-    AtomicActions::get(FESTIVITY_DETERMINE_WINNING_SET)->stFestivityDetermineWinningSet();
+    JoyMarkers::setupNewGame();
+
+    // AtomicActions::get(FESTIVITY_DETERMINE_WINNING_SET)->stFestivityDetermineWinningSet();
 
     // IndictmentCards::setupNewGame();
 

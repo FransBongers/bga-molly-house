@@ -43,3 +43,5 @@ const GREEN = 'green';
 const PINK = 'pink';
 const PURPLE = 'purple';
 const YELLOW = 'yellow';
+
+const BLACK = 'black';

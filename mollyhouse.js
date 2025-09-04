@@ -3420,29 +3420,21 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_loseJoy = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, amount, total;
+            var _a, playerId, amount, total, joyMarker;
             return __generator(this, function (_b) {
-                _a = notif.args, playerId = _a.playerId, amount = _a.amount, total = _a.total;
+                _a = notif.args, playerId = _a.playerId, amount = _a.amount, total = _a.total, joyMarker = _a.joyMarker;
                 incScore(playerId, -amount);
-                Board.getInstance().joyMarkerStocks[total % 40].addCard({
-                    id: "".concat(playerId),
-                    hanged: false,
-                    color: HEX_COLOR_COLOR_MAP[this.getPlayer(playerId).getColor()],
-                });
+                Board.getInstance().joyMarkerStocks[total % 40].addCard(joyMarker);
                 return [2];
             });
         });
     };
     NotificationManager.prototype.notif_loseJoyCommunity = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, joyDecrease, joyTotal;
+            var _a, joyTotal, joyMarker;
             return __generator(this, function (_b) {
-                _a = notif.args, joyDecrease = _a.joyDecrease, joyTotal = _a.joyTotal;
-                Board.getInstance().joyMarkerStocks[joyTotal % 40].addCard({
-                    id: COMMUNITY_JOY_MARKER,
-                    hanged: false,
-                    color: COMMUNITY_JOY_MARKER,
-                });
+                _a = notif.args, joyTotal = _a.joyTotal, joyMarker = _a.joyMarker;
+                Board.getInstance().joyMarkerStocks[joyTotal % 40].addCard(joyMarker);
                 return [2];
             });
         });
@@ -3605,17 +3597,13 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_scoreBonusJoy = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, amount, total;
+            var _a, playerId, amount, total, joyMarker;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _a = notif.args, playerId = _a.playerId, amount = _a.amount, total = _a.total;
+                        _a = notif.args, playerId = _a.playerId, amount = _a.amount, total = _a.total, joyMarker = _a.joyMarker;
                         incScore(playerId, amount);
-                        return [4, Board.getInstance().joyMarkerStocks[total % 40].addCard({
-                                id: "".concat(playerId),
-                                hanged: false,
-                                color: HEX_COLOR_COLOR_MAP[this.getPlayer(playerId).getColor()],
-                            })];
+                        return [4, Board.getInstance().joyMarkerStocks[total % 40].addCard(joyMarker)];
                     case 1:
                         _b.sent();
                         return [2];
@@ -3625,17 +3613,13 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_scoreJoy = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, amount, total;
+            var _a, playerId, amount, total, joyMarker;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _a = notif.args, playerId = _a.playerId, amount = _a.amount, total = _a.total;
+                        _a = notif.args, playerId = _a.playerId, amount = _a.amount, total = _a.total, joyMarker = _a.joyMarker;
                         incScore(playerId, amount);
-                        return [4, Board.getInstance().joyMarkerStocks[total % 40].addCard({
-                                id: "".concat(playerId),
-                                hanged: false,
-                                color: HEX_COLOR_COLOR_MAP[this.getPlayer(playerId).getColor()],
-                            })];
+                        return [4, Board.getInstance().joyMarkerStocks[total % 40].addCard(joyMarker)];
                     case 1:
                         _b.sent();
                         return [2];
@@ -3645,18 +3629,14 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_scoreJoyCommunity = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var joyTotal;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var _a, joyTotal, joyMarker;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        joyTotal = notif.args.joyTotal;
-                        return [4, Board.getInstance().joyMarkerStocks[joyTotal % 40].addCard({
-                                id: COMMUNITY_JOY_MARKER,
-                                hanged: false,
-                                color: COMMUNITY_JOY_MARKER,
-                            })];
+                        _a = notif.args, joyTotal = _a.joyTotal, joyMarker = _a.joyMarker;
+                        return [4, Board.getInstance().joyMarkerStocks[joyTotal % 40].addCard(joyMarker)];
                     case 1:
-                        _a.sent();
+                        _b.sent();
                         return [2];
                 }
             });
@@ -5108,7 +5088,7 @@ var Board = (function () {
             _this.encounterTokens[siteId] = new LineStock(_this.game.encounterTokenManager, elt, {
                 gap: '0px',
                 direction: 'row',
-                wrap: 'nowrap'
+                wrap: 'nowrap',
             });
         });
         this.updateEncounterTokens(gamedatas);
@@ -5157,7 +5137,7 @@ var Board = (function () {
             elt.classList.add('moho-joy-marker-stock');
             setAbsolutePosition(elt, BOARD_SCALE, JOY_MARKER_POSITIONS[i]);
             this.ui.containers.markers.appendChild(elt);
-            this.joyMarkerStocks[i] = new LineStock(this.game.joyMarkerManager, elt, {
+            this.joyMarkerStocks["".concat(i)] = new LineStock(this.game.joyMarkerManager, elt, {
                 gap: '0',
                 direction: 'row',
             });
@@ -5284,7 +5264,9 @@ var Board = (function () {
     Board.prototype.updateEncounterTokens = function (gamedatas) {
         var _this = this;
         gamedatas.encounterTokens.forEach(function (token) {
-            _this.encounterTokens[token.location].addCard(token);
+            if (_this.encounterTokens[token.location]) {
+                _this.encounterTokens[token.location].addCard(token);
+            }
         });
     };
     Board.prototype.updateEvidenceCounters = function (gamedatas) { };
@@ -5301,17 +5283,8 @@ var Board = (function () {
     };
     Board.prototype.updateJoyMarkers = function (gamedatas) {
         var _this = this;
-        this.joyMarkerStocks[gamedatas.communityJoy].addCard({
-            id: COMMUNITY_JOY_MARKER,
-            color: COMMUNITY_JOY_MARKER,
-            hanged: false,
-        });
-        Object.values(gamedatas.players).forEach(function (player) {
-            _this.joyMarkerStocks[player.score].addCard({
-                id: player.id,
-                color: HEX_COLOR_COLOR_MAP[player.color],
-                hanged: false,
-            });
+        Object.values(gamedatas.joyMarkers).forEach(function (joyMarker) {
+            _this.joyMarkerStocks[Number(joyMarker.location) % 40].addCard(joyMarker);
         });
     };
     Board.prototype.updateWeekMarker = function (gamedatas) {

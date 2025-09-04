@@ -48,16 +48,17 @@ class EndOfWeekCheckGameEnd extends \Bga\Games\MollyHouse\Models\AtomicAction
   public function stEndOfWeekCheckGameEnd()
   {
     if ($this->communityInfiltration()) {
+      $this->triggerGameEnd(COMMUNITY_INFILTRATION);
       return;
     }
 
     if ($this->communitySurvival()) {
-
+      $this->triggerGameEnd(COMMUNITY_SURVIVAL);
       return;
     }
 
     if ($this->communityAtrophy()) {
-
+      $this->triggerGameEnd(COMMUNITY_ATROPHY);
       return;
     }
 
@@ -80,6 +81,30 @@ class EndOfWeekCheckGameEnd extends \Bga\Games\MollyHouse\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
+
+  private function triggerGameEnd($gameEndType)
+  {
+
+    $gameEndTypeText = [
+      COMMUNITY_INFILTRATION => clienttranslate('Community Infiltration'),
+      COMMUNITY_SURVIVAL => clienttranslate('Community Survival'),
+      COMMUNITY_ATROPHY => clienttranslate('Community Atrophy'),
+    ];
+
+    Notifications::message(clienttranslate('The game ends with ${tkn_boldText_gameEndType}'), [
+      'tkn_boldText_gameEndType' => $gameEndTypeText[$gameEndType],
+    ]);
+
+
+
+    $action = [
+      'action' => FINAL_SCORING,
+      'gameEndType' => $gameEndType,
+    ];
+    $this->ctx->insertAsBrother(Engine::buildTree($action));
+
+    $this->resolveAction(['automatic' => true], true);
+  }
 
   private function checkEncounterTheSociety()
   {

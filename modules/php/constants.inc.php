@@ -77,6 +77,7 @@ const ST_END_OF_WEEK_DOMINO_CHECK = 42;
 const ST_END_OF_WEEK_USE_DOMINO = 43;
 const ST_PLAY_VIOLIN = 44;
 const ST_FESTIVITY_PLAY_DRESS = 45;
+const ST_FINAL_SCORING = 46;
 const ST_PLACE_ENCOUNTER_TOKEN = 39;
 
 /**
@@ -126,6 +127,7 @@ const END_OF_WEEK_DOMINO_CHECK = 'EndOfWeekDominoCheck';
 const END_OF_WEEK_USE_DOMINO = 'EndOfWeekUseDomino';
 const PLAY_VIOLIN = 'PlayViolin';
 const FESTIVITY_PLAY_DRESS = 'FestivityPlayDress';
+const FINAL_SCORING = 'FinalScoring';
 const PLACE_ENCOUNTER_TOKEN = 'PlaceEncounterToken';
 
 const USE_ITEM = 'UseItem';
@@ -285,3 +287,7 @@ const MOVE_WEEK_MARKER = 'moveWeekMarker';
  */
 const LOYAL = 'Loyal';
 const INFORMER = 'Informer';
+
+const COMMUNITY_INFILTRATION = 'CommunityInfiltration';
+const COMMUNITY_SURVIVAL = 'CommunitySurvival';
+const COMMUNITY_ATROPHY = 'CommunityAtrophy';

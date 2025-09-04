@@ -58,6 +58,7 @@ interface MollyHouseGamedatas extends Gamedatas {
   safePile: ViceCardBase[];
   sites: Record<string, MohoSiteBase>;
   topOfSafePile: ViceCardBase | null;
+  joyMarkers: Record<string, MohoJoyMarker>;
 }
 
 interface MollyHousePlayerData extends BgaPlayer {
@@ -93,7 +94,6 @@ interface MohoItemStatic extends GamePiece {
 
 type MohoItem = MohoItemBase & MohoItemStatic;
 
-
 interface MohoPawn extends GamePiece {
   color: string;
 }
@@ -103,8 +103,7 @@ interface MohoSiteBase extends GamePiece {
   evidence: number;
 }
 
-interface MohoJoyMarker {
-  id: string;
+interface MohoJoyMarker extends GamePiece {
   color: string;
   hanged: boolean;
 }

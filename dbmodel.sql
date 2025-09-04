@@ -112,3 +112,11 @@ CREATE TABLE IF NOT EXISTS `players_extra` (
   `draw_tokens` int(10) DEFAULT 0,
   PRIMARY KEY (`player_extra_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
+CREATE TABLE IF NOT EXISTS `joy_markers` (
+  `joy_marker_id` varchar(32) NOT NULL,
+  `joy_marker_location` varchar(32) NOT NULL,
+  `joy_marker_state` int(10) DEFAULT 0,
+  `hanged` tinyint(1) DEFAULT 0,
+  `color` varchar(32) NOT NULL,
+  PRIMARY KEY (`joy_marker_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8;

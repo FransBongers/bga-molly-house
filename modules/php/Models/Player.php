@@ -10,6 +10,7 @@ use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 use Bga\Games\MollyHouse\Managers\EncounterTokens;
 use Bga\Games\MollyHouse\Managers\IndictmentCards;
 use Bga\Games\MollyHouse\Managers\Items;
+use Bga\Games\MollyHouse\Managers\JoyMarkers;
 use Bga\Games\MollyHouse\Managers\Pawns;
 use Bga\Games\MollyHouse\Managers\PlayerCubes;
 use Bga\Games\MollyHouse\Managers\PlayersExtra;
@@ -226,15 +227,21 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
 
     $total = $this->incScore(-$amount);
 
+    $joyMarker = JoyMarkers::getForPlayer($this);
+    $joyMarker->setLocation($total);
+
     if ($amount > 0) {
-      Notifications::loseJoy($this, $amount, $total);
+      Notifications::loseJoy($this, $amount, $total, $joyMarker);
     }
   }
 
   public function scoreJoy($amount)
   {
     $total = $this->incScore($amount);
-    Notifications::scoreJoy($this, $amount, $total);
+
+    $joyMarker = JoyMarkers::getForPlayer($this);
+    $joyMarker->setLocation($total);
+    Notifications::scoreJoy($this, $amount, $total, $joyMarker);
   }
 
 

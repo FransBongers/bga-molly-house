@@ -34,6 +34,7 @@ use Bga\Games\MollyHouse\Managers\EncounterTokens;
 use Bga\Games\MollyHouse\Managers\Festivity;
 use Bga\Games\MollyHouse\Managers\IndictmentCards;
 use Bga\Games\MollyHouse\Managers\Items;
+use Bga\Games\MollyHouse\Managers\JoyMarkers;
 use Bga\Games\MollyHouse\Managers\Pawns;
 use Bga\Games\MollyHouse\Managers\PlayerCubes;
 use Bga\Games\MollyHouse\Managers\Players;
@@ -234,19 +235,32 @@ class Game extends \Bga\GameFramework\Table
      */
     public function upgradeTableDb($from_version)
     {
+
+
+
+
         // if ($from_version <= 2509012241) {
         //     // ! important ! Use `DBPREFIX_<table_name>` for all tables
         //     $sql = "ALTER TABLE `DBPREFIX_indictment_cards` ADD `indictment_id` VARCHAR(32) NOT NULL;";
         //     $this->applyDbUpgradeToAllDB($sql);
         // }
         //
-        //       if ($from_version <= 1405061421)
-        //       {
-        //            // ! important ! Use `DBPREFIX_<table_name>` for all tables
-        //
-        //            $sql = "CREATE TABLE `DBPREFIX_xxxxxxx` ....";
-        //            $this->applyDbUpgradeToAllDB( $sql );
-        //       }
+            //   if ($from_version <= 2509042011)
+            //   {
+            //         $sql = ""
+            //             . "CREATE TABLE IF NOT EXISTS `DBPREFIX_joy_markers` ("
+            //             . "`joy_marker_id` varchar(32) NOT NULL,"
+            //             . "`joy_marker_location` varchar(32) NOT NULL,"
+            //             . "`joy_marker_state` int(10) DEFAULT 0,"
+            //             . "`hanged` int(10) DEFAULT 0,"
+            //             . "`color` varchar(32) NOT NULL,"
+            //             . "PRIMARY KEY (`joy_marker_id`)"
+            //             . ") ENGINE = InnoDB DEFAULT CHARSET = utf8;";
+            //         self::applyDbUpgradeToAllDB($sql);
+
+            //         JoyMarkers::setupNewGame();
+
+            //   }
     }
 
     /*
@@ -284,6 +298,7 @@ class Game extends \Bga\GameFramework\Table
             'sites' => Sites::getAll(),
             'topOfSafePile' => ViceCards::getTopOf(SAFE_PILE),
             'encounterTokens' => EncounterTokens::getEncounterTokensOnMollyHouses($playerId),
+            'joyMarkers' => JoyMarkers::getAll(),
         ];
 
 
@@ -308,8 +323,7 @@ class Game extends \Bga\GameFramework\Table
         IndictmentCards::setupNewGame($players, $options);
         Items::setupNewGame($players, $options);
         EncounterTokens::setupNewGame($players, $options);
-        $players = Players::getAll()->toArray();
-
+        JoyMarkers::setupNewGame($players, $options);
 
 
         $this->activeNextPlayer();

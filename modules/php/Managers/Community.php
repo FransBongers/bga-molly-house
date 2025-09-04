@@ -12,15 +12,19 @@ class Community
   public static function scoreJoy($joyIncrease)
   {
     $joyTotal = Globals::incCommunityJoy($joyIncrease);
-    Notifications::scoreJoyCommunity($joyIncrease, $joyTotal);
+    $joyMarker = JoyMarkers::getForPlayerId(COMMUNITY);
+    $joyMarker->setLocation($joyTotal);
+    Notifications::scoreJoyCommunity($joyIncrease, $joyTotal, $joyMarker);
   }
 
   public static function loseJoy($joyDecrease)
   {
     $currentJoy = Globals::getCommunityJoy();
     $joyDecrease = $joyDecrease > $currentJoy ? $currentJoy : $joyDecrease;
-     $joyTotal = Globals::incCommunityJoy(-$joyDecrease);
-    Notifications::loseJoyCommunity($joyDecrease, $joyTotal);
+    $joyTotal = Globals::incCommunityJoy(-$joyDecrease);
+    $joyMarker = JoyMarkers::getForPlayerId(COMMUNITY);
+    $joyMarker->setLocation($joyTotal);
+    Notifications::loseJoyCommunity($joyDecrease, $joyTotal, $joyMarker);
   }
 
   public static function getJoy()

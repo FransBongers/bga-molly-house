@@ -128,11 +128,13 @@ interface NotifGainIndictmentPrivate extends NotifWithPlayerArgs {
 interface NotifLoseJoy extends NotifWithPlayerArgs {
   amount: number;
   total: number;
+  joyMarker: MohoJoyMarker;
 }
 
 interface NotifLoseJoyCommunity {
   joyDecrease: number;
   joyTotal: number;
+  joyMarker: MohoJoyMarker;
 }
 
 interface NotifMovePawn extends NotifWithPlayerArgs {
@@ -172,16 +174,19 @@ interface NotifRollDice extends NotifWithPlayerArgs {
 interface NotifScoreBonusJoy extends NotifWithPlayerArgs {
   amount: number;
   total: number;
+  joyMarker: MohoJoyMarker;
 }
 
 interface NotifScoreJoy extends NotifWithPlayerArgs {
   amount: number;
   total: number;
+  joyMarker: MohoJoyMarker;
 }
 
 interface NotifScoreJoyCommunity {
   joyIncrease: number;
   joyTotal: number;
+  joyMarker: MohoJoyMarker;
 }
 
 interface NotifSetupChooseCard extends NotifWithPlayerArgs {

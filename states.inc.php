@@ -353,6 +353,13 @@ $machinestates = [
         ->action('stAtomicAction')
         ->build(),
 
+    ST_FINAL_SCORING => GameStateBuilder::create()
+        ->name(FINAL_SCORING)
+        ->description('')
+        ->type(StateType::GAME)
+        ->action('stAtomicAction')
+        ->build(),
+
     ST_FESTIVITY_SCORE_JOY => GameStateBuilder::create()
         ->name(FESTIVITY_SCORE_JOY)
         ->description('')

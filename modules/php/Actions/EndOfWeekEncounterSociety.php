@@ -38,10 +38,12 @@ class EndOfWeekEncounterSociety extends \Bga\Games\MollyHouse\Models\AtomicActio
     ];
 
     foreach ($activePlayerIds as $playerId) {
+      $pawnLocation = Pawns::getPlayerPawn($players[$playerId])->getLocation();
+
       $encounterTokens = $players[$playerId]->getEncounterTokens();
       $data['_private'][$playerId] = [
         'encounterTokens' => $encounterTokens,
-        'site' => Sites::get(Pawns::getPlayerPawn($players[$playerId])->getLocation())
+        'site' => $this->getClosestOpenMollyHouse($pawnLocation),
       ];
     }
 

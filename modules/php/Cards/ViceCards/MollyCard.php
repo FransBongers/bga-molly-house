@@ -4,6 +4,7 @@ namespace Bga\Games\MollyHouse\Cards\ViceCards;
 
 use Bga\Games\MollyHouse\Boilerplate\Core\Globals;
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
+use Bga\Games\MollyHouse\Managers\JoyMarkers;
 
 class MollyCard extends \Bga\Games\MollyHouse\Models\ViceCard
 {
@@ -24,7 +25,9 @@ class MollyCard extends \Bga\Games\MollyHouse\Models\ViceCard
   {
     $bonusJoy = $this->bonusJoy;
     $totalScore = $player->incScore($bonusJoy);
-    Notifications::scoreBonusJoy($player, $bonusJoy, $this, $totalScore);
+    $joyMarker = JoyMarkers::getForPlayer($this);
+    $joyMarker->setLocation($totalScore);
+    Notifications::scoreBonusJoy($player, $bonusJoy, $this, $totalScore, $joyMarker);
   }
 
   public function scoreJoy($playerOrCommunity)
@@ -32,7 +35,9 @@ class MollyCard extends \Bga\Games\MollyHouse\Models\ViceCard
     if ($playerOrCommunity === COMMUNITY) {
       $joyIncrease = 4;
       $joyTotal = Globals::incCommunityJoy($joyIncrease);
-      Notifications::scoreJoyCommunity($joyIncrease, $joyTotal);
+      $joyMarker = JoyMarkers::getForPlayerId(COMMUNITY);
+      $joyMarker->setLocation($joyTotal);
+      Notifications::scoreJoyCommunity($joyIncrease, $joyTotal, $joyMarker);
       return;
     }
   }

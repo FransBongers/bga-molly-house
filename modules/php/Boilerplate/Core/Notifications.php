@@ -559,22 +559,24 @@ class Notifications
     ]);
   }
 
-  public static function loseJoy($player, $amount, $total)
+  public static function loseJoy($player, $amount, $total, $joyMarker)
   {
     self::notifyAll('loseJoy', clienttranslate('${player_name} loses ${tkn_boldText_amount} joy'), [
       'player' => $player,
       'amount' => $amount,
       'total' => $total,
+      'joyMarker' => $joyMarker->jsonSerialize(),
       'tkn_boldText_amount' => $amount,
       'i18n' => ['tkn_boldText_amount'],
     ]);
   }
 
-  public static function loseJoyCommunity($joyDecrease, $joyTotal)
+  public static function loseJoyCommunity($joyDecrease, $joyTotal, $joyMarker)
   {
     self::notifyAll('loseJoyCommunity', clienttranslate('The ${tkn_boldText_community} loses ${tkn_boldText_amount} joy'), [
       'joyDecrease' => $joyDecrease,
       'joyTotal' => $joyTotal,
+      'joyMarker' => $joyMarker->jsonSerialize(),
       'tkn_boldText_community' => clienttranslate('community'),
       'tkn_boldText_amount' => $joyDecrease,
       'i18n' => ['tkn_boldText_amount', 'tkn_boldText_community'],
@@ -705,12 +707,13 @@ class Notifications
     ]);
   }
 
-  public static function scoreBonusJoy($player, $amount, $card, $totalScore)
+  public static function scoreBonusJoy($player, $amount, $card, $totalScore, $joyMarker)
   {
     self::notifyAll('scoreBonusJoy', clienttranslate('${player_name} scores ${tkn_boldText_amount} bonus joy with ${tkn_boldText_cardValue} of ${tkn_suit}${tkn_viceCard}'), [
       'player' => $player,
       'amount' => $amount,
       'total' => $totalScore,
+      'joyMarker' => $joyMarker->jsonSerialize(),
       'tkn_boldText_amount' => $amount,
       'tkn_boldText_cardValue' => self::viceCardValueText($card->getDisplayValue()),
       'tkn_suit' => $card->getSuit(),
@@ -720,22 +723,24 @@ class Notifications
   }
 
 
-  public static function scoreJoy($player, $amount, $total)
+  public static function scoreJoy($player, $amount, $total, $joyMarker)
   {
     self::notifyAll('scoreJoy', clienttranslate('${player_name} scores ${tkn_boldText_amount} joy!'), [
       'player' => $player,
       'amount' => $amount,
       'total' => $total,
+      'joyMarker' => $joyMarker->jsonSerialize(),
       'tkn_boldText_amount' => $amount,
       'i18n' => ['tkn_boldText_amount'],
     ]);
   }
 
-  public static function scoreJoyCommunity($joyIncrease, $joyTotal)
+  public static function scoreJoyCommunity($joyIncrease, $joyTotal, $joyMarker)
   {
     self::notifyAll('scoreJoyCommunity', clienttranslate('The ${tkn_boldText_community} scores ${tkn_boldText_amount} joy!'), [
       'joyIncrease' => $joyIncrease,
       'joyTotal' => $joyTotal,
+      'joyMarker' => $joyMarker->jsonSerialize(),
       'tkn_boldText_community' => clienttranslate('community'),
       'tkn_boldText_amount' => $joyIncrease,
       'i18n' => ['tkn_boldText_amount', 'tkn_boldText_community'],

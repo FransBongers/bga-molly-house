@@ -510,23 +510,15 @@ class NotificationManager {
   }
 
   async notif_loseJoy(notif: Notif<NotifLoseJoy>) {
-    const { playerId, amount, total } = notif.args;
+    const { playerId, amount, total, joyMarker } = notif.args;
 
     incScore(playerId, -amount);
-    Board.getInstance().joyMarkerStocks[total % 40].addCard({
-      id: `${playerId}`,
-      hanged: false,
-      color: HEX_COLOR_COLOR_MAP[this.getPlayer(playerId).getColor()],
-    });
+    Board.getInstance().joyMarkerStocks[total % 40].addCard(joyMarker);
   }
 
   async notif_loseJoyCommunity(notif: Notif<NotifLoseJoyCommunity>) {
-    const { joyDecrease, joyTotal } = notif.args;
-    Board.getInstance().joyMarkerStocks[joyTotal % 40].addCard({
-      id: COMMUNITY_JOY_MARKER,
-      hanged: false,
-      color: COMMUNITY_JOY_MARKER,
-    });
+    const { joyTotal, joyMarker } = notif.args;
+    Board.getInstance().joyMarkerStocks[joyTotal % 40].addCard(joyMarker);
   }
 
   async notif_movePawn(notif: Notif<NotifMovePawn>) {
@@ -610,34 +602,22 @@ class NotificationManager {
   }
 
   async notif_scoreBonusJoy(notif: Notif<NotifScoreBonusJoy>) {
-    const { playerId, amount, total } = notif.args;
+    const { playerId, amount, total, joyMarker } = notif.args;
 
     incScore(playerId, amount);
-    await Board.getInstance().joyMarkerStocks[total % 40].addCard({
-      id: `${playerId}`,
-      hanged: false,
-      color: HEX_COLOR_COLOR_MAP[this.getPlayer(playerId).getColor()],
-    });
+    await Board.getInstance().joyMarkerStocks[total % 40].addCard(joyMarker);
   }
 
   async notif_scoreJoy(notif: Notif<NotifScoreJoy>) {
-    const { playerId, amount, total } = notif.args;
+    const { playerId, amount, total, joyMarker } = notif.args;
 
     incScore(playerId, amount);
-    await Board.getInstance().joyMarkerStocks[total % 40].addCard({
-      id: `${playerId}`,
-      hanged: false,
-      color: HEX_COLOR_COLOR_MAP[this.getPlayer(playerId).getColor()],
-    });
+    await Board.getInstance().joyMarkerStocks[total % 40].addCard(joyMarker);
   }
 
   async notif_scoreJoyCommunity(notif: Notif<NotifScoreJoyCommunity>) {
-    const { joyTotal } = notif.args;
-    await Board.getInstance().joyMarkerStocks[joyTotal % 40].addCard({
-      id: COMMUNITY_JOY_MARKER,
-      hanged: false,
-      color: COMMUNITY_JOY_MARKER,
-    });
+    const { joyTotal, joyMarker } = notif.args;
+    await Board.getInstance().joyMarkerStocks[joyTotal % 40].addCard(joyMarker);
   }
 
   async notif_setupChooseCard(notif: Notif<NotifSetupChooseCard>) {

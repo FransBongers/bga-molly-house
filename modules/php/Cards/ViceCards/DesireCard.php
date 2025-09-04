@@ -5,6 +5,7 @@ namespace Bga\Games\MollyHouse\Cards\ViceCards;
 use Bga\Games\MollyHouse\Boilerplate\Core\Globals;
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
 use Bga\Games\MollyHouse\Managers\Community;
+use Bga\Games\MollyHouse\Managers\JoyMarkers;
 
 class DesireCard extends \Bga\Games\MollyHouse\Models\ViceCard
 {
@@ -28,7 +29,11 @@ class DesireCard extends \Bga\Games\MollyHouse\Models\ViceCard
     }
 
     $total = $playerOrCommunity->incScore($this->getJoy());
-    Notifications::scoreJoy($playerOrCommunity, $this->getJoy(), $total);
+
+    $joyMarker = JoyMarkers::getForPlayer($playerOrCommunity);
+    $joyMarker->setLocation($total);
+
+    Notifications::scoreJoy($playerOrCommunity, $this->getJoy(), $total, $joyMarker);
 
     $reptution = $playerOrCommunity->getCardsInReputation();
     foreach ($reptution as $card) {
