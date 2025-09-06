@@ -56,7 +56,7 @@ use Bga\GameFramework\StateType;
 
 
 $machinestates = [
-    98 => GameStateBuilder::endScore()->build(),
+    // 98 => GameStateBuilder::endScore()->build(),
 
     // .########.##....##..######...####.##....##.########
     // .##.......###...##.##....##...##..###...##.##......

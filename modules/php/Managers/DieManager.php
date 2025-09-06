@@ -25,7 +25,8 @@ class DieManager
     self::rollDice();
   }
 
-  public static function mapDiceResults($diceResults) {
+  public static function mapDiceResults($diceResults)
+  {
     return array_map(function ($dieFaceIndex) {
       return DIE_FACES[$dieFaceIndex];
     }, $diceResults);;
@@ -44,5 +45,14 @@ class DieManager
     }
 
     return self::mapDiceResults($dieResults);
+  }
+
+  public static function rollTenSided($player, $notify = true)
+  {
+    $dieResult = bga_rand(0, 9);
+    if ($notify) {
+      Notifications::rollTenSidedDie($player, $dieResult);
+    }
+    return $dieResult;
   }
 }

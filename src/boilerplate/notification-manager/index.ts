@@ -69,7 +69,10 @@ class NotificationManager {
       'addCardToSafePile',
       'addExcessCardsToGossip',
       'addExcessCardsToGossipPrivate',
+      'communityAtrophy',
       'dealItemToShop',
+      'discardEncounterToken',
+      'discardIndictment',
       'discardItem',
       'drawCards',
       'drawCardsPrivate',
@@ -86,6 +89,7 @@ class NotificationManager {
       'festivityPhase',
       'festivitySetRogueValue',
       'festivityWinningSet',
+      'hang',
       'gainCubes',
       'gainDrawTokens',
       'loseJoy',
@@ -98,10 +102,13 @@ class NotificationManager {
       'playDress',
       'refillMarket',
       'revealEncounterToken',
+      'revealIndictment',
       'rollDice',
+      'rollTenSidedDie',
       'scoreBonusJoy',
       'scoreJoy',
       'scoreJoyCommunity',
+      'scoreVictoryPoints',
       'setupChooseCardPrivate',
       'setupChooseCard',
       'setupRevealCard',
@@ -311,9 +318,27 @@ class NotificationManager {
     await Promise.all(promises);
   }
 
+  async notif_communityAtrophy(notif: Notif<NotifCommunityAtrophy>) {
+    PlayerManager.getInstance()
+      .getPlayerIds()
+      .forEach((playerId) => {
+        setScore(playerId, -1);
+      });
+  }
+
   async notif_dealItemToShop(notif: Notif<NotifDealItemToShop>) {
     const { item } = notif.args;
     await Board.getInstance().shops[item.location].addCard(getItem(item));
+  }
+
+  async notif_discardEncounterToken(notif: Notif<NotifDiscardEncounterToken>) {
+    const { token } = notif.args;
+    await Board.getInstance().encounterTokenDiscard.addCard(token);
+  }
+
+  async notif_discardIndictment(notif: Notif<NotifDiscardIndictment>) {
+    const { playerId, indictment } = notif.args;
+    await Board.getInstance().indictmentDiscard.addCard(indictment);
   }
 
   async notif_discardItem(notif: Notif<NotifDiscardItem>) {
@@ -457,11 +482,14 @@ class NotificationManager {
   }
 
   async notif_gainIndictment(notif: Notif<NotifGainIndictment>) {
-    const { playerId } = notif.args;
+    const { playerId, indictment } = notif.args;
+
+    await this.getPlayer(playerId).indictments.addCard(indictment);
   }
 
   async notif_gainIndictmentPrivate(notif: Notif<NotifGainIndictmentPrivate>) {
-    const { playerId } = notif.args;
+    const { playerId, indictment } = notif.args;
+    await this.getPlayer(playerId).indictments.addCard(indictment);
   }
 
   async notif_festivityRevealTopCardViceDeck(
@@ -507,6 +535,12 @@ class NotificationManager {
     const { playerId, numberOfCubes, suit } = notif.args;
     const player = this.getPlayer(playerId);
     player.counters[SUIT_COLOR_MAP[suit]].incValue(numberOfCubes);
+  }
+
+  async notif_hang(notif: Notif<NotifHang>) {
+    const { playerId, joyMarker } = notif.args;
+    setScore(playerId, -1);
+    this.game.joyMarkerManager.updateCardInformations(joyMarker);
   }
 
   async notif_loseJoy(notif: Notif<NotifLoseJoy>) {
@@ -591,6 +625,11 @@ class NotificationManager {
     this.game.encounterTokenManager.updateCardInformations(token);
   }
 
+  async notif_revealIndictment(notif: Notif<NotifRevealIndictment>) {
+    const { playerId, indictment } = notif.args;
+    this.game.indictmentManager.updateCardInformations(indictment);
+  }
+
   async notif_rollDice(notif: Notif<NotifRollDice>) {
     const { diceResults } = notif.args;
 
@@ -599,6 +638,10 @@ class NotificationManager {
       duration: [800, 1200],
     });
     await sleep(1200);
+  }
+
+  async notif_rollTenSidedDie(notif: Notif<NotifRollTenSidedDie>) {
+    const { dieResult } = notif.args;
   }
 
   async notif_scoreBonusJoy(notif: Notif<NotifScoreBonusJoy>) {
@@ -618,6 +661,11 @@ class NotificationManager {
   async notif_scoreJoyCommunity(notif: Notif<NotifScoreJoyCommunity>) {
     const { joyTotal, joyMarker } = notif.args;
     await Board.getInstance().joyMarkerStocks[joyTotal % 40].addCard(joyMarker);
+  }
+
+  async notif_scoreVictoryPoints(notif: Notif<NotifScoreVictoryPoints>) {
+    const { playerId, amount } = notif.args;
+    incScore(playerId, amount);
   }
 
   async notif_setupChooseCard(notif: Notif<NotifSetupChooseCard>) {

@@ -1,0 +1,54 @@
+@use 'sass:math';
+@use 'sass:map';
+
+.moho-indictment-container {
+  aspect-ratio: 402 / 265;
+}
+
+.moho-indictment {
+  width: calc(var(--cardScale) * 178px);
+  aspect-ratio: 402 / 265;
+
+  box-sizing: border-box;
+  background-image: url('img/indictment_cards.jpg');
+  background-size: 900% 200%;
+  background-repeat: no-repeat;
+  border: calc(var(--cardScale) * 1px) black solid;
+  border-radius: calc(var(--cardScale) * 5px);
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: high-quality;
+  position: relative;
+}
+
+.moho-indictment:hover {
+  transform: scale(1.1);
+  transition: transform 0.1s ease-in-out;
+}
+
+$indictments: (
+  1: 'Major1',
+  2: 'Major2',
+  3: 'Major3',
+  4: 'Major4',
+  5: 'Major5',
+  6: 'Major6',
+  7: 'Major7',
+  8: 'Major8',
+  9: 'major',
+  10: 'Minor1',
+  11: 'Minor2',
+  12: 'Minor3',
+  13: 'Minor4',
+  14: 'Minor5',
+  15: 'Minor6',
+  16: 'Minor7',
+  17: 'Minor8',
+  18: 'minor',
+);
+
+@for $i from 1 through 18 {
+  .moho-indictment[data-indictment-id='#{map.get($indictments,$i)}'] {
+    background-position-x: math.div((($i - 1) % 9 * 100%), 8);
+    background-position-y: math.div(math.floor(calc(($i - 1) / 9)) * 100%, 1);
+  }
+}

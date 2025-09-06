@@ -17,6 +17,7 @@ class MohoPlayer {
 
   public items: Record<string, LineStock<MohoItem>> = {};
   public encounterTokens: LineStock<MohoEncounterToken>;
+  public indictments: LineStock<MohoIndictment>;
 
   constructor(private game: GameAlias, player: MollyHousePlayerData) {
     this.game = game;
@@ -93,6 +94,7 @@ class MohoPlayer {
       );
     });
     this.setupEncounterTokens(gamedatas);
+    this.setupIndictments(gamedatas);
 
     this.updatePlayerBoard(playerGamedatas);
   }
@@ -101,6 +103,16 @@ class MohoPlayer {
     this.encounterTokens = new LineStock<MohoEncounterToken>(
       this.game.encounterTokenManager,
       document.getElementById(`moho-encounter-tokens-${this.playerId}`),
+      {
+        gap: '0px',
+      }
+    );
+  }
+
+  setupIndictments(gamedatas: GamedatasAlias) {
+    this.indictments = new LineStock<MohoIndictment>(
+      this.game.indictmentManager,
+      document.getElementById(`moho-indictments-${this.playerId}`),
       {
         gap: '0px',
       }
@@ -172,6 +184,7 @@ class MohoPlayer {
     playerGamedatas.items.forEach((item) => {
       this.items[item.location].addCard(getItem(item));
     });
+    this.indictments.addCards(playerGamedatas.indictments);
   }
 
   public updateEncounterTokens(playerGamedatas: PlayerDataAlias) {

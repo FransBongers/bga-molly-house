@@ -22,6 +22,15 @@
       margin-left: calc(var(--tokenScale) * -40px);
     }
   }
+
+  .moho-indictments {
+    --cardScale: var(--rightColumnScale);
+    min-height: fit-content;
+
+    .moho-indictment-container:not(:first-child) {
+      margin-left: calc(var(--cardScale) * -100px);
+    }
+  }
 }
 
 .moho-player-board {

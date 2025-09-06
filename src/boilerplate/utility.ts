@@ -75,6 +75,10 @@ const incScore = (playerId: number, value: number) => {
   Interaction.use().game.framework().scoreCtrl[playerId].incValue(value);
 };
 
+const setScore = (playerId: number, value: number) => {
+  Interaction.use().game.framework().scoreCtrl[playerId].setValue(value);
+};
+
 const formatStringRecursive = (
   log: string,
   args: Record<string, unknown>

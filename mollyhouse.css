@@ -469,11 +469,14 @@ body > .bga-dice_die {
   position: absolute;
 }
 
+#encounter-token-discard,
+#indictment-discard,
 #item-discard {
   position: absolute;
   top: -400px;
   left: 0px;
   --cardScale: 1;
+  --tokenScale: 1;
   width: 178px;
   aspect-ratio: 402/265;
 }
@@ -1295,6 +1298,119 @@ span[style*="color:#fcd873"] {
   background-position-y: 100%;
 }
 
+.moho-indictment-container {
+  aspect-ratio: 402/265;
+}
+
+.moho-indictment {
+  width: calc(var(--cardScale) * 178px);
+  aspect-ratio: 402/265;
+  box-sizing: border-box;
+  background-image: url("img/indictment_cards.jpg");
+  background-size: 900% 200%;
+  background-repeat: no-repeat;
+  border: calc(var(--cardScale) * 1px) black solid;
+  border-radius: calc(var(--cardScale) * 5px);
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: high-quality;
+  position: relative;
+}
+
+.moho-indictment:hover {
+  transform: scale(1.1);
+  transition: transform 0.1s ease-in-out;
+}
+
+.moho-indictment[data-indictment-id=Major1] {
+  background-position-x: 0%;
+  background-position-y: 0%;
+}
+
+.moho-indictment[data-indictment-id=Major2] {
+  background-position-x: 12.5%;
+  background-position-y: 0%;
+}
+
+.moho-indictment[data-indictment-id=Major3] {
+  background-position-x: 25%;
+  background-position-y: 0%;
+}
+
+.moho-indictment[data-indictment-id=Major4] {
+  background-position-x: 37.5%;
+  background-position-y: 0%;
+}
+
+.moho-indictment[data-indictment-id=Major5] {
+  background-position-x: 50%;
+  background-position-y: 0%;
+}
+
+.moho-indictment[data-indictment-id=Major6] {
+  background-position-x: 62.5%;
+  background-position-y: 0%;
+}
+
+.moho-indictment[data-indictment-id=Major7] {
+  background-position-x: 75%;
+  background-position-y: 0%;
+}
+
+.moho-indictment[data-indictment-id=Major8] {
+  background-position-x: 87.5%;
+  background-position-y: 0%;
+}
+
+.moho-indictment[data-indictment-id=major] {
+  background-position-x: 100%;
+  background-position-y: 0%;
+}
+
+.moho-indictment[data-indictment-id=Minor1] {
+  background-position-x: 0%;
+  background-position-y: 100%;
+}
+
+.moho-indictment[data-indictment-id=Minor2] {
+  background-position-x: 12.5%;
+  background-position-y: 100%;
+}
+
+.moho-indictment[data-indictment-id=Minor3] {
+  background-position-x: 25%;
+  background-position-y: 100%;
+}
+
+.moho-indictment[data-indictment-id=Minor4] {
+  background-position-x: 37.5%;
+  background-position-y: 100%;
+}
+
+.moho-indictment[data-indictment-id=Minor5] {
+  background-position-x: 50%;
+  background-position-y: 100%;
+}
+
+.moho-indictment[data-indictment-id=Minor6] {
+  background-position-x: 62.5%;
+  background-position-y: 100%;
+}
+
+.moho-indictment[data-indictment-id=Minor7] {
+  background-position-x: 75%;
+  background-position-y: 100%;
+}
+
+.moho-indictment[data-indictment-id=Minor8] {
+  background-position-x: 87.5%;
+  background-position-y: 100%;
+}
+
+.moho-indictment[data-indictment-id=minor] {
+  background-position-x: 100%;
+  background-position-y: 100%;
+}
+
 .moho-item {
   width: calc(var(--cardScale) * 178px);
   aspect-ratio: 402/265;
@@ -2039,6 +2155,13 @@ span[style*="color:#fcd873"] {
 }
 .moho-player-container .moho-encounter-tokens .moho-encounter-token-container:not(:first-child) {
   margin-left: calc(var(--tokenScale) * -40px);
+}
+.moho-player-container .moho-indictments {
+  --cardScale: var(--rightColumnScale);
+  min-height: fit-content;
+}
+.moho-player-container .moho-indictments .moho-indictment-container:not(:first-child) {
+  margin-left: calc(var(--cardScale) * -100px);
 }
 
 .moho-player-board {

@@ -23,14 +23,14 @@ class EncounterTokenManager extends CardManager<MohoEncounterToken> {
   setupFrontDiv(card: MohoEncounterToken, div: HTMLElement) {
     div.classList.add('moho-encounter-token');
     div.setAttribute('data-type', card.type);
-    div.setAttribute('data-color', this.getPlayerColor(card));
+    div.setAttribute('data-color', card.color);
     div.style.width = 'calc(var(--tokenScale) * 75px)';
   }
 
   setupBackDiv(card: MohoEncounterToken, div: HTMLElement) {
     div.classList.add('moho-encounter-token');
     div.setAttribute('data-type', 'back');
-    div.setAttribute('data-color', this.getPlayerColor(card));
+    div.setAttribute('data-color', card.color);
     div.style.width = 'calc(var(--tokenScale) * 75px)';
 
     if (card.type !== null) {
@@ -50,12 +50,5 @@ class EncounterTokenManager extends CardManager<MohoEncounterToken> {
     }
 
     return true;
-  }
-
-  getPlayerColor(card: MohoEncounterToken) {
-    const playerId = Number(card.id.split('_')[1]);
-    return HEX_COLOR_COLOR_MAP[
-      PlayerManager.getInstance().getPlayer(playerId).getColor()
-    ];
   }
 }

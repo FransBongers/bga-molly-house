@@ -61,6 +61,7 @@ CREATE TABLE IF NOT EXISTS `indictment_cards` (
   `card_location` varchar(32) NOT NULL,
   `card_state` int(10) DEFAULT 0,
   `indictment_id` varchar(32) NOT NULL,
+  `hidden` tinyint(1) DEFAULT 1,
   PRIMARY KEY (`card_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 CREATE TABLE IF NOT EXISTS `items` (

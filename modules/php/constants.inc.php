@@ -8,6 +8,8 @@ const DECK = 'deck';
 const DISCARD = 'discard';
 const SUPPLY = 'supply';
 
+const STANDARD = 'standard';
+
 const PAWN = 'pawn';
 const COMMUNITY = 'community';
 
@@ -151,7 +153,15 @@ const FANS = 'fans';
 const HEARTS = 'hearts';
 const DRESSES = 'dresses';
 
+const SUITS = [
+  CUPS,
+  PENTACLES,
+  FANS,
+  HEARTS,
+];
+
 const PLAYED_DRESSES = 'playedDresses';
+
 
 /**
  * Market locations
@@ -291,3 +301,5 @@ const INFORMER = 'Informer';
 const COMMUNITY_INFILTRATION = 'CommunityInfiltration';
 const COMMUNITY_SURVIVAL = 'CommunitySurvival';
 const COMMUNITY_ATROPHY = 'CommunityAtrophy';
+
+const SCORE_LOYAL_TOKENS = 'scoreLoyalTokens';

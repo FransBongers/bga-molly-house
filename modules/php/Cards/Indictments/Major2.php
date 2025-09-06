@@ -1,8 +1,8 @@
 <?php
 
-namespace Bga\Games\MollyHouse\Cards\IndictmentCards;
+namespace Bga\Games\MollyHouse\Cards\Indictments;
 
-class Major2 extends \Bga\Games\MollyHouse\Cards\IndictmentCards\MajorIndictment
+class Major2 extends \Bga\Games\MollyHouse\Cards\Indictments\MajorIndictment
 {
   public function __construct($row)
   {

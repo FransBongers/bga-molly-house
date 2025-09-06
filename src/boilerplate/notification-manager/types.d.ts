@@ -48,8 +48,18 @@ interface NotifAddExcessCardsToGossipPrivate extends NotifWithPlayerArgs {
   cards: ViceCardBase[];
 }
 
+interface NotifCommunityAtrophy {}
+
 interface NotifDealItemToShop {
   item: MohoItemBase;
+}
+
+interface NotifDiscardEncounterToken extends NotifWithPlayerArgs {
+  token: MohoEncounterToken;
+}
+
+interface NotifDiscardIndictment extends NotifWithPlayerArgs {
+  indictment: MohoIndictment;
 }
 
 interface NotifDiscardItem {
@@ -118,11 +128,15 @@ interface NotifGainDrawTokens extends NotifWithPlayerArgs {
 }
 
 interface NotifGainIndictment extends NotifWithPlayerArgs {
-  majorOrMinor: 'major' | 'minor';
+  indictment: MohoIndictment;
 }
 
 interface NotifGainIndictmentPrivate extends NotifWithPlayerArgs {
-  majorOrMinor: 'major' | 'minor';
+  indictment: MohoIndictment;
+}
+
+interface NotifHang extends NotifWithPlayerArgs {
+  joyMarker: MohoJoyMarker;
 }
 
 interface NotifLoseJoy extends NotifWithPlayerArgs {
@@ -167,6 +181,14 @@ interface NotifRevealEncounterToken extends NotifWithPlayerArgs {
   token: MohoEncounterToken;
 }
 
+interface NotifRevealIndictment extends NotifWithPlayerArgs {
+  indictment: MohoIndictment;
+}
+
+interface NotifRollTenSidedDie extends NotifWithPlayerArgs {
+  dieResult: number;
+}
+
 interface NotifRollDice extends NotifWithPlayerArgs {
   diceResults: number[];
 }
@@ -187,6 +209,10 @@ interface NotifScoreJoyCommunity {
   joyIncrease: number;
   joyTotal: number;
   joyMarker: MohoJoyMarker;
+}
+
+interface NotifScoreVictoryPoints extends NotifWithPlayerArgs {
+  amount: number;
 }
 
 interface NotifSetupChooseCard extends NotifWithPlayerArgs {

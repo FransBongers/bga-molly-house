@@ -25,7 +25,7 @@ class MollyCard extends \Bga\Games\MollyHouse\Models\ViceCard
   {
     $bonusJoy = $this->bonusJoy;
     $totalScore = $player->incScore($bonusJoy);
-    $joyMarker = JoyMarkers::getForPlayer($this);
+    $joyMarker = JoyMarkers::getForPlayer($player);
     $joyMarker->setLocation($totalScore);
     Notifications::scoreBonusJoy($player, $bonusJoy, $this, $totalScore, $joyMarker);
   }

@@ -8,7 +8,7 @@ use Bga\Games\MollyHouse\Boilerplate\Core\Preferences;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 use Bga\Games\MollyHouse\Managers\EncounterTokens;
-use Bga\Games\MollyHouse\Managers\IndictmentCards;
+use Bga\Games\MollyHouse\Managers\Indictments;
 use Bga\Games\MollyHouse\Managers\Items;
 use Bga\Games\MollyHouse\Managers\JoyMarkers;
 use Bga\Games\MollyHouse\Managers\Pawns;
@@ -61,6 +61,7 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
 
     $handCards =  ViceCards::getInLocation(Locations::hand($this->getId()))->toArray();
     $encounterTokens = $this->getEncounterTokens();
+    $indictments = $this->getIndictments();
 
     $playerExtra = $this->getExtra();
 
@@ -85,6 +86,9 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
           $serializedTokens['type'] = null;
           return $serializedTokens;
         }, $encounterTokens),
+        'indictments' => $isCurrentPlayer ? $indictments : array_map(function ($token) {
+          return $token->jsonSerializeAnonymous();
+        }, $indictments),
       ],
     );
   }
@@ -235,20 +239,20 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     }
   }
 
-  public function scoreJoy($amount)
+  public function scoreJoy($amount, $notifText = STANDARD)
   {
     $total = $this->incScore($amount);
 
     $joyMarker = JoyMarkers::getForPlayer($this);
     $joyMarker->setLocation($total);
-    Notifications::scoreJoy($this, $amount, $total, $joyMarker);
+    Notifications::scoreJoy($this, $amount, $total, $joyMarker, $notifText);
   }
 
 
   public function gainIndictment($majorOrMinor)
   {
     $fromLocation = Locations::indicmentDeck($majorOrMinor);
-    $indictment = IndictmentCards::getTopOf($fromLocation);
+    $indictment = Indictments::getTopOf($fromLocation);
     if ($indictment === null) {
       if ($majorOrMinor === MAJOR) {
         $this->loseJoy(8);
@@ -257,7 +261,9 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
       }
       return;
     }
-    $indictment->setLocation(Locations::indictments($this->getId()));
+    $location = Locations::indictments($this->getId());
+    $indictment->setLocation($location);
+    Indictments::insertOnTop($indictment->getId(), $location);
 
     Notifications::gainIndictment($this, $indictment, $majorOrMinor);
   }
@@ -318,5 +324,24 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
       fn($pItem) =>
       $pItem->isDress() && $pItem->getSuit() === $suit
     );
+  }
+
+  public function hang()
+  {
+    $this->setScore(1);
+    $joyMarker = JoyMarkers::getForPlayer($this);
+    $joyMarker->setHanged(1);
+    Notifications::hang($this, $joyMarker);
+  }
+
+  public function scoreVictoryPoints($points)
+  {
+    $this->incScore($points);
+    Notifications::scoreVictoryPoints($this, $points);
+  }
+
+  public function getIndictments(): array
+  {
+    return Indictments::getInLocation(Locations::indictments($this->getId()))->toArray();
   }
 }

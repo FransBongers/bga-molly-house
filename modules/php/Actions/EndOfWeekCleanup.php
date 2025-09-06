@@ -50,6 +50,9 @@ class EndOfWeekCleanup extends \Bga\Games\MollyHouse\Models\AtomicAction
 
     $this->advanceWeekMarker();
 
+    Globals::setPlayersWhoGainedIndictment([]);
+    Globals::setPlayersWhoPlayedDomino([]);
+
     $this->resolveAction(['automatic' => true]);
   }
 

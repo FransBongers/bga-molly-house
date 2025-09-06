@@ -7,7 +7,9 @@ class Board {
   public counters: Record<string, Counter> = {};
   public evidenceCounters: Record<string, CubeCounter> = {};
   public itemDiscard: VoidStock<MohoItem>;
+  public indictmentDiscard: VoidStock<MohoIndictment>;
   public encounterTokens: Record<string, LineStock<MohoEncounterToken>> = {};
+  public encounterTokenDiscard: VoidStock<MohoEncounterToken>;
 
   public ui: {
     containers: {
@@ -102,6 +104,7 @@ class Board {
     // this.setupTokens(gamedatas);
     this.setFestivityActive(gamedatas.festivity.active);
     this.setupEncounterTokens(gamedatas);
+    this.setupIndictmentDiscard();
   }
 
   private setupDangerousCruisingMarkers(gamedatas: GamedatasAlias) {
@@ -153,6 +156,10 @@ class Board {
         }
       );
     });
+    this.encounterTokenDiscard = new VoidStock(
+      this.game.encounterTokenManager,
+      document.getElementById('encounter-token-discard')
+    );
 
     this.updateEncounterTokens(gamedatas);
   }
@@ -245,6 +252,13 @@ class Board {
 
   //   // this.updateTokens(gamedatas);
   // }
+
+  private setupIndictmentDiscard() {
+    this.indictmentDiscard = new VoidStock(
+      this.game.indictmentManager,
+      document.getElementById('indictment-discard')
+    );
+  }
 
   private setupShops(gamedatas: GamedatasAlias) {
     SHOP_SITES.forEach((site) => {

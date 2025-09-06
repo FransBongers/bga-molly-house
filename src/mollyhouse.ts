@@ -58,6 +58,7 @@ class MollyHouse implements Game {
   // Card managers
   public diceManager: MollyHouseDiceManager;
   public encounterTokenManager: EncounterTokenManager;
+  public indictmentManager: IndictmentManager;
   public itemManager: ItemManager;
   public viceCardManager: ViceCardManager;
   public joyMarkerManager: JoyMarkerManager;
@@ -143,6 +144,7 @@ class MollyHouse implements Game {
     StaticData.create(this);
     this.diceManager = new MollyHouseDiceManager(this);
     this.encounterTokenManager = new EncounterTokenManager(this);
+    this.indictmentManager = new IndictmentManager(this);
     this.itemManager = new ItemManager(this);
     this.viceCardManager = new ViceCardManager(this);
     this.joyMarkerManager = new JoyMarkerManager(this);

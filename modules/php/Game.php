@@ -32,7 +32,7 @@ use Bga\Games\MollyHouse\Managers\Community;
 use Bga\Games\MollyHouse\Managers\DieManager;
 use Bga\Games\MollyHouse\Managers\EncounterTokens;
 use Bga\Games\MollyHouse\Managers\Festivity;
-use Bga\Games\MollyHouse\Managers\IndictmentCards;
+use Bga\Games\MollyHouse\Managers\Indictments;
 use Bga\Games\MollyHouse\Managers\Items;
 use Bga\Games\MollyHouse\Managers\JoyMarkers;
 use Bga\Games\MollyHouse\Managers\Pawns;
@@ -236,31 +236,34 @@ class Game extends \Bga\GameFramework\Table
     public function upgradeTableDb($from_version)
     {
 
-
+        // if ($from_version <= 2509042231) {
+        //     $sql = "ALTER TABLE `DBPREFIX_indictment_cards` ADD `hidden` tinyint(1) default 1;";
+        //     $this->applyDbUpgradeToAllDB($sql);
+        // }
 
 
         // if ($from_version <= 2509012241) {
         //     // ! important ! Use `DBPREFIX_<table_name>` for all tables
-        //     $sql = "ALTER TABLE `DBPREFIX_indictment_cards` ADD `indictment_id` VARCHAR(32) NOT NULL;";
+        //     $sql = "ALTER TABLE `DBPREFIX_indictment_cards` ADD `hidden` tinyint(1) default 1;";
         //     $this->applyDbUpgradeToAllDB($sql);
         // }
         //
-            //   if ($from_version <= 2509042011)
-            //   {
-            //         $sql = ""
-            //             . "CREATE TABLE IF NOT EXISTS `DBPREFIX_joy_markers` ("
-            //             . "`joy_marker_id` varchar(32) NOT NULL,"
-            //             . "`joy_marker_location` varchar(32) NOT NULL,"
-            //             . "`joy_marker_state` int(10) DEFAULT 0,"
-            //             . "`hanged` int(10) DEFAULT 0,"
-            //             . "`color` varchar(32) NOT NULL,"
-            //             . "PRIMARY KEY (`joy_marker_id`)"
-            //             . ") ENGINE = InnoDB DEFAULT CHARSET = utf8;";
-            //         self::applyDbUpgradeToAllDB($sql);
+        //   if ($from_version <= 2509042011)
+        //   {
+        //         $sql = ""
+        //             . "CREATE TABLE IF NOT EXISTS `DBPREFIX_joy_markers` ("
+        //             . "`joy_marker_id` varchar(32) NOT NULL,"
+        //             . "`joy_marker_location` varchar(32) NOT NULL,"
+        //             . "`joy_marker_state` int(10) DEFAULT 0,"
+        //             . "`hanged` int(10) DEFAULT 0,"
+        //             . "`color` varchar(32) NOT NULL,"
+        //             . "PRIMARY KEY (`joy_marker_id`)"
+        //             . ") ENGINE = InnoDB DEFAULT CHARSET = utf8;";
+        //         self::applyDbUpgradeToAllDB($sql);
 
-            //         JoyMarkers::setupNewGame();
+        //         JoyMarkers::setupNewGame();
 
-            //   }
+        //   }
     }
 
     /*
@@ -320,7 +323,7 @@ class Game extends \Bga\GameFramework\Table
         ViceCards::setupNewGame($players, $options);
         Pawns::setupNewGame($players, $options);
         Sites::setupNewGame($players, $options);
-        IndictmentCards::setupNewGame($players, $options);
+        Indictments::setupNewGame($players, $options);
         Items::setupNewGame($players, $options);
         EncounterTokens::setupNewGame($players, $options);
         JoyMarkers::setupNewGame($players, $options);

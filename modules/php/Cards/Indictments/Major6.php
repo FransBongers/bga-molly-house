@@ -1,8 +1,8 @@
 <?php
 
-namespace Bga\Games\MollyHouse\Cards\IndictmentCards;
+namespace Bga\Games\MollyHouse\Cards\Indictments;
 
-class Major5 extends \Bga\Games\MollyHouse\Cards\IndictmentCards\MajorIndictment
+class Major6 extends \Bga\Games\MollyHouse\Cards\Indictments\MajorIndictment
 {
   public function __construct($row)
   {
@@ -11,7 +11,7 @@ class Major5 extends \Bga\Games\MollyHouse\Cards\IndictmentCards\MajorIndictment
     $this->acquittedResult = -5;
     $this->convictedResult = null;
     $this->text = clienttranslate(
-      "Indicted for feloniously committing the heinous and detestable Sin of Sodomy"
+      "Indicted for that they not having God before their Eyes, did commit Buggery"
     );
   }
 }

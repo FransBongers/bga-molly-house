@@ -70,6 +70,7 @@ interface MollyHousePlayerData extends BgaPlayer {
   cubes: Record<Suit, number>;
   items: MohoItemBase[];
   encounterTokens: MohoEncounterToken[];
+  indictments: MohoIndictment[];
 }
 
 type GameAlias = MollyHouse;
@@ -81,6 +82,12 @@ interface MohoEncounterToken extends GamePiece {
   type: 'Loyal' | 'Informer' | null;
   hidden: boolean;
   color: string;
+}
+
+interface MohoIndictment extends GamePiece {
+  hidden: boolean;
+  indictmentId: string | null;
+  type: string;
 }
 
 interface MohoItemBase extends GamePiece {

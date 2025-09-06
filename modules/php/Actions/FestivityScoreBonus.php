@@ -55,6 +55,7 @@ class FestivityScoreBonus extends \Bga\Games\MollyHouse\Models\AtomicAction
     if ($reputationForSuit > 0) {
       switch ($ranking) {
         case SURPRISE_BALL:
+        case SURPRISE_BALL_WITH_DRESS:
         case CHRISTENING:
         case DANCE:
           $player->scoreJoy($reputationForSuit);
@@ -72,6 +73,7 @@ class FestivityScoreBonus extends \Bga\Games\MollyHouse\Models\AtomicAction
 
     switch ($ranking) {
       case SURPRISE_BALL:
+      case SURPRISE_BALL_WITH_DRESS:
         Community::scoreJoy(3);
         break;
       case CHRISTENING:

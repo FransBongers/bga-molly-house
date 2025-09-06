@@ -11,12 +11,13 @@ use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 
 
 
-class IndictmentCards extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
+class Indictments extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
 {
   protected static $table = 'indictment_cards';
   protected static $prefix = 'card_';
   protected static $customFields = [
-    'indictment_id'
+    'indictment_id',
+    'hidden'
   ];
   protected static $autoremovePrefix = false;
   protected static $autoreshuffle = false;
@@ -32,7 +33,7 @@ class IndictmentCards extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
     // $prefix = self::getClassPrefix($id);
     $indictmentId = $data['indictment_id'];
 
-    $className = "\Bga\Games\MollyHouse\Cards\IndictmentCards\\$indictmentId";
+    $className = "\Bga\Games\MollyHouse\Cards\Indictments\\$indictmentId";
     return new $className($data);
   }
 
@@ -63,7 +64,7 @@ class IndictmentCards extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
   private static function setupLoadCards()
   {
     // Load list of cards
-    include dirname(__FILE__) . '/../Cards/IndictmentCards/list.inc.php';
+    include dirname(__FILE__) . '/../Cards/Indictments/list.inc.php';
 
     $cards = [];
 

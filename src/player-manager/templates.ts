@@ -16,6 +16,7 @@ const tplPlayerBoard = ({
   </div>
   <div class="moho-player-row">
     <div id="moho-encounter-tokens-${playerId}" class="moho-encounter-tokens"></div>
+    <div id="moho-indictments-${playerId}" class="moho-indictments"></div>
   </div>
 </div>`;
 };

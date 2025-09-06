@@ -142,6 +142,11 @@ class Notifications
     return implode(':', [$die + 1, DIE_FACES[$die]]);
   }
 
+  protected static function tknEncounterToken($token)
+  {
+    return implode(':', [$token->getColor(), $token->getType()]);
+  }
+
   protected static function tknPawn($pawn)
   {
     return implode(':', [$pawn->getColor(), PAWN]);
@@ -335,6 +340,11 @@ class Notifications
     ]);
   }
 
+  public static function communityAtrophy()
+  {
+    self::notifyAll('communityAtrophy', clienttranslate('All players lose'), []);
+  }
+
   public static function dealItemToShop($item, $site)
   {
     self::notifyAll('dealItemToShop', clienttranslate('${tkn_boldText_itemName} is dealt to ${tkn_boldText_site}'), [
@@ -342,6 +352,30 @@ class Notifications
       'tkn_boldText_itemName' => $item->getName(),
       'tkn_boldText_site' => $site->getName(),
       'i18n' => ['tkn_boldText_itemName', 'tkn_boldText_site'],
+    ]);
+  }
+
+  public static function discardEncounterToken($player, $token, $fromSite)
+  {
+    self::notifyAll('discardEncounterToken', clienttranslate('${player_name} discards ${tkn_encounterToken} from ${tkn_boldText_site}'), [
+      'player' => $player,
+      'token' => $token,
+      'tkn_boldText_site' => $fromSite->getName(),
+      'tkn_encounterToken' => self::tknEncounterToken($token),
+      'i18n' => ['tkn_boldText_site'],
+    ]);
+  }
+
+  public static function discardIndictment($player, $indictment)
+  {
+    $text = $indictment->getType() === MAJOR
+      ? clienttranslate('${player_name} discards a major indictment')
+      : clienttranslate('${player_name} discards a minor indictment');
+
+    self::notifyAll('discardIndictment', $text, [
+      'player' => $player,
+      'indictment' => $indictment->jsonSerializeAnonymous(),
+      'preserve' => ['playerId'],
     ]);
   }
 
@@ -468,6 +502,19 @@ class Notifications
     ]);
   }
 
+  public static function revealIndictment($player, $indictment)
+  {
+    $text = $indictment->getType() === MAJOR
+      ? clienttranslate('${player_name} reveals a major indictment')
+      : clienttranslate('${player_name} reveals a minor indictment');
+
+    self::notifyAll('revealIndictment', $text, [
+      'player' => $player,
+      'indictment' => $indictment->jsonSerialize(),
+      'preserve' => ['playerId'],
+    ]);
+  }
+
   public static function festivityRevealTopCardViceDeck($player, $card, $cardDrawnFromGossipPile)
   {
     $text = $cardDrawnFromGossipPile
@@ -549,13 +596,20 @@ class Notifications
     self::notify($player, 'gainIndictmentPrivate', $text, [
       'player' => $player,
       'indictment' => $indictment,
-      'majorOrMinor' => $majorOrMinor,
     ]);
 
     self::notifyAll('gainIndictment', $text, [
-      'majorOrMinor' => $majorOrMinor,
       'player' => $player,
+      'indictment' => $indictment->jsonSerializeAnonymous(),
       'preserve' => ['playerId'],
+    ]);
+  }
+
+  public static function hang($player, $joyMarker)
+  {
+    self::notifyAll('hang', clienttranslate('${player_name} found guilty of sodomy and hanged'), [
+      'player' => $player,
+      'joyMarker' => $joyMarker->jsonSerialize(),
     ]);
   }
 
@@ -707,6 +761,16 @@ class Notifications
     ]);
   }
 
+  public static function rollTenSidedDie($player, $dieResult)
+  {
+    self::notifyAll('rollTenSidedDie', clienttranslate('${player_name} rolls ${tkn_boldText_dieResult}'), [
+      'player' => $player,
+      'dieResult' => $dieResult,
+      'tkn_boldText_dieResult' => $dieResult,
+
+    ]);
+  }
+
   public static function scoreBonusJoy($player, $amount, $card, $totalScore, $joyMarker)
   {
     self::notifyAll('scoreBonusJoy', clienttranslate('${player_name} scores ${tkn_boldText_amount} bonus joy with ${tkn_boldText_cardValue} of ${tkn_suit}${tkn_viceCard}'), [
@@ -723,9 +787,15 @@ class Notifications
   }
 
 
-  public static function scoreJoy($player, $amount, $total, $joyMarker)
+  public static function scoreJoy($player, $amount, $total, $joyMarker, $notifText = STANDARD)
   {
-    self::notifyAll('scoreJoy', clienttranslate('${player_name} scores ${tkn_boldText_amount} joy!'), [
+    $text = clienttranslate('${player_name} scores ${tkn_boldText_amount} joy!');
+
+    if ($notifText === SCORE_LOYAL_TOKENS) {
+      $text = clienttranslate('${player_name} scores ${tkn_boldText_amount} joy for their loyal tokens!');
+    }
+
+    self::notifyAll('scoreJoy', $text, [
       'player' => $player,
       'amount' => $amount,
       'total' => $total,
@@ -744,6 +814,16 @@ class Notifications
       'tkn_boldText_community' => clienttranslate('community'),
       'tkn_boldText_amount' => $joyIncrease,
       'i18n' => ['tkn_boldText_amount', 'tkn_boldText_community'],
+    ]);
+  }
+
+  public static function scoreVictoryPoints($player, $amount)
+  {
+    self::notifyAll('scoreVictoryPoints', clienttranslate('${player_name} scores ${tkn_boldText_amount} victory points'), [
+      'player' => $player,
+      'amount' => $amount,
+      'tkn_boldText_amount' => $amount,
+      'i18n' => ['tkn_boldText_amount'],
     ]);
   }
 

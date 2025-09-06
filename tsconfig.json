@@ -66,6 +66,7 @@
     "src/board/templates.ts",
     "src/board/utility.ts",
     "src/card-managers/encounter-tokens/index.ts",
+    "src/card-managers/indictment-cards/index.ts",
     "src/card-managers/items/index.ts",
     "src/card-managers/vice-cards/index.ts",
     "src/card-modal/index.ts",

@@ -14,7 +14,7 @@ use Bga\Games\MollyHouse\Managers\AtomicActions;
 use Bga\Games\MollyHouse\Managers\DieManager;
 use Bga\Games\MollyHouse\Managers\EncounterTokens;
 use Bga\Games\MollyHouse\Managers\Festivity;
-use Bga\Games\MollyHouse\Managers\IndictmentCards;
+use Bga\Games\MollyHouse\Managers\Indictments;
 use Bga\Games\MollyHouse\Managers\Items;
 use Bga\Games\MollyHouse\Managers\JoyMarkers;
 use Bga\Games\MollyHouse\Managers\Pawns;
@@ -26,20 +26,21 @@ use Bga\Games\MollyHouse\Managers\ViceCards;
 
 trait DebugTrait
 {
-  function setupItem($item, $families) {}
-
-
-
-
   function debug_test()
   {
+    // Sites::get(MISS_MUFFS)->setRaided(1);
+
+    AtomicActions::get(FINAL_SCORING)->communitySurvival();
+
+
+
     // Notifications::log('closest', ->getBestSetOfCards(Festivity::getPlayedCards()));
 
-    JoyMarkers::setupNewGame();
+    // JoyMarkers::setupNewGame();
 
     // AtomicActions::get(FESTIVITY_DETERMINE_WINNING_SET)->stFestivityDetermineWinningSet();
 
-    // IndictmentCards::setupNewGame();
+    // Indictments::setupNewGame();
 
     // Sites::get(MOTHER_CLAPS)->setEvidence(6);
     // Sites::get(MISS_MUFFS)->setEvidence(6);
@@ -64,5 +65,25 @@ trait DebugTrait
   function debug_engineDisplay()
   {
     Notifications::log('engine', Globals::getEngine());
+  }
+
+  function debug_placeEncounterTokens()
+  {
+    $mollyHouses = Sites::getMany(MOLLY_HOUSES)->toArray();
+
+    foreach (Players::getAll()->toArray() as $index => $player) {
+      shuffle($mollyHouses);
+      $encounterTokens = $player->getEncounterTokens();
+      shuffle($encounterTokens);
+      $encounterTokens[0]->placeOnSite($player, $mollyHouses[0]);
+    }
+  }
+
+
+  function debug_gainIndictments()
+  {
+    foreach (Players::getAll()->toArray() as $index => $p) {
+      $p->gainIndictment($index === 0 ? MAJOR : MINOR);
+    }
   }
 }

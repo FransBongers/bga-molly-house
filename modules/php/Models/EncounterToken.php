@@ -17,10 +17,6 @@ class EncounterToken extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   protected $type;
   protected $color;
 
-
-
-
-
   protected $attributes = [
     'id' => ['token_id', 'str'],
     'location' => 'token_location',
@@ -60,6 +56,16 @@ class EncounterToken extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     return in_array($this->getLocation(), MOLLY_HOUSES);
   }
 
+  public function isInformerToken()
+  {
+    return $this->type === INFORMER;
+  }
+
+  public function isLoyalToken()
+  {
+    return $this->type === LOYAL;
+  }
+
   public function getOwner()
   {
     return Players::get($this->getOwnerId());
@@ -84,5 +90,13 @@ class EncounterToken extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     $this->setHidden(0);
     $site = Sites::get($this->getLocation());
     Notifications::revealEncounterToken($player, $site, $this);
+  }
+
+  public function discard($player)
+  {
+    $from = Sites::get($this->getLocation());
+    $this->setLocation(DISCARD);
+
+    Notifications::discardEncounterToken($player, $this, $from);
   }
 }
