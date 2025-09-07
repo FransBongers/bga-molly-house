@@ -86,11 +86,14 @@ class Cruise extends \Bga\Games\MollyHouse\Models\AtomicAction
 
   public function getOptions($player, $site)
   {
-    $hand = $player->getHand();
     $suit = $site->getSuit();
+    if ($suit !== null && $player->isRevealedInformer($suit)) {
+      return [];
+    }
+
+    $hand = $player->getHand();
 
     $options = [];
-
     foreach ($hand as $card) {
       if ($card->isDesire() && $card->getSuit() === $suit) {
         $options[$card->getId()] = $card;

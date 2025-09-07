@@ -51,6 +51,11 @@ class EncounterToken extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     return $this->hidden === 1;
   }
 
+  public function isRevealed()
+  {
+    return $this->hidden === 0;
+  }
+
   public function isOnMollyHouse()
   {
     return in_array($this->getLocation(), MOLLY_HOUSES);

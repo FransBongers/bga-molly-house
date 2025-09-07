@@ -3044,7 +3044,6 @@ var NotificationManager = (function () {
                         return [4, market.addCardToSafePile(getViceCard(card))];
                     case 1:
                         _a.sent();
-                        market.counters[SAFE_PILE].incValue(1);
                         return [2];
                 }
             });
@@ -3052,24 +3051,51 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_addExcessCardsToGossip = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, number, playerId, player;
+            var _a, number, playerId, cardsAddedToSafePile, cards, player, market, promises;
+            var _this = this;
             return __generator(this, function (_b) {
-                _a = notif.args, number = _a.number, playerId = _a.playerId;
-                player = this.getPlayer(playerId);
-                player.counters[HAND].incValue(-number);
-                return [2];
+                switch (_b.label) {
+                    case 0:
+                        _a = notif.args, number = _a.number, playerId = _a.playerId, cardsAddedToSafePile = _a.cardsAddedToSafePile, cards = _a.cards;
+                        player = this.getPlayer(playerId);
+                        market = Market.getInstance();
+                        player.counters[HAND].incValue(-number);
+                        if (!cardsAddedToSafePile) return [3, 2];
+                        promises = cards.map(function (card, index) { return __awaiter(_this, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0: return [4, Interaction.use().wait(index * 150)];
+                                    case 1:
+                                        _a.sent();
+                                        return [4, market.addCardToSafePile(getViceCard(card))];
+                                    case 2:
+                                        _a.sent();
+                                        return [2];
+                                }
+                            });
+                        }); });
+                        return [4, Promise.all(promises)];
+                    case 1:
+                        _b.sent();
+                        return [3, 3];
+                    case 2:
+                        Board.getInstance().counters[GOSSIP_PILE].incValue(number);
+                        _b.label = 3;
+                    case 3: return [2];
+                }
             });
         });
     };
     NotificationManager.prototype.notif_addExcessCardsToGossipPrivate = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, cards, playerId, board, promises;
+            var _a, cards, playerId, board, market, promises;
             var _this = this;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         _a = notif.args, cards = _a.cards, playerId = _a.playerId;
                         board = Board.getInstance();
+                        market = Market.getInstance();
                         this.getPlayer(playerId).counters[HAND].incValue(-cards.length);
                         promises = cards.map(function (card, index) { return __awaiter(_this, void 0, void 0, function () {
                             var viceCard;
@@ -3079,7 +3105,7 @@ var NotificationManager = (function () {
                                     case 1:
                                         _a.sent();
                                         viceCard = getViceCard(card);
-                                        viceCard.location = GOSSIP_PILE;
+                                        if (!(viceCard.location === GOSSIP_PILE)) return [3, 4];
                                         return [4, board.gossipPile.addCard(viceCard)];
                                     case 2:
                                         _a.sent();
@@ -3087,7 +3113,14 @@ var NotificationManager = (function () {
                                         return [4, this.game.viceCardManager.removeCard(viceCard)];
                                     case 3:
                                         _a.sent();
-                                        return [2];
+                                        return [3, 6];
+                                    case 4:
+                                        if (!(viceCard.location === SAFE_PILE)) return [3, 6];
+                                        return [4, market.addCardToSafePile(viceCard)];
+                                    case 5:
+                                        _a.sent();
+                                        _a.label = 6;
+                                    case 6: return [2];
                                 }
                             });
                         }); });
@@ -6131,6 +6164,7 @@ var Market = (function () {
                         return [4, this.safePileModal.addCard(viceCard)];
                     case 3:
                         _a.sent();
+                        this.counters[SAFE_PILE].incValue(1);
                         return [2];
                 }
             });

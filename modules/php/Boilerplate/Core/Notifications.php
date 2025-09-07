@@ -317,7 +317,7 @@ class Notifications
     ]);
   }
 
-  public static function addExcessCardsToGossip($player, $cards)
+  public static function addExcessCardsToGossip($player, $cards, $playerIsRevealedInformer)
   {
 
     $number = count($cards);
@@ -325,6 +325,12 @@ class Notifications
     $text = $number === 1
       ? clienttranslate('${player_name} adds ${tkn_boldText_number} card from their hand to the gossip pile')
       : clienttranslate('${player_name} adds ${tkn_boldText_number} cards from their hand to the gossip pile');
+
+    if ($playerIsRevealedInformer) {
+      $text = $number === 1
+        ? clienttranslate('${player_name} adds ${tkn_boldText_number} card from their hand to the safe pile')
+        : clienttranslate('${player_name} adds ${tkn_boldText_number} cards from their hand to the safe pile');
+    }
 
     self::notify($player, 'addExcessCardsToGossipPrivate', $text, [
       'player' => $player,
@@ -336,6 +342,8 @@ class Notifications
       'player' => $player,
       'tkn_boldText_number' => $number,
       'number' => $number,
+      'cardsAddedToSafePile' => $playerIsRevealedInformer,
+      'cards' => $playerIsRevealedInformer ? $cards : [],
       'preserve' => ['playerId'],
     ]);
   }

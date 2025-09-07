@@ -4,6 +4,7 @@ namespace Bga\Games\MollyHouse\Actions;
 
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
+use Bga\Games\MollyHouse\Managers\ViceCards;
 
 class AddExcessCardsToGossip extends \Bga\Games\MollyHouse\Models\AtomicAction
 {
@@ -73,6 +74,8 @@ class AddExcessCardsToGossip extends \Bga\Games\MollyHouse\Models\AtomicAction
     $player = $this->getPlayer();
     $playerId = $player->getId();
 
+    $playerIsRevealedInformer = $player->isRevealedInformer();
+
     $cards = [];
     foreach ($cardIds as $cardId) {
       $card = Utils::array_find($stateArgs['_private'][$playerId]['cards'], function ($c) use ($cardId) {
@@ -81,11 +84,14 @@ class AddExcessCardsToGossip extends \Bga\Games\MollyHouse\Models\AtomicAction
       if ($card === null) {
         throw new \feException("ERROR_009");
       }
-      $card->setLocation(GOSSIP_PILE);
+      $card->setLocation($playerIsRevealedInformer ? SAFE_PILE : GOSSIP_PILE);
+      if ($playerIsRevealedInformer) {
+        ViceCards::insertOnTop($card->getId(), SAFE_PILE);
+      }
       $cards[] = $card;
     }
 
-    Notifications::addExcessCardsToGossip($player, $cards);
+    Notifications::addExcessCardsToGossip($player, $cards, $playerIsRevealedInformer);
 
     $this->resolveAction([]);
   }

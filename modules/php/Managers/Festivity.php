@@ -39,11 +39,12 @@ class Festivity
     Globals::setFestivity($festivity);
   }
 
-  public static function start($player)
+  public static function start($player, $siteId)
   {
     $festivity = self::getFestivityObject();
     $festivity['active'] = true;
     $festivity['runner'] = $player->getId();
+    $festivity['siteId'] = $siteId;
 
     Globals::setFestivity($festivity);
   }
@@ -77,9 +78,15 @@ class Festivity
       'runner' => null,
       'passed' => [],
       'round' => 0,
+      'siteId' => null
     ];
   }
 
+  public static function getSite()
+  {
+    $festivity = self::get();
+    return isset($festivity['siteId']) ? Sites::get($festivity['siteId']) : null;
+  }
 
   public static function getPlayedCards()
   {

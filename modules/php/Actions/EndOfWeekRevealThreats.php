@@ -9,6 +9,7 @@ use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 use Bga\Games\MollyHouse\Managers\Festivity;
 use Bga\Games\MollyHouse\Managers\Players;
+use Bga\Games\MollyHouse\Managers\Sites;
 use Bga\Games\MollyHouse\Managers\ViceCards;
 
 class EndOfWeekRevealThreats extends \Bga\Games\MollyHouse\Models\AtomicAction
@@ -46,8 +47,11 @@ class EndOfWeekRevealThreats extends \Bga\Games\MollyHouse\Models\AtomicAction
       $numberOfThreatsRevealed = 0;
       $hand = $player->getHand();
 
+      $revealedInformerToken = $player->getRevealedInformerToken();
+      $suitToIgnore = $revealedInformerToken === null ? null : Sites::get($revealedInformerToken->getLocation())->getSuit();
+
       foreach ($hand as $card) {
-        if (!$card->isThreat()) {
+        if (!$card->isThreat() || $card->getSuit() === $suitToIgnore) {
           continue;
         }
         

@@ -14,6 +14,7 @@ use Bga\Games\MollyHouse\Managers\JoyMarkers;
 use Bga\Games\MollyHouse\Managers\Pawns;
 use Bga\Games\MollyHouse\Managers\PlayerCubes;
 use Bga\Games\MollyHouse\Managers\PlayersExtra;
+use Bga\Games\MollyHouse\Managers\Sites;
 use Bga\Games\MollyHouse\Managers\ViceCards;
 
 /*
@@ -343,5 +344,49 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   public function getIndictments(): array
   {
     return Indictments::getInLocation(Locations::indictments($this->getId()))->toArray();
+  }
+
+  public function becomeRevealedInformer($informerToken)
+  {
+    Notifications::message(
+      clienttranslate('${player_name} becomes a ${tkn_boldText_revealedInformer}'),
+      [
+        'player' => $this,
+        'tkn_boldText_revealedInformer' => clienttranslate('revealed informer'),
+        'i18n' => ['tkn_boldText_revealedInformer']
+      ]
+    );
+
+    $site = Sites::get($informerToken->getLocation());
+    $suit = $site->getSuit();
+
+    $cards = $this->getCardsInReputation();
+
+    foreach ($cards as $card) {
+      if ($card->getSuit() === $suit) {
+        $card->addToSafePile($this);
+      }
+    }
+  }
+
+  public function getRevealedInformerToken()
+  {
+    $encounterTokens = EncounterTokens::getAllEncounterTokensForPlayer($this->getId());
+    $informerToken = Utils::array_find($encounterTokens, fn($token) => $token->isInformerToken());
+    $revealedInformerToken = in_array($informerToken->getLocation(), MOLLY_HOUSES) && $informerToken->isRevealed();
+    return $revealedInformerToken ? $informerToken : null;
+  }
+
+  public function isRevealedInformer($suit = null)
+  {
+    $informerToken = $this->getRevealedInformerToken();
+    
+    if ($informerToken === null) {
+      return false;
+    }
+    if ($suit !== null) {
+      return Sites::get($informerToken->getLocation())->getSuit() === $suit;
+    }
+    return true;
   }
 }

@@ -42,6 +42,8 @@ interface NotifAddCardToSafePile {
 
 interface NotifAddExcessCardsToGossip extends NotifWithPlayerArgs {
   number: number;
+  cardsAddedToSafePile: boolean;
+  cards: ViceCardBase[];
 }
 
 interface NotifAddExcessCardsToGossipPrivate extends NotifWithPlayerArgs {

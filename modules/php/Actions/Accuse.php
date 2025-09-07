@@ -110,6 +110,7 @@ class Accuse extends \Bga\Games\MollyHouse\Models\AtomicAction
     } else {
       $player->scoreJoy(3);
       Community::scoreJoy(3);
+      $encounterToken->getOwner()->becomeRevealedInformer($encounterToken);
     }
   }
 }

@@ -283,16 +283,26 @@ class NotificationManager {
 
     const market = Market.getInstance();
     await market.addCardToSafePile(getViceCard(card));
-    market.counters[SAFE_PILE].incValue(1);
   }
 
   async notif_addExcessCardsToGossip(
     notif: Notif<NotifAddExcessCardsToGossip>
   ) {
-    const { number, playerId } = notif.args;
+    const { number, playerId, cardsAddedToSafePile, cards } = notif.args;
     const player = this.getPlayer(playerId);
+
+    const market = Market.getInstance();
+
     player.counters[HAND].incValue(-number);
-    // TODO update counters
+    if (cardsAddedToSafePile) {
+      const promises = cards.map(async (card, index) => {
+        await Interaction.use().wait(index * 150);
+        await market.addCardToSafePile(getViceCard(card));
+      });
+      await Promise.all(promises);
+    } else {
+      Board.getInstance().counters[GOSSIP_PILE].incValue(number);
+    }
   }
 
   async notif_addExcessCardsToGossipPrivate(
@@ -301,18 +311,21 @@ class NotificationManager {
     const { cards, playerId } = notif.args;
 
     const board = Board.getInstance();
+    const market = Market.getInstance();
 
     this.getPlayer(playerId).counters[HAND].incValue(-cards.length);
 
     const promises = cards.map(async (card, index) => {
       await Interaction.use().wait(index * 150);
       const viceCard = getViceCard(card);
-      viceCard.location = GOSSIP_PILE;
-
-      await board.gossipPile.addCard(viceCard);
-      board.counters[GOSSIP_PILE].incValue(1);
-
-      await this.game.viceCardManager.removeCard(viceCard);
+      // viceCard.location = GOSSIP_PILE;
+      if (viceCard.location === GOSSIP_PILE) {
+        await board.gossipPile.addCard(viceCard);
+        board.counters[GOSSIP_PILE].incValue(1);
+        await this.game.viceCardManager.removeCard(viceCard);
+      } else if (viceCard.location === SAFE_PILE) {
+        await market.addCardToSafePile(viceCard);
+      }
     });
 
     await Promise.all(promises);

@@ -140,6 +140,7 @@ class Market {
     this.ui.safePile.setAttribute('data-card-id', viceCard.id);
     await this.safePile.removeCard(viceCard);
     await this.safePileModal.addCard(viceCard);
+    this.counters[SAFE_PILE].incValue(1);
   }
 
   //  .##.....##.########.####.##.......####.########.##....##

@@ -101,6 +101,10 @@ class PlaceEncounterToken extends \Bga\Games\MollyHouse\Models\AtomicAction
     $item = Items::get($this->ctx->getInfo()['itemId']);
     $item->discard($player);
 
+    if ($token->isInformerToken()) {
+      $player->becomeRevealedInformer($token);
+    }
+
     $this->resolveAction([]);
   }
 

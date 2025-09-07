@@ -85,6 +85,10 @@ class ThrowFestivity extends \Bga\Games\MollyHouse\Models\AtomicAction
       return false;
     }
 
+    if ($player->isRevealedInformer($site->getSuit())) {
+      return false;
+    }
+
     return true;
   }
 
@@ -93,7 +97,7 @@ class ThrowFestivity extends \Bga\Games\MollyHouse\Models\AtomicAction
     Notifications::throwFestivity($player, $site);
 
 
-    Festivity::start($player);
+    Festivity::start($player, $site->getId());
 
     $nodes = [];
 
