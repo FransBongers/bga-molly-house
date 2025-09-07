@@ -65,24 +65,30 @@ class Notifications
     ]);
   }
 
-  // public static function refreshHand($player, $hand)
-  // {
-  //   // foreach ($hand as &$card) {
-  //   //   $card = self::filterCardDatas($card);
-  //   // }
-  //   self::notify($player, 'refreshHand', '', [
-  //     'player' => $player,
-  //     'hand' => $hand,
-  //   ]);
-  // }
+  public static function refreshUIPrivate($player, $privateData)
+  {
+    self::notify($player, 'refreshUIPrivate', '', array_merge([
+      'player' => $player,
+    ], $privateData));
+  }
 
   public static function refreshUI($data)
   {
-    // Keep only the thing that matters
-    $refreshedData = [
-      // Add data here that needs to be refreshed
+    unset($data['playerOrder']);
+    unset($data['playerorder']);
+    unset($data['staticData']);
+    unset($data['gamestates']);
 
-    ];
+    foreach ($data['players'] as $playerId => $player) {
+      unset($data['players'][$playerId]['hand']);
+      unset($data['players'][$playerId]['indictments']);
+      unset($data['players'][$playerId]['encounterTokens']);
+    }
+
+    self::notifyAll('refreshUI', '', [
+      // 'datas' => $fDatas,
+      'data' => $data
+    ]);
   }
 
 

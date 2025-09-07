@@ -549,8 +549,9 @@ class MollyHouse implements Game {
   // }
 
   public clearInterface() {
-    //  this.playerManager.clearInterface();
-    //  this.gameMap.clearInterface();
+    Board.getInstance().clearInterface();
+    PlayerManager.getInstance().clearInterface();
+    Market.getInstance().clearInterface();
   }
 
   clearPossible() {

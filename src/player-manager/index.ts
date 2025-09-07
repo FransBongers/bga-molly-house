@@ -35,6 +35,34 @@ class PlayerManager {
     return PlayerManager.instance;
   }
 
+  // .##.....##.##....##.########...#######.
+  // .##.....##.###...##.##.....##.##.....##
+  // .##.....##.####..##.##.....##.##.....##
+  // .##.....##.##.##.##.##.....##.##.....##
+  // .##.....##.##..####.##.....##.##.....##
+  // .##.....##.##...###.##.....##.##.....##
+  // ..#######..##....##.########...#######.
+
+  clearInterface() {
+    Object.keys(this.players).forEach((playerId) => {
+      this.players[playerId].clearInterface();
+    });
+  }
+
+  public updateInterface(gamedatas: GamedatasAlias) {
+    for (const playerId in gamedatas.players) {
+      this.players[playerId].updateInterface(gamedatas);
+    }
+  }
+
+  // .##.....##.########.####.##.......####.##....##
+  // .##.....##....##.....##..##........##...##..##.
+  // .##.....##....##.....##..##........##....####..
+  // .##.....##....##.....##..##........##.....##...
+  // .##.....##....##.....##..##........##.....##...
+  // .##.....##....##.....##..##........##.....##...
+  // ..#######.....##....####.########.####....##...
+
   getPlayer(playerId: number): PlayerAlias {
     return this.players[playerId];
   }
@@ -45,18 +73,6 @@ class PlayerManager {
 
   getPlayerIds(): number[] {
     return Object.keys(this.players).map(Number);
-  }
-
-  updatePlayers(gamedatas: GamedatasAlias) {
-    for (const playerId in gamedatas.players) {
-      this.players[playerId].updatePlayer(gamedatas);
-    }
-  }
-
-  clearInterface() {
-    Object.keys(this.players).forEach((playerId) => {
-      this.players[playerId].clearInterface();
-    });
   }
 
   /**

@@ -60,6 +60,8 @@ class NotificationManager {
       // Boilerplate
       'log',
       'message',
+      'refreshUI',
+      'refreshUIPrivate',
       // Game specific
       'addCardFromGossipPile',
       'addCardFromGossipPilePrivate',
@@ -210,6 +212,36 @@ class NotificationManager {
 
   async notif_message(notif: Notif<unknown>) {
     // Only here so messages get displayed in title bar
+  }
+
+  async notif_refreshUI(notif: Notif<NotifRefreshUI>) {
+    const { data: gamedatas } = notif.args;
+
+    const {players, ...otherData} = gamedatas;
+
+    const updatedGamedatas = {
+      ...this.game.gamedatas,
+      ...otherData,
+    };
+    this.game.gamedatas = updatedGamedatas;
+    this.game.clearInterface();
+    Board.getInstance().updateInterface(updatedGamedatas);
+    PlayerManager.getInstance().updateInterface(updatedGamedatas);
+    Market.getInstance().updateInterface(updatedGamedatas);
+  }
+
+  async notif_refreshUIPrivate(notif: Notif<NotifRefreshUIPrivate>) {
+    const { playerId, hand: handCards, encounterTokens, indictments } = notif.args;
+    const player = this.getPlayer(playerId);
+    player.indictments.removeAll();
+    player.encounterTokens.removeAll();
+    player.updatePrivateData({
+      encounterTokens,
+      indictments,
+    } as PlayerDataAlias);
+    const hand = Hand.getInstance()
+    hand.clearInterface();
+    hand.updateHand(handCards);
   }
 
   async notif_phase(notif: Notif<NotifPhase>) {

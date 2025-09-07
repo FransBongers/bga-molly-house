@@ -41,8 +41,9 @@ class MohoPlayer {
 
   clearInterface() {}
 
-  updatePlayer(gamedatas: GamedatasAlias) {
+  updateInterface(gamedatas: GamedatasAlias) {
     this.updatePlayerPanel(gamedatas);
+    this.updatePlayerBoard(gamedatas.players[this.playerId]);
   }
 
   // ..######..########.########.##.....##.########.
@@ -97,6 +98,7 @@ class MohoPlayer {
     this.setupIndictments(gamedatas);
 
     this.updatePlayerBoard(playerGamedatas);
+    this.updatePrivateData(playerGamedatas);
   }
 
   setupEncounterTokens(gamedatas: GamedatasAlias) {
@@ -171,12 +173,7 @@ class MohoPlayer {
       type: 'overlap',
     });
 
-    // node.insertAdjacentElement(
-    //   'afterbegin',
-    //   this.cubeCounters[RED].getElement()
-    // );
-
-    this.updatePlayerPanel(gamedatas);
+    // this.updatePlayerPanel(gamedatas);
   }
 
   updatePlayerBoard(playerGamedatas: PlayerDataAlias) {
@@ -184,14 +181,35 @@ class MohoPlayer {
     playerGamedatas.items.forEach((item) => {
       this.items[item.location].addCard(getItem(item));
     });
+  }
+
+  updatePrivateData(playerGamedatas: PlayerDataAlias) {
     this.indictments.addCards(playerGamedatas.indictments);
+    this.updateEncounterTokens(playerGamedatas);
   }
 
   public updateEncounterTokens(playerGamedatas: PlayerDataAlias) {
     this.encounterTokens.addCards(playerGamedatas.encounterTokens);
   }
 
-  updatePlayerPanel(gamedatas: GamedatasAlias) {}
+  updatePlayerPanel(gamedatas: GamedatasAlias) {
+    const playerGamedatas = gamedatas.players[this.playerId];
+    [PENTACLES, FANS, CUPS, HEARTS].forEach((suit) => {
+      this.counters[suit].setValue(
+        playerGamedatas.reputation.filter(
+          (card) => getViceCard(card).suit === suit && !card.hidden
+        ).length
+      );
+    });
+    this.counters[HAND].setValue(playerGamedatas.handCardCount);
+
+    [YELLOW, GREEN, BLUE, RED].forEach((color) => {
+      this.counters[color].setValue(
+        playerGamedatas.cubes[COLOR_SUIT_MAP[color]]
+      );
+    });
+    this.counters[DRAW_TOKEN].setValue(playerGamedatas.drawTokens);
+  }
 
   // ..######...########.########.########.########.########...######.
   // .##....##..##..........##.......##....##.......##.....##.##....##

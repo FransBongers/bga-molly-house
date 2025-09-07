@@ -100,21 +100,21 @@ const getSettingsConfig = (): Record<string, PlayerPreferenceTab> => ({
         },
         type: 'slider',
       },
-      [PREF_CARD_SIZE]: {
-        id: PREF_CARD_SIZE,
-        onChangeInSetup: false,
-        label: _("Size of cards"),
-        defaultValue: 100,
-        sliderConfig: {
-          step: 5,
-          padding: 0,
-          range: {
-            min: 50,
-            max: 200,
-          },
-        },
-        type: "slider",
-      },
+      // [PREF_CARD_SIZE]: {
+      //   id: PREF_CARD_SIZE,
+      //   onChangeInSetup: false,
+      //   label: _("Size of cards"),
+      //   defaultValue: 100,
+      //   sliderConfig: {
+      //     step: 5,
+      //     padding: 0,
+      //     range: {
+      //       min: 50,
+      //       max: 200,
+      //     },
+      //   },
+      //   type: "slider",
+      // },
       [PREF_CARD_SIZE_IN_LOG]: {
         id: PREF_CARD_SIZE_IN_LOG,
         onChangeInSetup: true,
@@ -130,23 +130,23 @@ const getSettingsConfig = (): Record<string, PlayerPreferenceTab> => ({
         },
         type: 'slider',
       },
-      [PREF_CARD_INFO_IN_TOOLTIP]: {
-        id: PREF_CARD_INFO_IN_TOOLTIP,
-        onChangeInSetup: false,
-        defaultValue: PREF_ENABLED,
-        label: _('Show card info in tooltip'),
-        type: 'select',
-        options: [
-          {
-            label: _('Enabled'),
-            value: PREF_ENABLED,
-          },
-          {
-            label: _('Disabled (card image only)'),
-            value: PREF_DISABLED,
-          },
-        ],
-      },
+      // [PREF_CARD_INFO_IN_TOOLTIP]: {
+      //   id: PREF_CARD_INFO_IN_TOOLTIP,
+      //   onChangeInSetup: false,
+      //   defaultValue: PREF_ENABLED,
+      //   label: _('Show card info in tooltip'),
+      //   type: 'select',
+      //   options: [
+      //     {
+      //       label: _('Enabled'),
+      //       value: PREF_ENABLED,
+      //     },
+      //     {
+      //       label: _('Disabled (card image only)'),
+      //       value: PREF_DISABLED,
+      //     },
+      //   ],
+      // },
     },
   },
   gameplay: {

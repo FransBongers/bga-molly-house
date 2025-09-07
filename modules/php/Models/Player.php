@@ -380,7 +380,7 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   public function isRevealedInformer($suit = null)
   {
     $informerToken = $this->getRevealedInformerToken();
-    
+
     if ($informerToken === null) {
       return false;
     }
@@ -388,5 +388,16 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
       return Sites::get($informerToken->getLocation())->getSuit() === $suit;
     }
     return true;
+  }
+
+  public function getPrivateData()
+  {
+
+    $handCards =  ViceCards::getInLocation(Locations::hand($this->getId()))->toArray();
+    return [
+      'hand' => $handCards,
+      'encounterTokens' => $this->getEncounterTokens(),
+      'indictments' => $this->getIndictments(),
+    ];
   }
 }

@@ -9,7 +9,7 @@
 class Hand {
   private static instance: Hand;
   private game: GameAlias;
-  private hand: LineStock<ViceCard>;
+
   private handStock: HandStock<ViceCard>;
 
   constructor(game: GameAlias) {
@@ -25,11 +25,29 @@ class Hand {
     return Hand.instance;
   }
 
+  // .##.....##.##....##.########...#######.
+  // .##.....##.###...##.##.....##.##.....##
+  // .##.....##.####..##.##.....##.##.....##
+  // .##.....##.##.##.##.##.....##.##.....##
+  // .##.....##.##..####.##.....##.##.....##
+  // .##.....##.##...###.##.....##.##.....##
+  // ..#######..##....##.########...#######.
+
   clearInterface() {
-    this.hand.removeAll();
+    this.handStock.removeAll();
   }
 
-  updateHand() {}
+  updateHand(cards: ViceCardBase[]) {
+    this.handStock.addCards(cards.map(getViceCard));
+  }
+
+  // ..######..########.########.##.....##.########.
+  // .##....##.##..........##....##.....##.##.....##
+  // .##.......##..........##....##.....##.##.....##
+  // ..######..######......##....##.....##.########.
+  // .......##.##..........##....##.....##.##.......
+  // .##....##.##..........##....##.....##.##.......
+  // ..######..########....##.....#######..##.......
 
   public setupHand() {
     const node: HTMLElement = $('game_play_area');
@@ -44,7 +62,7 @@ class Hand {
       }
     );
     const cards = this.game.gamedatas.players[this.game.getPlayerId()].hand;
-    this.handStock.addCards(cards.map(getViceCard));
+    this.updateHand(cards);
   }
 
   public updateFloatingHandScale() {
@@ -67,15 +85,15 @@ class Hand {
   }
 
   public async removeCard(card: ViceCard): Promise<void> {
-    await this.hand.removeCard(card);
+    await this.handStock.removeCard(card);
   }
 
   public getCards(): ViceCard[] {
-    return this.hand.getCards() as ViceCard[];
+    return this.handStock.getCards() as ViceCard[];
   }
 
-  public getStock(): LineStock<ViceCard> {
-    return this.hand;
+  public getStock(): HandStock<ViceCard> {
+    return this.handStock;
   }
 
   public open(): void {
@@ -86,7 +104,7 @@ class Hand {
   }
 
   public updateCardTooltips() {
-    const cards = this.hand.getCards();
+    const cards = this.handStock.getCards();
     cards.forEach((card) => {
       // this.game.tooltipManager.removeTooltip(card.id);
       // this.game.tooltipManager.addCardTooltip({ nodeId: card.id, cardId: card.id });

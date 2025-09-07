@@ -2787,6 +2787,17 @@ var Modal = (function () {
     };
     return Modal;
 }());
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var MIN_NOTIFICATION_MS = 1200;
 var NotificationManager = (function () {
     function NotificationManager(game) {
@@ -2808,6 +2819,8 @@ var NotificationManager = (function () {
         var notifs = [
             'log',
             'message',
+            'refreshUI',
+            'refreshUIPrivate',
             'addCardFromGossipPile',
             'addCardFromGossipPilePrivate',
             'addCardToHand',
@@ -2919,6 +2932,41 @@ var NotificationManager = (function () {
     NotificationManager.prototype.notif_message = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
+                return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_refreshUI = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var gamedatas, players, otherData, updatedGamedatas;
+            return __generator(this, function (_a) {
+                gamedatas = notif.args.data;
+                players = gamedatas.players, otherData = __rest(gamedatas, ["players"]);
+                updatedGamedatas = __assign(__assign({}, this.game.gamedatas), otherData);
+                this.game.gamedatas = updatedGamedatas;
+                this.game.clearInterface();
+                Board.getInstance().updateInterface(updatedGamedatas);
+                PlayerManager.getInstance().updateInterface(updatedGamedatas);
+                Market.getInstance().updateInterface(updatedGamedatas);
+                return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_refreshUIPrivate = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, playerId, handCards, encounterTokens, indictments, player, hand;
+            return __generator(this, function (_b) {
+                _a = notif.args, playerId = _a.playerId, handCards = _a.hand, encounterTokens = _a.encounterTokens, indictments = _a.indictments;
+                player = this.getPlayer(playerId);
+                player.indictments.removeAll();
+                player.encounterTokens.removeAll();
+                player.updatePrivateData({
+                    encounterTokens: encounterTokens,
+                    indictments: indictments,
+                });
+                hand = Hand.getInstance();
+                hand.clearInterface();
+                hand.updateHand(handCards);
                 return [2];
             });
         });
@@ -3920,21 +3968,6 @@ var getSettingsConfig = function () {
                     },
                     type: 'slider',
                 },
-                _a[PREF_CARD_SIZE] = {
-                    id: PREF_CARD_SIZE,
-                    onChangeInSetup: false,
-                    label: _("Size of cards"),
-                    defaultValue: 100,
-                    sliderConfig: {
-                        step: 5,
-                        padding: 0,
-                        range: {
-                            min: 50,
-                            max: 200,
-                        },
-                    },
-                    type: "slider",
-                },
                 _a[PREF_CARD_SIZE_IN_LOG] = {
                     id: PREF_CARD_SIZE_IN_LOG,
                     onChangeInSetup: true,
@@ -3949,23 +3982,6 @@ var getSettingsConfig = function () {
                         },
                     },
                     type: 'slider',
-                },
-                _a[PREF_CARD_INFO_IN_TOOLTIP] = {
-                    id: PREF_CARD_INFO_IN_TOOLTIP,
-                    onChangeInSetup: false,
-                    defaultValue: PREF_ENABLED,
-                    label: _('Show card info in tooltip'),
-                    type: 'select',
-                    options: [
-                        {
-                            label: _('Enabled'),
-                            value: PREF_ENABLED,
-                        },
-                        {
-                            label: _('Disabled (card image only)'),
-                            value: PREF_DISABLED,
-                        },
-                    ],
                 },
                 _a),
         },
@@ -4799,6 +4815,9 @@ var MollyHouse = (function () {
         }
     };
     MollyHouse.prototype.clearInterface = function () {
+        Board.getInstance().clearInterface();
+        PlayerManager.getInstance().clearInterface();
+        Market.getInstance().clearInterface();
     };
     MollyHouse.prototype.clearPossible = function () {
         this.framework().removeActionButtons();
@@ -5156,6 +5175,13 @@ var Board = (function () {
     };
     Board.getInstance = function () {
         return Board.instance;
+    };
+    Board.prototype.clearInterface = function () {
+        Object.values(this.shops).forEach(function (shop) { return shop.removeAll(); });
+    };
+    Board.prototype.updateInterface = function (gamedatas) {
+        this.updateShops(gamedatas);
+        this.updatePawns(Object.values(gamedatas.pawns));
     };
     Board.prototype.setup = function (gamedatas) {
         document
@@ -5890,9 +5916,11 @@ var Hand = (function () {
         return Hand.instance;
     };
     Hand.prototype.clearInterface = function () {
-        this.hand.removeAll();
+        this.handStock.removeAll();
     };
-    Hand.prototype.updateHand = function () { };
+    Hand.prototype.updateHand = function (cards) {
+        this.handStock.addCards(cards.map(getViceCard));
+    };
     Hand.prototype.setupHand = function () {
         var node = $('game_play_area');
         node.insertAdjacentHTML('beforeend', tplHand());
@@ -5901,7 +5929,7 @@ var Hand = (function () {
             cardShift: 'calc(var(--cardScale) * 15px)',
         });
         var cards = this.game.gamedatas.players[this.game.getPlayerId()].hand;
-        this.handStock.addCards(cards.map(getViceCard));
+        this.updateHand(cards);
     };
     Hand.prototype.updateFloatingHandScale = function () {
         var WIDTH = $('game_play_area').getBoundingClientRect()['width'];
@@ -5931,7 +5959,7 @@ var Hand = (function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4, this.hand.removeCard(card)];
+                    case 0: return [4, this.handStock.removeCard(card)];
                     case 1:
                         _a.sent();
                         return [2];
@@ -5940,10 +5968,10 @@ var Hand = (function () {
         });
     };
     Hand.prototype.getCards = function () {
-        return this.hand.getCards();
+        return this.handStock.getCards();
     };
     Hand.prototype.getStock = function () {
-        return this.hand;
+        return this.handStock;
     };
     Hand.prototype.open = function () {
         var handWrapper = $('floating_hand_wrapper');
@@ -5952,7 +5980,7 @@ var Hand = (function () {
         }
     };
     Hand.prototype.updateCardTooltips = function () {
-        var cards = this.hand.getCards();
+        var cards = this.handStock.getCards();
         cards.forEach(function (card) {
         });
     };
@@ -6098,6 +6126,15 @@ var Market = (function () {
     Market.getInstance = function () {
         return Market.instance;
     };
+    Market.prototype.clearInterface = function () {
+        this.stock.removeAll();
+        this.safePile.removeAll();
+    };
+    Market.prototype.updateInterface = function (gamedatas) {
+        this.updateMarket(gamedatas);
+        this.updateDeck(gamedatas);
+        this.updateSafePile(gamedatas);
+    };
     Market.prototype.setup = function (gamedatas) {
         document
             .getElementById('left-column')
@@ -6189,6 +6226,17 @@ var PlayerManager = (function () {
     PlayerManager.getInstance = function () {
         return PlayerManager.instance;
     };
+    PlayerManager.prototype.clearInterface = function () {
+        var _this = this;
+        Object.keys(this.players).forEach(function (playerId) {
+            _this.players[playerId].clearInterface();
+        });
+    };
+    PlayerManager.prototype.updateInterface = function (gamedatas) {
+        for (var playerId in gamedatas.players) {
+            this.players[playerId].updateInterface(gamedatas);
+        }
+    };
     PlayerManager.prototype.getPlayer = function (playerId) {
         return this.players[playerId];
     };
@@ -6197,17 +6245,6 @@ var PlayerManager = (function () {
     };
     PlayerManager.prototype.getPlayerIds = function () {
         return Object.keys(this.players).map(Number);
-    };
-    PlayerManager.prototype.updatePlayers = function (gamedatas) {
-        for (var playerId in gamedatas.players) {
-            this.players[playerId].updatePlayer(gamedatas);
-        }
-    };
-    PlayerManager.prototype.clearInterface = function () {
-        var _this = this;
-        Object.keys(this.players).forEach(function (playerId) {
-            _this.players[playerId].clearInterface();
-        });
     };
     PlayerManager.prototype.getCurrentPlayerId = function () {
         return this.game.getPlayerId();
@@ -6229,8 +6266,9 @@ var MohoPlayer = (function () {
         this.setupPlayer(gamedatas);
     }
     MohoPlayer.prototype.clearInterface = function () { };
-    MohoPlayer.prototype.updatePlayer = function (gamedatas) {
+    MohoPlayer.prototype.updateInterface = function (gamedatas) {
         this.updatePlayerPanel(gamedatas);
+        this.updatePlayerBoard(gamedatas.players[this.playerId]);
     };
     MohoPlayer.prototype.setupPlayer = function (gamedatas) {
         this.setupPlayerBoard(gamedatas);
@@ -6258,6 +6296,7 @@ var MohoPlayer = (function () {
         this.setupEncounterTokens(gamedatas);
         this.setupIndictments(gamedatas);
         this.updatePlayerBoard(playerGamedatas);
+        this.updatePrivateData(playerGamedatas);
     };
     MohoPlayer.prototype.setupEncounterTokens = function (gamedatas) {
         this.encounterTokens = new LineStock(this.game.encounterTokenManager, document.getElementById("moho-encounter-tokens-".concat(this.playerId)), {
@@ -6306,7 +6345,6 @@ var MohoPlayer = (function () {
             parentElement: node,
             type: 'overlap',
         });
-        this.updatePlayerPanel(gamedatas);
     };
     MohoPlayer.prototype.updatePlayerBoard = function (playerGamedatas) {
         var _this = this;
@@ -6314,12 +6352,26 @@ var MohoPlayer = (function () {
         playerGamedatas.items.forEach(function (item) {
             _this.items[item.location].addCard(getItem(item));
         });
+    };
+    MohoPlayer.prototype.updatePrivateData = function (playerGamedatas) {
         this.indictments.addCards(playerGamedatas.indictments);
+        this.updateEncounterTokens(playerGamedatas);
     };
     MohoPlayer.prototype.updateEncounterTokens = function (playerGamedatas) {
         this.encounterTokens.addCards(playerGamedatas.encounterTokens);
     };
-    MohoPlayer.prototype.updatePlayerPanel = function (gamedatas) { };
+    MohoPlayer.prototype.updatePlayerPanel = function (gamedatas) {
+        var _this = this;
+        var playerGamedatas = gamedatas.players[this.playerId];
+        [PENTACLES, FANS, CUPS, HEARTS].forEach(function (suit) {
+            _this.counters[suit].setValue(playerGamedatas.reputation.filter(function (card) { return getViceCard(card).suit === suit && !card.hidden; }).length);
+        });
+        this.counters[HAND].setValue(playerGamedatas.handCardCount);
+        [YELLOW, GREEN, BLUE, RED].forEach(function (color) {
+            _this.counters[color].setValue(playerGamedatas.cubes[COLOR_SUIT_MAP[color]]);
+        });
+        this.counters[DRAW_TOKEN].setValue(playerGamedatas.drawTokens);
+    };
     MohoPlayer.prototype.getColor = function () {
         return this.playerColor;
     };

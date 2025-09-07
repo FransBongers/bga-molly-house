@@ -18,6 +18,16 @@ interface NotifPhase {
   phase: string;
 }
 
+interface NotifRefreshUI {
+  data: Partial<GamedatasAlias>;
+}
+
+interface NotifRefreshUIPrivate extends NotifWithPlayerArgs {
+  hand: ViceCardBase[];
+  indictments: MohoIndictment[];
+  encounterTokens: MohoEncounterToken[];
+}
+
 interface NotifAddCardFromGossipPile extends NotifWithPlayerArgs {}
 
 interface NotifAddCardFromGossipPilePrivate extends NotifWithPlayerArgs {
