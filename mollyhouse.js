@@ -5779,7 +5779,7 @@ var CardModal = (function () {
     };
     return CardModal;
 }());
-var _a;
+var _a, _b, _c, _d;
 var FESTIVITY_CONFIG_TWO_PLAYERS = (_a = {},
     _a[COMMUNITY] = {
         top: 250,
@@ -5798,10 +5798,94 @@ var FESTIVITY_CONFIG_TWO_PLAYERS = (_a = {},
         left: 305,
     },
     _a);
+var FESTIVITY_CONFIG_THREE_PLAYERS = (_b = {},
+    _b[COMMUNITY] = {
+        top: 250,
+        left: 10,
+    },
+    _b[0] = {
+        top: 487,
+        left: 313,
+    },
+    _b[1] = {
+        top: 10,
+        left: 313,
+    },
+    _b[2] = {
+        top: 250,
+        left: 612,
+    },
+    _b[PLAYED_DRESSES] = {
+        top: 250,
+        left: 305,
+    },
+    _b);
+var FESTIVITY_CONFIG_FOUR_PLAYERS = (_c = {},
+    _c[COMMUNITY] = {
+        top: 250,
+        left: 310,
+    },
+    _c[0] = {
+        top: 495,
+        left: 612,
+    },
+    _c[1] = {
+        top: 495,
+        left: 10,
+    },
+    _c[2] = {
+        top: 10,
+        left: 10,
+    },
+    _c[3] = {
+        top: 10,
+        left: 612,
+    },
+    _c[PLAYED_DRESSES] = {
+        top: 250,
+        left: 605,
+    },
+    _c);
+var FESTIVITY_CONFIG_FIVE_PLAYERS = (_d = {},
+    _d[COMMUNITY] = {
+        top: 320,
+        left: 310,
+    },
+    _d[0] = {
+        top: 495,
+        left: 612,
+    },
+    _d[1] = {
+        top: 495,
+        left: 10,
+    },
+    _d[2] = {
+        top: 10,
+        left: 10,
+    },
+    _d[3] = {
+        top: 10,
+        left: 310,
+    },
+    _d[4] = {
+        top: 10,
+        left: 612,
+    },
+    _d[PLAYED_DRESSES] = {
+        top: 250,
+        left: 605,
+    },
+    _d);
 var getFestivityPosition = function (playerCount, position) {
     switch (playerCount) {
         case 2:
             return FESTIVITY_CONFIG_TWO_PLAYERS[position];
+        case 3:
+            return FESTIVITY_CONFIG_THREE_PLAYERS[position];
+        case 4:
+            return FESTIVITY_CONFIG_FOUR_PLAYERS[position];
+        case 5:
+            return FESTIVITY_CONFIG_FIVE_PLAYERS[position];
         default:
             return {
                 top: 0,
