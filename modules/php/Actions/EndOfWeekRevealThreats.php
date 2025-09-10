@@ -57,7 +57,7 @@ class EndOfWeekRevealThreats extends \Bga\Games\MollyHouse\Models\AtomicAction
         
         Notifications::revealThreat($player, $card);
 
-        $card->addToGossip($player);
+        $card->addToGossip($player, false);
         $player->expose($card);
 
         $numberOfThreatsRevealed++;

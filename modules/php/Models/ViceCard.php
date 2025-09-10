@@ -98,14 +98,13 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     return $this->displayValue === 'Q';
   }
 
-  public function addToGossip($player, $notify = true)
+  public function addToGossip($player, $exposePlayers = true)
   {
     $state = ViceCards::insertOnTop($this->getId(), GOSSIP_PILE);
     $this->location = GOSSIP_PILE;
     $this->state = $state;
-    if ($notify) {
-      Notifications::addCardToGossipPile($player, $this);
-    }
+
+    Notifications::addCardToGossipPile($player, $this);
   }
 
   public function addToHand($player, $notify = true)

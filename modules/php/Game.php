@@ -236,7 +236,7 @@ class Game extends \Bga\GameFramework\Table
     public function upgradeTableDb($from_version)
     {
 
-        // if ($from_version <= 2509042231) {
+        // if ($from_version <= 2509091802) {
         //     $sql = "ALTER TABLE `DBPREFIX_indictment_cards` ADD `hidden` tinyint(1) default 1;";
         //     $this->applyDbUpgradeToAllDB($sql);
         // }

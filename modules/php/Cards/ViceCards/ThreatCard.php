@@ -15,9 +15,14 @@ class ThreatCard extends \Bga\Games\MollyHouse\Models\ViceCard
     $this->type = THREAT;
   }
 
-  public function addToGossip($player, $notify = true)
+  public function addToGossip($player, $exposePlayers = true)
   {
-    parent::addToGossip($player, $notify);
+    parent::addToGossip($player, $exposePlayers);
+
+    if (!$exposePlayers) {
+      return;
+    }
+
 
     $suit = $this->getSuit();
     // Expose the most infamous
