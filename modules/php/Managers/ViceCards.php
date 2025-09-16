@@ -144,6 +144,7 @@ class ViceCards extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
     self::createMarket();
     self::pickOneForLocation(DECK, GOSSIP_PILE);
     self::dealCards(count($players));
+    Globals::setDeckCountStartOfWeek(ViceCards::countInLocation(DECK));
   }
 
   //  .##.....##.########.####.##.......####.########.##....##

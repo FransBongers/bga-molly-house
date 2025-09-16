@@ -217,7 +217,7 @@ class NotificationManager {
   async notif_refreshUI(notif: Notif<NotifRefreshUI>) {
     const { data: gamedatas } = notif.args;
 
-    const {players, ...otherData} = gamedatas;
+    const { players, ...otherData } = gamedatas;
 
     const updatedGamedatas = {
       ...this.game.gamedatas,
@@ -231,7 +231,12 @@ class NotificationManager {
   }
 
   async notif_refreshUIPrivate(notif: Notif<NotifRefreshUIPrivate>) {
-    const { playerId, hand: handCards, encounterTokens, indictments } = notif.args;
+    const {
+      playerId,
+      hand: handCards,
+      encounterTokens,
+      indictments,
+    } = notif.args;
     const player = this.getPlayer(playerId);
     player.indictments.removeAll();
     player.encounterTokens.removeAll();
@@ -239,7 +244,7 @@ class NotificationManager {
       encounterTokens,
       indictments,
     } as PlayerDataAlias);
-    const hand = Hand.getInstance()
+    const hand = Hand.getInstance();
     hand.clearInterface();
     hand.updateHand(handCards);
   }
@@ -311,10 +316,16 @@ class NotificationManager {
   }
 
   async notif_addCardToSafePile(notif: Notif<NotifAddCardToSafePile>) {
-    const { card } = notif.args;
+    const { card, playerId, community, from } = notif.args;
+
+    const viceCard = getViceCard(card);
+
+    if (from.startsWith('reputation_') && !community && playerId) {
+      this.getPlayer(playerId).counters[viceCard.suit].incValue(-1);
+    }
 
     const market = Market.getInstance();
-    await market.addCardToSafePile(getViceCard(card));
+    await market.addCardToSafePile(viceCard);
   }
 
   async notif_addExcessCardsToGossip(

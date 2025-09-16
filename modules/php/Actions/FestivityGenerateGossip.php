@@ -75,7 +75,7 @@ class FestivityGenerateGossip extends \Bga\Games\MollyHouse\Models\AtomicAction
 
     $playerThatPlayerCardId = explode('_', $card->getLocation())[1];
 
-    $card->addToGossip($player);
+    $card->addToGossip($player, false);
 
     if ($playerThatPlayerCardId !== COMMUNITY) {
       Players::get($playerThatPlayerCardId)->drawCards(1);

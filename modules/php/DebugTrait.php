@@ -30,11 +30,11 @@ trait DebugTrait
   {
     // Sites::get(MISS_MUFFS)->setRaided(1);
 
-    AtomicActions::get(FINAL_SCORING)->communitySurvival();
+    
 
 
 
-    // Notifications::log('closest', ->getBestSetOfCards(Festivity::getPlayedCards()));
+    Notifications::log('getDeckCountStartOfWeek', Globals::getDeckCountStartOfWeek());
 
     // JoyMarkers::setupNewGame();
 

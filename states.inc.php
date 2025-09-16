@@ -179,6 +179,7 @@ $machinestates = [
             'playCard' => 4,
             'pass' => 4,
         ])
+        ->updateGameProgression(true)
         ->build(),
 
     ST_ROLL_DICE => GameStateBuilder::create()

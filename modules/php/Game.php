@@ -218,7 +218,9 @@ class Game extends \Bga\GameFramework\Table
     {
         // TODO: compute and return the game progression
 
-        return 0;
+        $weekPercentage = (Globals::getCurrentWeek() - 1) * 20;
+        $deckPercentage = (int) (20 * (1 - (Globals::getDeckCountStartOfWeek() > 0 ? ViceCards::countInLocation(DECK) / Globals::getDeckCountStartOfWeek() : 1)));
+        return $weekPercentage + $deckPercentage;
     }
 
 

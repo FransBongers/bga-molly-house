@@ -2395,6 +2395,7 @@ span[style*="color:#c0c0c0"] {
   background-image: url("img/pawns.png");
   background-size: 500% 100%;
   background-repeat: no-repeat;
+  filter: drop-shadow(calc(var(--iconScale) * 2px) 0px 0px black) drop-shadow(calc(var(--iconScale) * -2px) 0px 0px black) drop-shadow(0px calc(var(--iconScale) * 2px) 0px black) drop-shadow(0px calc(var(--iconScale) * -2px) 0px black);
 }
 
 .moho-pawn[data-color=blue] {

@@ -111,9 +111,16 @@ class EndOfWeekEncounterSociety extends \Bga\Games\MollyHouse\Models\AtomicActio
 
   public function getClosestOpenMollyHouse($siteId)
   {
+    $sites = Sites::getAll();
 
-    $closestOpenToClockwise = $this->getClosestOpenInDirection($siteId, true);
-    $closestOpenToCounterClockwise = $this->getClosestOpenInDirection($siteId, false);
+    // Return site player is at if they are on an open Molly House
+    $playerSite = $sites[$siteId];
+    if ($playerSite->isMollyHouse() && $playerSite->isOpen()) {
+      return $playerSite;
+    }
+
+    $closestOpenToClockwise = $this->getClosestOpenInDirection($sites, $siteId, true);
+    $closestOpenToCounterClockwise = $this->getClosestOpenInDirection($sites, $siteId, false);
 
     if ($closestOpenToClockwise['distance'] <= $closestOpenToCounterClockwise['distance']) {
       return $closestOpenToClockwise['site'];
@@ -121,9 +128,8 @@ class EndOfWeekEncounterSociety extends \Bga\Games\MollyHouse\Models\AtomicActio
     return $closestOpenToCounterClockwise['site'];
   }
 
-  private function getClosestOpenInDirection($siteId, $clockwise)
+  private function getClosestOpenInDirection($sites, $siteId, $clockwise)
   {
-    $sites = Sites::getAll();
     $startIndex =  Utils::array_find_index(SITES, function ($sId) use ($siteId) {
       return $sId === $siteId;
     });

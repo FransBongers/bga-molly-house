@@ -48,6 +48,9 @@ interface NotifAddCardToReputation extends NotifWithPlayerArgs {
 
 interface NotifAddCardToSafePile {
   card: ViceCardBase;
+  community: boolean;
+  playerId?: number;
+  from: string;
 }
 
 interface NotifAddExcessCardsToGossip extends NotifWithPlayerArgs {

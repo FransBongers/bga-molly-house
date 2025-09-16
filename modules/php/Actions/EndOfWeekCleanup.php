@@ -52,6 +52,7 @@ class EndOfWeekCleanup extends \Bga\Games\MollyHouse\Models\AtomicAction
 
     Globals::setPlayersWhoGainedIndictment([]);
     Globals::setPlayersWhoPlayedDomino([]);
+    Globals::setDeckCountStartOfWeek(ViceCards::countInLocation(DECK));
 
     $this->resolveAction(['automatic' => true]);
   }

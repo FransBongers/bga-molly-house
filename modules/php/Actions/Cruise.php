@@ -79,6 +79,7 @@ class Cruise extends \Bga\Games\MollyHouse\Models\AtomicAction
       'i18n' => ['tkn_boldText_site'],
     ]);
     $card->addToReputation($player);
+    $card->checkForBonusJoy($player);
 
     $reputationForSuit = $player->getReputationForSuit($card->getSuit());
     $player->drawCards(min(4, $reputationForSuit));;

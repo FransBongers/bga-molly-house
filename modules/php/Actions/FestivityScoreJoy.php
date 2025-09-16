@@ -79,6 +79,7 @@ class FestivityScoreJoy extends \Bga\Games\MollyHouse\Models\AtomicAction
 
         $card->addToReputation($player);
         $card->scoreJoy($player);
+        $card->checkForBonusJoy($player);
       }
     }
 

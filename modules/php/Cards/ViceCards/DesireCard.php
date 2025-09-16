@@ -15,11 +15,11 @@ class DesireCard extends \Bga\Games\MollyHouse\Models\ViceCard
     $this->type = DESIRE;
   }
 
-  public function addToReputation($player, $notify = true)
-  {
-    parent::addToReputation($player, $notify);
-    $this->scoreBonusJoy($player);
-  }
+  // public function addToReputation($player, $notify = true)
+  // {
+  //   parent::addToReputation($player, $notify);
+  //   // $this->scoreBonusJoy($player);
+  // }
 
   public function scoreJoy($playerOrCommunity)
   {
@@ -35,10 +35,10 @@ class DesireCard extends \Bga\Games\MollyHouse\Models\ViceCard
 
     Notifications::scoreJoy($playerOrCommunity, $this->getJoy(), $total, $joyMarker);
 
-    $this->scoreBonusJoy($playerOrCommunity);
+    // $this->scoreBonusJoy($playerOrCommunity);
   }
 
-  public function scoreBonusJoy($player)
+  public function checkForBonusJoy($player)
   {
     $reptution = $player->getCardsInReputation();
     foreach ($reptution as $card) {

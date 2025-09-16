@@ -140,6 +140,7 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
 
   public function addToSafePile($playerOrCommunity, $notify = true)
   {
+    $from = $this->getLocation();
     $state = ViceCards::insertOnTop($this->getId(), SAFE_PILE);
     $this->location = SAFE_PILE;
     $this->state = $state;
@@ -147,7 +148,7 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
       return;
     }
 
-    Notifications::addCardToSafePile($playerOrCommunity, $this);
+    Notifications::addCardToSafePile($playerOrCommunity, $this, $from);
   }
 
   public function scoreJoy($playerOrCommunity)
@@ -179,5 +180,10 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   public function isInMarket()
   {
     return Utils::startsWith($this->location, 'market_');
+  }
+
+  public function checkForBonusJoy($player)
+  {
+    return;
   }
 }

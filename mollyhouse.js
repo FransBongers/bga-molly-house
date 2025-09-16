@@ -3083,15 +3083,19 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_addCardToSafePile = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var card, market;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var _a, card, playerId, community, from, viceCard, market;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        card = notif.args.card;
+                        _a = notif.args, card = _a.card, playerId = _a.playerId, community = _a.community, from = _a.from;
+                        viceCard = getViceCard(card);
+                        if (from.startsWith('reputation_') && !community && playerId) {
+                            this.getPlayer(playerId).counters[viceCard.suit].incValue(-1);
+                        }
                         market = Market.getInstance();
-                        return [4, market.addCardToSafePile(getViceCard(card))];
+                        return [4, market.addCardToSafePile(viceCard)];
                     case 1:
-                        _a.sent();
+                        _b.sent();
                         return [2];
                 }
             });
@@ -5061,7 +5065,7 @@ var SITE_POSITIONS = (_a = {},
     _a[OLD_ROUND_COURT] = { top: 991, left: 732 },
     _a[CANNON_STREET] = { top: 991, left: 539 },
     _a[ST_JAMESS_PARK] = { top: 991, left: 345 },
-    _a[JULIUS_CESAR_TAYLORS] = { top: 991, left: 119 },
+    _a[JULIUS_CESAR_TAYLORS] = { top: 991, left: 160 },
     _a[COVENT_GARDEN_PIAZZA] = { top: 680, left: 83 },
     _a[DUKE_STREET] = { top: 486, left: 83 },
     _a[LINCOLNS_INN_BOGHOUSE] = { top: 288, left: 83 },
@@ -5079,11 +5083,7 @@ var DANGEROUS_CRUISING_MARKERS_POSITIONS = (_b = {},
 var getPawnPosition = function (location, index) {
     var position = { top: 0, left: 0 };
     var _a = SITE_POSITIONS[location] || { top: 0, left: 0 }, top = _a.top, left = _a.left;
-    switch (location) {
-        default:
-            position = getGroupPosition(top, left, index, 5);
-            break;
-    }
+    position = getGroupPosition(top, left, index, 5);
     return position;
 };
 var SITE_SELECT_POSITIONS = (_c = {},

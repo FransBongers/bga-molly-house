@@ -32,6 +32,7 @@ class Globals extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Manager
     'festivity' => 'obj',
     'playersWhoGainedIndictment' => 'obj',
     'playersWhoPlayedDomino' => 'obj',
+    'deckCountStartOfWeek' => 'int',
   ];
 
   protected static $table = 'global_variables';
