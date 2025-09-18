@@ -131,10 +131,11 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
 
   public function foilThreat($playerOrCommunity, $notify = true)
   {
+    $from = $this->getLocation();
     $this->addToSafePile($playerOrCommunity, false);
 
     if ($notify) {
-      Notifications::foilThreat($playerOrCommunity, $this);
+      Notifications::foilThreat($playerOrCommunity, $this, $from);
     }
   }
 

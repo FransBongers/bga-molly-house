@@ -44,7 +44,7 @@ class EndOfWeekCheckForRaids extends \Bga\Games\MollyHouse\Models\AtomicAction
     foreach ($mollyHouses as $siteId => $mollyHouse) {
       $evidence = $mollyHouse->getEvidence();
 
-      if ($evidence < 7) {
+      if ($evidence < 7 || $mollyHouse->isRaided()) {
         continue;
       }
 

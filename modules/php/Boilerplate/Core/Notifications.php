@@ -263,12 +263,14 @@ class Notifications
     ]);
   }
 
-  public static function foilThreat($playerOrCommunity, $card)
+  public static function foilThreat($playerOrCommunity, $card, $from)
   {
     if ($playerOrCommunity === COMMUNITY) {
       self::notifyAll('addCardToSafePile', clienttranslate('The ${tkn_boldText_community} foils a threat and adds it to the safe pile: ${tkn_boldText_cardValue} of ${tkn_suit} ${tkn_viceCard}'), [
         'tkn_boldText_community' => clienttranslate('community'),
-        'card' => $card,
+        'card' => $card->jsonSerialize(),
+        'community' => true,
+        'from' => $from,
         'tkn_viceCard' => self::tknViceCard($card),
         'tkn_boldText_cardValue' => self::viceCardValueText($card->getDisplayValue()),
         'tkn_suit' => $card->getSuit(),
@@ -279,7 +281,9 @@ class Notifications
 
     self::notifyAll('addCardToSafePile', clienttranslate('${player_name} foils a threat and adds it to the safe pile: ${tkn_boldText_cardValue} of ${tkn_suit} ${tkn_viceCard}'), [
       'player' => $playerOrCommunity,
-      'card' => $card,
+      'card' => $card->jsonSerialize(),
+      'community' => false,
+      'from' => $from,
       'tkn_viceCard' => self::tknViceCard($card),
       'tkn_boldText_cardValue' => self::viceCardValueText($card->getDisplayValue()),
       'tkn_suit' => $card->getSuit(),
