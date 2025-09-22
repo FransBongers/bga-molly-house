@@ -7349,6 +7349,21 @@ var FestivitySelectWinningSet = (function () {
             this.updateInterfaceSelectCardsInSet();
             return;
         }
+        updatePageTitle(_('${you} must select the winning set'));
+        this.args.options.forEach(function (option, index) {
+            addSecondaryActionButton({
+                id: "set_choice_".concat(index),
+                text: option.ranking === SURPRISE_BALL
+                    ? formatStringRecursive(_('Surprise Ball of  ${tkn_suit}'), {
+                        tkn_suit: option.suit,
+                    })
+                    : _('Surprise Ball with Dress(es)'),
+                callback: function () {
+                    _this.selectedSet = index;
+                    _this.updateInterfaceSelectCardsInSet();
+                },
+            });
+        });
     };
     FestivitySelectWinningSet.prototype.updateInterfaceSelectCardsInSet = function () {
         var _this = this;

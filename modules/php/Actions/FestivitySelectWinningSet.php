@@ -142,7 +142,7 @@ class FestivitySelectWinningSet extends \Bga\Games\MollyHouse\Models\AtomicActio
   {
     $cards = ViceCards::getAll();
 
-    $suit = $cards[$cardSet[array_keys($cardSet)[0]]]->getSuit();
+    $suit = $cards[$cardSet[array_keys($cardSet)[0]][0]]->getSuit();
     // TODO update this to work with multiple suits, or differentiate for suprise ball with dresses, probably better
 
     $setOptions = [

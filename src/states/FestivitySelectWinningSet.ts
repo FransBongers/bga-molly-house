@@ -5,14 +5,16 @@ interface SetChoice {
   ranking: string;
 }
 
-interface SetOpions {
+interface SetOptions {
+  ranking: string;
   selected: ViceCardBase[];
   choices: Array<SetChoice>;
+  suit: Suit;
 }
 
 interface OnEnteringFestivitySelectWinningSetArgs extends CommonStateArgs {
+  options: SetOptions[];
   ranking: string;
-  options: SetOpions[];
 }
 
 class FestivitySelectWinningSet implements State {
@@ -76,33 +78,23 @@ class FestivitySelectWinningSet implements State {
       return;
     }
 
-    // const remaining =
-    //   this.args.numberToSelect - Object.keys(this.selectedCards).length;
-    // if (remaining === 0) {
-    //   this.updateInterfaceConfirm();
-    //   return;
-    // }
+    updatePageTitle(_('${you} must select the winning set'));
 
-    // updatePageTitle(
-    //   _('${you} must select the winning set (${number} remaining)'),
-    //   {
-    //     number: remaining,
-    //   }
-    // );
-    // this.args.cards.forEach((card) => {
-    //   const cardElt = document.getElementById(card.id);
-    //   if (cardElt) {
-    //     onClick(cardElt, () => this.onClickCard(card));
-    //   }
-    // });
-
-    // this.setSelected();
-
-    // if (Object.keys(this.selectedCards).length > 0) {
-    //   addCancelButton();
-    // } else {
-    //   addUndoButtons(this.args);
-    // }
+    this.args.options.forEach((option, index) => {
+      addSecondaryActionButton({
+        id: `set_choice_${index}`,
+        text:
+          option.ranking === SURPRISE_BALL
+            ? formatStringRecursive(_('Surprise Ball of  ${tkn_suit}'), {
+                tkn_suit: option.suit,
+              })
+            : _('Surprise Ball with Dress(es)'),
+        callback: () => {
+          this.selectedSet = index;
+          this.updateInterfaceSelectCardsInSet();
+        },
+      });
+    });
   }
 
   private updateInterfaceSelectCardsInSet() {
