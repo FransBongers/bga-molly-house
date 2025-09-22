@@ -168,19 +168,21 @@ class Festivity
     ]));
   }
 
-  public static function revealTopCardViceDeck($player, $ifEmptyDrawFromGossip = false)
+  public static function revealTopCardViceDeck($player)
   {
     $card = ViceCards::getTopOf(DECK);
 
     $cardDrawnFromGossipPile = false;
 
-    if ($card === null && $ifEmptyDrawFromGossip) {
+    if ($card === null) {
       ViceCards::shuffle(GOSSIP_PILE);
       $card = ViceCards::getTopOf(GOSSIP_PILE);
       $cardDrawnFromGossipPile = true;
-    } else if ($card === null) {
-      // TODO: check if this is what needs to happen
-      Notifications::message(clienttranslate('There are no cards left in the vice deck to reveal'), []);
+    } 
+    
+    if ($card === null) {
+      // Not sure if this actually can happen
+      Notifications::message(clienttranslate('There are no cards left in the vice deck and gossip pile to reveal'), []);
       return;
     }
 

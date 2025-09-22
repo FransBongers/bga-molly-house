@@ -540,7 +540,7 @@ class Notifications
   public static function festivityRevealTopCardViceDeck($player, $card, $cardDrawnFromGossipPile)
   {
     $text = $cardDrawnFromGossipPile
-      ? clienttranslate('The ${tkn_boldText_community} plays ${tkn_boldText_cardValue} of ${tkn_suit}${tkn_viceCard} from the gossip pile')
+      ? clienttranslate('The ${tkn_boldText_community} plays ${tkn_boldText_cardValue} of ${tkn_suit} from the gossip pile${tkn_viceCard}')
       : clienttranslate('The ${tkn_boldText_community} plays ${tkn_boldText_cardValue} of ${tkn_suit}${tkn_viceCard}');
 
     self::notifyAll('festivityRevealTopCardViceDeck', $text, [

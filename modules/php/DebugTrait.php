@@ -30,20 +30,7 @@ trait DebugTrait
   {
     // Sites::get(MISS_MUFFS)->setRaided(1);
 
-    $data = [
-      'cardIds' => [
-        2 => ['Hearts2'],
-        3 => ['Hearts3'],
-        4 => ['Hearts4'],
-        5 => ['Hearts5']
-      ],
-      'ranking' => "SurpriseBall"
-    ];
-
-    $action = AtomicActions::get(FESTIVITY_SELECT_WINNING_SET);
-    $result = $action->getSurpriseBallOptions($data['cardIds']);
-
-    Notifications::log('result', $result);
+    ViceCards::pickForLocation(19, DECK, GOSSIP_PILE);
 
     // Notifications::log('getDeckCountStartOfWeek', Globals::getDeckCountStartOfWeek());
 
