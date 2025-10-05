@@ -1316,9 +1316,10 @@ span[style*="color:#fcd873"] {
   position: relative;
 }
 
-.moho-indictment:hover {
+.moho-indictment-container:hover {
   transform: scale(1.1);
   transition: transform 0.1s ease-in-out;
+  z-index: 1;
 }
 
 .moho-indictment[data-indictment-id=Major1] {
