@@ -84,7 +84,7 @@ class FestivityScoreJoy extends \Bga\Games\MollyHouse\Models\AtomicAction
     }
 
     if (count($foiledThreats) === 1) {
-      $cardPlayerdById = explode('_', $foiledThreats[0]->getLocation())[1];
+      // $cardPlayerdById = explode('_', $foiledThreats[0]->getLocation())[1];
       $action = [
         'action' => FESTIVITY_FOIL_THREAT,
         'cardId' => $foiledThreats[0]->getId(),

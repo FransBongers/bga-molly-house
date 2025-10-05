@@ -82,6 +82,10 @@ class PlaceEncounterToken extends \Bga\Games\MollyHouse\Models\AtomicAction
 
     $token->placeOnSite($player, $site, true);
 
+    if ($token->isInformerToken()) {
+      $player->becomeRevealedInformer($token);
+    }
+
     // Add matching cards from market to gossip pile
     $marketCards = ViceCards::getMarket();
 
@@ -100,10 +104,6 @@ class PlaceEncounterToken extends \Bga\Games\MollyHouse\Models\AtomicAction
 
     $item = Items::get($this->ctx->getInfo()['itemId']);
     $item->discard($player);
-
-    if ($token->isInformerToken()) {
-      $player->becomeRevealedInformer($token);
-    }
 
     $this->resolveAction([]);
   }

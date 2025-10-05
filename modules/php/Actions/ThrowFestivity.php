@@ -126,6 +126,9 @@ class ThrowFestivity extends \Bga\Games\MollyHouse\Models\AtomicAction
         'action' => FESTIVITY_SCORE_JOY,
       ],
       [
+        'action' => FESTIVITY_KNOWN_THREAT_CHECK,
+      ],
+      [
         'action' => LOG_PHASE,
         'phase' => FESTIVITY_GENERATE_GOSSIP,
       ],

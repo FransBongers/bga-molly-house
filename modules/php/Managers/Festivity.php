@@ -155,12 +155,22 @@ class Festivity
       ];
     }
 
+    $players = Players::getAll();
+    $suit = Sites::get($festivity['siteId'])->getSuit();
+
     foreach ($playerOrder as $playerId) {
-      $nodes[] = [
-        'action' => FESTIVITY_PLAY_CARD,
-        'playerId' => $playerId,
-        'optional' => $round === ADDITIONAL_ROUND || $playerId !== $runnerPlayerId,
-      ];
+      if ($players[$playerId]->isRevealedInformer($suit) && $round !== ADDITIONAL_ROUND) {
+        $nodes[] = [
+          'action' => FESTIVITY_PASS_AND_PLAY_COMMUNITY_CARD,
+          'playerId' => $playerId,
+        ];
+      } else {
+        $nodes[] = [
+          'action' => FESTIVITY_PLAY_CARD,
+          'playerId' => $playerId,
+          'optional' => $round === ADDITIONAL_ROUND || $playerId !== $runnerPlayerId,
+        ];
+      }
     }
 
     $ctx->insertAsBrother(Engine::buildTree([
@@ -178,8 +188,8 @@ class Festivity
       ViceCards::shuffle(GOSSIP_PILE);
       $card = ViceCards::getTopOf(GOSSIP_PILE);
       $cardDrawnFromGossipPile = true;
-    } 
-    
+    }
+
     if ($card === null) {
       // Not sure if this actually can happen
       Notifications::message(clienttranslate('There are no cards left in the vice deck and gossip pile to reveal'), []);

@@ -81,6 +81,8 @@ const ST_PLAY_VIOLIN = 44;
 const ST_FESTIVITY_PLAY_DRESS = 45;
 const ST_FINAL_SCORING = 46;
 const ST_PLACE_ENCOUNTER_TOKEN = 39;
+const ST_FESTIVITY_KNOWN_THREAT_CHECK = 47;
+const ST_FESTIVITY_PASS_AND_PLAY_COMMUNITY_CARD = 48;
 
 /**
  * Game state names
@@ -131,6 +133,8 @@ const PLAY_VIOLIN = 'PlayViolin';
 const FESTIVITY_PLAY_DRESS = 'FestivityPlayDress';
 const FINAL_SCORING = 'FinalScoring';
 const PLACE_ENCOUNTER_TOKEN = 'PlaceEncounterToken';
+const FESTIVITY_KNOWN_THREAT_CHECK = 'FestivityKnownThreatCheck';
+const FESTIVITY_PASS_AND_PLAY_COMMUNITY_CARD = 'FestivityPassAndPlayCommunityCard';
 
 const USE_ITEM = 'UseItem';
 /**

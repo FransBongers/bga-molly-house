@@ -127,11 +127,16 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
 
     $drawTokens = $number - count($cards);
     if ($drawTokens > 0) {
-      $this->getExtra()->incDrawTokens($drawTokens);
-      Notifications::gainDrawTokens($this, $drawTokens);
+      $this->gainDrawTokens($drawTokens);
     }
 
     // TODO: Add checkpoint
+  }
+
+  public function gainDrawTokens($number)
+  {
+    $this->getExtra()->incDrawTokens($number);
+    Notifications::gainDrawTokens($this, $number);
   }
 
   public function expose($card)

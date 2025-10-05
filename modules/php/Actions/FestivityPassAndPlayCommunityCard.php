@@ -2,6 +2,7 @@
 
 namespace Bga\Games\MollyHouse\Actions;
 
+use Bga\Games\MollyHouse\Boilerplate\Core\Engine;
 use Bga\Games\MollyHouse\Boilerplate\Core\Engine\LeafNode;
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
@@ -11,11 +12,11 @@ use Bga\Games\MollyHouse\Managers\Players;
 use Bga\Games\MollyHouse\Managers\ViceCards;
 
 
-class FestivityRevealTopCardViceDeck extends \Bga\Games\MollyHouse\Models\AtomicAction
+class FestivityPassAndPlayCommunityCard extends \Bga\Games\MollyHouse\Models\AtomicAction
 {
   public function getState()
   {
-    return ST_FESTIVITY_REVEAL_TOP_CARD_VICE_DECK;
+    return ST_FESTIVITY_PASS_AND_PLAY_COMMUNITY_CARD;
   }
 
   // ..######..########....###....########.########
@@ -35,10 +36,14 @@ class FestivityRevealTopCardViceDeck extends \Bga\Games\MollyHouse\Models\Atomic
   // .##.....##..######.....##....####..#######..##....##
 
 
-  public function stFestivityRevealTopCardViceDeck()
+  public function stFestivityPassAndPlayCommunityCard()
   {
-    $player = $this->getPlayer();
+    $player = self::getPlayer();
+    Festivity::pass($player->getId());
 
+    Notifications::message(clienttranslate('${player_name} is a revealed informer and passes'), [
+      'player' => $player
+    ]);
     Festivity::revealTopCardViceDeck($player);
 
     $this->resolveAction(['automatic' => true], true);

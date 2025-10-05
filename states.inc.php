@@ -541,6 +541,20 @@ $machinestates = [
         ])
         ->build(),
 
+    ST_FESTIVITY_KNOWN_THREAT_CHECK => GameStateBuilder::create()
+        ->name(FESTIVITY_KNOWN_THREAT_CHECK)
+        ->description('')
+        ->type(StateType::GAME)
+        ->action('stAtomicAction')
+        ->build(),
+
+    ST_FESTIVITY_PASS_AND_PLAY_COMMUNITY_CARD => GameStateBuilder::create()
+        ->name(FESTIVITY_PASS_AND_PLAY_COMMUNITY_CARD)
+        ->description('')
+        ->type(StateType::GAME)
+        ->action('stAtomicAction')
+        ->build(),
+
     ST_FESTIVITY_BOTTLE_OF_GIN_CHECK => GameStateBuilder::create()
         ->name(FESTIVITY_BOTTLE_OF_GIN_CHECK)
         ->description('')

@@ -41,7 +41,7 @@ class EndOfWeekRevealThreats extends \Bga\Games\MollyHouse\Models\AtomicAction
 
     $players = Players::getAll();
 
-    
+
 
     foreach ($players as $player) {
       $numberOfThreatsRevealed = 0;
@@ -54,7 +54,7 @@ class EndOfWeekRevealThreats extends \Bga\Games\MollyHouse\Models\AtomicAction
         if (!$card->isThreat() || $card->getSuit() === $suitToIgnore) {
           continue;
         }
-        
+
         Notifications::revealThreat($player, $card);
 
         $card->addToGossip($player, false);
@@ -64,10 +64,10 @@ class EndOfWeekRevealThreats extends \Bga\Games\MollyHouse\Models\AtomicAction
       }
 
       if ($numberOfThreatsRevealed > 0) {
-        // gain draw token
+        $player->gainDrawTokens(1);
       }
     }
-    
+
 
     $this->resolveAction(['automatic' => true]);
   }

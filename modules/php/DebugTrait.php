@@ -30,7 +30,7 @@ trait DebugTrait
   {
     // Sites::get(MISS_MUFFS)->setRaided(1);
 
-    ViceCards::pickForLocation(19, DECK, GOSSIP_PILE);
+    ViceCards::get('Hearts4')->setLocation(Locations::reputation('2371052'));
 
     // Notifications::log('getDeckCountStartOfWeek', Globals::getDeckCountStartOfWeek());
 
