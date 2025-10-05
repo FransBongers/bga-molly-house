@@ -5,6 +5,7 @@ namespace Bga\Games\MollyHouse\Actions;
 use Bga\Games\MollyHouse\Boilerplate\Core\Engine;
 use Bga\Games\MollyHouse\Boilerplate\Core\Engine\LeafNode;
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
+use Bga\Games\MollyHouse\Boilerplate\Core\Stats;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 use Bga\Games\MollyHouse\Game;
@@ -92,8 +93,9 @@ class TakeAction extends \Bga\Games\MollyHouse\Models\AtomicAction
     $target = $args->target;
 
     $player = $this->getPlayer();
+    $playerId = $player->getId();
     $stateArgs = $this->argsTakeAction();
-    $options = $stateArgs['_private'][$player->getId()];
+    $options = $stateArgs['_private'][$playerId];
 
     if ($takenAction !== USE_ITEM && !isset($options[$takenAction])) {
       throw new \feException("ERROR_004");
@@ -124,26 +126,33 @@ class TakeAction extends \Bga\Games\MollyHouse\Models\AtomicAction
     switch ($takenAction) {
       case ACCUSE:
         $checkpoint = true;
+        Stats::incAccuseActions($playerId, 1);
         AtomicActions::get(ACCUSE)->performAction($player, $stateArgs['site'], $options[ACCUSE][$target]);
         break;
       case INDULGE:
+        Stats::incIndulgeActions($playerId, 1);
         AtomicActions::get(INDULGE)->performAction($player, $stateArgs['site'], $options[INDULGE][$target]);
         break;
       case LIE_LOW:
         $checkpoint = true;
+        Stats::incLieLowActions($playerId, 1);
         AtomicActions::get(LIE_LOW)->performAction($player, $stateArgs['site']);
         break;
       case CRUISE:
         $checkpoint = true;
+        Stats::incCruiseActions($playerId, 1);
         AtomicActions::get(CRUISE)->performAction($player, $stateArgs['site'], $options[CRUISE][$target]);
         break;
       case SHOP:
+        Stats::incShopActions($playerId, 1);
         AtomicActions::get(SHOP)->performAction($this->ctx, $player, $stateArgs['site'], $options[SHOP]);
         break;
       case THROW_FESTIVITY:
+        Stats::incThrowFestivityActions($playerId, 1);
         AtomicActions::get(THROW_FESTIVITY)->performAction($this->ctx, $player, $stateArgs['site']);
         break;
       case USE_ITEM:
+        Stats::incItemsUsed($playerId, 1);
         $checkpoint = $this->useItem($player, $options['items'][$target], $stateArgs['site']);
         break;
       default:

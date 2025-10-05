@@ -3,6 +3,7 @@
 namespace Bga\Games\MollyHouse\Actions;
 
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
+use Bga\Games\MollyHouse\Boilerplate\Core\Stats;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 use Bga\Games\MollyHouse\Managers\Items;
 use Bga\Games\MollyHouse\Models\Item;
@@ -69,6 +70,7 @@ class FestivityPlayDress extends \Bga\Games\MollyHouse\Models\AtomicAction
 
     if ($playDress) {
       $item->setLocation(PLAYED_DRESSES);
+      Stats::incItemsUsed($player->getId(), 1);
       Notifications::playDress($player, $item);
     } else {
       Notifications::message(clienttranslate('${player_name} does not play their ${tkn_boldText_dress}'), [

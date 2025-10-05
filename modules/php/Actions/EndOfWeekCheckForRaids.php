@@ -6,6 +6,7 @@ use Bga\Games\MollyHouse\Boilerplate\Core\Engine;
 use Bga\Games\MollyHouse\Boilerplate\Core\Engine\LeafNode;
 use Bga\Games\MollyHouse\Boilerplate\Core\Globals;
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
+use Bga\Games\MollyHouse\Boilerplate\Core\Stats;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 use Bga\Games\MollyHouse\Managers\Festivity;
@@ -49,6 +50,7 @@ class EndOfWeekCheckForRaids extends \Bga\Games\MollyHouse\Models\AtomicAction
       }
 
       $this->raidMollyHouse($mollyHouse);
+      Stats::incMollyHousesRaided(1);
 
       $this->gainIndictments($mollyHouse);
     }

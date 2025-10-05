@@ -4,6 +4,7 @@ namespace Bga\Games\MollyHouse\Actions;
 
 use Bga\Games\MollyHouse\Boilerplate\Core\Globals;
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
+use Bga\Games\MollyHouse\Boilerplate\Core\Stats;
 use Bga\Games\MollyHouse\Game;
 use Bga\Games\MollyHouse\Managers\Players;
 
@@ -64,6 +65,7 @@ class EndOfWeekUseDomino extends \Bga\Games\MollyHouse\Models\AtomicAction
     $game = Game::get();
     if ($playDomino) {
       // Handle the case where the player plays Domino
+      Stats::incItemsUsed($player->getId(), 1);
       $this->playDomino($player);
     } else {
       $this->handleSkip($player);

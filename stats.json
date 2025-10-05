@@ -1,1 +1,118 @@
-{}
+{
+  "table": {
+    "turnCount": {
+      "id": 10,
+      "name": "Number of turns",
+      "type": "int"
+    },
+    "gameEnd": {
+      "id": 11,
+      "name": "Game end",
+      "type": "int"
+    },
+    "surpriseBalls": {
+      "id": 12,
+      "name": "Number of Surprise Balls",
+      "type": "int"
+    },
+    "christenings": {
+      "id": 13,
+      "name": "Number of Christenings",
+      "type": "int"
+    },
+    "dances": {
+      "id": 14,
+      "name": "Number of Dances",
+      "type": "int"
+    },
+    "quietGatherings": {
+      "id": 15,
+      "name": "Number of Quiet Gatherings",
+      "type": "int"
+    },
+    "mollyHousesRaided": {
+      "id": 16,
+      "name": "Number of Molly Houses raided",
+      "type": "int"
+    },
+    "gameEndPercentageCommunityInfiltration": {
+      "id": 17,
+      "name": "Game end % Community Infiltration",
+      "type": "int"
+    },
+    "gameEndPercentageCommunitySurvival": {
+      "id": 18,
+      "name": "Game end % Community Survival",
+      "type": "int"
+    },
+    "gameEndPercentageCommunityAtrophy": {
+      "id": 19,
+      "name": "Game end % Community Atrophy",
+      "type": "int"
+    }
+  },
+  "player": {
+    "playerTurnCount": {
+      "id": 40,
+      "name": "Number of turns",
+      "type": "int"
+    },
+    "indulgeActions": {
+      "id": 30,
+      "name": "Number of Indulge actions",
+      "type": "int"
+    },
+    "lieLowActions": {
+      "id": 31,
+      "name": "Number of Lie Low actions",
+      "type": "int"
+    },
+    "accuseActions": {
+      "id": 32,
+      "name": "Number of Accuse actions",
+      "type": "int"
+    },
+    "throwFestivityActions": {
+      "id": 33,
+      "name": "Number of Throw Festivity actions",
+      "type": "int"
+    },
+    "cruiseActions": {
+      "id": 34,
+      "name": "Number of Cruise actions",
+      "type": "int"
+    },
+    "shopActions": {
+      "id": 35,
+      "name": "Number of Shop actions",
+      "type": "int"
+    },
+    "minorIndictments": {
+      "id": 36,
+      "name": "Number of Minor Indictments gained",
+      "type": "int"
+    },
+    "majorIndictments": {
+      "id": 37,
+      "name": "Number of Major Indictments gained",
+      "type": "int"
+    },
+    "revealedInformerPercentage": {
+      "id": 38,
+      "name": "Revealed Informer %",
+      "type": "int"
+    },
+    "itemsUsed": {
+      "id": 39,
+      "name": "Number of items used",
+      "type": "int"
+    }
+  },
+  "value_labels": {
+    "10": [
+      "Community Infiltration",
+      "Community Survival",
+      "Community Atrophy"
+    ]
+  }
+}

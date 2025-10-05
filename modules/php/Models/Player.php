@@ -5,6 +5,7 @@ namespace Bga\Games\MollyHouse\Models;
 use Bga\Games\MollyHouse\Boilerplate\Core\Globals;
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
 use Bga\Games\MollyHouse\Boilerplate\Core\Preferences;
+use Bga\Games\MollyHouse\Boilerplate\Core\Stats;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 use Bga\Games\MollyHouse\Managers\EncounterTokens;
@@ -259,6 +260,11 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   {
     $fromLocation = Locations::indicmentDeck($majorOrMinor);
     $indictment = Indictments::getTopOf($fromLocation);
+    if ($majorOrMinor === MAJOR) {
+      Stats::incMajorIndictments($this->getId(), 1);
+    } else {
+      Stats::incMinorIndictments($this->getId(), 1);
+    }
     if ($indictment === null) {
       if ($majorOrMinor === MAJOR) {
         $this->loseJoy(8);
@@ -361,6 +367,7 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
         'i18n' => ['tkn_boldText_revealedInformer']
       ]
     );
+    Stats::setRevealedInformer($this->getId(), 100);
 
     $site = Sites::get($informerToken->getLocation());
     $suit = $site->getSuit();

@@ -6,6 +6,7 @@ use Bga\Games\MollyHouse\Boilerplate\Core\Engine;
 use Bga\Games\MollyHouse\Boilerplate\Core\Engine\LeafNode;
 use Bga\Games\MollyHouse\Boilerplate\Core\Globals;
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
+use Bga\Games\MollyHouse\Boilerplate\Core\Stats;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 use Bga\Games\MollyHouse\Managers\Community;
@@ -49,16 +50,22 @@ class EndOfWeekCheckGameEnd extends \Bga\Games\MollyHouse\Models\AtomicAction
   {
     if ($this->communityInfiltration()) {
       $this->triggerGameEnd(COMMUNITY_INFILTRATION);
+      Stats::setGameEnd(0);
+      Stats::setGameEndPercentageCommunityInfiltration(100);
       return;
     }
 
     if ($this->communitySurvival()) {
       $this->triggerGameEnd(COMMUNITY_SURVIVAL);
+      Stats::setGameEnd(1);
+      Stats::setGameEndPercentageCommunitySurvival(100);
       return;
     }
 
     if ($this->communityAtrophy()) {
       $this->triggerGameEnd(COMMUNITY_ATROPHY);
+      Stats::setGameEnd(2);
+      Stats::setGameEndPercentageCommunityAtrophy(100);
       return;
     }
 
@@ -94,8 +101,6 @@ class EndOfWeekCheckGameEnd extends \Bga\Games\MollyHouse\Models\AtomicAction
     Notifications::message(clienttranslate('The game ends with ${tkn_boldText_gameEndType}'), [
       'tkn_boldText_gameEndType' => $gameEndTypeText[$gameEndType],
     ]);
-
-
 
     $action = [
       'action' => FINAL_SCORING,

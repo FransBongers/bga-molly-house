@@ -67,6 +67,7 @@ class Game extends \Bga\GameFramework\Table
             'logging' => 10,
         ]);
         Engine::boot();
+        Stats::checkExistence();
 
         /* example of notification decorator.
         // automatically complete notification args when needed
@@ -329,6 +330,7 @@ class Game extends \Bga\GameFramework\Table
         Items::setupNewGame($players, $options);
         EncounterTokens::setupNewGame($players, $options);
         JoyMarkers::setupNewGame($players, $options);
+        Stats::checkExistence();
 
 
         $this->activeNextPlayer();
