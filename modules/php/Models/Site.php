@@ -48,6 +48,11 @@ class Site extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     return $this->jsonSerialize(); // Static datas are already in js file
   }
 
+  public function isDangerous()
+  {
+    return $this->raidedOrDangerous === 1;
+  }
+
   public function isRaided()
   {
     return $this->raidedOrDangerous === 1;
@@ -82,7 +87,7 @@ class Site extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     }
   }
 
-    public function setDangerousCruising($isRaided)
+  public function setDangerousCruising($isRaided)
   {
     if ($isRaided) {
       $this->setRaidedOrDangerous(1);

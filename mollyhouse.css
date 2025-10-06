@@ -1849,6 +1849,8 @@ span[style*="color:#fcd873"] {
   --cardScale: 1;
   min-height: 225px;
   padding: 8px;
+  max-height: 75vh;
+  overflow-y: auto;
 }
 
 .bga-dice_die-face {
@@ -1916,6 +1918,19 @@ span[style*="color:#fcd873"] {
 #moho-festivity .moho-festivity-container .moho-festivity-stock .moho-vice-card-container:not(:first-child) {
   margin-left: calc(var(--cardScale) * -115px);
 }
+#moho-festivity .moho-festivity-container .moho-festivity-player-name {
+  display: flex;
+  flex-direction: row;
+  --iconScale: calc(var(--boardScale) * 0.5);
+  gap: calc(var(--boardScale) * 8px);
+}
+#moho-festivity .moho-festivity-container .moho-candelabra {
+  display: none;
+}
+#moho-festivity .moho-festivity-container.moho-festivity-runner .moho-candelabra {
+  display: inherit;
+  filter: drop-shadow(0px 0px calc(var(--iconScale) * 2px) white) drop-shadow(0px 0px calc(var(--iconScale) * 2px) white) drop-shadow(0px 0px calc(var(--iconScale) * 2px) white);
+}
 #moho-festivity #moho-festivity-community span {
   color: ivory;
 }
@@ -1933,7 +1948,7 @@ span[style*="color:#fcd873"] {
   bottom: 0;
   display: flex;
   justify-content: center;
-  --cardScale: 1;
+  --cardScale: var(--handScale);
   height: calc(var(--cardScale) * 180px);
   width: 100%;
   z-index: 2;
@@ -1945,6 +1960,14 @@ span[style*="color:#fcd873"] {
 #hand .moho-vice-card:hover {
   transform: translateY(-20px) scale(1.1);
   transition: transform 0.2s ease-in-out;
+}
+
+.moho-candelabra {
+  width: calc(var(--iconScale) * 50px);
+  aspect-ratio: 200/166;
+  background-image: url("img/candelabra.png");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
 }
 
 .moho-suit {
@@ -2034,6 +2057,13 @@ span[style*="color:#fcd873"] {
   margin-top: calc(var(--tokenScale) * -25px);
 }
 
+.moho-joy-marker-stock.moho-game-end-threshold {
+  outline: calc(var(--tokenScale) * 5px) solid rgb(223, 176, 103);
+  width: calc(var(--tokenScale) * 42px);
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+}
+
 .moho-joy-marker-container {
   border-radius: 50%;
 }
@@ -2082,6 +2112,7 @@ span[style*="color:#fcd873"] {
   flex-direction: row;
   padding: calc(var(--cardScale) * 16px);
   padding-bottom: calc(var(--cardScale) * 8px);
+  padding-top: 0px;
   --cardScale: calc(var(--leftColumnScale) * 1.3);
   gap: calc(var(--cardScale) * 16px);
 }
@@ -2169,6 +2200,7 @@ span[style*="color:#fcd873"] {
   --playerBoardScale: var(--rightColumnScale);
   --tokenScale: var(--rightColumnScale);
   --cardScale: var(--rightColumnScale);
+  --iconScale: var(--rightColumnScale);
   position: relative;
   background-size: 100% 100%;
   width: calc(var(--playerBoardScale) * 600px);
@@ -2185,6 +2217,21 @@ span[style*="color:#fcd873"] {
 .moho-player-board .moho-item-spot[data-spot="2"] {
   left: calc(var(--playerBoardScale) * 407px);
   top: calc(var(--playerBoardScale) * 13px);
+}
+.moho-player-board .moho-player-board-counters {
+  position: absolute;
+  left: calc(var(--playerBoardScale) * 58px);
+  top: calc(var(--playerBoardScale) * 22px);
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: calc(var(--playerBoardScale) * 16px);
+}
+.moho-player-board .moho-candelabra-spot {
+  position: absolute;
+  left: calc(var(--playerBoardScale) * 5px);
+  top: calc(var(--playerBoardScale) * 86px);
+  width: calc(var(--iconScale) * 50px);
+  aspect-ratio: 200/166;
 }
 
 .moho-reputation {
@@ -2441,6 +2488,13 @@ html {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+#game-buttons {
+  padding: 4px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
 }
 
 /*# sourceMappingURL=mollyhouse.css.map */

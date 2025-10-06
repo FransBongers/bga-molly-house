@@ -281,11 +281,13 @@ class Game extends \Bga\GameFramework\Table
     {
         $playerId = $playerId ?? Players::getCurrentId();
 
+        $playerData = Players::getUiData($playerId);
+
         $data = [
             // Default
             'gameOptions' => [],
             'playerOrder' => Players::getTurnOrder($playerId),
-            'players' => Players::getUiData($playerId),
+            'players' => $playerData,
             'staticData' => [
                 'items' => Items::getStaticUiData(),
                 'viceCards' => ViceCards::getStaticUiData(),
@@ -305,6 +307,8 @@ class Game extends \Bga\GameFramework\Table
             'topOfSafePile' => ViceCards::getTopOf(SAFE_PILE),
             'encounterTokens' => EncounterTokens::getEncounterTokensOnMollyHouses($playerId),
             'joyMarkers' => JoyMarkers::getAll(),
+            'gameEndThreshold' => COMMUNITY_MARKER_THRESHOLD[count($playerData)],
+            'candelabra' => Globals::getCandelabra(),
         ];
 
 

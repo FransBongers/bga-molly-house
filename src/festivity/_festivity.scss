@@ -45,11 +45,30 @@
       }
     }
 
+    .moho-festivity-player-name {
+      display: flex;
+      flex-direction: row;
+      --iconScale: calc(var(--boardScale) * 0.5);
+      gap: calc(var(--boardScale) * 8px);
+    }
+
+    .moho-candelabra {
+      display: none;
+    }
     // .card-side {
     //   span {
 
     //   }
     // }
+  }
+
+  .moho-festivity-container.moho-festivity-runner {
+    .moho-candelabra {
+      display: inherit;
+      filter: drop-shadow(0px 0px calc(var(--iconScale) * 2px) white)
+        drop-shadow(0px 0px calc(var(--iconScale) * 2px) white)
+        drop-shadow(0px 0px calc(var(--iconScale) * 2px) white);
+    }
   }
 
   #moho-festivity-community {

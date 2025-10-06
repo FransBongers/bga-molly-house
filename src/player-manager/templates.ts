@@ -9,6 +9,8 @@ const tplPlayerBoard = ({
 <div id="moho-player-row-${playerId}" class="moho-player-container">
   <div class="moho-player-row">
     <div id="moho-player-board-${playerId}" class="moho-player-board" data-color="${color}">
+      <div id="moho-player-board-counters-${playerId}" class="moho-player-board-counters"></div>
+      <div id="moho-candelabra-${playerId}" class="moho-candelabra-spot"></div>  
       <div id="item_1_${playerId}" class="moho-item-spot" data-spot="1"></div>
       <div id="item_2_${playerId}" class="moho-item-spot" data-spot="2"></div>
     </div>

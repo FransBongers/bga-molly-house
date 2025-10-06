@@ -28,11 +28,13 @@ trait DebugTrait
 {
   function debug_test()
   {
+    // Globals::setCandelabra(2371052);
+
     // Sites::get(MISS_MUFFS)->setRaided(1);
 
-    ViceCards::get('Hearts4')->setLocation(Locations::reputation('2371052'));
+    // ViceCards::get('Hearts4')->setLocation(Locations::reputation('2371052'));
 
-    // Notifications::log('getDeckCountStartOfWeek', Globals::getDeckCountStartOfWeek());
+    // Notifications::log('turnOrder', Players::getTurnOrder());
 
     // JoyMarkers::setupNewGame();
 

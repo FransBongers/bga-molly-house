@@ -40,6 +40,7 @@ interface NotifAddCardToHand extends NotifWithPlayerArgs {
 
 interface NotifAddCardToGossipPile extends NotifWithPlayerArgs {
   card: ViceCardBase;
+  fromLocation: string;
 }
 
 interface NotifAddCardToReputation extends NotifWithPlayerArgs {

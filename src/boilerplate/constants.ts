@@ -25,6 +25,7 @@ const PREF_DISABLED = 'disabled';
 const PREF_ENABLED = 'enabled';
 const PREF_SINGLE_COLUMN_MAP_SIZE = 'singleColumnMapSize';
 const PREF_TWO_COLUMN_LAYOUT = 'twoColumnLayout';
+const PREF_SIZE_OF_HAND = 'sizeOfHand';
 
 /**
  * Var names

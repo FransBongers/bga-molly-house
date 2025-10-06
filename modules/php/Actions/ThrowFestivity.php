@@ -96,6 +96,7 @@ class ThrowFestivity extends \Bga\Games\MollyHouse\Models\AtomicAction
   {
     Notifications::throwFestivity($player, $site);
 
+    $player->takeCandelabra();
 
     Festivity::start($player, $site->getId());
 

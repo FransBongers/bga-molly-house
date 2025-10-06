@@ -59,6 +59,8 @@ interface MollyHouseGamedatas extends Gamedatas {
   sites: Record<string, MohoSiteBase>;
   topOfSafePile: ViceCardBase | null;
   joyMarkers: Record<string, MohoJoyMarker>;
+  gameEndThreshold: number;
+  candelabra: number;
 }
 
 interface MollyHousePlayerData extends BgaPlayer {

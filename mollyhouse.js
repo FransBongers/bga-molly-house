@@ -15,6 +15,7 @@ var PREF_DISABLED = 'disabled';
 var PREF_ENABLED = 'enabled';
 var PREF_SINGLE_COLUMN_MAP_SIZE = 'singleColumnMapSize';
 var PREF_TWO_COLUMN_LAYOUT = 'twoColumnLayout';
+var PREF_SIZE_OF_HAND = 'sizeOfHand';
 var BOARD_SCALE = 'boardScale';
 var CARD_SCALE = 'cardScale';
 var BLUE = 'blue';
@@ -2921,6 +2922,10 @@ var NotificationManager = (function () {
     NotificationManager.prototype.getPlayer = function (playerId) {
         return PlayerManager.getInstance().getPlayer(playerId);
     };
+    NotificationManager.prototype.gainCubes = function (player, suit, numberOfCubes) {
+        player.counters[SUIT_COLOR_MAP[suit]].incValue(numberOfCubes);
+        player.counters["playerBoard_".concat(SUIT_COLOR_MAP[suit])].incValue(numberOfCubes);
+    };
     NotificationManager.prototype.notif_log = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
@@ -3038,20 +3043,24 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_addCardToGossipPile = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var card, viceCard, board;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var _a, card, fromLocation, viceCard, board, playerId;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        card = notif.args.card;
+                        _a = notif.args, card = _a.card, fromLocation = _a.fromLocation;
                         viceCard = getViceCard(card);
                         board = Board.getInstance();
+                        if (fromLocation.startsWith('reputation')) {
+                            playerId = Number(fromLocation.split('_')[1]);
+                            this.getPlayer(playerId).counters[viceCard.suit].incValue(-1);
+                        }
                         return [4, board.gossipPile.addCard(viceCard)];
                     case 1:
-                        _a.sent();
+                        _b.sent();
                         board.counters[GOSSIP_PILE].incValue(1);
                         return [4, this.game.viceCardManager.removeCard(viceCard)];
                     case 2:
-                        _a.sent();
+                        _b.sent();
                         return [2];
                 }
             });
@@ -3559,7 +3568,7 @@ var NotificationManager = (function () {
             return __generator(this, function (_b) {
                 _a = notif.args, playerId = _a.playerId, numberOfCubes = _a.numberOfCubes, suit = _a.suit;
                 player = this.getPlayer(playerId);
-                player.counters[SUIT_COLOR_MAP[suit]].incValue(numberOfCubes);
+                this.gainCubes(player, suit, numberOfCubes);
                 return [2];
             });
         });
@@ -3878,8 +3887,14 @@ var NotificationManager = (function () {
         return __awaiter(this, void 0, void 0, function () {
             var playerId;
             return __generator(this, function (_a) {
-                playerId = notif.args.playerId;
-                return [2];
+                switch (_a.label) {
+                    case 0:
+                        playerId = notif.args.playerId;
+                        return [4, PlayerManager.getInstance().moveCandelabraTo(playerId)];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
             });
         });
     };
@@ -3901,8 +3916,11 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_throwFestivity = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
+            var playerId;
             return __generator(this, function (_a) {
+                playerId = notif.args.playerId;
                 Board.getInstance().setFestivityActive(true);
+                Festivity.getInstance().setRunner(playerId);
                 Festivity.getInstance().setFestivityActive(true);
                 return [2];
             });
@@ -3953,25 +3971,6 @@ var getSettingsConfig = function () {
                         type: 'slider',
                     }
                 },
-                _a[PREF_SINGLE_COLUMN_MAP_SIZE] = {
-                    id: PREF_SINGLE_COLUMN_MAP_SIZE,
-                    onChangeInSetup: true,
-                    label: _('Map size'),
-                    defaultValue: 100,
-                    visibleCondition: {
-                        id: PREF_TWO_COLUMN_LAYOUT,
-                        values: [DISABLED],
-                    },
-                    sliderConfig: {
-                        step: 5,
-                        padding: 0,
-                        range: {
-                            min: 30,
-                            max: 100,
-                        },
-                    },
-                    type: 'slider',
-                },
                 _a[PREF_CARD_SIZE_IN_LOG] = {
                     id: PREF_CARD_SIZE_IN_LOG,
                     onChangeInSetup: true,
@@ -3983,6 +3982,21 @@ var getSettingsConfig = function () {
                         range: {
                             min: 0,
                             max: 140,
+                        },
+                    },
+                    type: 'slider',
+                },
+                _a[PREF_SIZE_OF_HAND] = {
+                    id: PREF_SIZE_OF_HAND,
+                    onChangeInSetup: true,
+                    label: _('Size of hand'),
+                    defaultValue: 100,
+                    sliderConfig: {
+                        step: 5,
+                        padding: 0,
+                        range: {
+                            min: 40,
+                            max: 160,
                         },
                     },
                     type: 'slider',
@@ -4079,7 +4093,7 @@ var Settings = (function () {
     };
     Settings.prototype.addButton = function (_a) {
         var gamedatas = _a.gamedatas;
-        var configPanel = document.getElementById("info-panel-buttons");
+        var configPanel = document.getElementById("game-buttons");
         if (configPanel) {
             configPanel.insertAdjacentHTML("beforeend", tplSettingsButton());
         }
@@ -4131,10 +4145,11 @@ var Settings = (function () {
             Object.values(tabConfig.config).forEach(function (setting) {
                 var id = setting.id, type = setting.type, defaultValue = setting.defaultValue, visibleCondition = setting.visibleCondition;
                 var localValue = localStorage.getItem(_this.getLocalStorageKey({ id: id }));
-                _this.settings[id] = localValue || defaultValue;
+                var value = localValue || defaultValue;
+                _this.settings[id] = value;
                 var methodName = _this.getMethodName({ id: id });
-                if (setting.onChangeInSetup && localValue && _this[methodName]) {
-                    _this[methodName](localValue);
+                if (setting.onChangeInSetup && value && _this[methodName]) {
+                    _this[methodName](value);
                 }
                 if (setting.type === "select") {
                     var visible = !visibleCondition ||
@@ -4198,6 +4213,11 @@ var Settings = (function () {
     Settings.prototype.onChangeCardSizeInLogSetting = function (value) {
         var ROOT = document.documentElement;
         ROOT.style.setProperty("--logCardScale", "".concat(Number(value) / 100));
+    };
+    Settings.prototype.onChangeSizeOfHandSetting = function (value) {
+        console.log("onChangeSizeOfHandSetting", value);
+        var ROOT = document.documentElement;
+        ROOT.style.setProperty("--handScale", "".concat(Number(value) / 100));
     };
     Settings.prototype.onChangeAnimationSpeedSetting = function (value) {
         var duration = 2100 - value;
@@ -4708,7 +4728,6 @@ var MollyHouse = (function () {
         this.setupPlayerOrder(gamedatas.playerOrder);
         debug('game', this);
         this._connections = [];
-        InfoPanel.create(this);
         TooltipManager.create(this);
         Settings.create(this);
         var settings = Settings.getInstance();
@@ -5032,11 +5051,9 @@ var MollyHouse = (function () {
     MollyHouse.prototype.updatePlayerOrdering = function () {
         this.framework().inherited(arguments);
         var container = document.getElementById('player_boards');
-        var infoPanel = document.getElementById('info-panel');
         if (!container) {
             return;
         }
-        container.insertAdjacentElement('afterbegin', infoPanel);
     };
     MollyHouse.prototype.actionError = function (actionName) {
         this.framework().showMessage("cannot take ".concat(actionName, " action"), 'error');
@@ -5301,6 +5318,9 @@ var Board = (function () {
         for (var i = 0; i <= 39; i++) {
             var elt = document.createElement('div');
             elt.classList.add('moho-joy-marker-stock');
+            if (i === gamedatas.gameEndThreshold) {
+                elt.classList.add('moho-game-end-threshold');
+            }
             setAbsolutePosition(elt, BOARD_SCALE, JOY_MARKER_POSITIONS[i]);
             this.ui.containers.markers.appendChild(elt);
             this.joyMarkerStocks["".concat(i)] = new LineStock(this.game.joyMarkerManager, elt, {
@@ -5925,6 +5945,9 @@ var Festivity = (function () {
             });
         });
         this.playedDresses.addCards(gamedatas.festivity.playedDresses.map(getItem));
+        if (gamedatas.festivity.runner) {
+            this.setRunner(gamedatas.festivity.runner);
+        }
     };
     Festivity.prototype.addRogueValue = function (cardId, value) {
         var frontElt = document.getElementById("".concat(cardId, "-front"));
@@ -5948,7 +5971,7 @@ var Festivity = (function () {
         this.festivityContainer = document.getElementById('moho-festivity');
         var players = PlayerManager.getInstance().getPlayers();
         var playerCount = players.length;
-        var communityContainerElt = this.createPlayerElement(COMMUNITY, _('Community'));
+        var communityContainerElt = this.createPlayerElement(COMMUNITY, "<span>".concat(_('Community'), "</span>"));
         setAbsolutePosition(communityContainerElt, CARD_SCALE, getFestivityPosition(playerCount, COMMUNITY));
         var playerManager = PlayerManager.getInstance();
         gamedatas.playerOrder.forEach(function (playerId, index) {
@@ -5970,12 +5993,14 @@ var Festivity = (function () {
         var containerElt = document.createElement('div');
         containerElt.id = "moho-festivity-".concat(playerId);
         containerElt.classList.add('moho-festivity-container');
-        var nameSpan = document.createElement('span');
-        nameSpan.innerHTML = playerName;
+        var nameDiv = document.createElement('div');
+        nameDiv.innerHTML = playerName;
+        nameDiv.classList.add('moho-festivity-player-name');
+        nameDiv.insertAdjacentHTML('beforeend', '<div class="moho-candelabra"></div>');
         var playerStockElt = document.createElement('div');
         playerStockElt.classList.add('moho-festivity-stock');
         containerElt.appendChild(playerStockElt);
-        containerElt.appendChild(nameSpan);
+        containerElt.appendChild(nameDiv);
         this.festivityContainer.appendChild(containerElt);
         this.stocks[playerId] = new LineStock(this.game.viceCardManager, playerStockElt, {
             gap: '0px',
@@ -5985,6 +6010,19 @@ var Festivity = (function () {
     };
     Festivity.prototype.setFestivityActive = function (active) {
         this.festivityContainer.dataset.active = active ? 'true' : 'false';
+    };
+    Festivity.prototype.setRunner = function (runnerPlayerId) {
+        PlayerManager.getInstance()
+            .getPlayerIds()
+            .forEach(function (playerId) {
+            var elt = document.getElementById("moho-festivity-".concat(playerId));
+            if (playerId === runnerPlayerId) {
+                elt.classList.add('moho-festivity-runner');
+            }
+            else {
+                elt.classList.remove('moho-festivity-runner');
+            }
+        });
     };
     return Festivity;
 }());
@@ -6303,6 +6341,7 @@ var PlayerManager = (function () {
             var player = game.gamedatas.players[playerId];
             this.players[playerId] = new MohoPlayer(this.game, player);
         }
+        this.setupCandelabra(game.gamedatas);
     }
     PlayerManager.create = function (game) {
         PlayerManager.instance = new PlayerManager(game);
@@ -6320,6 +6359,12 @@ var PlayerManager = (function () {
         for (var playerId in gamedatas.players) {
             this.players[playerId].updateInterface(gamedatas);
         }
+        this.updateCandelabra(gamedatas);
+    };
+    PlayerManager.prototype.setupCandelabra = function (gamedatas) {
+        this.candelabra = document.createElement('div');
+        this.candelabra.classList.add('moho-candelabra');
+        this.updateCandelabra(gamedatas);
     };
     PlayerManager.prototype.getPlayer = function (playerId) {
         return this.players[playerId];
@@ -6332,6 +6377,24 @@ var PlayerManager = (function () {
     };
     PlayerManager.prototype.getCurrentPlayerId = function () {
         return this.game.getPlayerId();
+    };
+    PlayerManager.prototype.moveCandelabraTo = function (playerId) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                document
+                    .getElementById("moho-candelabra-".concat(playerId))
+                    .appendChild(this.candelabra);
+                return [2];
+            });
+        });
+    };
+    PlayerManager.prototype.updateCandelabra = function (gamedatas) {
+        if (!gamedatas.candelabra) {
+            return;
+        }
+        document
+            .getElementById("moho-candelabra-".concat(gamedatas.candelabra))
+            .appendChild(this.candelabra);
     };
     return PlayerManager;
 }());
@@ -6375,6 +6438,15 @@ var MohoPlayer = (function () {
         [1, 2].forEach(function (value) {
             _this.items["item_".concat(value, "_").concat(_this.playerId)] = new LineStock(_this.game.itemManager, document.getElementById("item_".concat(value, "_").concat(_this.playerId)), {
                 gap: '0px',
+            });
+        });
+        [YELLOW, GREEN, BLUE, RED].forEach(function (color) {
+            _this.counters["playerBoard_".concat(color)] = new CubeCounter({
+                id: "player-board-cubes-".concat(color, "-").concat(_this.playerId),
+                initialValue: playerGamedatas.cubes[COLOR_SUIT_MAP[color]],
+                parentElement: document.getElementById("moho-player-board-counters-".concat(_this.playerId)),
+                color: color,
+                type: 'overlap',
             });
         });
         this.setupEncounterTokens(gamedatas);
@@ -6436,6 +6508,9 @@ var MohoPlayer = (function () {
         playerGamedatas.items.forEach(function (item) {
             _this.items[item.location].addCard(getItem(item));
         });
+        [YELLOW, GREEN, BLUE, RED].forEach(function (color) {
+            _this.counters["playerBoard_".concat(color)].setValue(playerGamedatas.cubes[COLOR_SUIT_MAP[color]]);
+        });
     };
     MohoPlayer.prototype.updatePrivateData = function (playerGamedatas) {
         this.indictments.addCards(playerGamedatas.indictments);
@@ -6469,7 +6544,7 @@ var MohoPlayer = (function () {
 }());
 var tplPlayerBoard = function (_a) {
     var playerId = _a.playerId, color = _a.color;
-    return "\n<div id=\"moho-player-row-".concat(playerId, "\" class=\"moho-player-container\">\n  <div class=\"moho-player-row\">\n    <div id=\"moho-player-board-").concat(playerId, "\" class=\"moho-player-board\" data-color=\"").concat(color, "\">\n      <div id=\"item_1_").concat(playerId, "\" class=\"moho-item-spot\" data-spot=\"1\"></div>\n      <div id=\"item_2_").concat(playerId, "\" class=\"moho-item-spot\" data-spot=\"2\"></div>\n    </div>\n    <div id=\"moho-reputation-").concat(playerId, "\" class=\"moho-reputation\"></div>\n  </div>\n  <div class=\"moho-player-row\">\n    <div id=\"moho-encounter-tokens-").concat(playerId, "\" class=\"moho-encounter-tokens\"></div>\n    <div id=\"moho-indictments-").concat(playerId, "\" class=\"moho-indictments\"></div>\n  </div>\n</div>");
+    return "\n<div id=\"moho-player-row-".concat(playerId, "\" class=\"moho-player-container\">\n  <div class=\"moho-player-row\">\n    <div id=\"moho-player-board-").concat(playerId, "\" class=\"moho-player-board\" data-color=\"").concat(color, "\">\n      <div id=\"moho-player-board-counters-").concat(playerId, "\" class=\"moho-player-board-counters\"></div>\n      <div id=\"moho-candelabra-").concat(playerId, "\" class=\"moho-candelabra-spot\"></div>  \n      <div id=\"item_1_").concat(playerId, "\" class=\"moho-item-spot\" data-spot=\"1\"></div>\n      <div id=\"item_2_").concat(playerId, "\" class=\"moho-item-spot\" data-spot=\"2\"></div>\n    </div>\n    <div id=\"moho-reputation-").concat(playerId, "\" class=\"moho-reputation\"></div>\n  </div>\n  <div class=\"moho-player-row\">\n    <div id=\"moho-encounter-tokens-").concat(playerId, "\" class=\"moho-encounter-tokens\"></div>\n    <div id=\"moho-indictments-").concat(playerId, "\" class=\"moho-indictments\"></div>\n  </div>\n</div>");
 };
 var tplPlayerCounters = function (_a) {
     var playerId = _a.playerId;
@@ -6765,7 +6840,7 @@ var StaticData = (function () {
     };
     return StaticData;
 }());
-var tplPlayArea = function () { return "\n  <div id=\"encounter-token-discard\"></div>\n  <div id=\"indictment-discard\"></div>\n  <div id=\"item-discard\"></div>\n  <div id=\"play-area-container\">\n    <div id=\"left-column\"></div>\n    <div id=\"right-column\"></div>\n  </div>\n"; };
+var tplPlayArea = function () { return "\n  <div id=\"encounter-token-discard\"></div>\n  <div id=\"indictment-discard\"></div>\n  <div id=\"item-discard\"></div>\n  <div id=\"game-buttons\"></div>\n  <div id=\"play-area-container\">\n    <div id=\"left-column\"></div>\n    <div id=\"right-column\"></div>\n  </div>\n"; };
 var getItem = function (base) {
     return __assign(__assign({}, base), StaticData.get().item(base.id));
 };
@@ -7178,7 +7253,19 @@ var FestivityPlayCard = (function () {
     FestivityPlayCard.prototype.onLeavingState = function () {
         debug('Leaving Indulge state');
     };
-    FestivityPlayCard.prototype.setDescription = function (activePlayerIds, args) { };
+    FestivityPlayCard.prototype.setDescription = function (activePlayerId, args) {
+        if (args.optionalAction) {
+            this.game.clientUpdatePageTitle({
+                text: _('${tkn_playerName} may play a card'),
+                args: {
+                    tkn_playerName: PlayerManager.getInstance()
+                        .getPlayer(activePlayerId)
+                        .getName(),
+                },
+                nonActivePlayers: true,
+            });
+        }
+    };
     FestivityPlayCard.prototype.updateInterfaceInitialStep = function () {
         var _this = this;
         this.game.clearPossible();

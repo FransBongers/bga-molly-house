@@ -54,7 +54,8 @@ class Players extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Manager
     Game::get()->reattributeColorsBasedOnPreferences($players, $gameInfos['player_colors']);
     Game::get()->reloadPlayersBasicInfos();
     // PlayersExtra::setupNewGame();
-
+    $firstPlayerId = self::getTurnOrder()[0];
+    Globals::setCandelabra($firstPlayerId);
   }
 
   public static function getActiveId()

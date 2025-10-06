@@ -46,6 +46,10 @@ class Festivity {
       });
     });
     this.playedDresses.addCards(gamedatas.festivity.playedDresses.map(getItem));
+
+    if (gamedatas.festivity.runner) {
+      this.setRunner(gamedatas.festivity.runner);
+    }
   }
 
   public addRogueValue(cardId: string, value: number) {
@@ -75,7 +79,7 @@ class Festivity {
 
     const communityContainerElt = this.createPlayerElement(
       COMMUNITY,
-      _('Community')
+      `<span>${_('Community')}</span>`
     );
     setAbsolutePosition(
       communityContainerElt,
@@ -127,13 +131,15 @@ class Festivity {
     containerElt.id = `moho-festivity-${playerId}`;
     containerElt.classList.add('moho-festivity-container');
 
-    const nameSpan = document.createElement('span');
-    nameSpan.innerHTML = playerName;
+    const nameDiv = document.createElement('div');
+    nameDiv.innerHTML = playerName;
+    nameDiv.classList.add('moho-festivity-player-name');
+    nameDiv.insertAdjacentHTML('beforeend', '<div class="moho-candelabra"></div>');
 
     const playerStockElt = document.createElement('div');
     playerStockElt.classList.add('moho-festivity-stock');
     containerElt.appendChild(playerStockElt);
-    containerElt.appendChild(nameSpan);
+    containerElt.appendChild(nameDiv);
 
     this.festivityContainer.appendChild(containerElt);
 
@@ -151,5 +157,18 @@ class Festivity {
 
   setFestivityActive(active: boolean) {
     this.festivityContainer.dataset.active = active ? 'true' : 'false';
+  }
+
+  public setRunner(runnerPlayerId: number) {
+    PlayerManager.getInstance()
+      .getPlayerIds()
+      .forEach((playerId) => {
+        const elt = document.getElementById(`moho-festivity-${playerId}`);
+        if (playerId === runnerPlayerId) {
+          elt.classList.add('moho-festivity-runner');
+        } else {
+          elt.classList.remove('moho-festivity-runner');
+        }
+      });
   }
 }

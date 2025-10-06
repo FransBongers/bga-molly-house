@@ -61,7 +61,7 @@ class Settings {
   }: {
     gamedatas: GamedatasAlias;
   }) {
-    const configPanel = document.getElementById("info-panel-buttons");
+    const configPanel = document.getElementById("game-buttons");
     if (configPanel) {
       configPanel.insertAdjacentHTML("beforeend", tplSettingsButton());
     }
@@ -145,12 +145,13 @@ class Settings {
         const localValue = localStorage.getItem(
           this.getLocalStorageKey({ id })
         );
-        this.settings[id] = localValue || defaultValue;
+        const value = localValue || defaultValue;
+        this.settings[id] = value;
 
         // Call change method to update interface based on current value
         const methodName = this.getMethodName({ id });
-        if (setting.onChangeInSetup && localValue && this[methodName]) {
-          this[methodName](localValue);
+        if (setting.onChangeInSetup && value && this[methodName]) {
+          this[methodName](value);
         }
 
         // Add content to modal
@@ -257,6 +258,12 @@ class Settings {
     // console.log("onChangeCardSizeInLogSetting", value);
     const ROOT = document.documentElement;
     ROOT.style.setProperty("--logCardScale", `${Number(value) / 100}`);
+  }
+
+  public onChangeSizeOfHandSetting(value: number) {
+    console.log("onChangeSizeOfHandSetting", value);
+    const ROOT = document.documentElement;
+    ROOT.style.setProperty("--handScale", `${Number(value) / 100}`);
   }
 
   public onChangeAnimationSpeedSetting(value: number) {

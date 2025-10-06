@@ -127,7 +127,7 @@ class MollyHouse implements Game {
 
     this._connections = [];
 
-    InfoPanel.create(this);
+    // InfoPanel.create(this);
 
     TooltipManager.create(this);
     Settings.create(this);
@@ -913,12 +913,12 @@ class MollyHouse implements Game {
     this.framework().inherited(arguments);
     // TODO: Update for mobile mode
     const container = document.getElementById('player_boards');
-    const infoPanel = document.getElementById('info-panel');
+    // const infoPanel = document.getElementById('info-panel');
 
     if (!container) {
       return;
     }
-    container.insertAdjacentElement('afterbegin', infoPanel);
+    // container.insertAdjacentElement('afterbegin', infoPanel);
   }
 
   //  setAlwaysFixTopActions(alwaysFixed = true, maximum = 30) {

@@ -1,5 +1,13 @@
 @use 'sass:math';
 
+.moho-candelabra {
+  width: calc(var(--iconScale) * 50px);
+  aspect-ratio: 200 /166;
+  background-image: url('img/candelabra.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
 .moho-suit {
   width: calc(var(--iconScale) * 40px);
   aspect-ratio: 1 /1;

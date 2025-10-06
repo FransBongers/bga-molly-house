@@ -38,6 +38,7 @@
   --playerBoardScale: var(--rightColumnScale);
   --tokenScale: var(--rightColumnScale);
   --cardScale: var(--rightColumnScale);
+  --iconScale: var(--rightColumnScale);
   position: relative;
 
   background-size: 100% 100%;
@@ -61,6 +62,23 @@
   .moho-item-spot[data-spot='2'] {
     left: calc(var(--playerBoardScale) * 407px);
     top: calc(var(--playerBoardScale) * 13px);
+  }
+
+  .moho-player-board-counters {
+    position: absolute;
+    left: calc(var(--playerBoardScale) * 58px);
+    top: calc(var(--playerBoardScale) * 22px);
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    gap: calc(var(--playerBoardScale) * 16px);
+  }
+
+  .moho-candelabra-spot {
+    position: absolute;
+    left: calc(var(--playerBoardScale) * 5px);
+    top: calc(var(--playerBoardScale) * 86px);
+    width: calc(var(--iconScale) * 50px);
+    aspect-ratio: 200 /166;
   }
 }
 

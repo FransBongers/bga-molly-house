@@ -233,6 +233,9 @@ class Board {
     for (let i = 0; i <= 39; i++) {
       const elt = document.createElement('div');
       elt.classList.add('moho-joy-marker-stock');
+      if (i === gamedatas.gameEndThreshold) {
+        elt.classList.add('moho-game-end-threshold');
+      }
       setAbsolutePosition(elt, BOARD_SCALE, JOY_MARKER_POSITIONS[i]);
       this.ui.containers.markers.appendChild(elt);
       this.joyMarkerStocks[`${i}`] = new LineStock<MohoJoyMarker>(

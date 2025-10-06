@@ -81,25 +81,25 @@ const getSettingsConfig = (): Record<string, PlayerPreferenceTab> => ({
         },
         type: 'slider',
       },
-      [PREF_SINGLE_COLUMN_MAP_SIZE]: {
-        id: PREF_SINGLE_COLUMN_MAP_SIZE,
-        onChangeInSetup: true,
-        label: _('Map size'),
-        defaultValue: 100,
-        visibleCondition: {
-          id: PREF_TWO_COLUMN_LAYOUT,
-          values: [DISABLED],
-        },
-        sliderConfig: {
-          step: 5,
-          padding: 0,
-          range: {
-            min: 30,
-            max: 100,
-          },
-        },
-        type: 'slider',
-      },
+      // [PREF_SINGLE_COLUMN_MAP_SIZE]: {
+      //   id: PREF_SINGLE_COLUMN_MAP_SIZE,
+      //   onChangeInSetup: true,
+      //   label: _('Map size'),
+      //   defaultValue: 100,
+      //   visibleCondition: {
+      //     id: PREF_TWO_COLUMN_LAYOUT,
+      //     values: [DISABLED],
+      //   },
+      //   sliderConfig: {
+      //     step: 5,
+      //     padding: 0,
+      //     range: {
+      //       min: 30,
+      //       max: 100,
+      //     },
+      //   },
+      //   type: 'slider',
+      // },
       // [PREF_CARD_SIZE]: {
       //   id: PREF_CARD_SIZE,
       //   onChangeInSetup: false,
@@ -126,6 +126,21 @@ const getSettingsConfig = (): Record<string, PlayerPreferenceTab> => ({
           range: {
             min: 0,
             max: 140,
+          },
+        },
+        type: 'slider',
+      },
+      [PREF_SIZE_OF_HAND]: {
+        id: PREF_SIZE_OF_HAND,
+        onChangeInSetup: true,
+        label: _('Size of hand'),
+        defaultValue: 100,
+        sliderConfig: {
+          step: 5,
+          padding: 0,
+          range: {
+            min: 40,
+            max: 160,
           },
         },
         type: 'slider',

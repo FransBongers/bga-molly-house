@@ -307,3 +307,11 @@ const COMMUNITY_SURVIVAL = 'CommunitySurvival';
 const COMMUNITY_ATROPHY = 'CommunityAtrophy';
 
 const SCORE_LOYAL_TOKENS = 'scoreLoyalTokens';
+
+const COMMUNITY_MARKER_THRESHOLD = [
+  1 => 30,
+  2 => 35,
+  3 => 35,
+  4 => 40,
+  5 => 25,
+];

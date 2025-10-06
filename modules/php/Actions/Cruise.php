@@ -82,7 +82,13 @@ class Cruise extends \Bga\Games\MollyHouse\Models\AtomicAction
     $card->checkForBonusJoy($player);
 
     $reputationForSuit = $player->getReputationForSuit($card->getSuit());
-    $player->drawCards(min(4, $reputationForSuit));;
+    $player->drawCards(min(4, $reputationForSuit));
+
+    // Check dangerous cruising
+    if ($site->isDangerous()) {
+      $card->addToGossip($player, false);
+      $player->gainCubes($site->getSuit(), 1);
+    }
   }
 
   public function getOptions($player, $site)

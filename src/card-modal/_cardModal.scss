@@ -55,12 +55,14 @@
     // background-color: base.$player-aid-green;
     color: ivory;
     border-top-left-radius: 7px;
-    background-color: rgb(20,22,29);
+    background-color: rgb(20, 22, 29);
   }
 
   .moho-card-modal-content {
     --cardScale: 1;
     min-height: 225px;
     padding: 8px;
+    max-height: 75vh;
+    overflow-y: auto;
   }
 }

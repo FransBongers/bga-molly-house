@@ -53,3 +53,10 @@ html {
   flex-direction: column;
   gap: 8px;
 }
+
+#game-buttons {
+  padding: 4px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}

@@ -197,6 +197,13 @@ class NotificationManager {
     return PlayerManager.getInstance().getPlayer(playerId);
   }
 
+  private gainCubes(player: PlayerAlias, suit: Suit, numberOfCubes) {
+    player.counters[SUIT_COLOR_MAP[suit]].incValue(numberOfCubes);
+    player.counters[`playerBoard_${SUIT_COLOR_MAP[suit]}`].incValue(
+      numberOfCubes
+    );
+  }
+
   // .##....##..#######..########.####.########..######.
   // .###...##.##.....##....##.....##..##.......##....##
   // .####..##.##.....##....##.....##..##.......##......
@@ -289,9 +296,14 @@ class NotificationManager {
   }
 
   async notif_addCardToGossipPile(notif: Notif<NotifAddCardToGossipPile>) {
-    const { card } = notif.args;
+    const { card, fromLocation } = notif.args;
     const viceCard = getViceCard(card);
     const board = Board.getInstance();
+    if (fromLocation.startsWith('reputation')) {
+      const playerId = Number(fromLocation.split('_')[1]);
+
+      this.getPlayer(playerId).counters[viceCard.suit].incValue(-1);
+    }
     await board.gossipPile.addCard(viceCard);
     board.counters[GOSSIP_PILE].incValue(1);
     await this.game.viceCardManager.removeCard(viceCard);
@@ -590,7 +602,11 @@ class NotificationManager {
   async notif_gainCubes(notif: Notif<NotifGainCubes>) {
     const { playerId, numberOfCubes, suit } = notif.args;
     const player = this.getPlayer(playerId);
-    player.counters[SUIT_COLOR_MAP[suit]].incValue(numberOfCubes);
+    this.gainCubes(player, suit, numberOfCubes);
+    // player.counters[SUIT_COLOR_MAP[suit]].incValue(numberOfCubes);
+    // player.counters[`playerBoard_${SUIT_COLOR_MAP[suit]}`].incValue(
+    //   numberOfCubes
+    // );
   }
 
   async notif_hang(notif: Notif<NotifHang>) {
@@ -750,6 +766,7 @@ class NotificationManager {
   async notif_takeCandelabra(notif: Notif<NotifTakeCandelabra>) {
     const { playerId } = notif.args;
     // TODO
+    await PlayerManager.getInstance().moveCandelabraTo(playerId);
   }
 
   async notif_takeItem(notif: Notif<NotifTakeItem>) {
@@ -761,7 +778,9 @@ class NotificationManager {
   }
 
   async notif_throwFestivity(notif: Notif<NotifThrowFestivity>) {
+    const { playerId } = notif.args;
     Board.getInstance().setFestivityActive(true);
+    Festivity.getInstance().setRunner(playerId);
     Festivity.getInstance().setFestivityActive(true);
   }
 }

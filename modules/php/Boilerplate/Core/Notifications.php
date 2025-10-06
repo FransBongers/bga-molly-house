@@ -319,11 +319,12 @@ class Notifications
     ]);
   }
 
-  public static function addCardToGossipPile($player, $card)
+  public static function addCardToGossipPile($player, $card, $fromLocation)
   {
     self::notifyAll('addCardToGossipPile', clienttranslate('${player_name} adds ${tkn_boldText_cardValue} of ${tkn_suit} to the gossip pile ${tkn_viceCard}'), [
       'player' => $player,
       'card' => $card,
+      'fromLocation' => $fromLocation,
       'tkn_viceCard' => self::tknViceCard($card),
       'tkn_boldText_cardValue' => self::viceCardValueText($card->getDisplayValue()),
       'tkn_suit' => $card->getSuit(),
@@ -445,11 +446,11 @@ class Notifications
 
   public static function gainDrawTokens($player, $number)
   {
-    self::notifyAll('gainDrawTokens', clienttranslate('${player_name} gains ${tkn_boldText_number} ${tkn_drawTokens}'), [
+    self::notifyAll('gainDrawTokens', clienttranslate('${player_name} gains ${tkn_boldText_number} ${tkn_drawToken}'), [
       'player' => $player,
       'tkn_boldText_number' => $number,
       'number' => $number,
-      'tkn_drawTokens' => DRAW_TOKEN,
+      'tkn_drawToken' => DRAW_TOKEN,
     ]);
   }
 

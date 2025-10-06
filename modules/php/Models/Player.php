@@ -124,7 +124,9 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   {
     $cards = ViceCards::pickForLocation($number, DECK, Locations::hand($this->getId()))->toArray();
 
-    Notifications::drawCards($this, $cards, $numberOfDrawTokenToReturn);
+    if (count($cards) > 0) {
+      Notifications::drawCards($this, $cards, $numberOfDrawTokenToReturn);
+    }
 
     $drawTokens = $number - count($cards);
     if ($drawTokens > 0) {
@@ -367,7 +369,7 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
         'i18n' => ['tkn_boldText_revealedInformer']
       ]
     );
-    Stats::setRevealedInformer($this->getId(), 100);
+    Stats::setRevealedInformerPercentage($this->getId(), 100);
 
     $site = Sites::get($informerToken->getLocation());
     $suit = $site->getSuit();

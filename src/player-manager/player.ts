@@ -94,6 +94,19 @@ class MohoPlayer {
         }
       );
     });
+
+    [YELLOW, GREEN, BLUE, RED].forEach((color) => {
+      this.counters[`playerBoard_${color}`] = new CubeCounter({
+        id: `player-board-cubes-${color}-${this.playerId}`,
+        initialValue: playerGamedatas.cubes[COLOR_SUIT_MAP[color]],
+        parentElement: document.getElementById(
+          `moho-player-board-counters-${this.playerId}`
+        ),
+        color: color as CubeCounterProps['color'],
+        type: 'overlap',
+      });
+    });
+
     this.setupEncounterTokens(gamedatas);
     this.setupIndictments(gamedatas);
 
@@ -180,6 +193,11 @@ class MohoPlayer {
     this.reputation.addCards(playerGamedatas.reputation.map(getViceCard));
     playerGamedatas.items.forEach((item) => {
       this.items[item.location].addCard(getItem(item));
+    });
+    [YELLOW, GREEN, BLUE, RED].forEach((color) => {
+      this.counters[`playerBoard_${color}`].setValue(
+        playerGamedatas.cubes[COLOR_SUIT_MAP[color]]
+      );
     });
   }
 

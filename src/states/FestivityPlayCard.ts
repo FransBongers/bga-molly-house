@@ -29,9 +29,21 @@ class FestivityPlayCard implements State {
   }
 
   setDescription(
-    activePlayerIds: number,
+    activePlayerId: number,
     args: OnEnteringFestivityPlayCardArgs
-  ) {}
+  ) {
+    if (args.optionalAction) {
+      this.game.clientUpdatePageTitle({
+        text: _('${tkn_playerName} may play a card'),
+        args: {
+          tkn_playerName: PlayerManager.getInstance()
+            .getPlayer(activePlayerId)
+            .getName(),
+        },
+        nonActivePlayers: true,
+      });
+    }
+  }
 
   //  .####.##....##.########.########.########..########....###.....######..########
   //  ..##..###...##....##....##.......##.....##.##.........##.##...##....##.##......

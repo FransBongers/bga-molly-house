@@ -17,14 +17,6 @@ use Bga\Games\MollyHouse\Managers\ViceCards;
 
 class EndOfWeekCheckGameEnd extends \Bga\Games\MollyHouse\Models\AtomicAction
 {
-  protected $communitMarkerThreshold = [
-    1 => 30,
-    2 => 35,
-    3 => 35,
-    4 => 40,
-    5 => 25,
-  ];
-
   public function getState()
   {
     return ST_END_OF_WEEK_CHECK_GAME_END;
@@ -172,7 +164,7 @@ class EndOfWeekCheckGameEnd extends \Bga\Games\MollyHouse\Models\AtomicAction
   private function communitySurvival()
   {
     $playerCount = Players::count();
-    return Community::getJoy() >= $this->communitMarkerThreshold[$playerCount];
+    return Community::getJoy() >= COMMUNITY_MARKER_THRESHOLD[$playerCount];
   }
 
   /**
