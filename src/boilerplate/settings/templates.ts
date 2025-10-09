@@ -9,7 +9,7 @@ const tplSettingsButton = () => {
 </div>`;
 };
 
-const tplPlayerPrefenceSelectRow = ({
+const tplPlayerPrefenceSelectRowOld = ({
   setting,
   currentValue,
   visible = true,
@@ -41,6 +41,40 @@ const tplPlayerPrefenceSelectRow = ({
   `;
 };
 
+const tplPlayerPrefenceSelectRow = ({
+  setting,
+  currentValue,
+  visible = true,
+}: {
+  setting: PlayerPreferenceSelectConfig;
+  currentValue: string;
+  visible: boolean;
+}) => {
+  let values = setting.options
+    .map(
+      (option) =>
+        `<option value='${option.value}' ${
+          option.value === currentValue ? 'selected="selected"' : ""
+        }>${_(option.label)}</option>`
+    )
+    .join("");
+
+  return `
+    <div id="setting_row_${setting.id}" class="preference_choice"${!visible ? ` style="display: none;"` : ''}>
+         <div class="row-data row-data-large">
+         <div class="label">${_(setting.label)}</div>
+         <div class="row-value">
+                 <select id="setting_${
+          setting.id
+        }" class="preference_control game_preference_control" style="display: block;">
+        ${values}
+        </select>
+         </div>
+     </div>
+    </div>
+  `;
+};
+
 const tplSettingsModalTabContent = ({ id }: { id: string; }) => `
   <div id="settings_modal_tab_content_${id}" style="display: none;"></div>`;
 
@@ -59,12 +93,25 @@ const tplSettingsModalContent = ({tabs}: {tabs: {id: string; name: string;}[]}) 
   </div>`;
 };
 
-const tplPlayerPrefenceSliderRow = ({label, id, visible = true}: {label: string; id: string; visible?: boolean}) => {
+const tplPlayerPrefenceSliderRowOld = ({label, id, visible = true}: {label: string; id: string; visible?: boolean}) => {
   return `
   <div id="setting_row_${id}" class="player_preference_row"${!visible ? ` style="display: none;"` : ''}>
     <div class="player_preference_row_label">${_(label)}</div>
     <div class="player_preference_row_value slider">
       <div id="setting_${id}"></div>
+    </div>
+  </div>
+  `;
+};
+
+const tplPlayerPrefenceSliderRow = ({label, id, visible = true}: {label: string; id: string; visible?: boolean}) => {
+  return `
+  <div id="setting_row_${id}" class="preference_choice"${!visible ? ` style="display: none;"` : ''}>
+        <div class="row-data row-data-large">
+        <div class="row-label">${_(label)}</div>
+        <div class="row-value" style="padding-right: 10px;">
+          <div id="setting_${id}" class=""></div>
+        </div>
     </div>
   </div>
   `;

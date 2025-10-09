@@ -4066,15 +4066,15 @@ var getSettingsConfig = function () {
 var Settings = (function () {
     function Settings(game) {
         this.settings = {};
-        this.selectedTab = "layout";
+        this.selectedTab = 'layout';
         this.tabs = [
             {
-                id: "layout",
-                name: _("Layout"),
+                id: 'layout',
+                name: _('Layout'),
             },
             {
-                id: "gameplay",
-                name: _("Gameplay"),
+                id: 'gameplay',
+                name: _('Gameplay'),
             },
         ];
         this.game = game;
@@ -4093,37 +4093,35 @@ var Settings = (function () {
     };
     Settings.prototype.addButton = function (_a) {
         var gamedatas = _a.gamedatas;
-        var configPanel = document.getElementById("game-buttons");
+        var configPanel = document.getElementById('game-buttons');
         if (configPanel) {
-            configPanel.insertAdjacentHTML("beforeend", tplSettingsButton());
+            configPanel.insertAdjacentHTML('beforeend', tplSettingsButton());
         }
     };
     Settings.prototype.setupModal = function (_a) {
         var gamedatas = _a.gamedatas;
         this.modal = new Modal("settings_modal", {
-            class: "settings_modal",
-            closeIcon: "fa-times",
+            class: 'settings_modal',
+            closeIcon: 'fa-times',
             titleTpl: '<h2 id="popin_${id}_title" class="${class}_title">${title}</h2>',
-            title: _("Settings"),
+            title: _('Settings'),
             contents: tplSettingsModalContent({
                 tabs: this.tabs,
             }),
-            closeAction: "hide",
-            verticalAlign: "flex-start",
+            closeAction: 'hide',
+            verticalAlign: 'flex-start',
             breakpoint: 740,
         });
     };
     Settings.prototype.setup = function (_a) {
         var _this = this;
         var gamedatas = _a.gamedatas;
-        this.addButton({ gamedatas: gamedatas });
         this.setupModal({ gamedatas: gamedatas });
         this.setupModalContent();
         this.changeTab({ id: this.selectedTab });
-        dojo.connect($("show_settings"), "onclick", function () { return _this.open(); });
         this.tabs.forEach(function (_a) {
             var id = _a.id;
-            dojo.connect($("settings_modal_tab_".concat(id)), "onclick", function () {
+            dojo.connect($("settings_modal_tab_".concat(id)), 'onclick', function () {
                 return _this.changeTab({ id: id });
             });
         });
@@ -4131,18 +4129,17 @@ var Settings = (function () {
     Settings.prototype.setupModalContent = function () {
         var _this = this;
         var config = getSettingsConfig();
-        var node = document.getElementById("setting_modal_content");
+        var node = document.getElementById('setting_modal_content');
         if (!node) {
             return;
         }
-        Object.entries(config).forEach(function (_a) {
-            var tabId = _a[0], tabConfig = _a[1];
-            node.insertAdjacentHTML("beforeend", tplSettingsModalTabContent({ id: tabId }));
-            var tabContentNode = document.getElementById("settings_modal_tab_content_".concat(tabId));
+        var tabContentNode = document.querySelectorAll('#ingame_menu_content > .preference_choice')[1];
+        console.log('selected', tabContentNode);
+        Object.values(config).reverse().forEach(function (tabConfig) {
             if (!tabContentNode) {
                 return;
             }
-            Object.values(tabConfig.config).forEach(function (setting) {
+            Object.values(tabConfig.config).reverse().forEach(function (setting) {
                 var id = setting.id, type = setting.type, defaultValue = setting.defaultValue, visibleCondition = setting.visibleCondition;
                 var localValue = localStorage.getItem(_this.getLocalStorageKey({ id: id }));
                 var value = localValue || defaultValue;
@@ -4151,29 +4148,26 @@ var Settings = (function () {
                 if (setting.onChangeInSetup && value && _this[methodName]) {
                     _this[methodName](value);
                 }
-                if (setting.type === "select") {
+                if (setting.type === 'select') {
                     var visible = !visibleCondition ||
                         (visibleCondition &&
                             visibleCondition.values.includes(_this.settings[visibleCondition.id]));
-                    tabContentNode.insertAdjacentHTML("beforeend", tplPlayerPrefenceSelectRow({
+                    tabContentNode.insertAdjacentHTML('afterend', tplPlayerPrefenceSelectRow({
                         setting: setting,
                         currentValue: _this.settings[setting.id],
                         visible: visible,
                     }));
                     var controlId_1 = "setting_".concat(setting.id);
-                    $(controlId_1).addEventListener("change", function () {
+                    $(controlId_1).addEventListener('change', function () {
                         var value = $(controlId_1).value;
                         _this.changeSetting({ id: setting.id, value: value });
                     });
                 }
-                else if (setting.type === "slider") {
-                    var visible = !visibleCondition ||
-                        (visibleCondition &&
-                            visibleCondition.values.includes(_this.settings[visibleCondition.id]));
-                    tabContentNode.insertAdjacentHTML("beforeend", tplPlayerPrefenceSliderRow({
+                else if (setting.type === 'slider') {
+                    tabContentNode.insertAdjacentHTML('afterend', tplPlayerPrefenceSliderRow({
                         id: setting.id,
                         label: setting.label,
-                        visible: visible,
+                        visible: true,
                     }));
                     var sliderConfig = __assign(__assign({}, setting.sliderConfig), { start: _this.settings[setting.id] });
                     noUiSlider.create($("setting_" + setting.id), sliderConfig);
@@ -4196,9 +4190,9 @@ var Settings = (function () {
     };
     Settings.prototype.onChangeTwoColumnLayoutSetting = function (value) {
         this.checkColumnSizesVisisble();
-        var node = document.getElementById("play-area-container");
+        var node = document.getElementById('play-area-container');
         if (node) {
-            node.setAttribute("data-two-columns", value);
+            node.setAttribute('data-two-columns', value);
         }
         this.game.updateLayout();
     };
@@ -4212,16 +4206,16 @@ var Settings = (function () {
     };
     Settings.prototype.onChangeCardSizeInLogSetting = function (value) {
         var ROOT = document.documentElement;
-        ROOT.style.setProperty("--logCardScale", "".concat(Number(value) / 100));
+        ROOT.style.setProperty('--logCardScale', "".concat(Number(value) / 100));
     };
     Settings.prototype.onChangeSizeOfHandSetting = function (value) {
-        console.log("onChangeSizeOfHandSetting", value);
+        console.log('onChangeSizeOfHandSetting', value);
         var ROOT = document.documentElement;
-        ROOT.style.setProperty("--handScale", "".concat(Number(value) / 100));
+        ROOT.style.setProperty('--handScale', "".concat(Number(value) / 100));
     };
     Settings.prototype.onChangeAnimationSpeedSetting = function (value) {
         var duration = 2100 - value;
-        debug("onChangeAnimationSpeedSetting", duration);
+        debug('onChangeAnimationSpeedSetting', duration);
         this.game.animationManager.getSettings().duration = duration;
     };
     Settings.prototype.onChangeShowAnimationsSetting = function (value) {
@@ -4240,43 +4234,43 @@ var Settings = (function () {
         var id = _a.id;
         var currentTab = document.getElementById("settings_modal_tab_".concat(this.selectedTab));
         var currentTabContent = document.getElementById("settings_modal_tab_content_".concat(this.selectedTab));
-        currentTab.removeAttribute("data-state");
+        currentTab.removeAttribute('data-state');
         if (currentTabContent) {
-            currentTabContent.style.display = "none";
+            currentTabContent.style.display = 'none';
         }
         this.selectedTab = id;
         var tab = document.getElementById("settings_modal_tab_".concat(id));
         var tabContent = document.getElementById("settings_modal_tab_content_".concat(this.selectedTab));
-        tab.setAttribute("data-state", "selected");
+        tab.setAttribute('data-state', 'selected');
         if (tabContent) {
-            tabContent.style.display = "";
+            tabContent.style.display = '';
         }
     };
     Settings.prototype.checkAnmimationSpeedVisisble = function () {
-        var sliderNode = document.getElementById("setting_row_animationSpeed");
+        var sliderNode = document.getElementById('setting_row_animationSpeed');
         if (!sliderNode) {
             return;
         }
         if (this.settings[PREF_SHOW_ANIMATIONS] === PREF_ENABLED) {
-            sliderNode.style.display = "";
+            sliderNode.style.display = '';
         }
         else {
-            sliderNode.style.display = "none";
+            sliderNode.style.display = 'none';
         }
     };
     Settings.prototype.checkColumnSizesVisisble = function () {
-        var sliderNode = document.getElementById("setting_row_columnSizes");
-        var mapSizeSliderNode = document.getElementById("setting_row_singleColumnMapSize");
+        var sliderNode = document.getElementById('setting_row_columnSizes');
+        var mapSizeSliderNode = document.getElementById('setting_row_singleColumnMapSize');
         if (!(sliderNode && mapSizeSliderNode)) {
             return;
         }
-        if (this.settings["twoColumnsLayout"] === PREF_ENABLED) {
-            sliderNode.style.display = "";
-            mapSizeSliderNode.style.display = "none";
+        if (this.settings['twoColumnsLayout'] === PREF_ENABLED) {
+            sliderNode.style.display = '';
+            mapSizeSliderNode.style.display = 'none';
         }
         else {
-            sliderNode.style.display = "none";
-            mapSizeSliderNode.style.display = "";
+            sliderNode.style.display = 'none';
+            mapSizeSliderNode.style.display = '';
         }
     };
     Settings.prototype.getMethodName = function (_a) {
@@ -4302,7 +4296,7 @@ var Settings = (function () {
 var tplSettingsButton = function () {
     return "<div id=\"show_settings\">\n  <svg  xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 512\">\n    <g>\n      <path class=\"fa-secondary\" fill=\"currentColor\" d=\"M638.41 387a12.34 12.34 0 0 0-12.2-10.3h-16.5a86.33 86.33 0 0 0-15.9-27.4L602 335a12.42 12.42 0 0 0-2.8-15.7 110.5 110.5 0 0 0-32.1-18.6 12.36 12.36 0 0 0-15.1 5.4l-8.2 14.3a88.86 88.86 0 0 0-31.7 0l-8.2-14.3a12.36 12.36 0 0 0-15.1-5.4 111.83 111.83 0 0 0-32.1 18.6 12.3 12.3 0 0 0-2.8 15.7l8.2 14.3a86.33 86.33 0 0 0-15.9 27.4h-16.5a12.43 12.43 0 0 0-12.2 10.4 112.66 112.66 0 0 0 0 37.1 12.34 12.34 0 0 0 12.2 10.3h16.5a86.33 86.33 0 0 0 15.9 27.4l-8.2 14.3a12.42 12.42 0 0 0 2.8 15.7 110.5 110.5 0 0 0 32.1 18.6 12.36 12.36 0 0 0 15.1-5.4l8.2-14.3a88.86 88.86 0 0 0 31.7 0l8.2 14.3a12.36 12.36 0 0 0 15.1 5.4 111.83 111.83 0 0 0 32.1-18.6 12.3 12.3 0 0 0 2.8-15.7l-8.2-14.3a86.33 86.33 0 0 0 15.9-27.4h16.5a12.43 12.43 0 0 0 12.2-10.4 112.66 112.66 0 0 0 .01-37.1zm-136.8 44.9c-29.6-38.5 14.3-82.4 52.8-52.8 29.59 38.49-14.3 82.39-52.8 52.79zm136.8-343.8a12.34 12.34 0 0 0-12.2-10.3h-16.5a86.33 86.33 0 0 0-15.9-27.4l8.2-14.3a12.42 12.42 0 0 0-2.8-15.7 110.5 110.5 0 0 0-32.1-18.6A12.36 12.36 0 0 0 552 7.19l-8.2 14.3a88.86 88.86 0 0 0-31.7 0l-8.2-14.3a12.36 12.36 0 0 0-15.1-5.4 111.83 111.83 0 0 0-32.1 18.6 12.3 12.3 0 0 0-2.8 15.7l8.2 14.3a86.33 86.33 0 0 0-15.9 27.4h-16.5a12.43 12.43 0 0 0-12.2 10.4 112.66 112.66 0 0 0 0 37.1 12.34 12.34 0 0 0 12.2 10.3h16.5a86.33 86.33 0 0 0 15.9 27.4l-8.2 14.3a12.42 12.42 0 0 0 2.8 15.7 110.5 110.5 0 0 0 32.1 18.6 12.36 12.36 0 0 0 15.1-5.4l8.2-14.3a88.86 88.86 0 0 0 31.7 0l8.2 14.3a12.36 12.36 0 0 0 15.1 5.4 111.83 111.83 0 0 0 32.1-18.6 12.3 12.3 0 0 0 2.8-15.7l-8.2-14.3a86.33 86.33 0 0 0 15.9-27.4h16.5a12.43 12.43 0 0 0 12.2-10.4 112.66 112.66 0 0 0 .01-37.1zm-136.8 45c-29.6-38.5 14.3-82.5 52.8-52.8 29.59 38.49-14.3 82.39-52.8 52.79z\" opacity=\"0.4\"></path>\n      <path class=\"fa-primary\" fill=\"currentColor\" d=\"M420 303.79L386.31 287a173.78 173.78 0 0 0 0-63.5l33.7-16.8c10.1-5.9 14-18.2 10-29.1-8.9-24.2-25.9-46.4-42.1-65.8a23.93 23.93 0 0 0-30.3-5.3l-29.1 16.8a173.66 173.66 0 0 0-54.9-31.7V58a24 24 0 0 0-20-23.6 228.06 228.06 0 0 0-76 .1A23.82 23.82 0 0 0 158 58v33.7a171.78 171.78 0 0 0-54.9 31.7L74 106.59a23.91 23.91 0 0 0-30.3 5.3c-16.2 19.4-33.3 41.6-42.2 65.8a23.84 23.84 0 0 0 10.5 29l33.3 16.9a173.24 173.24 0 0 0 0 63.4L12 303.79a24.13 24.13 0 0 0-10.5 29.1c8.9 24.1 26 46.3 42.2 65.7a23.93 23.93 0 0 0 30.3 5.3l29.1-16.7a173.66 173.66 0 0 0 54.9 31.7v33.6a24 24 0 0 0 20 23.6 224.88 224.88 0 0 0 75.9 0 23.93 23.93 0 0 0 19.7-23.6v-33.6a171.78 171.78 0 0 0 54.9-31.7l29.1 16.8a23.91 23.91 0 0 0 30.3-5.3c16.2-19.4 33.7-41.6 42.6-65.8a24 24 0 0 0-10.5-29.1zm-151.3 4.3c-77 59.2-164.9-28.7-105.7-105.7 77-59.2 164.91 28.7 105.71 105.7z\"></path>\n    </g>\n  </svg>\n</div>";
 };
-var tplPlayerPrefenceSelectRow = function (_a) {
+var tplPlayerPrefenceSelectRowOld = function (_a) {
     var setting = _a.setting, currentValue = _a.currentValue, _b = _a.visible, visible = _b === void 0 ? true : _b;
     var values = setting.options
         .map(function (option) {
@@ -4310,6 +4304,15 @@ var tplPlayerPrefenceSelectRow = function (_a) {
     })
         .join("");
     return "\n    <div id=\"setting_row_".concat(setting.id, "\" class=\"player_preference_row\"").concat(!visible ? " style=\"display: none;\"" : '', ">\n      <div class=\"player_preference_row_label\">").concat(_(setting.label), "</div>\n      <div class=\"player_preference_row_value\">\n        <select id=\"setting_").concat(setting.id, "\" class=\"\" style=\"display: block;\">\n        ").concat(values, "\n        </select>\n      </div>\n    </div>\n  ");
+};
+var tplPlayerPrefenceSelectRow = function (_a) {
+    var setting = _a.setting, currentValue = _a.currentValue, _b = _a.visible, visible = _b === void 0 ? true : _b;
+    var values = setting.options
+        .map(function (option) {
+        return "<option value='".concat(option.value, "' ").concat(option.value === currentValue ? 'selected="selected"' : "", ">").concat(_(option.label), "</option>");
+    })
+        .join("");
+    return "\n    <div id=\"setting_row_".concat(setting.id, "\" class=\"preference_choice\"").concat(!visible ? " style=\"display: none;\"" : '', ">\n         <div class=\"row-data row-data-large\">\n         <div class=\"label\">").concat(_(setting.label), "</div>\n         <div class=\"row-value\">\n                 <select id=\"setting_").concat(setting.id, "\" class=\"preference_control game_preference_control\" style=\"display: block;\">\n        ").concat(values, "\n        </select>\n         </div>\n     </div>\n    </div>\n  ");
 };
 var tplSettingsModalTabContent = function (_a) {
     var id = _a.id;
@@ -4328,9 +4331,13 @@ var tplSettingsModalContent = function (_a) {
     })
         .join(""), "\n    </div>\n  </div>");
 };
-var tplPlayerPrefenceSliderRow = function (_a) {
+var tplPlayerPrefenceSliderRowOld = function (_a) {
     var label = _a.label, id = _a.id, _b = _a.visible, visible = _b === void 0 ? true : _b;
     return "\n  <div id=\"setting_row_".concat(id, "\" class=\"player_preference_row\"").concat(!visible ? " style=\"display: none;\"" : '', ">\n    <div class=\"player_preference_row_label\">").concat(_(label), "</div>\n    <div class=\"player_preference_row_value slider\">\n      <div id=\"setting_").concat(id, "\"></div>\n    </div>\n  </div>\n  ");
+};
+var tplPlayerPrefenceSliderRow = function (_a) {
+    var label = _a.label, id = _a.id, _b = _a.visible, visible = _b === void 0 ? true : _b;
+    return "\n  <div id=\"setting_row_".concat(id, "\" class=\"preference_choice\"").concat(!visible ? " style=\"display: none;\"" : '', ">\n        <div class=\"row-data row-data-large\">\n        <div class=\"row-label\">").concat(_(label), "</div>\n        <div class=\"row-value\" style=\"padding-right: 10px;\">\n          <div id=\"setting_").concat(id, "\" class=\"\"></div>\n        </div>\n    </div>\n  </div>\n  ");
 };
 var ConfirmPartialTurn = (function () {
     function ConfirmPartialTurn(game) {
@@ -6840,7 +6847,7 @@ var StaticData = (function () {
     };
     return StaticData;
 }());
-var tplPlayArea = function () { return "\n  <div id=\"encounter-token-discard\"></div>\n  <div id=\"indictment-discard\"></div>\n  <div id=\"item-discard\"></div>\n  <div id=\"game-buttons\"></div>\n  <div id=\"play-area-container\">\n    <div id=\"left-column\"></div>\n    <div id=\"right-column\"></div>\n  </div>\n"; };
+var tplPlayArea = function () { return "\n  <div id=\"encounter-token-discard\"></div>\n  <div id=\"indictment-discard\"></div>\n  <div id=\"item-discard\"></div>\n  <div id=\"play-area-container\">\n    <div id=\"left-column\"></div>\n    <div id=\"right-column\"></div>\n  </div>\n"; };
 var getItem = function (base) {
     return __assign(__assign({}, base), StaticData.get().item(base.id));
 };
