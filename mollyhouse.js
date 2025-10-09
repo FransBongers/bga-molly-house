@@ -4134,7 +4134,6 @@ var Settings = (function () {
             return;
         }
         var tabContentNode = document.querySelectorAll('#ingame_menu_content > .preference_choice')[1];
-        console.log('selected', tabContentNode);
         Object.values(config).reverse().forEach(function (tabConfig) {
             if (!tabContentNode) {
                 return;
@@ -6650,7 +6649,6 @@ var TakeAction = (function () {
     };
     TakeAction.prototype.updateConfirmTitle = function (action, target) {
         var site = StaticData.get().site(this.args.site.id).name;
-        console.log("Updating confirm title for action: ".concat(action, ", target: ").concat(target));
         switch (action) {
             case ACCUSE:
                 updatePageTitle(_('Accuse ${player_name} and reveal ${tkn_encounterToken} ?'), {

@@ -168,9 +168,6 @@ class TakeAction implements State {
 
   private updateConfirmTitle(action: string, target: string) {
     const site = StaticData.get().site(this.args.site.id).name;
-    console.log(
-      `Updating confirm title for action: ${action}, target: ${target}`
-    );
     switch (action) {
       case ACCUSE:
         updatePageTitle(

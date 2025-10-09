@@ -114,7 +114,7 @@ class Settings {
     }
 
     const tabContentNode = document.querySelectorAll('#ingame_menu_content > .preference_choice')[1];
-    console.log('selected', tabContentNode);
+    // console.log('selected', tabContentNode);
 
     Object.values(config).reverse().forEach((tabConfig) => {
       // node.insertAdjacentHTML(

@@ -89,10 +89,13 @@ class FestivityPlayCard extends \Bga\Games\MollyHouse\Models\AtomicAction
         throw new \feException("ERROR_030");
       }
 
+      $info = $this->ctx->getInfo();
+      $optional = isset($info['optional']) && $info['optional'];
+
       $action = [
         'action' => FESTIVITY_PLAY_CARD,
         'playerId' => $playerId,
-        'optional' => $this->isOptional(),
+        'optional' => $optional,
       ];
       $this->ctx->insertAsBrother(Engine::buildTree($action));
       $action = [
