@@ -169,4 +169,20 @@ class Market {
   //  .##.....##....##.....##..##........##.....##.......##...
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
+
+  public incDeckCounter(value: number) {
+    this.counters[DECK].incValue(value);
+    if (this.counters[DECK].getValue() === 0) {
+      this.ui.deck.classList.add('moho-empty');
+    } else {
+      this.ui.deck.classList.remove('moho-empty');
+    }
+  }
+
+  public incSafePileCounter(value: number) {
+    this.counters[SAFE_PILE].incValue(value);
+    if (this.counters[SAFE_PILE].getValue() === 0) {
+      this.ui.safePile.setAttribute('data-card-id', 'none');
+    }
+  }
 }

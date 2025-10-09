@@ -303,6 +303,9 @@ class NotificationManager {
       const playerId = Number(fromLocation.split('_')[1]);
 
       this.getPlayer(playerId).counters[viceCard.suit].incValue(-1);
+    } else if (fromLocation.startsWith('hand')) {
+      const playerId = Number(fromLocation.split('_')[1]);
+      this.getPlayer(playerId).counters[HAND].incValue(-1);
     }
     await board.gossipPile.addCard(viceCard);
     board.counters[GOSSIP_PILE].incValue(1);
@@ -334,6 +337,9 @@ class NotificationManager {
 
     if (from.startsWith('reputation_') && !community && playerId) {
       this.getPlayer(playerId).counters[viceCard.suit].incValue(-1);
+    } else if (from.startsWith('hand')) {
+      const playerId = Number(from.split('_')[1]);
+      this.getPlayer(playerId).counters[HAND].incValue(-1);
     }
 
     const market = Market.getInstance();
@@ -418,7 +424,7 @@ class NotificationManager {
   async notif_drawCards(notif: Notif<NotifDrawCards>) {
     const { playerId, number, numberOfDrawTokenToReturn } = notif.args;
 
-    Market.getInstance().counters[DECK].incValue(-number);
+    Market.getInstance().incDeckCounter(-number);
     const player = this.getPlayer(playerId);
     player.counters[DRAW_TOKEN].incValue(-numberOfDrawTokenToReturn);
     player.counters[HAND].incValue(number);
@@ -443,7 +449,7 @@ class NotificationManager {
       card.location = location;
 
       // Add card to hand
-      market.counters[DECK].incValue(-1);
+      market.incDeckCounter(-1);
       await hand.addCard(card);
       player.counters[HAND].incValue(1);
     });
@@ -461,7 +467,7 @@ class NotificationManager {
     const board = Board.getInstance();
     await market.deck.addCard(fakeCard);
     fakeCard.location = GOSSIP_PILE;
-    market.counters[DECK].incValue(-1);
+    market.incDeckCounter(-1);
     await board.gossipPile.addCard(fakeCard);
     board.counters[GOSSIP_PILE].incValue(1);
     await this.game.viceCardManager.removeCard(fakeCard);
@@ -480,7 +486,7 @@ class NotificationManager {
       const viceCard = getViceCard(card);
       if (card.location === SAFE_PILE) {
         await market.safePile.addCard(viceCard);
-        market.counters[SAFE_PILE].incValue(-1);
+        market.incSafePileCounter(-1);
       }
 
       if (card.location === GOSSIP_PILE) {
@@ -492,7 +498,7 @@ class NotificationManager {
       card.location = DECK;
 
       await market.deck.addCard(viceCard);
-      market.counters[DECK].incValue(1);
+      market.incDeckCounter(1);
       this.game.viceCardManager.removeCard(viceCard);
     });
 
@@ -504,7 +510,7 @@ class NotificationManager {
   ) {
     const { number, cards } = notif.args;
     Board.getInstance().counters[GOSSIP_PILE].incValue(-number);
-    Market.getInstance().counters[SAFE_PILE].incValue(number);
+    Market.getInstance().incSafePileCounter(number);
   }
 
   async notif_endOfWeekGenerateEvidence(
@@ -580,7 +586,7 @@ class NotificationManager {
     if (cardDrawnFromGossipPile) {
       Board.getInstance().counters[GOSSIP_PILE].incValue(-1);
     } else {
-      market.counters[DECK].incValue(-1);
+      market.incDeckCounter(-1);
     }
 
     await Festivity.getInstance().stocks[COMMUNITY].addCard(viceCard);
@@ -684,7 +690,7 @@ class NotificationManager {
         viceCard.location = DECK;
         await market.deck.addCard(viceCard);
         viceCard.location = location;
-        market.counters[DECK].incValue(-1);
+        market.incDeckCounter(-1);
         await market.stock.addCard(viceCard);
       }
     });

@@ -2123,6 +2123,12 @@ span[style*="color:#fcd873"] {
 #moho-market #moho-deck {
   box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);
 }
+#moho-market #moho-deck.moho-empty {
+  background-image: none !important;
+  box-shadow: none;
+  border: none;
+  cursor: default;
+}
 #moho-market #moho-safe-pile {
   position: relative;
   box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);
@@ -2438,12 +2444,11 @@ span[style*="color:#c0c0c0"] {
 }
 
 .moho-pawn {
-  width: calc(var(--iconScale) * 64px);
   height: calc(var(--iconScale) * 101px);
-  background-image: url("img/pawns.png");
+  aspect-ratio: 275/424;
+  background-image: url("img/pawns_outline.png");
   background-size: 500% 100%;
   background-repeat: no-repeat;
-  filter: drop-shadow(calc(var(--iconScale) * 2px) 0px 0px black) drop-shadow(calc(var(--iconScale) * -2px) 0px 0px black) drop-shadow(0px calc(var(--iconScale) * 2px) 0px black) drop-shadow(0px calc(var(--iconScale) * -2px) 0px black);
 }
 
 .moho-pawn[data-color=blue] {

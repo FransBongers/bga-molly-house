@@ -1,16 +1,11 @@
 @use 'sass:math';
 
 .moho-pawn {
-  width: calc(var(--iconScale) * 64px);
   height: calc(var(--iconScale) * 101px);
-  background-image: url('img/pawns.png');
+  aspect-ratio: 275 / 424;
+  background-image: url('img/pawns_outline.png');
   background-size: 500% 100%;
   background-repeat: no-repeat;
-
-  filter: drop-shadow(calc(var(--iconScale) * 2px) 0px 0px black)
-    drop-shadow(calc(var(--iconScale) * -2px) 0px 0px black)
-    drop-shadow(0px calc(var(--iconScale) * 2px) 0px black)
-    drop-shadow(0px calc(var(--iconScale) * -2px) 0px black);
 }
 
 .moho-pawn[data-color='blue'] {

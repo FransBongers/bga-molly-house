@@ -3043,7 +3043,7 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_addCardToGossipPile = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, card, fromLocation, viceCard, board, playerId;
+            var _a, card, fromLocation, viceCard, board, playerId, playerId;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -3053,6 +3053,10 @@ var NotificationManager = (function () {
                         if (fromLocation.startsWith('reputation')) {
                             playerId = Number(fromLocation.split('_')[1]);
                             this.getPlayer(playerId).counters[viceCard.suit].incValue(-1);
+                        }
+                        else if (fromLocation.startsWith('hand')) {
+                            playerId = Number(fromLocation.split('_')[1]);
+                            this.getPlayer(playerId).counters[HAND].incValue(-1);
                         }
                         return [4, board.gossipPile.addCard(viceCard)];
                     case 1:
@@ -3092,7 +3096,7 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_addCardToSafePile = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, card, playerId, community, from, viceCard, market;
+            var _a, card, playerId, community, from, viceCard, playerId_1, market;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -3100,6 +3104,10 @@ var NotificationManager = (function () {
                         viceCard = getViceCard(card);
                         if (from.startsWith('reputation_') && !community && playerId) {
                             this.getPlayer(playerId).counters[viceCard.suit].incValue(-1);
+                        }
+                        else if (from.startsWith('hand')) {
+                            playerId_1 = Number(from.split('_')[1]);
+                            this.getPlayer(playerId_1).counters[HAND].incValue(-1);
                         }
                         market = Market.getInstance();
                         return [4, market.addCardToSafePile(viceCard)];
@@ -3270,7 +3278,7 @@ var NotificationManager = (function () {
             var _a, playerId, number, numberOfDrawTokenToReturn, player;
             return __generator(this, function (_b) {
                 _a = notif.args, playerId = _a.playerId, number = _a.number, numberOfDrawTokenToReturn = _a.numberOfDrawTokenToReturn;
-                Market.getInstance().counters[DECK].incValue(-number);
+                Market.getInstance().incDeckCounter(-number);
                 player = this.getPlayer(playerId);
                 player.counters[DRAW_TOKEN].incValue(-numberOfDrawTokenToReturn);
                 player.counters[HAND].incValue(number);
@@ -3303,7 +3311,7 @@ var NotificationManager = (function () {
                                     case 1:
                                         _a.sent();
                                         card.location = location;
-                                        market.counters[DECK].incValue(-1);
+                                        market.incDeckCounter(-1);
                                         return [4, hand.addCard(card)];
                                     case 2:
                                         _a.sent();
@@ -3336,7 +3344,7 @@ var NotificationManager = (function () {
                     case 1:
                         _a.sent();
                         fakeCard.location = GOSSIP_PILE;
-                        market.counters[DECK].incValue(-1);
+                        market.incDeckCounter(-1);
                         return [4, board.gossipPile.addCard(fakeCard)];
                     case 2:
                         _a.sent();
@@ -3371,7 +3379,7 @@ var NotificationManager = (function () {
                                         return [4, market.safePile.addCard(viceCard)];
                                     case 2:
                                         _a.sent();
-                                        market.counters[SAFE_PILE].incValue(-1);
+                                        market.incSafePileCounter(-1);
                                         _a.label = 3;
                                     case 3:
                                         if (!(card.location === GOSSIP_PILE)) return [3, 5];
@@ -3385,7 +3393,7 @@ var NotificationManager = (function () {
                                         return [4, market.deck.addCard(viceCard)];
                                     case 6:
                                         _a.sent();
-                                        market.counters[DECK].incValue(1);
+                                        market.incDeckCounter(1);
                                         this.game.viceCardManager.removeCard(viceCard);
                                         return [2];
                                 }
@@ -3405,7 +3413,7 @@ var NotificationManager = (function () {
             return __generator(this, function (_b) {
                 _a = notif.args, number = _a.number, cards = _a.cards;
                 Board.getInstance().counters[GOSSIP_PILE].incValue(-number);
-                Market.getInstance().counters[SAFE_PILE].incValue(number);
+                Market.getInstance().incSafePileCounter(number);
                 return [2];
             });
         });
@@ -3528,7 +3536,7 @@ var NotificationManager = (function () {
                             Board.getInstance().counters[GOSSIP_PILE].incValue(-1);
                         }
                         else {
-                            market.counters[DECK].incValue(-1);
+                            market.incDeckCounter(-1);
                         }
                         return [4, Festivity.getInstance().stocks[COMMUNITY].addCard(viceCard)];
                     case 4:
@@ -3715,7 +3723,7 @@ var NotificationManager = (function () {
                                     case 4:
                                         _a.sent();
                                         viceCard.location = location_1;
-                                        market.counters[DECK].incValue(-1);
+                                        market.incDeckCounter(-1);
                                         return [4, market.stock.addCard(viceCard)];
                                     case 5:
                                         _a.sent();
@@ -6334,6 +6342,21 @@ var Market = (function () {
                 }
             });
         });
+    };
+    Market.prototype.incDeckCounter = function (value) {
+        this.counters[DECK].incValue(value);
+        if (this.counters[DECK].getValue() === 0) {
+            this.ui.deck.classList.add('moho-empty');
+        }
+        else {
+            this.ui.deck.classList.remove('moho-empty');
+        }
+    };
+    Market.prototype.incSafePileCounter = function (value) {
+        this.counters[SAFE_PILE].incValue(value);
+        if (this.counters[SAFE_PILE].getValue() === 0) {
+            this.ui.safePile.setAttribute('data-card-id', 'none');
+        }
     };
     return Market;
 }());
