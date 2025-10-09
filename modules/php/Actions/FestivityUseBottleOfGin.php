@@ -7,6 +7,7 @@ use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
 use Bga\Games\MollyHouse\Boilerplate\Core\Stats;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 use Bga\Games\MollyHouse\Game;
+use Bga\Games\MollyHouse\Managers\AtomicActions;
 use Bga\Games\MollyHouse\Managers\Festivity;
 use Bga\Games\MollyHouse\Managers\Players;
 
@@ -30,7 +31,9 @@ class FestivityUseBottleOfGin extends \Bga\Games\MollyHouse\Models\AtomicAction
   {
     $info = $this->ctx->getInfo();
 
-    $data = [];
+    $data = [
+      'currentWinningCards' => AtomicActions::get(FESTIVITY_DETERMINE_WINNING_SET)->getCurrentlyWinningCards(),
+    ];
 
     return $data;
   }

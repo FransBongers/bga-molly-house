@@ -1,6 +1,10 @@
 interface OnEnteringFestivityPlayCardArgs extends CommonStateArgs {
   _private: ViceCardBase[];
   hasViolin: boolean;
+  currentWinningCards: {
+    ranking: string;
+    cards: ViceCardBase[];
+  }
 }
 
 class FestivityPlayCard implements State {
@@ -32,6 +36,7 @@ class FestivityPlayCard implements State {
     activePlayerId: number,
     args: OnEnteringFestivityPlayCardArgs
   ) {
+    this.args = args;
     if (args.optionalAction) {
       this.game.clientUpdatePageTitle({
         text: _('${tkn_playerName} may play a card'),
@@ -43,6 +48,7 @@ class FestivityPlayCard implements State {
         nonActivePlayers: true,
       });
     }
+    this.highlightWinningCards();
   }
 
   //  .####.##....##.########.########.########..########....###.....######..########
@@ -65,6 +71,7 @@ class FestivityPlayCard implements State {
     this.game.clearPossible();
 
     this.updatePageTitle();
+    this.highlightWinningCards();
 
     this.args._private.forEach((card) => {
       onClick(card.id, () => {
@@ -96,6 +103,7 @@ class FestivityPlayCard implements State {
   private updateInterfaceSelectRogueValue(card: ViceCardBase) {
     clearPossible();
     setSelected(card.id);
+    this.highlightWinningCards();
 
     const { displayValue, suit } = getViceCard(card);
 
@@ -126,7 +134,8 @@ class FestivityPlayCard implements State {
     clearPossible();
 
     setSelected(card.id);
-
+    this.highlightWinningCards();
+    
     const { displayValue, suit } = getViceCard(card);
 
     const text =
@@ -167,6 +176,10 @@ class FestivityPlayCard implements State {
     } else {
       updatePageTitle(_('${you} must play a card'), {});
     }
+  }
+
+  highlightWinningCards() {
+    this.args.currentWinningCards.cards.forEach((card) => setSelected(card.id));
   }
 
   //  ..######..##.......####..######..##....##

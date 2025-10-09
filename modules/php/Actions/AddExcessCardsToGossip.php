@@ -38,6 +38,7 @@ class AddExcessCardsToGossip extends \Bga\Games\MollyHouse\Models\AtomicAction
         ],
       ],
       'numberToDiscard' => $numberToDiscard,
+      'isRevealedInformer' => $player->isRevealedInformer()
     ];
   }
 

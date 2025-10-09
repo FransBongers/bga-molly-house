@@ -313,7 +313,7 @@ class NotificationManager {
   }
 
   async notif_addCardToReputation(notif: Notif<NotifAddCardToReputation>) {
-    const { playerId, card } = notif.args;
+    const { playerId, card, from } = notif.args;
 
     const player = this.getPlayer(playerId);
 
@@ -323,7 +323,10 @@ class NotificationManager {
         ? document.getElementById(`player_board_${playerId}`)
         : undefined;
 
-    player.counters[HAND].incValue(-1);
+    if (from.startsWith('hand')) {
+      player.counters[HAND].incValue(-1);
+    }
+
     await player.reputation.addCard(viceCard, {
       fromElement,
     });

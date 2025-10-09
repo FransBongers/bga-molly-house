@@ -121,12 +121,13 @@ class ViceCard extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
 
   public function addToReputation($player, $notify = true)
   {
+    $from = $this->getLocation();
     $reputationLocation = Locations::reputation($player->getId());
     $state = ViceCards::insertOnTop($this->getId(), $reputationLocation);
     $this->location = $reputationLocation;
     $this->state = $state;
     if ($notify) {
-      Notifications::addCardToReputation($player, $this);
+      Notifications::addCardToReputation($player, $this, $from);
     }
   }
 

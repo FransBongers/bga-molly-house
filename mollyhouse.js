@@ -3072,17 +3072,19 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_addCardToReputation = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, card, player, viceCard, fromElement;
+            var _a, playerId, card, from, player, viceCard, fromElement;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _a = notif.args, playerId = _a.playerId, card = _a.card;
+                        _a = notif.args, playerId = _a.playerId, card = _a.card, from = _a.from;
                         player = this.getPlayer(playerId);
                         viceCard = getViceCard(card);
                         fromElement = this.game.getPlayerId() !== playerId
                             ? document.getElementById("player_board_".concat(playerId))
                             : undefined;
-                        player.counters[HAND].incValue(-1);
+                        if (from.startsWith('hand')) {
+                            player.counters[HAND].incValue(-1);
+                        }
                         return [4, player.reputation.addCard(viceCard, {
                                 fromElement: fromElement,
                             })];
@@ -7156,7 +7158,19 @@ var AddExcessCardsToGossip = (function () {
     AddExcessCardsToGossip.prototype.onLeavingState = function () {
         debug('Leaving Indulge state');
     };
-    AddExcessCardsToGossip.prototype.setDescription = function (activePlayerIds, args) { };
+    AddExcessCardsToGossip.prototype.setDescription = function (activePlayerId, args) {
+        if (args.isRevealedInformer) {
+            this.game.clientUpdatePageTitle({
+                text: _('${tkn_playerName}  must add excess cards to the safe pile'),
+                args: {
+                    tkn_playerName: PlayerManager.getInstance()
+                        .getPlayer(activePlayerId)
+                        .getName(),
+                },
+                nonActivePlayers: true,
+            });
+        }
+    };
     AddExcessCardsToGossip.prototype.updateInterfaceInitialStep = function () {
         var _this = this;
         this.game.clearPossible();
@@ -7165,7 +7179,9 @@ var AddExcessCardsToGossip = (function () {
             this.updateInterfaceConfirm();
             return;
         }
-        updatePageTitle(_('${you} must select cards to add to the gossip pile (${number} remaining)'), {
+        updatePageTitle(this.args.isRevealedInformer
+            ? _('${you} must select cards to add to the safe pile (${number} remaining)')
+            : _('${you} must select cards to add to the gossip pile (${number} remaining)'), {
             number: remaining,
         });
         this.args._private.cards.forEach(function (card) {
@@ -7185,7 +7201,9 @@ var AddExcessCardsToGossip = (function () {
     AddExcessCardsToGossip.prototype.updateInterfaceConfirm = function () {
         var _this = this;
         clearPossible();
-        updatePageTitle(_('Add selected cards to the gossip pile?'));
+        updatePageTitle(this.args.isRevealedInformer
+            ? _('Add selected cards to the safe pile?')
+            : _('Add selected cards to the gossip pile?'));
         this.setSelected();
         addConfirmButton(function () {
             performAction('actAddExcessCardsToGossip', {
@@ -7282,6 +7300,7 @@ var FestivityPlayCard = (function () {
         debug('Leaving Indulge state');
     };
     FestivityPlayCard.prototype.setDescription = function (activePlayerId, args) {
+        this.args = args;
         if (args.optionalAction) {
             this.game.clientUpdatePageTitle({
                 text: _('${tkn_playerName} may play a card'),
@@ -7293,11 +7312,13 @@ var FestivityPlayCard = (function () {
                 nonActivePlayers: true,
             });
         }
+        this.highlightWinningCards();
     };
     FestivityPlayCard.prototype.updateInterfaceInitialStep = function () {
         var _this = this;
         this.game.clearPossible();
         this.updatePageTitle();
+        this.highlightWinningCards();
         this.args._private.forEach(function (card) {
             onClick(card.id, function () {
                 if (getViceCard(card).displayValue === 'R') {
@@ -7327,6 +7348,7 @@ var FestivityPlayCard = (function () {
         var _this = this;
         clearPossible();
         setSelected(card.id);
+        this.highlightWinningCards();
         var _a = getViceCard(card), displayValue = _a.displayValue, suit = _a.suit;
         updatePageTitle(_('${you} must select a value for ${value} of ${tkn_suit}'), {
             value: getViceCardValueText(displayValue),
@@ -7350,6 +7372,7 @@ var FestivityPlayCard = (function () {
         if (valueForRogue === void 0) { valueForRogue = 0; }
         clearPossible();
         setSelected(card.id);
+        this.highlightWinningCards();
         var _a = getViceCard(card), displayValue = _a.displayValue, suit = _a.suit;
         var text = displayValue === 'R'
             ? _('Play ${value} of ${tkn_suit} as ${valueForRogue} ?')
@@ -7381,6 +7404,9 @@ var FestivityPlayCard = (function () {
         else {
             updatePageTitle(_('${you} must play a card'), {});
         }
+    };
+    FestivityPlayCard.prototype.highlightWinningCards = function () {
+        this.args.currentWinningCards.cards.forEach(function (card) { return setSelected(card.id); });
     };
     return FestivityPlayCard;
 }());
@@ -7879,10 +7905,14 @@ var FestivityUseBottleOfGin = (function () {
     FestivityUseBottleOfGin.prototype.onLeavingState = function () {
         debug('Leaving FestivityUseBottleOfGin state');
     };
-    FestivityUseBottleOfGin.prototype.setDescription = function (activePlayerIds, args) { };
+    FestivityUseBottleOfGin.prototype.setDescription = function (activePlayerIds, args) {
+        this.args = args;
+        this.highlightWinningCards();
+    };
     FestivityUseBottleOfGin.prototype.updateInterfaceInitialStep = function () {
         this.game.clearPossible();
         updatePageTitle(_('${you} may use Bottle of Gin to play an addittional round'), {});
+        this.highlightWinningCards();
         addPrimaryActionButton({
             id: 'use_btn',
             text: _('Use Bottle of Gin'),
@@ -7908,6 +7938,9 @@ var FestivityUseBottleOfGin = (function () {
         addConfirmButton(function () {
             performAction('actFestivityUseBottleOfGin', {});
         });
+    };
+    FestivityUseBottleOfGin.prototype.highlightWinningCards = function () {
+        this.args.currentWinningCards.cards.forEach(function (card) { return setSelected(card.id); });
     };
     return FestivityUseBottleOfGin;
 }());

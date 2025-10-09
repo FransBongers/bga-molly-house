@@ -6,6 +6,7 @@ use Bga\Games\MollyHouse\Boilerplate\Core\Engine;
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
+use Bga\Games\MollyHouse\Managers\AtomicActions;
 use Bga\Games\MollyHouse\Managers\Festivity;
 
 class FestivityPlayCard extends \Bga\Games\MollyHouse\Models\AtomicAction
@@ -32,7 +33,8 @@ class FestivityPlayCard extends \Bga\Games\MollyHouse\Models\AtomicAction
       '_private' => [
         $player->getId() => $player->getHand(),
       ],
-      'hasViolin' => $player->hasItem(VIOLIN)
+      'hasViolin' => $player->hasItem(VIOLIN),
+      'currentWinningCards' => AtomicActions::get(FESTIVITY_DETERMINE_WINNING_SET)->getCurrentlyWinningCards(),
     ];
 
     return $data;

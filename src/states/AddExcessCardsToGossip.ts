@@ -3,6 +3,7 @@ interface OnEnteringAddExcessCardsToGossipArgs extends CommonStateArgs {
     cards: ViceCardBase[];
   };
   numberToDiscard: number;
+  isRevealedInformer: boolean;
 }
 
 class AddExcessCardsToGossip implements State {
@@ -31,7 +32,22 @@ class AddExcessCardsToGossip implements State {
     debug('Leaving Indulge state');
   }
 
-  setDescription(activePlayerIds: number, args: OnEnteringAddExcessCardsToGossipArgs) {}
+  setDescription(
+    activePlayerId: number,
+    args: OnEnteringAddExcessCardsToGossipArgs
+  ) {
+    if (args.isRevealedInformer) {
+      this.game.clientUpdatePageTitle({
+        text: _('${tkn_playerName}  must add excess cards to the safe pile'),
+        args: {
+          tkn_playerName: PlayerManager.getInstance()
+            .getPlayer(activePlayerId)
+            .getName(),
+        },
+        nonActivePlayers: true,
+      });
+    }
+  }
 
   //  .####.##....##.########.########.########..########....###.....######..########
   //  ..##..###...##....##....##.......##.....##.##.........##.##...##....##.##......
@@ -59,7 +75,13 @@ class AddExcessCardsToGossip implements State {
     }
 
     updatePageTitle(
-      _('${you} must select cards to add to the gossip pile (${number} remaining)'),
+      this.args.isRevealedInformer
+        ? _(
+            '${you} must select cards to add to the safe pile (${number} remaining)'
+          )
+        : _(
+            '${you} must select cards to add to the gossip pile (${number} remaining)'
+          ),
       {
         number: remaining,
       }
@@ -83,7 +105,11 @@ class AddExcessCardsToGossip implements State {
   private updateInterfaceConfirm() {
     clearPossible();
 
-    updatePageTitle(_('Add selected cards to the gossip pile?'));
+    updatePageTitle(
+      this.args.isRevealedInformer
+        ? _('Add selected cards to the safe pile?')
+        : _('Add selected cards to the gossip pile?')
+    );
 
     this.setSelected();
 

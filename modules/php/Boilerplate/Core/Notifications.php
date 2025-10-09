@@ -251,11 +251,12 @@ class Notifications
     ]);
   }
 
-  public static function addCardToReputation($player, $card)
+  public static function addCardToReputation($player, $card, $from)
   {
     self::notifyAll('addCardToReputation', clienttranslate('${player_name} adds ${tkn_boldText_cardValue} of ${tkn_suit} to their reputation${tkn_viceCard}'), [
       'player' => $player,
       'card' => $card,
+      'from' => $from,
       'tkn_viceCard' => self::tknViceCard($card),
       'tkn_boldText_cardValue' => self::viceCardValueText($card->getDisplayValue()),
       'tkn_suit' => $card->getSuit(),

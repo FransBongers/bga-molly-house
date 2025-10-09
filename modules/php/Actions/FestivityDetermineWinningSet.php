@@ -435,4 +435,24 @@ class FestivityDetermineWinningSet extends \Bga\Games\MollyHouse\Models\AtomicAc
       'cards' => $cards
     ];
   }
+
+  public function getCurrentlyWinningCards()
+  {
+    $sets = $this->getBestSetOfCards(
+      Festivity::getPlayedCards()
+    );
+
+    $result = [
+      'ranking' => $sets[0]['ranking'],
+      'cards' => [],
+    ];
+
+    foreach ($sets as $set) {
+      foreach ($set['cards'] as $value => $cards) {
+        $result['cards'] = array_merge($result['cards'], $cards);
+      }
+    }
+
+    return $result;
+  }
 }

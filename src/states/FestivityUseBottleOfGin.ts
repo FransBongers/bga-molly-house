@@ -1,4 +1,9 @@
-interface OnEnteringFestivityUseBottleOfGinArgs extends CommonStateArgs {}
+interface OnEnteringFestivityUseBottleOfGinArgs extends CommonStateArgs {
+  currentWinningCards: {
+    ranking: string;
+    cards: ViceCardBase[];
+  };
+}
 
 class FestivityUseBottleOfGin implements State {
   private static instance: FestivityUseBottleOfGin;
@@ -28,7 +33,10 @@ class FestivityUseBottleOfGin implements State {
   setDescription(
     activePlayerIds: number,
     args: OnEnteringFestivityUseBottleOfGinArgs
-  ) {}
+  ) {
+    this.args = args;
+    this.highlightWinningCards();
+  }
 
   //  .####.##....##.########.########.########..########....###.....######..########
   //  ..##..###...##....##....##.......##.....##.##.........##.##...##....##.##......
@@ -53,6 +61,7 @@ class FestivityUseBottleOfGin implements State {
       _('${you} may use Bottle of Gin to play an addittional round'),
       {}
     );
+    this.highlightWinningCards();
 
     addPrimaryActionButton({
       id: 'use_btn',
@@ -92,6 +101,10 @@ class FestivityUseBottleOfGin implements State {
   //  .##.....##....##.....##..##........##.....##.......##...
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
+
+  highlightWinningCards() {
+    this.args.currentWinningCards.cards.forEach((card) => setSelected(card.id));
+  }
 
   //  ..######..##.......####..######..##....##
   //  .##....##.##........##..##....##.##...##.
