@@ -3941,13 +3941,18 @@ var NotificationManager = (function () {
 var getSettingsConfig = function () {
     var _a, _b;
     return ({
-        layout: {
-            id: 'layout',
+        baseSettings: {
+            id: 'baseSettings',
+            name: _('Base Settings'),
             config: (_a = {
                     twoColumnLayout: {
                         id: PREF_TWO_COLUMN_LAYOUT,
                         onChangeInSetup: true,
-                        defaultValue: 'disabled',
+                        defaultValue: {
+                            mobile: 'disabled',
+                            desktop: 'enabled',
+                            wideScreen: 'enabled',
+                        },
                         label: _('Two column layout'),
                         type: 'select',
                         options: [
@@ -3965,7 +3970,11 @@ var getSettingsConfig = function () {
                         id: PREF_COLUMN_SIZES,
                         onChangeInSetup: true,
                         label: _('Column sizes'),
-                        defaultValue: 50,
+                        defaultValue: {
+                            mobile: 50,
+                            desktop: 50,
+                            wideScreen: 50,
+                        },
                         visibleCondition: {
                             id: PREF_TWO_COLUMN_LAYOUT,
                             values: [PREF_ENABLED],
@@ -3985,7 +3994,11 @@ var getSettingsConfig = function () {
                     id: PREF_CARD_SIZE_IN_LOG,
                     onChangeInSetup: true,
                     label: _('Size of cards in log'),
-                    defaultValue: 0,
+                    defaultValue: {
+                        mobile: 0,
+                        desktop: 0,
+                        wideScreen: 0,
+                    },
                     sliderConfig: {
                         step: 5,
                         padding: 0,
@@ -4000,7 +4013,11 @@ var getSettingsConfig = function () {
                     id: PREF_SIZE_OF_HAND,
                     onChangeInSetup: true,
                     label: _('Size of hand'),
-                    defaultValue: 100,
+                    defaultValue: {
+                        mobile: 100,
+                        desktop: 100,
+                        wideScreen: 100,
+                    },
                     sliderConfig: {
                         step: 5,
                         padding: 0,
@@ -4015,11 +4032,16 @@ var getSettingsConfig = function () {
         },
         gameplay: {
             id: 'gameplay',
+            name: _('Gameplay'),
             config: (_b = {},
                 _b[PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY] = {
                     id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
                     onChangeInSetup: false,
-                    defaultValue: DISABLED,
+                    defaultValue: {
+                        mobile: PREF_DISABLED,
+                        desktop: PREF_DISABLED,
+                        wideScreen: PREF_DISABLED,
+                    },
                     label: _('Confirm end of turn and player switch only'),
                     type: 'select',
                     options: [
@@ -4036,7 +4058,11 @@ var getSettingsConfig = function () {
                 _b[PREF_SHOW_ANIMATIONS] = {
                     id: PREF_SHOW_ANIMATIONS,
                     onChangeInSetup: false,
-                    defaultValue: PREF_ENABLED,
+                    defaultValue: {
+                        mobile: PREF_ENABLED,
+                        desktop: PREF_ENABLED,
+                        wideScreen: PREF_ENABLED,
+                    },
                     label: _('Show animations'),
                     type: 'select',
                     options: [
@@ -4054,7 +4080,11 @@ var getSettingsConfig = function () {
                     id: PREF_ANIMATION_SPEED,
                     onChangeInSetup: false,
                     label: _('Animation speed'),
-                    defaultValue: 1600,
+                    defaultValue: {
+                        mobile: 1600,
+                        desktop: 1600,
+                        wideScreen: 1600,
+                    },
                     visibleCondition: {
                         id: PREF_SHOW_ANIMATIONS,
                         values: [PREF_ENABLED],
@@ -4076,20 +4106,11 @@ var getSettingsConfig = function () {
 var Settings = (function () {
     function Settings(game) {
         this.settings = {};
-        this.selectedTab = 'layout';
-        this.tabs = [
-            {
-                id: 'layout',
-                name: _('Layout'),
-            },
-            {
-                id: 'gameplay',
-                name: _('Gameplay'),
-            },
-        ];
+        this.selectedTab = 'baseSettings';
+        this.preferenceValues = {};
         this.game = game;
         var gamedatas = game.gamedatas;
-        this.setup({ gamedatas: gamedatas });
+        this.setup(gamedatas);
     }
     Settings.create = function (game) {
         Settings.instance = new Settings(game);
@@ -4097,159 +4118,118 @@ var Settings = (function () {
     Settings.getInstance = function () {
         return Settings.instance;
     };
-    Settings.prototype.clearInterface = function () { };
-    Settings.prototype.updateInterface = function (_a) {
-        var gamedatas = _a.gamedatas;
-    };
-    Settings.prototype.addButton = function (_a) {
-        var gamedatas = _a.gamedatas;
-        var configPanel = document.getElementById('game-buttons');
-        if (configPanel) {
-            configPanel.insertAdjacentHTML('beforeend', tplSettingsButton());
+    Settings.prototype.setupSettingsContainer = function () {
+        var header = document.querySelectorAll('#ingame_menu_content > h2')[0];
+        if (header) {
+            header.remove();
         }
+        var firstPreferenceNode = document.querySelectorAll('#ingame_menu_content > .preference_choice')[0];
+        firstPreferenceNode.insertAdjacentHTML('beforebegin', tplSettingsContainer(this.isMobileVersion()));
     };
-    Settings.prototype.setupModal = function (_a) {
-        var gamedatas = _a.gamedatas;
-        this.modal = new Modal("settings_modal", {
-            class: 'settings_modal',
-            closeIcon: 'fa-times',
-            titleTpl: '<h2 id="popin_${id}_title" class="${class}_title">${title}</h2>',
-            title: _('Settings'),
-            contents: tplSettingsModalContent({
-                tabs: this.tabs,
-            }),
-            closeAction: 'hide',
-            verticalAlign: 'flex-start',
-            breakpoint: 740,
-        });
-    };
-    Settings.prototype.setup = function (_a) {
-        var _this = this;
-        var gamedatas = _a.gamedatas;
-        this.setupModal({ gamedatas: gamedatas });
-        this.setupModalContent();
-        this.changeTab({ id: this.selectedTab });
-        this.tabs.forEach(function (_a) {
-            var id = _a.id;
-            dojo.connect($("settings_modal_tab_".concat(id)), 'onclick', function () {
-                return _this.changeTab({ id: id });
-            });
-        });
-    };
-    Settings.prototype.setupModalContent = function () {
+    Settings.prototype.addTabs = function () {
         var _this = this;
         var config = getSettingsConfig();
-        var node = document.getElementById('setting_modal_content');
-        if (!node) {
-            return;
-        }
-        var tabContentNode = document.querySelectorAll('#ingame_menu_content > .preference_choice')[1];
-        Object.values(config).reverse().forEach(function (tabConfig) {
-            if (!tabContentNode) {
-                return;
-            }
-            Object.values(tabConfig.config).reverse().forEach(function (setting) {
-                var id = setting.id, type = setting.type, defaultValue = setting.defaultValue, visibleCondition = setting.visibleCondition;
-                var localValue = localStorage.getItem(_this.getLocalStorageKey({ id: id }));
-                var value = localValue || defaultValue;
-                _this.settings[id] = value;
-                var methodName = _this.getMethodName({ id: id });
-                if (setting.onChangeInSetup && value && _this[methodName]) {
+        var tabsNode = document.getElementById('preference-tabs');
+        var contentNode = document.getElementById('preference-content');
+        Object.entries(config).forEach(function (_a) {
+            var tabId = _a[0], name = _a[1].name;
+            tabsNode.insertAdjacentHTML('beforeend', tplSettingsTab(tabId, name));
+            contentNode.insertAdjacentHTML('beforeend', tplSettingsTabContent(tabId));
+            document
+                .getElementById("preference-tab-".concat(tabId))
+                .addEventListener('click', function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                _this.changeTab(tabId);
+            });
+            document.getElementById("preference-content-".concat(tabId)).style.display =
+                'none';
+        });
+    };
+    Settings.prototype.moveExisitingPreferences = function () {
+        var contentNode = document.getElementById('preference-content-baseSettings');
+        document
+            .querySelectorAll('#ingame_menu_content > .preference_choice')
+            .forEach(function (node) {
+            contentNode.insertAdjacentElement('beforeend', node);
+        });
+    };
+    Settings.prototype.setupSelect = function (tabId, config) {
+        var _this = this;
+        var id = config.id, visibleCondition = config.visibleCondition;
+        var visible = !visibleCondition ||
+            (visibleCondition &&
+                visibleCondition.values.includes(this.preferenceValues[visibleCondition.id]));
+        var tabContentNode = document.getElementById("preference-content-".concat(tabId));
+        tabContentNode.insertAdjacentHTML('beforeend', tplPlayerPrefenceSelectRow({
+            setting: config,
+            currentValue: this.preferenceValues[config.id],
+            visible: visible,
+        }));
+        1;
+        var controlId = "setting_".concat(id);
+        $(controlId).addEventListener('change', function () {
+            var value = $(controlId).value;
+            _this.onChangePreferenceValue(id, value);
+        });
+    };
+    Settings.prototype.setupSlider = function (tabId, config) {
+        var _this = this;
+        var id = config.id, visibleCondition = config.visibleCondition, label = config.label;
+        var visible = !visibleCondition ||
+            (visibleCondition &&
+                visibleCondition.values.includes(this.preferenceValues[visibleCondition.id]));
+        var tabContentNode = document.getElementById("preference-content-".concat(tabId));
+        tabContentNode.insertAdjacentHTML('beforeend', tplPlayerPrefenceSliderRow({
+            id: id,
+            label: label,
+            visible: visible,
+        }));
+        var sliderConfig = __assign(__assign({}, config.sliderConfig), { start: this.preferenceValues[id] });
+        noUiSlider.create($('setting_' + id), sliderConfig);
+        $('setting_' + id).noUiSlider.on('slide', function (arg) {
+            return _this.onChangePreferenceValue(id, arg[0]);
+        });
+    };
+    Settings.prototype.setupPreferences = function () {
+        var _this = this;
+        var config = getSettingsConfig();
+        Object.values(config).forEach(function (_a) {
+            var tabId = _a.id, tabConfig = _a.config;
+            Object.values(tabConfig).forEach(function (preferenceConfig) {
+                var id = preferenceConfig.id, type = preferenceConfig.type, defaultValue = preferenceConfig.defaultValue, onChangeInSetup = preferenceConfig.onChangeInSetup;
+                var value = _this.getValue(id, defaultValue);
+                _this.preferenceValues[id] = value;
+                if (type === 'select') {
+                    _this.setupSelect(tabId, preferenceConfig);
+                }
+                else if (type === 'slider') {
+                    _this.setupSlider(tabId, preferenceConfig);
+                }
+                var methodName = _this.getMethodName(id);
+                if (onChangeInSetup && value && _this[methodName]) {
                     _this[methodName](value);
-                }
-                if (setting.type === 'select') {
-                    var visible = !visibleCondition ||
-                        (visibleCondition &&
-                            visibleCondition.values.includes(_this.settings[visibleCondition.id]));
-                    tabContentNode.insertAdjacentHTML('afterend', tplPlayerPrefenceSelectRow({
-                        setting: setting,
-                        currentValue: _this.settings[setting.id],
-                        visible: visible,
-                    }));
-                    var controlId_1 = "setting_".concat(setting.id);
-                    $(controlId_1).addEventListener('change', function () {
-                        var value = $(controlId_1).value;
-                        _this.changeSetting({ id: setting.id, value: value });
-                    });
-                }
-                else if (setting.type === 'slider') {
-                    tabContentNode.insertAdjacentHTML('afterend', tplPlayerPrefenceSliderRow({
-                        id: setting.id,
-                        label: setting.label,
-                        visible: true,
-                    }));
-                    var sliderConfig = __assign(__assign({}, setting.sliderConfig), { start: _this.settings[setting.id] });
-                    noUiSlider.create($("setting_" + setting.id), sliderConfig);
-                    $("setting_" + setting.id).noUiSlider.on("slide", function (arg) {
-                        return _this.changeSetting({ id: setting.id, value: arg[0] });
-                    });
                 }
             });
         });
     };
-    Settings.prototype.changeSetting = function (_a) {
-        var id = _a.id, value = _a.value;
-        var suffix = this.getSuffix({ id: id });
-        this.settings[id] = value;
-        localStorage.setItem(this.getLocalStorageKey({ id: id }), value);
-        var methodName = this.getMethodName({ id: id });
-        if (this[methodName]) {
-            this[methodName](value);
-        }
+    Settings.prototype.setup = function (gamedatas) {
+        this.setupSettingsContainer();
+        this.addTabs();
+        this.moveExisitingPreferences();
+        this.setupPreferences();
+        this.changeTab(this.selectedTab);
     };
-    Settings.prototype.onChangeTwoColumnLayoutSetting = function (value) {
-        this.checkColumnSizesVisisble();
-        var node = document.getElementById('play-area-container');
-        if (node) {
-            node.setAttribute('data-two-columns', value);
-        }
-        this.game.updateLayout();
-    };
-    Settings.prototype.onChangeColumnSizesSetting = function (value) {
-        this.game.updateLayout();
-    };
-    Settings.prototype.onChangeSingleColumnMapSizeSetting = function (value) {
-        this.game.updateLayout();
-    };
-    Settings.prototype.onChangeCardSizeSetting = function (value) {
-    };
-    Settings.prototype.onChangeCardSizeInLogSetting = function (value) {
-        var ROOT = document.documentElement;
-        ROOT.style.setProperty('--logCardScale', "".concat(Number(value) / 100));
-    };
-    Settings.prototype.onChangeSizeOfHandSetting = function (value) {
-        console.log('onChangeSizeOfHandSetting', value);
-        var ROOT = document.documentElement;
-        ROOT.style.setProperty('--handScale', "".concat(Number(value) / 100));
-    };
-    Settings.prototype.onChangeAnimationSpeedSetting = function (value) {
-        var duration = 2100 - value;
-        debug('onChangeAnimationSpeedSetting', duration);
-        this.game.animationManager.getSettings().duration = duration;
-    };
-    Settings.prototype.onChangeShowAnimationsSetting = function (value) {
-        if (value === PREF_ENABLED) {
-            this.game.animationManager.getSettings().duration = Number(this.settings[PREF_ANIMATION_SPEED]);
-        }
-        else {
-            this.game.animationManager.getSettings().duration = 0;
-        }
-        this.checkAnmimationSpeedVisisble();
-    };
-    Settings.prototype.onChangeCardInfoInTooltipSetting = function (value) {
-        this.game.updateLogTooltips();
-    };
-    Settings.prototype.changeTab = function (_a) {
-        var id = _a.id;
-        var currentTab = document.getElementById("settings_modal_tab_".concat(this.selectedTab));
-        var currentTabContent = document.getElementById("settings_modal_tab_content_".concat(this.selectedTab));
+    Settings.prototype.changeTab = function (id) {
+        var currentTab = document.getElementById("preference-tab-".concat(this.selectedTab));
+        var currentTabContent = document.getElementById("preference-content-".concat(this.selectedTab));
         currentTab.removeAttribute('data-state');
         if (currentTabContent) {
             currentTabContent.style.display = 'none';
         }
         this.selectedTab = id;
-        var tab = document.getElementById("settings_modal_tab_".concat(id));
-        var tabContent = document.getElementById("settings_modal_tab_content_".concat(this.selectedTab));
+        var tab = document.getElementById("preference-tab-".concat(id));
+        var tabContent = document.getElementById("preference-content-".concat(this.selectedTab));
         tab.setAttribute('data-state', 'selected');
         if (tabContent) {
             tabContent.style.display = '';
@@ -4270,10 +4250,10 @@ var Settings = (function () {
     Settings.prototype.checkColumnSizesVisisble = function () {
         var sliderNode = document.getElementById('setting_row_columnSizes');
         var mapSizeSliderNode = document.getElementById('setting_row_singleColumnMapSize');
-        if (!(sliderNode && mapSizeSliderNode)) {
+        if (!sliderNode) {
             return;
         }
-        if (this.settings['twoColumnsLayout'] === PREF_ENABLED) {
+        if (this.preferenceValues['twoColumnsLayout'] === PREF_ENABLED) {
             sliderNode.style.display = '';
             mapSizeSliderNode.style.display = 'none';
         }
@@ -4282,67 +4262,93 @@ var Settings = (function () {
             mapSizeSliderNode.style.display = '';
         }
     };
-    Settings.prototype.getMethodName = function (_a) {
-        var id = _a.id;
-        return "onChange".concat(this.getSuffix({ id: id }), "Setting");
-    };
     Settings.prototype.get = function (id) {
-        return this.settings[id] || null;
+        return this.preferenceValues[id] || null;
     };
-    Settings.prototype.getSuffix = function (_a) {
-        var id = _a.id;
+    Settings.prototype.getLocalStorageKey = function (id) {
+        return "".concat(this.game.framework().game_name, "-").concat(this.getSuffix(id));
+    };
+    Settings.prototype.getMethodName = function (id) {
+        return "onChange".concat(this.getSuffix(id));
+    };
+    Settings.prototype.getSuffix = function (id) {
         return id.charAt(0).toUpperCase() + id.slice(1);
     };
-    Settings.prototype.getLocalStorageKey = function (_a) {
-        var id = _a.id;
-        return "".concat(this.game.framework().game_name, "-").concat(this.getSuffix({ id: id }));
+    Settings.prototype.getValue = function (id, defaultValues) {
+        var localValue = localStorage.getItem(this.getLocalStorageKey(id));
+        var defaultValue = this.isMobileVersion()
+            ? defaultValues.mobile
+            : defaultValues.desktop;
+        return localValue || defaultValue;
     };
-    Settings.prototype.open = function () {
-        this.modal.show();
+    Settings.prototype.isMobileVersion = function () {
+        var body = document.getElementById('ebd-body');
+        var mobileVersion = body && body.classList.contains('mobile_version');
+        return mobileVersion;
+    };
+    Settings.prototype.onChangePreferenceValue = function (id, value) {
+        var suffix = this.getSuffix(id);
+        this.preferenceValues[id] = value;
+        localStorage.setItem(this.getLocalStorageKey(id), value);
+        var methodName = this.getMethodName(id);
+        if (this[methodName]) {
+            this[methodName](value);
+        }
+    };
+    Settings.prototype.onChangeTwoColumnLayout = function (value) {
+        console.log('onChangeTwoColumnsLayoutSetting', value);
+        this.checkColumnSizesVisisble();
+        var node = document.getElementById('play-area-container');
+        if (node) {
+            node.setAttribute('data-two-columns', value);
+        }
+        this.game.updateLayout();
+    };
+    Settings.prototype.onChangeColumnSizes = function (value) {
+        this.game.updateLayout();
+    };
+    Settings.prototype.onChangeSingleColumnMapSize = function (value) {
+        this.game.updateLayout();
+    };
+    Settings.prototype.onChangeCardSizeInLog = function (value) {
+        var ROOT = document.documentElement;
+        ROOT.style.setProperty('--logCardScale', "".concat(Number(value) / 100));
+    };
+    Settings.prototype.onChangeSizeOfHand = function (value) {
+        console.log('onChangeSizeOfHandSetting', value);
+        var ROOT = document.documentElement;
+        ROOT.style.setProperty('--handScale', "".concat(Number(value) / 100));
+    };
+    Settings.prototype.onChangeAnimationSpeed = function (value) {
+        var duration = 2100 - value;
+        debug('onChangeAnimationSpeedSetting', duration);
+        this.game.animationManager.getSettings().duration = duration;
+    };
+    Settings.prototype.onChangeShowAnimations = function (value) {
+        if (value === PREF_ENABLED) {
+            this.game.animationManager.getSettings().duration = Number(this.settings[PREF_ANIMATION_SPEED]);
+        }
+        else {
+            this.game.animationManager.getSettings().duration = 0;
+        }
+        this.checkAnmimationSpeedVisisble();
+    };
+    Settings.prototype.onChangeCardInfoInTooltip = function (value) {
+        this.game.updateLogTooltips();
     };
     return Settings;
 }());
-var tplSettingsButton = function () {
-    return "<div id=\"show_settings\">\n  <svg  xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 640 512\">\n    <g>\n      <path class=\"fa-secondary\" fill=\"currentColor\" d=\"M638.41 387a12.34 12.34 0 0 0-12.2-10.3h-16.5a86.33 86.33 0 0 0-15.9-27.4L602 335a12.42 12.42 0 0 0-2.8-15.7 110.5 110.5 0 0 0-32.1-18.6 12.36 12.36 0 0 0-15.1 5.4l-8.2 14.3a88.86 88.86 0 0 0-31.7 0l-8.2-14.3a12.36 12.36 0 0 0-15.1-5.4 111.83 111.83 0 0 0-32.1 18.6 12.3 12.3 0 0 0-2.8 15.7l8.2 14.3a86.33 86.33 0 0 0-15.9 27.4h-16.5a12.43 12.43 0 0 0-12.2 10.4 112.66 112.66 0 0 0 0 37.1 12.34 12.34 0 0 0 12.2 10.3h16.5a86.33 86.33 0 0 0 15.9 27.4l-8.2 14.3a12.42 12.42 0 0 0 2.8 15.7 110.5 110.5 0 0 0 32.1 18.6 12.36 12.36 0 0 0 15.1-5.4l8.2-14.3a88.86 88.86 0 0 0 31.7 0l8.2 14.3a12.36 12.36 0 0 0 15.1 5.4 111.83 111.83 0 0 0 32.1-18.6 12.3 12.3 0 0 0 2.8-15.7l-8.2-14.3a86.33 86.33 0 0 0 15.9-27.4h16.5a12.43 12.43 0 0 0 12.2-10.4 112.66 112.66 0 0 0 .01-37.1zm-136.8 44.9c-29.6-38.5 14.3-82.4 52.8-52.8 29.59 38.49-14.3 82.39-52.8 52.79zm136.8-343.8a12.34 12.34 0 0 0-12.2-10.3h-16.5a86.33 86.33 0 0 0-15.9-27.4l8.2-14.3a12.42 12.42 0 0 0-2.8-15.7 110.5 110.5 0 0 0-32.1-18.6A12.36 12.36 0 0 0 552 7.19l-8.2 14.3a88.86 88.86 0 0 0-31.7 0l-8.2-14.3a12.36 12.36 0 0 0-15.1-5.4 111.83 111.83 0 0 0-32.1 18.6 12.3 12.3 0 0 0-2.8 15.7l8.2 14.3a86.33 86.33 0 0 0-15.9 27.4h-16.5a12.43 12.43 0 0 0-12.2 10.4 112.66 112.66 0 0 0 0 37.1 12.34 12.34 0 0 0 12.2 10.3h16.5a86.33 86.33 0 0 0 15.9 27.4l-8.2 14.3a12.42 12.42 0 0 0 2.8 15.7 110.5 110.5 0 0 0 32.1 18.6 12.36 12.36 0 0 0 15.1-5.4l8.2-14.3a88.86 88.86 0 0 0 31.7 0l8.2 14.3a12.36 12.36 0 0 0 15.1 5.4 111.83 111.83 0 0 0 32.1-18.6 12.3 12.3 0 0 0 2.8-15.7l-8.2-14.3a86.33 86.33 0 0 0 15.9-27.4h16.5a12.43 12.43 0 0 0 12.2-10.4 112.66 112.66 0 0 0 .01-37.1zm-136.8 45c-29.6-38.5 14.3-82.5 52.8-52.8 29.59 38.49-14.3 82.39-52.8 52.79z\" opacity=\"0.4\"></path>\n      <path class=\"fa-primary\" fill=\"currentColor\" d=\"M420 303.79L386.31 287a173.78 173.78 0 0 0 0-63.5l33.7-16.8c10.1-5.9 14-18.2 10-29.1-8.9-24.2-25.9-46.4-42.1-65.8a23.93 23.93 0 0 0-30.3-5.3l-29.1 16.8a173.66 173.66 0 0 0-54.9-31.7V58a24 24 0 0 0-20-23.6 228.06 228.06 0 0 0-76 .1A23.82 23.82 0 0 0 158 58v33.7a171.78 171.78 0 0 0-54.9 31.7L74 106.59a23.91 23.91 0 0 0-30.3 5.3c-16.2 19.4-33.3 41.6-42.2 65.8a23.84 23.84 0 0 0 10.5 29l33.3 16.9a173.24 173.24 0 0 0 0 63.4L12 303.79a24.13 24.13 0 0 0-10.5 29.1c8.9 24.1 26 46.3 42.2 65.7a23.93 23.93 0 0 0 30.3 5.3l29.1-16.7a173.66 173.66 0 0 0 54.9 31.7v33.6a24 24 0 0 0 20 23.6 224.88 224.88 0 0 0 75.9 0 23.93 23.93 0 0 0 19.7-23.6v-33.6a171.78 171.78 0 0 0 54.9-31.7l29.1 16.8a23.91 23.91 0 0 0 30.3-5.3c16.2-19.4 33.7-41.6 42.6-65.8a24 24 0 0 0-10.5-29.1zm-151.3 4.3c-77 59.2-164.9-28.7-105.7-105.7 77-59.2 164.91 28.7 105.71 105.7z\"></path>\n    </g>\n  </svg>\n</div>";
-};
-var tplPlayerPrefenceSelectRowOld = function (_a) {
-    var setting = _a.setting, currentValue = _a.currentValue, _b = _a.visible, visible = _b === void 0 ? true : _b;
-    var values = setting.options
-        .map(function (option) {
-        return "<option value='".concat(option.value, "' ").concat(option.value === currentValue ? 'selected="selected"' : "", ">").concat(_(option.label), "</option>");
-    })
-        .join("");
-    return "\n    <div id=\"setting_row_".concat(setting.id, "\" class=\"player_preference_row\"").concat(!visible ? " style=\"display: none;\"" : '', ">\n      <div class=\"player_preference_row_label\">").concat(_(setting.label), "</div>\n      <div class=\"player_preference_row_value\">\n        <select id=\"setting_").concat(setting.id, "\" class=\"\" style=\"display: block;\">\n        ").concat(values, "\n        </select>\n      </div>\n    </div>\n  ");
-};
+var tplSettingsContainer = function (isMobileVersion) { return "<div class=\"preference-container\" ".concat(isMobileVersion ? 'data-version="mobile"' : '', ">\n  <div id=\"preference-header\" class=\"preference-header\">\n    <h2>").concat(_('Preferences'), "</h2>\n    <div id=\"preference-tabs\"></div>\n  </div>\n  <div id=\"preference-content\">\n  </div>\n</div>"); };
+var tplSettingsTab = function (id, name) { return "\n  <div id=\"preference-tab-".concat(id, "\" class=\"preference-tab\">\n    <span>").concat(_(name), "</span>\n  </div>"); };
+var tplSettingsTabContent = function (id) { return "\n    <div id=\"preference-content-".concat(id, "\" class=\"preference-tab-content\">\n    </div>\n  "); };
 var tplPlayerPrefenceSelectRow = function (_a) {
     var setting = _a.setting, currentValue = _a.currentValue, _b = _a.visible, visible = _b === void 0 ? true : _b;
     var values = setting.options
         .map(function (option) {
-        return "<option value='".concat(option.value, "' ").concat(option.value === currentValue ? 'selected="selected"' : "", ">").concat(_(option.label), "</option>");
+        return "<option value='".concat(option.value, "' ").concat(option.value === currentValue ? 'selected="selected"' : '', ">").concat(_(option.label), "</option>");
     })
-        .join("");
+        .join('');
     return "\n    <div id=\"setting_row_".concat(setting.id, "\" class=\"preference_choice\"").concat(!visible ? " style=\"display: none;\"" : '', ">\n         <div class=\"row-data row-data-large\">\n         <div class=\"label\">").concat(_(setting.label), "</div>\n         <div class=\"row-value\">\n                 <select id=\"setting_").concat(setting.id, "\" class=\"preference_control game_preference_control\" style=\"display: block;\">\n        ").concat(values, "\n        </select>\n         </div>\n     </div>\n    </div>\n  ");
-};
-var tplSettingsModalTabContent = function (_a) {
-    var id = _a.id;
-    return "\n  <div id=\"settings_modal_tab_content_".concat(id, "\" style=\"display: none;\"></div>");
-};
-var tplSettingsModalTab = function (_a) {
-    var id = _a.id, name = _a.name;
-    return "\n  <div id=\"settings_modal_tab_".concat(id, "\" class=\"settings_modal_tab\">\n    <span>").concat(_(name), "</span>\n  </div>");
-};
-var tplSettingsModalContent = function (_a) {
-    var tabs = _a.tabs;
-    return "<div id=\"setting_modal_content\">\n    <div class=\"settings_modal_tabs\">\n  ".concat(tabs
-        .map(function (_a) {
-        var id = _a.id, name = _a.name;
-        return tplSettingsModalTab({ id: id, name: name });
-    })
-        .join(""), "\n    </div>\n  </div>");
-};
-var tplPlayerPrefenceSliderRowOld = function (_a) {
-    var label = _a.label, id = _a.id, _b = _a.visible, visible = _b === void 0 ? true : _b;
-    return "\n  <div id=\"setting_row_".concat(id, "\" class=\"player_preference_row\"").concat(!visible ? " style=\"display: none;\"" : '', ">\n    <div class=\"player_preference_row_label\">").concat(_(label), "</div>\n    <div class=\"player_preference_row_value slider\">\n      <div id=\"setting_").concat(id, "\"></div>\n    </div>\n  </div>\n  ");
 };
 var tplPlayerPrefenceSliderRow = function (_a) {
     var label = _a.label, id = _a.id, _b = _a.visible, visible = _b === void 0 ? true : _b;

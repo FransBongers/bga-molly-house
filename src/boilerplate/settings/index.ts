@@ -2,26 +2,16 @@ class Settings {
   private static instance: Settings;
   protected game: GameAlias;
 
-  private modal: Modal;
   public settings: Record<string, string | number> = {};
 
-  private selectedTab: SettingsTabId = 'layout';
-  private tabs: { id: SettingsTabId; name: string }[] = [
-    {
-      id: 'layout',
-      name: _('Layout'),
-    },
-    {
-      id: 'gameplay',
-      name: _('Gameplay'),
-    },
-  ];
+  private selectedTab: SettingsTabId = 'baseSettings';
+  public preferenceValues: Record<string, string | number> = {};
 
   constructor(game: GameAlias) {
     this.game = game;
     const gamedatas = game.gamedatas;
 
-    this.setup({ gamedatas });
+    this.setup(gamedatas);
   }
 
   public static create(game: GameAlias) {
@@ -32,18 +22,6 @@ class Settings {
     return Settings.instance;
   }
 
-  // .##.....##.##....##.########...#######.
-  // .##.....##.###...##.##.....##.##.....##
-  // .##.....##.####..##.##.....##.##.....##
-  // .##.....##.##.##.##.##.....##.##.....##
-  // .##.....##.##..####.##.....##.##.....##
-  // .##.....##.##...###.##.....##.##.....##
-  // ..#######..##....##.########...#######.
-
-  clearInterface() {}
-
-  updateInterface({ gamedatas }: { gamedatas: GamedatasAlias }) {}
-
   // ..######..########.########.##.....##.########.
   // .##....##.##..........##....##.....##.##.....##
   // .##.......##..........##....##.....##.##.....##
@@ -52,231 +30,149 @@ class Settings {
   // .##....##.##..........##....##.....##.##.......
   // ..######..########....##.....#######..##.......
 
-  private addButton({ gamedatas }: { gamedatas: GamedatasAlias }) {
-    const configPanel = document.getElementById('game-buttons');
-    if (configPanel) {
-      configPanel.insertAdjacentHTML('beforeend', tplSettingsButton());
+  private setupSettingsContainer() {
+    const header = document.querySelectorAll('#ingame_menu_content > h2')[0];
+    if (header) {
+      header.remove();
     }
+    const firstPreferenceNode = document.querySelectorAll(
+      '#ingame_menu_content > .preference_choice'
+    )[0];
+    firstPreferenceNode.insertAdjacentHTML(
+      'beforebegin',
+      tplSettingsContainer(this.isMobileVersion())
+    );
   }
 
-  private setupModal({ gamedatas }: { gamedatas: GamedatasAlias }) {
-    this.modal = new Modal(`settings_modal`, {
-      class: 'settings_modal',
-      closeIcon: 'fa-times',
-      titleTpl:
-        '<h2 id="popin_${id}_title" class="${class}_title">${title}</h2>',
-      title: _('Settings'),
-      contents: tplSettingsModalContent({
-        tabs: this.tabs,
-      }),
-      closeAction: 'hide',
-      verticalAlign: 'flex-start',
-      breakpoint: 740,
-    });
-  }
-
-  // Setup functions
-  setup({ gamedatas }: { gamedatas: GamedatasAlias }) {
-    // this.addButton({ gamedatas });
-    this.setupModal({ gamedatas });
-    this.setupModalContent();
-    this.changeTab({ id: this.selectedTab });
-
-    // dojo.connect($(`show_settings`), 'onclick', () => this.open());
-    this.tabs.forEach(({ id }) => {
-      dojo.connect($(`settings_modal_tab_${id}`), 'onclick', () =>
-        this.changeTab({ id })
-      );
-    });
-  }
-
-  // .##.....##.########..########.....###....########.########
-  // .##.....##.##.....##.##.....##...##.##......##....##......
-  // .##.....##.##.....##.##.....##..##...##.....##....##......
-  // .##.....##.########..##.....##.##.....##....##....######..
-  // .##.....##.##........##.....##.#########....##....##......
-  // .##.....##.##........##.....##.##.....##....##....##......
-  // ..#######..##........########..##.....##....##....########
-
-  // ..######...#######..##....##.########.########.##....##.########
-  // .##....##.##.....##.###...##....##....##.......###...##....##...
-  // .##.......##.....##.####..##....##....##.......####..##....##...
-  // .##.......##.....##.##.##.##....##....######...##.##.##....##...
-  // .##.......##.....##.##..####....##....##.......##..####....##...
-  // .##....##.##.....##.##...###....##....##.......##...###....##...
-  // ..######...#######..##....##....##....########.##....##....##...
-
-  private setupModalContent() {
+  private addTabs() {
     const config = getSettingsConfig();
-    const node = document.getElementById('setting_modal_content');
-    if (!node) {
-      return;
-    }
 
-    const tabContentNode = document.querySelectorAll('#ingame_menu_content > .preference_choice')[1];
-    // console.log('selected', tabContentNode);
+    const tabsNode = document.getElementById('preference-tabs');
+    const contentNode = document.getElementById('preference-content');
 
-    Object.values(config).reverse().forEach((tabConfig) => {
-      // node.insertAdjacentHTML(
-      //   'beforeend',
-      //   tplSettingsModalTabContent({ id: tabId })
-      // );
+    Object.entries(config).forEach(([tabId, { name }]) => {
+      tabsNode.insertAdjacentHTML('beforeend', tplSettingsTab(tabId, name));
+      contentNode.insertAdjacentHTML('beforeend', tplSettingsTabContent(tabId));
+      document
+        .getElementById(`preference-tab-${tabId}`)
+        .addEventListener('click', (event: MouseEvent) => {
+          event.preventDefault();
+          event.stopPropagation();
+          this.changeTab(tabId as SettingsTabId);
+        });
 
-      // const tabContentNode = document.getElementById(
-      //   `settings_modal_tab_content_${tabId}`
-      // );
-      if (!tabContentNode) {
-        return;
-      }
+      document.getElementById(`preference-content-${tabId}`).style.display =
+        'none';
+    });
+  }
 
-      Object.values(tabConfig.config).reverse().forEach((setting) => {
-        const { id, type, defaultValue, visibleCondition } = setting;
+  private moveExisitingPreferences() {
+    const contentNode = document.getElementById(
+      'preference-content-baseSettings'
+    );
 
-        // Set current value (local storage value or default)
-        const localValue = localStorage.getItem(
-          this.getLocalStorageKey({ id })
-        );
-        const value = localValue || defaultValue;
-        this.settings[id] = value;
+    document
+      .querySelectorAll('#ingame_menu_content > .preference_choice')
+      .forEach((node) => {
+        contentNode.insertAdjacentElement('beforeend', node);
+      });
+  }
 
-        // Call change method to update interface based on current value
-        const methodName = this.getMethodName({ id });
-        if (setting.onChangeInSetup && value && this[methodName]) {
-          this[methodName](value);
-        }
+  private setupSelect(tabId: string, config: PlayerPreferenceSelectConfig) {
+    const { id, visibleCondition } = config;
+
+    const visible =
+      !visibleCondition ||
+      (visibleCondition &&
+        visibleCondition.values.includes(
+          this.preferenceValues[visibleCondition.id]
+        ));
+
+    const tabContentNode = document.getElementById(
+      `preference-content-${tabId}`
+    );
+
+    tabContentNode.insertAdjacentHTML(
+      'beforeend',
+      tplPlayerPrefenceSelectRow({
+        setting: config,
+        currentValue: this.preferenceValues[config.id] as string,
+        visible,
+      })
+    );
+    1;
+    const controlId = `setting_${id}`;
+    $(controlId).addEventListener('change', () => {
+      const value = $(controlId).value;
+      this.onChangePreferenceValue(id, value);
+    });
+  }
+
+  private setupSlider(tabId: string, config: PlayerPreferenceSliderConfig) {
+    const { id, visibleCondition, label } = config;
+    const visible =
+      !visibleCondition ||
+      (visibleCondition &&
+        visibleCondition.values.includes(
+          this.preferenceValues[visibleCondition.id]
+        ));
+
+    const tabContentNode = document.getElementById(
+      `preference-content-${tabId}`
+    );
+
+    tabContentNode.insertAdjacentHTML(
+      'beforeend',
+      tplPlayerPrefenceSliderRow({
+        id: id,
+        label: label,
+        visible,
+      })
+    );
+    const sliderConfig = {
+      ...config.sliderConfig,
+      start: this.preferenceValues[id],
+    };
+    noUiSlider.create($('setting_' + id), sliderConfig);
+
+    $('setting_' + id).noUiSlider.on('slide', (arg) =>
+      this.onChangePreferenceValue(id, arg[0] as string)
+    );
+  }
+
+  private setupPreferences() {
+    const config = getSettingsConfig();
+
+    Object.values(config).forEach(({ id: tabId, config: tabConfig }) => {
+      Object.values(tabConfig).forEach((preferenceConfig) => {
+        const { id, type, defaultValue, onChangeInSetup } = preferenceConfig;
+
+        const value = this.getValue(id, defaultValue);
+        this.preferenceValues[id] = value;
 
         // Add content to modal
-        if (setting.type === 'select') {
-          const visible =
-            !visibleCondition ||
-            (visibleCondition &&
-              visibleCondition.values.includes(
-                this.settings[visibleCondition.id]
-              ));
+        if (type === 'select') {
+          this.setupSelect(tabId, preferenceConfig);
+        } else if (type === 'slider') {
+          this.setupSlider(tabId, preferenceConfig);
+        }
 
-          tabContentNode.insertAdjacentHTML(
-            'afterend',
-            tplPlayerPrefenceSelectRow({
-              setting,
-              currentValue: this.settings[setting.id] as string,
-              visible,
-            })
-          );
-          const controlId = `setting_${setting.id}`;
-          $(controlId).addEventListener('change', () => {
-            const value = $(controlId).value;
-            this.changeSetting({ id: setting.id, value });
-          });
-        } else if (setting.type === 'slider') {
-          // const visible =
-          //   !visibleCondition ||
-          //   (visibleCondition &&
-          //     visibleCondition.values.includes(
-          //       this.settings[visibleCondition.id]
-          //     ));
-
-          tabContentNode.insertAdjacentHTML(
-            'afterend',
-            tplPlayerPrefenceSliderRow({
-              id: setting.id,
-              label: setting.label,
-              visible: true,
-            })
-          );
-          const sliderConfig = {
-            ...setting.sliderConfig,
-            start: this.settings[setting.id],
-          };
-
-          noUiSlider.create($("setting_" + setting.id), sliderConfig);
-          $("setting_" + setting.id).noUiSlider.on("slide", (arg) =>
-            this.changeSetting({ id: setting.id, value: arg[0] as string })
-          );
+        // Call change method to update interface based on current value
+        const methodName = this.getMethodName(id);
+        if (onChangeInSetup && value && this[methodName]) {
+          this[methodName](value);
         }
       });
     });
   }
 
-  // ..#######..##....##.....######..##.....##....###....##....##..######...########
-  // .##.....##.###...##....##....##.##.....##...##.##...###...##.##....##..##......
-  // .##.....##.####..##....##.......##.....##..##...##..####..##.##........##......
-  // .##.....##.##.##.##....##.......#########.##.....##.##.##.##.##...####.######..
-  // .##.....##.##..####....##.......##.....##.#########.##..####.##....##..##......
-  // .##.....##.##...###....##....##.##.....##.##.....##.##...###.##....##..##......
-  // ..#######..##....##.....######..##.....##.##.....##.##....##..######...########
+  setup(gamedatas: GamedatasAlias) {
+    this.setupSettingsContainer();
+    this.addTabs();
+    this.moveExisitingPreferences();
+    this.setupPreferences();
 
-  private changeSetting({ id, value }: { id: string; value: string }) {
-    const suffix = this.getSuffix({ id });
-    this.settings[id] = value;
-    localStorage.setItem(this.getLocalStorageKey({ id }), value);
-    const methodName = this.getMethodName({ id });
-
-    if (this[methodName]) {
-      this[methodName](value);
-    }
-  }
-
-  public onChangeTwoColumnLayoutSetting(value: string) {
-    // console.log('onChangeTwoColumnsLayoutSetting', value);
-    this.checkColumnSizesVisisble();
-    const node = document.getElementById('play-area-container');
-    if (node) {
-      node.setAttribute('data-two-columns', value);
-    }
-    this.game.updateLayout();
-  }
-
-  public onChangeColumnSizesSetting(value: string) {
-    this.game.updateLayout();
-  }
-
-  public onChangeSingleColumnMapSizeSetting(value: string) {
-    this.game.updateLayout();
-  }
-
-  public onChangeCardSizeSetting(value: number) {
-    // TODO: make this working with single and two column
-    // const node = document.getElementById("gest_card_area");
-    // if (node) {
-    //   node.style.setProperty(
-    //     "--gestCardSizeScale",
-    //     `${Number(value) / 100}`
-    //   );
-    // }
-  }
-
-  public onChangeCardSizeInLogSetting(value: number) {
-    // console.log("onChangeCardSizeInLogSetting", value);
-    const ROOT = document.documentElement;
-    ROOT.style.setProperty('--logCardScale', `${Number(value) / 100}`);
-  }
-
-  public onChangeSizeOfHandSetting(value: number) {
-    console.log('onChangeSizeOfHandSetting', value);
-    const ROOT = document.documentElement;
-    ROOT.style.setProperty('--handScale', `${Number(value) / 100}`);
-  }
-
-  public onChangeAnimationSpeedSetting(value: number) {
-    const duration = 2100 - value;
-    debug('onChangeAnimationSpeedSetting', duration);
-    this.game.animationManager.getSettings().duration = duration;
-  }
-
-  public onChangeShowAnimationsSetting(value: string) {
-    if (value === PREF_ENABLED) {
-      this.game.animationManager.getSettings().duration = Number(
-        this.settings[PREF_ANIMATION_SPEED]
-      );
-    } else {
-      this.game.animationManager.getSettings().duration = 0;
-    }
-    this.checkAnmimationSpeedVisisble();
-  }
-
-  public onChangeCardInfoInTooltipSetting(value: string) {
-    // this.game.cardArea.updateTooltips();
-    this.game.updateLogTooltips();
+    this.changeTab(this.selectedTab);
   }
 
   //  .##.....##.########.####.##.......####.########.##....##
@@ -287,22 +183,24 @@ class Settings {
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
-  private changeTab({ id }: { id: SettingsTabId }) {
+  private changeTab(id: SettingsTabId) {
     const currentTab = document.getElementById(
-      `settings_modal_tab_${this.selectedTab}`
+      `preference-tab-${this.selectedTab}`
     );
+
     const currentTabContent = document.getElementById(
-      `settings_modal_tab_content_${this.selectedTab}`
+      `preference-content-${this.selectedTab}`
     );
+
     currentTab.removeAttribute('data-state');
     if (currentTabContent) {
       currentTabContent.style.display = 'none';
     }
 
     this.selectedTab = id;
-    const tab = document.getElementById(`settings_modal_tab_${id}`);
+    const tab = document.getElementById(`preference-tab-${id}`);
     const tabContent = document.getElementById(
-      `settings_modal_tab_content_${this.selectedTab}`
+      `preference-content-${this.selectedTab}`
     );
     tab.setAttribute('data-state', 'selected');
     if (tabContent) {
@@ -328,11 +226,14 @@ class Settings {
       'setting_row_singleColumnMapSize'
     );
 
-    if (!(sliderNode && mapSizeSliderNode)) {
+    if (!sliderNode) {
       return;
     }
+    //     if (!(sliderNode && mapSizeSliderNode)) {
+    //   return;
+    // }
 
-    if (this.settings['twoColumnsLayout'] === PREF_ENABLED) {
+    if (this.preferenceValues['twoColumnsLayout'] === PREF_ENABLED) {
       sliderNode.style.display = '';
       mapSizeSliderNode.style.display = 'none';
     } else {
@@ -341,23 +242,109 @@ class Settings {
     }
   }
 
-  private getMethodName({ id }: { id: string }) {
-    return `onChange${this.getSuffix({ id })}Setting`;
-  }
-
   public get(id: string): string | number | null {
-    return this.settings[id] || null;
+    return this.preferenceValues[id] || null;
   }
 
-  private getSuffix({ id }: { id: string }) {
+  private getLocalStorageKey(id: string) {
+    return `${this.game.framework().game_name}-${this.getSuffix(id)}`;
+  }
+
+  private getMethodName(id: string) {
+    return `onChange${this.getSuffix(id)}`;
+  }
+
+  private getSuffix(id: string) {
     return id.charAt(0).toUpperCase() + id.slice(1);
   }
 
-  private getLocalStorageKey({ id }: { id: string }) {
-    return `${this.game.framework().game_name}-${this.getSuffix({ id })}`;
+  private getValue(
+    id: string,
+    defaultValues: PreferenceDefaultValues<number | string>
+  ) {
+    const localValue = localStorage.getItem(this.getLocalStorageKey(id));
+
+    const defaultValue = this.isMobileVersion()
+      ? defaultValues.mobile
+      : defaultValues.desktop;
+
+    return localValue || defaultValue;
   }
 
-  public open() {
-    this.modal.show();
+  private isMobileVersion() {
+    const body = document.getElementById('ebd-body');
+    const mobileVersion = body && body.classList.contains('mobile_version');
+    return mobileVersion;
+  }
+
+  // ..#######..##....##.....######..##.....##....###....##....##..######...########
+  // .##.....##.###...##....##....##.##.....##...##.##...###...##.##....##..##......
+  // .##.....##.####..##....##.......##.....##..##...##..####..##.##........##......
+  // .##.....##.##.##.##....##.......#########.##.....##.##.##.##.##...####.######..
+  // .##.....##.##..####....##.......##.....##.#########.##..####.##....##..##......
+  // .##.....##.##...###....##....##.##.....##.##.....##.##...###.##....##..##......
+  // ..#######..##....##.....######..##.....##.##.....##.##....##..######...########
+
+  private onChangePreferenceValue(id: string, value: string) {
+    const suffix = this.getSuffix(id);
+    this.preferenceValues[id] = value;
+    localStorage.setItem(this.getLocalStorageKey(id), value);
+    const methodName = this.getMethodName(id);
+
+    if (this[methodName]) {
+      this[methodName](value);
+    }
+  }
+
+  public onChangeTwoColumnLayout(value: string) {
+    console.log('onChangeTwoColumnsLayoutSetting', value);
+    this.checkColumnSizesVisisble();
+    const node = document.getElementById('play-area-container');
+    if (node) {
+      node.setAttribute('data-two-columns', value);
+    }
+    this.game.updateLayout();
+  }
+
+  public onChangeColumnSizes(value: string) {
+    this.game.updateLayout();
+  }
+
+  public onChangeSingleColumnMapSize(value: string) {
+    this.game.updateLayout();
+  }
+
+  public onChangeCardSizeInLog(value: number) {
+    // console.log("onChangeCardSizeInLogSetting", value);
+    const ROOT = document.documentElement;
+    ROOT.style.setProperty('--logCardScale', `${Number(value) / 100}`);
+  }
+
+  public onChangeSizeOfHand(value: number) {
+    console.log('onChangeSizeOfHandSetting', value);
+    const ROOT = document.documentElement;
+    ROOT.style.setProperty('--handScale', `${Number(value) / 100}`);
+  }
+
+  public onChangeAnimationSpeed(value: number) {
+    const duration = 2100 - value;
+    debug('onChangeAnimationSpeedSetting', duration);
+    this.game.animationManager.getSettings().duration = duration;
+  }
+
+  public onChangeShowAnimations(value: string) {
+    if (value === PREF_ENABLED) {
+      this.game.animationManager.getSettings().duration = Number(
+        this.settings[PREF_ANIMATION_SPEED]
+      );
+    } else {
+      this.game.animationManager.getSettings().duration = 0;
+    }
+    this.checkAnmimationSpeedVisisble();
+  }
+
+  public onChangeCardInfoInTooltip(value: string) {
+    // this.game.cardArea.updateTooltips();
+    this.game.updateLogTooltips();
   }
 }

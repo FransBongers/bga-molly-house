@@ -1,9 +1,9 @@
-interface PlayerPreferenceOption {
+interface PreferenceOption {
   label: string;
   value: string;
 }
 
-interface PlayerPreferenceConfigBase {
+interface PreferenceConfigBase {
   id: string;
   onChangeInSetup: boolean;
   label: string;
@@ -13,14 +13,20 @@ interface PlayerPreferenceConfigBase {
   };
 }
 
-interface PlayerPreferenceSelectConfig extends PlayerPreferenceConfigBase {
-  defaultValue: string;
-  options: PlayerPreferenceOption[];
+interface PreferenceDefaultValues<T = string | number> {
+  mobile: T;
+  desktop: T;
+  wideScreen: T;
+}
+
+interface PlayerPreferenceSelectConfig extends PreferenceConfigBase {
+  defaultValue: PreferenceDefaultValues<string>;
+  options: PreferenceOption[];
   type: 'select';
 }
 
-interface PlayerPreferenceSliderConfig extends PlayerPreferenceConfigBase {
-  defaultValue: number;
+interface PlayerPreferenceSliderConfig extends PreferenceConfigBase {
+  defaultValue: PreferenceDefaultValues<number>;
   sliderConfig: {
     step: number;
     padding: number;
@@ -36,19 +42,25 @@ type PlayerPreferenceConfig =
   | PlayerPreferenceSelectConfig
   | PlayerPreferenceSliderConfig;
 
-interface PlayerPreferenceTab {
-  id: string;
+interface PreferenceTab {
+  id: SettingsTabId;
+  name: string;
   config: Record<string, PlayerPreferenceConfig>;
 }
 
-const getSettingsConfig = (): Record<string, PlayerPreferenceTab> => ({
-  layout: {
-    id: 'layout',
+const getSettingsConfig = (): Record<SettingsTabId, PreferenceTab> => ({
+  baseSettings: {
+    id: 'baseSettings',
+    name: _('Base Settings'),
     config: {
       twoColumnLayout: {
         id: PREF_TWO_COLUMN_LAYOUT,
         onChangeInSetup: true,
-        defaultValue: 'disabled',
+        defaultValue: {
+          mobile: 'disabled',
+          desktop: 'enabled',
+          wideScreen: 'enabled',
+        },
         label: _('Two column layout'),
         type: 'select',
         options: [
@@ -66,7 +78,11 @@ const getSettingsConfig = (): Record<string, PlayerPreferenceTab> => ({
         id: PREF_COLUMN_SIZES,
         onChangeInSetup: true,
         label: _('Column sizes'),
-        defaultValue: 50,
+        defaultValue: {
+          mobile: 50,
+          desktop: 50,
+          wideScreen: 50,
+        },
         visibleCondition: {
           id: PREF_TWO_COLUMN_LAYOUT,
           values: [PREF_ENABLED],
@@ -100,26 +116,15 @@ const getSettingsConfig = (): Record<string, PlayerPreferenceTab> => ({
       //   },
       //   type: 'slider',
       // },
-      // [PREF_CARD_SIZE]: {
-      //   id: PREF_CARD_SIZE,
-      //   onChangeInSetup: false,
-      //   label: _("Size of cards"),
-      //   defaultValue: 100,
-      //   sliderConfig: {
-      //     step: 5,
-      //     padding: 0,
-      //     range: {
-      //       min: 50,
-      //       max: 200,
-      //     },
-      //   },
-      //   type: "slider",
-      // },
       [PREF_CARD_SIZE_IN_LOG]: {
         id: PREF_CARD_SIZE_IN_LOG,
         onChangeInSetup: true,
         label: _('Size of cards in log'),
-        defaultValue: 0,
+        defaultValue: {
+          mobile: 0,
+          desktop: 0,
+          wideScreen: 0,
+        },
         sliderConfig: {
           step: 5,
           padding: 0,
@@ -134,7 +139,11 @@ const getSettingsConfig = (): Record<string, PlayerPreferenceTab> => ({
         id: PREF_SIZE_OF_HAND,
         onChangeInSetup: true,
         label: _('Size of hand'),
-        defaultValue: 100,
+        defaultValue: {
+          mobile: 100,
+          desktop: 100,
+          wideScreen: 100,
+        },
         sliderConfig: {
           step: 5,
           padding: 0,
@@ -166,11 +175,16 @@ const getSettingsConfig = (): Record<string, PlayerPreferenceTab> => ({
   },
   gameplay: {
     id: 'gameplay',
+    name: _('Gameplay'),
     config: {
       [PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY]: {
         id: PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY,
         onChangeInSetup: false,
-        defaultValue: DISABLED,
+        defaultValue: {
+          mobile: PREF_DISABLED,
+          desktop: PREF_DISABLED,
+          wideScreen: PREF_DISABLED,
+        },
         label: _('Confirm end of turn and player switch only'),
         type: 'select',
         options: [
@@ -187,7 +201,11 @@ const getSettingsConfig = (): Record<string, PlayerPreferenceTab> => ({
       [PREF_SHOW_ANIMATIONS]: {
         id: PREF_SHOW_ANIMATIONS,
         onChangeInSetup: false,
-        defaultValue: PREF_ENABLED,
+        defaultValue: {
+          mobile: PREF_ENABLED,
+          desktop: PREF_ENABLED,
+          wideScreen: PREF_ENABLED,
+        },
         label: _('Show animations'),
         type: 'select',
         options: [
@@ -205,7 +223,11 @@ const getSettingsConfig = (): Record<string, PlayerPreferenceTab> => ({
         id: PREF_ANIMATION_SPEED,
         onChangeInSetup: false,
         label: _('Animation speed'),
-        defaultValue: 1600,
+        defaultValue: {
+          mobile: 1600,
+          desktop: 1600,
+          wideScreen: 1600,
+        },
         visibleCondition: {
           id: PREF_SHOW_ANIMATIONS,
           values: [PREF_ENABLED],
