@@ -241,11 +241,11 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     $total = $this->incScore(-$amount);
 
     $joyMarker = JoyMarkers::getForPlayer($this);
-    $joyMarker->setLocation($total);
 
     if ($amount > 0) {
-      Notifications::loseJoy($this, $amount, $total, $joyMarker);
+      $joyMarker->setLocation($total);
     }
+    Notifications::loseJoy($this, $amount, $total, $joyMarker);
   }
 
   public function scoreJoy($amount, $notifText = STANDARD)
