@@ -36,13 +36,15 @@ class TooltipManager {
     return TooltipManager.instance;
   }
 
-  public addTextToolTip({
+  public addTextTooltip({
     nodeId,
     text,
+    title,
     custom = true,
   }: {
     nodeId: string;
     text: string;
+    title?: string;
     custom?: boolean;
   }) {
     if (custom) {
@@ -50,6 +52,7 @@ class TooltipManager {
         nodeId,
         tplTextTooltip({
           text,
+          title,
         })
       );
     } else {
@@ -57,6 +60,7 @@ class TooltipManager {
         nodeId,
         tplTextTooltip({
           text,
+          title,
         }),
         400
       );

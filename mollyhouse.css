@@ -469,6 +469,99 @@ body > .bga-dice_die {
   position: absolute;
 }
 
+#bga-help_buttons {
+  position: fixed;
+  bottom: 12px;
+  left: 5px;
+  display: flex;
+  gap: 10px;
+  z-index: 949;
+  align-items: flex-end;
+}
+
+.bga-help_button {
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  cursor: pointer;
+  box-shadow: 3px 5px 5px 0px rgb(0, 0, 0);
+}
+
+.bga-help_popin-button {
+  --background: black;
+  --color: white;
+  font-weight: bold;
+  font-size: 28pt;
+  background: var(--background);
+  color: var(--color);
+}
+
+.bga-help_expandable-button {
+  overflow: hidden;
+  background-size: contain;
+  background-repeat: no-repeat;
+  transition: width 0.5s, height 0.5s, border-radius 0.5s;
+  display: grid;
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+}
+
+.bga-help_expandable-button .bga-help_folded-content {
+  grid-row: 1;
+  grid-column: 1;
+  opacity: 1;
+  width: 50px;
+  height: 50px;
+}
+
+.bga-help_expandable-button .bga-help_unfolded-content {
+  grid-row: 1;
+  grid-column: 1;
+  opacity: 0;
+}
+
+.bga-help_expandable-button[data-folded=false] {
+  width: var(--expanded-width);
+  height: var(--expanded-height);
+  border-radius: var(--expanded-radius);
+}
+
+.bga-help_expandable-button[data-folded=false] .bga-help_folded-content {
+  opacity: 0;
+}
+
+.bga-help_expandable-button[data-folded=false] .bga-help_unfolded-content {
+  opacity: 1;
+}
+
+/* we show help button if user has no mouse ( = no tooltips) */
+@media (hover: hover) {
+  #bga-help_buttons {
+    bottom: 5px;
+  }
+}
+#popin_bgaHelpDialog_contents {
+  max-width: 100vw;
+  overflow-x: auto;
+}
+
+#popin_bgaHelpDialog {
+  --background-color: white;
+  background: var(--background-color);
+  background-repeat: repeat;
+  max-width: 100vw;
+  max-height: 80vh;
+  overflow: hidden;
+}
+
+#help-dialog-content {
+  width: 520px;
+  max-width: 35rem;
+  max-height: calc(80vh - 80px);
+  overflow: auto;
+}
+
 #encounter-token-discard,
 #indictment-discard,
 #item-discard {
@@ -1092,6 +1185,47 @@ body > .bga-dice_die {
 }
 .icon-counter-container[data-type=overlap] .icon-counter-counter {
   text-shadow: #fff 0 0 2px, #fff 0 0 2px, #fff 0 0 2px, #fff 0 0 2px, #fff 0 0 2px, #fff 0 0 2px;
+}
+
+.dijitTooltipContainer {
+  padding: 8px !important;
+}
+
+#ebd-body.help-mode .tooltipable {
+  cursor: help;
+}
+
+.help-marker {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  z-index: 900;
+  border: 1px solid black;
+  border-radius: 50%;
+  background-color: white;
+}
+.help-marker svg {
+  width: 20px;
+  height: 20px;
+}
+
+#ebd-body:not(.help-mode) .help-marker {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.text-tooltip-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  max-width: 200px;
+}
+.text-tooltip-container .title {
+  font-weight: bold;
+  font-size: 1.1em;
 }
 
 /* make space between buttons on touch devices */
@@ -1870,6 +2004,103 @@ span[style*="color:#fcd873"] {
 #hand .moho-vice-card:hover {
   transform: translateY(-20px) scale(1.1);
   transition: transform 0.2s ease-in-out;
+}
+
+.moho-festivity-aid {
+  width: 419px;
+  height: 300px;
+  background-repeat: no-repeat;
+  background-image: url("img/festivity_aid.jpg");
+  background-size: 100% 100%;
+  transition: top 0.5s, left 0.5s;
+}
+.moho-festivity-aid .moho-festivity-aid-header {
+  display: flex;
+  position: absolute;
+  left: 14px;
+  top: 22px;
+  width: 300px;
+  justify-content: space-between;
+}
+.moho-festivity-aid .moho-festivity-aid-header .moho-title {
+  font-weight: bold;
+  font-size: medium;
+  justify-content: space-between;
+}
+.moho-festivity-aid .moho-rank-container {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-size: smaller;
+  width: 84px;
+  text-align: left;
+}
+.moho-festivity-aid .moho-rank-order {
+  font-style: italic;
+}
+.moho-festivity-aid .moho-rank {
+  font-weight: bold;
+  font-size: small;
+}
+.moho-festivity-aid #moho-quiet-gathering {
+  width: 126px;
+}
+.moho-festivity-aid .moho-bonus-container {
+  position: absolute;
+  font-size: medium;
+}
+.moho-festivity-aid .moho-bonus-container .moho-bonus-amount {
+  font-style: italic;
+}
+.moho-festivity-aid #moho-quiet-gathering-bonus {
+  color: rgb(188, 38, 44);
+}
+.moho-festivity-aid #moho-matching-reputation {
+  position: absolute;
+  font-style: italic;
+  font-size: smaller;
+}
+
+.moho-festivity-help-actions[data-folded=false] .moho-rank-container {
+  left: 14px;
+}
+.moho-festivity-help-actions[data-folded=false] #moho-surprise-ball {
+  top: 58px;
+}
+.moho-festivity-help-actions[data-folded=false] #moho-christening {
+  top: 116px;
+}
+.moho-festivity-help-actions[data-folded=false] #moho-dance {
+  top: 172px;
+}
+.moho-festivity-help-actions[data-folded=false] #moho-quiet-gathering {
+  top: 232px;
+}
+.moho-festivity-help-actions[data-folded=false] .moho-bonus-container {
+  left: 364px;
+}
+.moho-festivity-help-actions[data-folded=false] #moho-surprise-ball-bonus {
+  top: 68px;
+}
+.moho-festivity-help-actions[data-folded=false] #moho-christening-bonus {
+  top: 123px;
+}
+.moho-festivity-help-actions[data-folded=false] #moho-dance-bonus {
+  top: 180px;
+}
+.moho-festivity-help-actions[data-folded=false] #moho-quiet-gathering-bonus {
+  top: 234px;
+}
+.moho-festivity-help-actions[data-folded=false] #moho-matching-reputation {
+  top: 258px;
+  left: 306px;
+}
+
+.moho-festivity-help-actions {
+  background-image: url("img/festivity_aid.jpg");
+  background-position: center;
+  background-size: cover;
 }
 
 .moho-candelabra {

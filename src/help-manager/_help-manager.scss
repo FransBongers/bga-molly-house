@@ -1,0 +1,149 @@
+.moho-festivity-aid {
+  width: 419px;
+  height: 300px;
+  background-repeat: no-repeat;
+  // transform: rotate(90deg);
+  background-image: url('img/festivity_aid.jpg');
+  background-size: 100% 100%;
+  transition: top 0.5s, left 0.5s;
+
+  .moho-festivity-aid-header {
+    display: flex;
+    position: absolute;
+    left: 14px;
+    top: 22px;
+    width: 300px;
+    justify-content: space-between;
+
+    .moho-title {
+      font-weight: bold;
+      font-size: medium;
+      justify-content: space-between;
+    }
+  }
+
+  .moho-rank-container {
+    position: absolute;
+    // left: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: smaller;
+    width: 84px;
+    text-align: left;
+  }
+
+  .moho-rank-order {
+    font-style: italic;
+  }
+
+  .moho-rank {
+    font-weight: bold;
+    font-size: small;
+  }
+
+  // #moho-surprise-ball {
+  //   top: 58px;
+  // }
+
+  // #moho-christening {
+  //   top: 116px;
+  // }
+
+  // #moho-dance {
+  //   top: 172px;
+  // }
+
+  #moho-quiet-gathering {
+    // top: 232px;
+    width: 126px;
+  }
+
+  .moho-bonus-container {
+    position: absolute;
+    // left: 364px;
+    font-size: medium;
+
+    .moho-bonus-amount {
+      font-style: italic;
+    }
+  }
+
+  // #moho-surprise-ball-bonus {
+  //   top: 68px;
+  // }
+
+  // #moho-christening-bonus {
+  //   top: 123px;
+  // }
+
+  // #moho-dance-bonus {
+  //   top: 180px;
+  // }
+
+  #moho-quiet-gathering-bonus {
+    // top: 234px;
+    color: rgb(188, 38, 44);
+  }
+
+  #moho-matching-reputation {
+    position: absolute;
+    // top: 258px;
+    // left: 306px;
+    font-style: italic;
+    font-size: smaller;
+  }
+}
+
+.moho-festivity-help-actions[data-folded='false'] {
+  .moho-rank-container {
+    left: 14px;
+  }
+
+  #moho-surprise-ball {
+    top: 58px;
+  }
+
+  #moho-christening {
+    top: 116px;
+  }
+
+  #moho-dance {
+    top: 172px;
+  }
+
+  #moho-quiet-gathering {
+    top: 232px;
+  }
+
+  .moho-bonus-container {
+    left: 364px;
+  }
+
+  #moho-surprise-ball-bonus {
+    top: 68px;
+  }
+
+  #moho-christening-bonus {
+    top: 123px;
+  }
+
+  #moho-dance-bonus {
+    top: 180px;
+  }
+
+  #moho-quiet-gathering-bonus {
+    top: 234px;
+  }
+
+  #moho-matching-reputation {
+    top: 258px;
+    left: 306px;
+  }
+}
+
+.moho-festivity-help-actions {
+  background-image: url('img/festivity_aid.jpg');
+  background-position: center;
+  background-size: cover;
+}

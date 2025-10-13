@@ -170,6 +170,7 @@ class MollyHouse implements Game {
       });
 
     NotificationManager.getInstance().setupNotifications();
+    MollyHouseHelpManager.create(this);
 
     //  this.tooltipManager.setupTooltips();
     debug('Ending game setup');

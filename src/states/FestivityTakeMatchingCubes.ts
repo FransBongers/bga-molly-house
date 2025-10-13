@@ -66,7 +66,7 @@ class FestivityTakeMatchingCubes implements State {
     });
     addSecondaryActionButton({
       id: 'do_not_take_cubes_btn',
-      text: _('Do no take '),
+      text: _('Do not take'),
       callback: () => {
         performAction('actFestivityTakeMatchingCubes', {
           takeCubes: false,

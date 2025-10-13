@@ -2253,6 +2253,93 @@ var LineDiceStock = (function (_super) {
     }
     return LineDiceStock;
 }(DiceStock));
+var BgaHelpButton = (function () {
+    function BgaHelpButton() {
+    }
+    return BgaHelpButton;
+}());
+var BgaHelpPopinButton = (function (_super) {
+    __extends(BgaHelpPopinButton, _super);
+    function BgaHelpPopinButton(settings) {
+        var _this = _super.call(this) || this;
+        _this.settings = settings;
+        return _this;
+    }
+    BgaHelpPopinButton.prototype.add = function (toElement) {
+        var _a;
+        var _this = this;
+        var button = document.createElement('button');
+        (_a = button.classList).add.apply(_a, __spreadArray(['bga-help_button', 'bga-help_popin-button'], (this.settings.buttonExtraClasses ? this.settings.buttonExtraClasses.split(/\s+/g) : []), false));
+        button.innerHTML = "?";
+        if (this.settings.buttonBackground) {
+            button.style.setProperty('--background', this.settings.buttonBackground);
+        }
+        if (this.settings.buttonColor) {
+            button.style.setProperty('--color', this.settings.buttonColor);
+        }
+        toElement.appendChild(button);
+        button.addEventListener('click', function () { return _this.showHelp(); });
+    };
+    BgaHelpPopinButton.prototype.showHelp = function () {
+        var _a, _b, _c;
+        var popinDialog = new window.ebg.popindialog();
+        popinDialog.create('bgaHelpDialog');
+        popinDialog.setTitle(this.settings.title);
+        popinDialog.setContent("<div id=\"help-dialog-content\">".concat((_a = this.settings.html) !== null && _a !== void 0 ? _a : '', "</div>"));
+        (_c = (_b = this.settings).onPopinCreated) === null || _c === void 0 ? void 0 : _c.call(_b, document.getElementById('help-dialog-content'));
+        popinDialog.show();
+    };
+    return BgaHelpPopinButton;
+}(BgaHelpButton));
+var BgaHelpExpandableButton = (function (_super) {
+    __extends(BgaHelpExpandableButton, _super);
+    function BgaHelpExpandableButton(settings) {
+        var _this = _super.call(this) || this;
+        _this.settings = settings;
+        return _this;
+    }
+    BgaHelpExpandableButton.prototype.add = function (toElement) {
+        var _a;
+        var _this = this;
+        var _b, _c, _d, _e, _f, _g, _h, _j;
+        var folded = (_b = this.settings.defaultFolded) !== null && _b !== void 0 ? _b : true;
+        if (this.settings.localStorageFoldedKey) {
+            var localStorageValue = localStorage.getItem(this.settings.localStorageFoldedKey);
+            if (localStorageValue) {
+                folded = localStorageValue == 'true';
+            }
+        }
+        var button = document.createElement('button');
+        button.dataset.folded = folded.toString();
+        (_a = button.classList).add.apply(_a, __spreadArray(['bga-help_button', 'bga-help_expandable-button'], (this.settings.buttonExtraClasses ? this.settings.buttonExtraClasses.split(/\s+/g) : []), false));
+        button.innerHTML = "\n            <div class=\"bga-help_folded-content ".concat(((_c = this.settings.foldedContentExtraClasses) !== null && _c !== void 0 ? _c : '').split(/\s+/g), "\">").concat((_d = this.settings.foldedHtml) !== null && _d !== void 0 ? _d : '', "</div>\n            <div class=\"bga-help_unfolded-content  ").concat(((_e = this.settings.unfoldedContentExtraClasses) !== null && _e !== void 0 ? _e : '').split(/\s+/g), "\">").concat((_f = this.settings.unfoldedHtml) !== null && _f !== void 0 ? _f : '', "</div>\n        ");
+        button.style.setProperty('--expanded-width', (_g = this.settings.expandedWidth) !== null && _g !== void 0 ? _g : 'auto');
+        button.style.setProperty('--expanded-height', (_h = this.settings.expandedHeight) !== null && _h !== void 0 ? _h : 'auto');
+        button.style.setProperty('--expanded-radius', (_j = this.settings.expandedRadius) !== null && _j !== void 0 ? _j : '10px');
+        toElement.appendChild(button);
+        button.addEventListener('click', function () {
+            button.dataset.folded = button.dataset.folded == 'true' ? 'false' : 'true';
+            if (_this.settings.localStorageFoldedKey) {
+                localStorage.setItem(_this.settings.localStorageFoldedKey, button.dataset.folded);
+            }
+        });
+    };
+    return BgaHelpExpandableButton;
+}(BgaHelpButton));
+var HelpManager = (function () {
+    function HelpManager(game, settings) {
+        this.game = game;
+        if (!(settings === null || settings === void 0 ? void 0 : settings.buttons)) {
+            throw new Error('HelpManager need a `buttons` list in the settings.');
+        }
+        var leftSide = document.getElementById('left-side');
+        var buttons = document.createElement('div');
+        buttons.id = "bga-help_buttons";
+        leftSide.appendChild(buttons);
+        settings.buttons.forEach(function (button) { return button.add(buttons); });
+    }
+    return HelpManager;
+}());
 var _this = this;
 var moveToAnimation = function (_a) { return __awaiter(_this, [_a], void 0, function (_b) {
     var toElement, fromRect, toRect, top, left, originalPositionStyle;
@@ -4465,16 +4552,18 @@ var TooltipManager = (function () {
     TooltipManager.getInstance = function () {
         return TooltipManager.instance;
     };
-    TooltipManager.prototype.addTextToolTip = function (_a) {
-        var nodeId = _a.nodeId, text = _a.text, _b = _a.custom, custom = _b === void 0 ? true : _b;
+    TooltipManager.prototype.addTextTooltip = function (_a) {
+        var nodeId = _a.nodeId, text = _a.text, title = _a.title, _b = _a.custom, custom = _b === void 0 ? true : _b;
         if (custom) {
             this.addCustomTooltip(nodeId, tplTextTooltip({
                 text: text,
+                title: title,
             }));
         }
         else {
             this.game.framework().addTooltipHtml(nodeId, tplTextTooltip({
                 text: text,
+                title: title,
             }), 400);
         }
     };
@@ -4577,8 +4666,8 @@ var TooltipManager = (function () {
     return TooltipManager;
 }());
 var tplTextTooltip = function (_a) {
-    var text = _a.text;
-    return "<span class=\"text-tooltip\">".concat(text, "</span>");
+    var text = _a.text, title = _a.title;
+    return "\n  <div class=\"text-tooltip-container\">\n    ".concat(title ? "<span class=\"title\">".concat(title, "</span>") : '', "\n    <span class=\"text\">").concat(text, "</span>\n  </div>\n");
 };
 var IconCounter = (function () {
     function IconCounter(config) {
@@ -4810,6 +4899,7 @@ var MollyHouse = (function () {
             player.updateEncounterTokens(_this.gamedatas.players[player.getPlayerId()]);
         });
         NotificationManager.getInstance().setupNotifications();
+        MollyHouseHelpManager.create(this);
         debug('Ending game setup');
     };
     MollyHouse.prototype.setupPlayerOrder = function (playerOrder) {
@@ -5727,6 +5817,8 @@ var ItemManager = (function (_super) {
         div.classList.add('moho-item');
         div.setAttribute('data-type', card.type);
         div.style.width = 'calc(var(--cardScale) * 178px)';
+        console.log('Adding tooltip for item', card);
+        TooltipManager.getInstance().addTextTooltip({ nodeId: card.id, text: card.text, title: card.name });
     };
     ItemManager.prototype.setupBackDiv = function (card, div) {
         div.classList.add('moho-item');
@@ -6162,6 +6254,38 @@ var Hand = (function () {
 var tplHand = function () {
     return "<div id=\"hand\"></div\n  ";
 };
+var LOCAL_STORAGE_HELP_ACTIONS_FOLDED_KEY = 'MollyHouse-help-actions-folded';
+var LOCAL_STORAGE_HELP_TURN_FOLDED_KEY = 'MollyHouse-help-turn-folded';
+var MollyHouseHelpManager = (function () {
+    function MollyHouseHelpManager(game) {
+        this.game = game;
+        this.setup();
+    }
+    MollyHouseHelpManager.create = function (game) {
+        MollyHouseHelpManager.instance = new MollyHouseHelpManager(game);
+    };
+    MollyHouseHelpManager.getInstance = function () {
+        return MollyHouseHelpManager.instance;
+    };
+    MollyHouseHelpManager.prototype.setup = function () {
+        new HelpManager(this.game, {
+            buttons: [
+                new BgaHelpExpandableButton({
+                    expandedWidth: '419px',
+                    expandedHeight: '300px',
+                    defaultFolded: true,
+                    localStorageFoldedKey: LOCAL_STORAGE_HELP_ACTIONS_FOLDED_KEY,
+                    buttonExtraClasses: "moho-festivity-help-actions",
+                    unfoldedHtml: this.getFestivityAidHtml(),
+                }),
+            ],
+        });
+    };
+    MollyHouseHelpManager.prototype.getFestivityAidHtml = function () {
+        return "\n      <div class=\"moho-festivity-aid\">\n        <div class=\"moho-festivity-aid-header\">\n          <span class=\"moho-title\">".concat(_('Festivity Ranking'), "</span><span class=\"moho-title\">").concat(_('Bonus'), "</span>\n        </div>\n        <div id=\"moho-surprise-ball\" class=\"moho-rank-container\">\n          <span class=\"moho-rank-order\">").concat(_('First'), ",</span>\n          <span class=\"moho-rank\">").concat(_('Surprise Ball'), "</span>\n        </div>\n        <div id=\"moho-christening\" class=\"moho-rank-container\">\n          <span class=\"moho-rank-order\">").concat(_('Second'), ",</span>\n          <span class=\"moho-rank\">").concat(_('Christening'), "</span>\n        </div>\n        <div id=\"moho-dance\" class=\"moho-rank-container\">\n          <span class=\"moho-rank-order\">").concat(_('Third'), ",</span>\n          <span class=\"moho-rank\">").concat(_('Dance'), "</span>\n        </div>\n        <div id=\"moho-quiet-gathering\" class=\"moho-rank-container\">\n          <span class=\"moho-rank-order\">").concat(_('Otherwise, form a'), "</span>\n          <span style=\"text-align: left;\">\n            <span class=\"moho-rank\">").concat(_('Quiet Gathering'), "</span> <span>").concat(_('with constables / lowest'), "</span>\n          </span>\n          <span class=\"moho-rank-order\">").concat(_('(ignore rogues)'), "</span>\n        </div>\n        <div id=\"moho-surprise-ball-bonus\" class=\"moho-bonus-container\">\n          <span>+</span><span class=\"moho-bonus-amount\">m</span>\n        </div>\n        <div id=\"moho-christening-bonus\" class=\"moho-bonus-container\">\n          <span>+</span><span class=\"moho-bonus-amount\">m</span>\n        </div>\n        <div id=\"moho-dance-bonus\" class=\"moho-bonus-container\">\n          <span>+</span><span class=\"moho-bonus-amount\">m</span>\n        </div>\n        <div id=\"moho-quiet-gathering-bonus\" class=\"moho-bonus-container\">\n          <span>-</span><span class=\"moho-bonus-amount\">m</span>\n        </div>\n        <span id=\"moho-matching-reputation\">").concat(_('m = matching reputation'), "</span>\n      </div>\n      ");
+    };
+    return MollyHouseHelpManager;
+}());
 var JoyMarkerManager = (function (_super) {
     __extends(JoyMarkerManager, _super);
     function JoyMarkerManager(game) {
@@ -7710,7 +7834,7 @@ var FestivityTakeMatchingCubes = (function () {
         });
         addSecondaryActionButton({
             id: 'do_not_take_cubes_btn',
-            text: _('Do no take '),
+            text: _('Do not take'),
             callback: function () {
                 performAction('actFestivityTakeMatchingCubes', {
                     takeCubes: false,

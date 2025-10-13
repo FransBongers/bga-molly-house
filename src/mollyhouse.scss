@@ -10,6 +10,7 @@
 
 @use '../node_modules/bga-cards/bga-cards';
 @use '../node_modules/bga-dice/bga-dice';
+@use '../node_modules/bga-help/bga-help';
 @use './base';
 @use './board/board';
 @use './boilerplate/default';
@@ -18,9 +19,10 @@
 @use './dice-manager/dice';
 @use './festivity/festivity';
 @use './hand/hand';
+@use './help-manager/help-manager';
 @use './icons';
 @use './joy-marker-manager/joy-markers';
-@use './market//market';
+@use './market/market';
 @use './player-manager/playerBoard';
 @use './player-manager/playerPanel';
 @use './logs/logs';
