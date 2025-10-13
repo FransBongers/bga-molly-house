@@ -71,7 +71,7 @@ const tplPlayerPrefenceSliderRow = ({
     !visible ? ` style="display: none;"` : ''
   }>
         <div class="row-data row-data-large">
-        <div class="row-label">${_(label)}</div>
+        <div class="row-label">${_(label)}<span id="slider-${id}-label-value" class="preference-slider-label-value"></span></div>
         <div class="row-value" style="padding-right: 10px;">
           <div id="setting_${id}" class=""></div>
         </div>

@@ -6,6 +6,7 @@ class Settings {
 
   private selectedTab: SettingsTabId = 'baseSettings';
   public preferenceValues: Record<string, string | number> = {};
+  public sliderValues: Record<string, number[]> = {};
 
   constructor(game: GameAlias) {
     this.game = game;
@@ -135,9 +136,20 @@ class Settings {
     };
     noUiSlider.create($('setting_' + id), sliderConfig);
 
-    $('setting_' + id).noUiSlider.on('slide', (arg) =>
-      this.onChangePreferenceValue(id, arg[0] as string)
-    );
+    let currentValue = sliderConfig.range.min;
+    const sliderValues = [];
+    while (currentValue <= sliderConfig.range.max) {
+      sliderValues.push(currentValue);
+      currentValue += sliderConfig.step;
+    }
+    this.sliderValues[id] = sliderValues;
+
+    this.updateSliderLabelValue(id, this.preferenceValues[id] as string);
+
+    $('setting_' + id).noUiSlider.on('slide', (arg) => {
+      this.onChangePreferenceValue(id, arg[0] as string);
+      this.updateSliderLabelValue(id, arg[0] as string);
+    });
   }
 
   private setupPreferences() {
@@ -171,6 +183,14 @@ class Settings {
     this.addTabs();
     this.moveExisitingPreferences();
     this.setupPreferences();
+
+    // Add event listener to prevent menu from closing when sliding a slider
+    document
+      .getElementById(`preference-content`)
+      .addEventListener('click', (event: MouseEvent) => {
+        event.preventDefault();
+        event.stopPropagation();
+      });
 
     this.changeTab(this.selectedTab);
   }
@@ -296,8 +316,22 @@ class Settings {
     }
   }
 
+  private updateSliderLabelValue(id: string, value: string) {
+    const numberValue = Number(value); 
+    if (isNaN(numberValue)) {
+      return;
+    }
+    const index = this.sliderValues[id].indexOf(numberValue);
+    if (index === -1) {
+      return;
+    }
+    const labelNode = document.getElementById(`slider-${id}-label-value`);
+    if (labelNode) {
+      labelNode.innerText = `(${index + 1}/${this.sliderValues[id].length})`;
+    }
+  }
+
   public onChangeTwoColumnLayout(value: string) {
-    console.log('onChangeTwoColumnsLayoutSetting', value);
     this.checkColumnSizesVisisble();
     const node = document.getElementById('play-area-container');
     if (node) {

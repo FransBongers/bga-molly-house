@@ -91,8 +91,8 @@ const getSettingsConfig = (): Record<SettingsTabId, PreferenceTab> => ({
           step: 5,
           padding: 0,
           range: {
-            min: 30,
-            max: 70,
+            min: 35,
+            max: 65,
           },
         },
         type: 'slider',
@@ -126,11 +126,11 @@ const getSettingsConfig = (): Record<SettingsTabId, PreferenceTab> => ({
           wideScreen: 0,
         },
         sliderConfig: {
-          step: 5,
+          step: 25,
           padding: 0,
           range: {
             min: 0,
-            max: 140,
+            max: 125,
           },
         },
         type: 'slider',
@@ -145,7 +145,7 @@ const getSettingsConfig = (): Record<SettingsTabId, PreferenceTab> => ({
           wideScreen: 100,
         },
         sliderConfig: {
-          step: 5,
+          step: 20,
           padding: 0,
           range: {
             min: 40,
@@ -233,10 +233,10 @@ const getSettingsConfig = (): Record<SettingsTabId, PreferenceTab> => ({
           values: [PREF_ENABLED],
         },
         sliderConfig: {
-          step: 100,
+          step: 300,
           padding: 0,
           range: {
-            min: 100,
+            min: 200,
             max: 2000,
           },
         },

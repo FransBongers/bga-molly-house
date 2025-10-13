@@ -3983,8 +3983,8 @@ var getSettingsConfig = function () {
                             step: 5,
                             padding: 0,
                             range: {
-                                min: 30,
-                                max: 70,
+                                min: 35,
+                                max: 65,
                             },
                         },
                         type: 'slider',
@@ -4000,11 +4000,11 @@ var getSettingsConfig = function () {
                         wideScreen: 0,
                     },
                     sliderConfig: {
-                        step: 5,
+                        step: 25,
                         padding: 0,
                         range: {
                             min: 0,
-                            max: 140,
+                            max: 125,
                         },
                     },
                     type: 'slider',
@@ -4019,7 +4019,7 @@ var getSettingsConfig = function () {
                         wideScreen: 100,
                     },
                     sliderConfig: {
-                        step: 5,
+                        step: 20,
                         padding: 0,
                         range: {
                             min: 40,
@@ -4090,10 +4090,10 @@ var getSettingsConfig = function () {
                         values: [PREF_ENABLED],
                     },
                     sliderConfig: {
-                        step: 100,
+                        step: 300,
                         padding: 0,
                         range: {
-                            min: 100,
+                            min: 200,
                             max: 2000,
                         },
                     },
@@ -4108,6 +4108,7 @@ var Settings = (function () {
         this.settings = {};
         this.selectedTab = 'baseSettings';
         this.preferenceValues = {};
+        this.sliderValues = {};
         this.game = game;
         var gamedatas = game.gamedatas;
         this.setup(gamedatas);
@@ -4187,8 +4188,17 @@ var Settings = (function () {
         }));
         var sliderConfig = __assign(__assign({}, config.sliderConfig), { start: this.preferenceValues[id] });
         noUiSlider.create($('setting_' + id), sliderConfig);
+        var currentValue = sliderConfig.range.min;
+        var sliderValues = [];
+        while (currentValue <= sliderConfig.range.max) {
+            sliderValues.push(currentValue);
+            currentValue += sliderConfig.step;
+        }
+        this.sliderValues[id] = sliderValues;
+        this.updateSliderLabelValue(id, this.preferenceValues[id]);
         $('setting_' + id).noUiSlider.on('slide', function (arg) {
-            return _this.onChangePreferenceValue(id, arg[0]);
+            _this.onChangePreferenceValue(id, arg[0]);
+            _this.updateSliderLabelValue(id, arg[0]);
         });
     };
     Settings.prototype.setupPreferences = function () {
@@ -4218,6 +4228,12 @@ var Settings = (function () {
         this.addTabs();
         this.moveExisitingPreferences();
         this.setupPreferences();
+        document
+            .getElementById("preference-content")
+            .addEventListener('click', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        });
         this.changeTab(this.selectedTab);
     };
     Settings.prototype.changeTab = function (id) {
@@ -4295,8 +4311,21 @@ var Settings = (function () {
             this[methodName](value);
         }
     };
+    Settings.prototype.updateSliderLabelValue = function (id, value) {
+        var numberValue = Number(value);
+        if (isNaN(numberValue)) {
+            return;
+        }
+        var index = this.sliderValues[id].indexOf(numberValue);
+        if (index === -1) {
+            return;
+        }
+        var labelNode = document.getElementById("slider-".concat(id, "-label-value"));
+        if (labelNode) {
+            labelNode.innerText = "(".concat(index + 1, "/").concat(this.sliderValues[id].length, ")");
+        }
+    };
     Settings.prototype.onChangeTwoColumnLayout = function (value) {
-        console.log('onChangeTwoColumnsLayoutSetting', value);
         this.checkColumnSizesVisisble();
         var node = document.getElementById('play-area-container');
         if (node) {
@@ -4352,7 +4381,7 @@ var tplPlayerPrefenceSelectRow = function (_a) {
 };
 var tplPlayerPrefenceSliderRow = function (_a) {
     var label = _a.label, id = _a.id, _b = _a.visible, visible = _b === void 0 ? true : _b;
-    return "\n  <div id=\"setting_row_".concat(id, "\" class=\"preference_choice\"").concat(!visible ? " style=\"display: none;\"" : '', ">\n        <div class=\"row-data row-data-large\">\n        <div class=\"row-label\">").concat(_(label), "</div>\n        <div class=\"row-value\" style=\"padding-right: 10px;\">\n          <div id=\"setting_").concat(id, "\" class=\"\"></div>\n        </div>\n    </div>\n  </div>\n  ");
+    return "\n  <div id=\"setting_row_".concat(id, "\" class=\"preference_choice\"").concat(!visible ? " style=\"display: none;\"" : '', ">\n        <div class=\"row-data row-data-large\">\n        <div class=\"row-label\">").concat(_(label), "<span id=\"slider-").concat(id, "-label-value\" class=\"preference-slider-label-value\"></span></div>\n        <div class=\"row-value\" style=\"padding-right: 10px;\">\n          <div id=\"setting_").concat(id, "\" class=\"\"></div>\n        </div>\n    </div>\n  </div>\n  ");
 };
 var ConfirmPartialTurn = (function () {
     function ConfirmPartialTurn(game) {
