@@ -62,6 +62,7 @@ class Board {
 
   public clearInterface() {
     Object.values(this.shops).forEach((shop) => shop.removeAll());
+    this.setupSites();
   }
 
   public updateInterface(gamedatas: GamedatasAlias) {

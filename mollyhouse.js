@@ -5310,6 +5310,7 @@ var Board = (function () {
     };
     Board.prototype.clearInterface = function () {
         Object.values(this.shops).forEach(function (shop) { return shop.removeAll(); });
+        this.setupSites();
     };
     Board.prototype.updateInterface = function (gamedatas) {
         this.updateShops(gamedatas);
