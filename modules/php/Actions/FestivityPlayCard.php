@@ -16,6 +16,40 @@ class FestivityPlayCard extends \Bga\Games\MollyHouse\Models\AtomicAction
     return ST_FESTIVITY_PLAY_CARD;
   }
 
+  // ..######..########....###....########.########
+  // .##....##....##......##.##......##....##......
+  // .##..........##.....##...##.....##....##......
+  // ..######.....##....##.....##....##....######..
+  // .......##....##....#########....##....##......
+  // .##....##....##....##.....##....##....##......
+  // ..######.....##....##.....##....##....########
+
+  // ....###.....######..########.####..#######..##....##
+  // ...##.##...##....##....##.....##..##.....##.###...##
+  // ..##...##..##..........##.....##..##.....##.####..##
+  // .##.....##.##..........##.....##..##.....##.##.##.##
+  // .#########.##..........##.....##..##.....##.##..####
+  // .##.....##.##....##....##.....##..##.....##.##...###
+  // .##.....##..######.....##....####..#######..##....##
+
+  
+  public function stFestivityPlayCard()
+  {
+    $options = $this->getOptions();
+    if (!$options['autoPass']) {
+      return;
+    }
+
+    $player = self::getPlayer();
+    Notifications::message(clienttranslate('${player_name} passes'), [
+      'player' => $player
+    ]);
+
+    Festivity::pass($player->getId());
+
+    $this->resolveAction(['automatic' => true]);
+  }
+
   // ....###....########...######....######.
   // ...##.##...##.....##.##....##..##....##
   // ..##...##..##.....##.##........##......
@@ -26,14 +60,14 @@ class FestivityPlayCard extends \Bga\Games\MollyHouse\Models\AtomicAction
 
   public function argsFestivityPlayCard()
   {
-    $info = $this->ctx->getInfo();
-    $player = $this->getPlayer();
+    $options = $this->getOptions();
 
     $data = [
+      '_no_notify' => $options['autoPass'],
       '_private' => [
-        $player->getId() => $player->getHand(),
+        $options['playerId'] => $options['hand'],
       ],
-      'hasViolin' => $player->hasItem(VIOLIN),
+      'hasViolin' => $options['hasViolin'],
       'currentWinningCards' => AtomicActions::get(FESTIVITY_DETERMINE_WINNING_SET)->getCurrentlyWinningCards(),
     ];
 
@@ -152,5 +186,16 @@ class FestivityPlayCard extends \Bga\Games\MollyHouse\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
+  private function getOptions()
+  {
+    $player = $this->getPlayer();
 
+    $data = [
+      'playerId' => $player->getId(),
+      'hand' => $player->getHand(),
+      'hasViolin' => $player->hasItem(VIOLIN),
+      'autoPass' => count($player->getHand()) === 0 && !$player->hasItem(VIOLIN),
+    ];
+    return $data;
+  }
 }

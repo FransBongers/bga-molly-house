@@ -29,7 +29,7 @@ class AddExcessCardsToGossip implements State {
   }
 
   onLeavingState() {
-    debug('Leaving Indulge state');
+    debug('Leaving AddExcessCardsToGossip state');
   }
 
   setDescription(

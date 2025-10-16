@@ -68,7 +68,7 @@ class FestivityDetermineWinningSet extends \Bga\Games\MollyHouse\Models\AtomicAc
       return $a->getFestivityValue() <=> $b->getFestivityValue();
     });
 
-    Notifications::festivityWinningSet($winningSet);
+    Notifications::festivityWinningSet($winningSet, $results[0]['ranking']);
     Festivity::setWinningSet(
       [
         'ranking' => $results[0]['ranking'],
@@ -146,8 +146,8 @@ class FestivityDetermineWinningSet extends \Bga\Games\MollyHouse\Models\AtomicAc
     $playedDresses = array_map(function ($item) {
       return $item->getSuit();
     }, Items::getInLocation(PLAYED_DRESSES)->toArray());
-    // TODO: return whether is is Suprise Ball with Dresses or not
-    // TODO: dresses
+    $dressPlayed = count($playedDresses) > 0;
+
     $cardsSortedBySuit = [
       CUPS => [],
       PENTACLES => [],
@@ -159,7 +159,10 @@ class FestivityDetermineWinningSet extends \Bga\Games\MollyHouse\Models\AtomicAc
     // Don't check Queens, Jacks or Constables
     foreach ($cards as $card) {
       $suit = $card->getSuit();
-      if ($card->isDesire() || $card->isRogue()) {
+      if (!($card->isDesire() || $card->isRogue())) {
+        continue;
+      }
+      if (!$dressPlayed) {
         $cardsSortedBySuit[$suit][] = $card;
       }
       if (in_array($suit, $playedDresses)) {

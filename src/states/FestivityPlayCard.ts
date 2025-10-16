@@ -29,7 +29,7 @@ class FestivityPlayCard implements State {
   }
 
   onLeavingState() {
-    debug('Leaving Indulge state');
+    debug('Leaving FestivityPlayCard state');
   }
 
   setDescription(

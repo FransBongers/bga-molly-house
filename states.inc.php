@@ -330,6 +330,7 @@ $machinestates = [
         ->description(clienttranslate('${actplayer} must play a card'))
         ->descriptionmyturn(clienttranslate('${you}'))
         ->type(StateType::ACTIVE_PLAYER)
+        ->action('stAtomicAction')
         ->args('argsAtomicAction')
         ->possibleactions([
             'actFestivityPlayCard',

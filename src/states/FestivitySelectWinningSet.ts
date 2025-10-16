@@ -43,7 +43,7 @@ class FestivitySelectWinningSet implements State {
   }
 
   onLeavingState() {
-    debug('Leaving Indulge state');
+    debug('Leaving FestivitySelectWinningSet state');
   }
 
   setDescription(

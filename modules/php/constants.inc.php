@@ -312,6 +312,6 @@ const COMMUNITY_MARKER_THRESHOLD = [
   1 => 30,
   2 => 35,
   3 => 35,
-  4 => 40,
+  4 => 30,
   5 => 25,
 ];

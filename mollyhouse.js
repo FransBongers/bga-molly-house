@@ -7299,7 +7299,7 @@ var AddExcessCardsToGossip = (function () {
         this.updateInterfaceInitialStep();
     };
     AddExcessCardsToGossip.prototype.onLeavingState = function () {
-        debug('Leaving Indulge state');
+        debug('Leaving AddExcessCardsToGossip state');
     };
     AddExcessCardsToGossip.prototype.setDescription = function (activePlayerId, args) {
         if (args.isRevealedInformer) {
@@ -7440,7 +7440,7 @@ var FestivityPlayCard = (function () {
         this.updateInterfaceInitialStep();
     };
     FestivityPlayCard.prototype.onLeavingState = function () {
-        debug('Leaving Indulge state');
+        debug('Leaving FestivityPlayCard state');
     };
     FestivityPlayCard.prototype.setDescription = function (activePlayerId, args) {
         this.args = args;
@@ -7569,7 +7569,7 @@ var FestivityGenerateGossip = (function () {
         this.updateInterfaceInitialStep();
     };
     FestivityGenerateGossip.prototype.onLeavingState = function () {
-        debug('Leaving Indulge state');
+        debug('Leaving FestivityGenerateGossip state');
     };
     FestivityGenerateGossip.prototype.setDescription = function (activePlayerIds, args) { };
     FestivityGenerateGossip.prototype.updateInterfaceInitialStep = function () {
@@ -7618,7 +7618,7 @@ var FestivitySelectWinningSet = (function () {
         this.updateInterfaceInitialStep();
     };
     FestivitySelectWinningSet.prototype.onLeavingState = function () {
-        debug('Leaving Indulge state');
+        debug('Leaving FestivitySelectWinningSet state');
     };
     FestivitySelectWinningSet.prototype.setDescription = function (activePlayerIds, args) { };
     FestivitySelectWinningSet.prototype.updateInterfaceInitialStep = function () {
@@ -7752,7 +7752,7 @@ var FestivityChooseNextFoiledThreat = (function () {
         this.updateInterfaceInitialStep();
     };
     FestivityChooseNextFoiledThreat.prototype.onLeavingState = function () {
-        debug('Leaving Indulge state');
+        debug('Leaving FestivityChooseNextFoiledThreat state');
     };
     FestivityChooseNextFoiledThreat.prototype.setDescription = function (activePlayerIds, args) { };
     FestivityChooseNextFoiledThreat.prototype.updateInterfaceInitialStep = function () {
@@ -8054,7 +8054,7 @@ var FestivityUseBottleOfGin = (function () {
     };
     FestivityUseBottleOfGin.prototype.updateInterfaceInitialStep = function () {
         this.game.clearPossible();
-        updatePageTitle(_('${you} may use Bottle of Gin to play an addittional round'), {});
+        updatePageTitle(_('${you} may use Bottle of Gin to play an additional round'), {});
         this.highlightWinningCards();
         addPrimaryActionButton({
             id: 'use_btn',
@@ -8153,7 +8153,7 @@ var FestivityPlayDress = (function () {
         this.updateInterfaceInitialStep();
     };
     FestivityPlayDress.prototype.onLeavingState = function () {
-        debug('Leaving Indulge state');
+        debug('Leaving FestivityPlayDress state');
     };
     FestivityPlayDress.prototype.setDescription = function (activePlayerIds, args) { };
     FestivityPlayDress.prototype.updateInterfaceInitialStep = function () {

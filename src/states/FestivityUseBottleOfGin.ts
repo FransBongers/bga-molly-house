@@ -58,7 +58,7 @@ class FestivityUseBottleOfGin implements State {
     this.game.clearPossible();
 
     updatePageTitle(
-      _('${you} may use Bottle of Gin to play an addittional round'),
+      _('${you} may use Bottle of Gin to play an additional round'),
       {}
     );
     this.highlightWinningCards();

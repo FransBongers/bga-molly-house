@@ -24,7 +24,7 @@ class FestivityPlayDress implements State {
   }
 
   onLeavingState() {
-    debug('Leaving Indulge state');
+    debug('Leaving FestivityPlayDress state');
   }
 
   setDescription(

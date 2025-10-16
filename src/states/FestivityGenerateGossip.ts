@@ -23,7 +23,7 @@ class FestivityGenerateGossip implements State {
   }
 
   onLeavingState() {
-    debug('Leaving Indulge state');
+    debug('Leaving FestivityGenerateGossip state');
   }
 
   setDescription(

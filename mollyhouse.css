@@ -2297,6 +2297,7 @@ span[style*="color:#fcd873"] {
   text-align: center;
   font-weight: bold;
   text-shadow: #fff 0 0 2px, #fff 0 0 2px, #fff 0 0 2px, #fff 0 0 2px, #fff 0 0 2px, #fff 0 0 2px;
+  font-size: calc(var(--leftColumnScale) * 39px);
 }
 #moho-market-bar .moho-market-label {
   width: calc(var(--cardScale) * 4 * 161px + 48px);

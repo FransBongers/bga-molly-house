@@ -116,7 +116,7 @@ class FestivitySelectWinningSet extends \Bga\Games\MollyHouse\Models\AtomicActio
       return $a->getFestivityValue() <=> $b->getFestivityValue();
     });
 
-    Notifications::festivityWinningSet($winningSet);
+    Notifications::festivityWinningSet($winningSet, $stateArgs['ranking']);
 
     Festivity::setWinningSet(
       [

@@ -25,7 +25,7 @@ class FestivityChooseNextFoiledThreat implements State {
   }
 
   onLeavingState() {
-    debug('Leaving Indulge state');
+    debug('Leaving FestivityChooseNextFoiledThreat state');
   }
 
   setDescription(

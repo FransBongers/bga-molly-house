@@ -179,6 +179,23 @@ class Notifications
     }
   }
 
+  public static function getFestivityRanking($ranking)
+  {
+    switch ($ranking) {
+      case DANCE:
+        return clienttranslate('Dance');
+      case SURPRISE_BALL_WITH_DRESS:
+      case SURPRISE_BALL:
+        return clienttranslate('Surprise Ball');
+      case CHRISTENING:
+        return clienttranslate('Christening');
+      case QUIET_GATHERING:
+        return clienttranslate('Quiet Gathering');
+      default:
+        return $ranking;
+    }
+  }
+
   private static function cardsLog($cards)
   {
     $cardsLog = [];
@@ -588,8 +605,13 @@ class Notifications
     self::notifyAll('festivitySetRogueValue', $text, $args);
   }
 
-  public static function festivityWinningSet($cards)
+  public static function festivityWinningSet($cards, $ranking)
   {
+    $text = $ranking === QUIET_GATHERING ? clienttranslate('It is a ${tkn_boldText_ranking}') : clienttranslate('It is a ${tkn_boldText_ranking}!');
+
+    self::message($text, [
+      'tkn_boldText_ranking' => self::getFestivityRanking($ranking),
+    ]);
     self::notifyAll('festivityWinningSet', clienttranslate('The winning set is ${cardsLog}'), [
       'cards' => $cards,
       'cardsLog' => self::cardsLog($cards),
