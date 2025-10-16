@@ -355,7 +355,6 @@ class Settings {
   }
 
   public onChangeSizeOfHand(value: number) {
-    console.log('onChangeSizeOfHandSetting', value);
     const ROOT = document.documentElement;
     ROOT.style.setProperty('--handScale', `${Number(value) / 100}`);
   }

@@ -34,7 +34,7 @@ class EncounterTokenManager extends CardManager<MohoEncounterToken> {
     div.style.width = 'calc(var(--tokenScale) * 75px)';
 
     if (card.type !== null) {
-      TooltipManager.getInstance().addTextToolTip({
+      TooltipManager.getInstance().addTextTooltip({
         nodeId: card.id,
         text: card.type,
       });

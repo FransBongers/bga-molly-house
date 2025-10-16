@@ -127,12 +127,9 @@ class MollyHouse implements Game {
 
     this._connections = [];
 
-    // InfoPanel.create(this);
-
     TooltipManager.create(this);
     Settings.create(this);
     const settings = Settings.getInstance();
-    //  this.informationModal = new InformationModal(this);
 
     this.animationManager = new AnimationManager(this, {
       duration:

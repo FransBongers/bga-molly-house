@@ -41,8 +41,6 @@
     "src/boilerplate/counter.d.ts",
     "src/boilerplate/define.ts",
     "src/boilerplate/framework/types.d.ts",
-    "src/boilerplate/info-panel/index.ts",
-    "src/boilerplate/info-panel/templates.ts",
     "src/boilerplate/interaction/index.ts",
     "src/boilerplate/modal/modal.ts",
     "src/boilerplate/modal/modal.d.ts",

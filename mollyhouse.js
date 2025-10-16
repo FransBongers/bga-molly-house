@@ -2395,31 +2395,6 @@ define([
     }
     return declare('bgagame.mollyhouse', ebg.core.gamegui, new MollyHouse());
 });
-var InfoPanel = (function () {
-    function InfoPanel(game) {
-        this.game = game;
-        var gamedatas = game.gamedatas;
-        this.setup(gamedatas);
-    }
-    InfoPanel.create = function (game) {
-        InfoPanel.instance = new InfoPanel(game);
-    };
-    InfoPanel.getInstance = function () {
-        return InfoPanel.instance;
-    };
-    InfoPanel.prototype.clearInterface = function () { };
-    InfoPanel.prototype.updateInterface = function (gamedatas) { };
-    InfoPanel.prototype.setup = function (gamedatas) {
-        var node = document.getElementById('player_boards');
-        if (!node) {
-            return;
-        }
-        node.insertAdjacentHTML('afterbegin', tplInfoPanel());
-    };
-    return InfoPanel;
-}());
-var tplInfoPanel = function () { return "<div class='player-board' id=\"info-panel\">\n  <div id=\"info-panel-buttons\">\n    \n  </div>\n\n</div>"; };
-var tplHelpModeSwitch = function () { return "<div id=\"help-mode-switch\">\n           <input type=\"checkbox\" class=\"checkbox\" id=\"help-mode-chk\" />\n           <label class=\"label\" for=\"help-mode-chk\">\n             <div class=\"ball\"></div>\n           </label><svg aria-hidden=\"true\" focusable=\"false\" data-prefix=\"fad\" data-icon=\"question-circle\" class=\"svg-inline--fa fa-question-circle fa-w-16\" role=\"img\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512 512\"><g class=\"fa-group\"><path class=\"fa-secondary\" fill=\"currentColor\" d=\"M256 8C119 8 8 119.08 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm0 422a46 46 0 1 1 46-46 46.05 46.05 0 0 1-46 46zm40-131.33V300a12 12 0 0 1-12 12h-56a12 12 0 0 1-12-12v-4c0-41.06 31.13-57.47 54.65-70.66 20.17-11.31 32.54-19 32.54-34 0-19.82-25.27-33-45.7-33-27.19 0-39.44 13.14-57.3 35.79a12 12 0 0 1-16.67 2.13L148.82 170a12 12 0 0 1-2.71-16.26C173.4 113 208.16 90 262.66 90c56.34 0 116.53 44 116.53 102 0 77-83.19 78.21-83.19 106.67z\" opacity=\"0.4\"></path><path class=\"fa-primary\" fill=\"currentColor\" d=\"M256 338a46 46 0 1 0 46 46 46 46 0 0 0-46-46zm6.66-248c-54.5 0-89.26 23-116.55 63.76a12 12 0 0 0 2.71 16.24l34.7 26.31a12 12 0 0 0 16.67-2.13c17.86-22.65 30.11-35.79 57.3-35.79 20.43 0 45.7 13.14 45.7 33 0 15-12.37 22.66-32.54 34C247.13 238.53 216 254.94 216 296v4a12 12 0 0 0 12 12h56a12 12 0 0 0 12-12v-1.33c0-28.46 83.19-29.67 83.19-106.67 0-58-60.19-102-116.53-102z\"></path></g></svg>\n         </div>"; };
 var Interaction = (function () {
     function Interaction(game) {
         this.game = game;
@@ -4431,7 +4406,6 @@ var Settings = (function () {
         ROOT.style.setProperty('--logCardScale', "".concat(Number(value) / 100));
     };
     Settings.prototype.onChangeSizeOfHand = function (value) {
-        console.log('onChangeSizeOfHandSetting', value);
         var ROOT = document.documentElement;
         ROOT.style.setProperty('--handScale', "".concat(Number(value) / 100));
     };
@@ -5736,7 +5710,7 @@ var EncounterTokenManager = (function (_super) {
         div.setAttribute('data-color', card.color);
         div.style.width = 'calc(var(--tokenScale) * 75px)';
         if (card.type !== null) {
-            TooltipManager.getInstance().addTextToolTip({
+            TooltipManager.getInstance().addTextTooltip({
                 nodeId: card.id,
                 text: card.type,
             });
@@ -5817,7 +5791,6 @@ var ItemManager = (function (_super) {
         div.classList.add('moho-item');
         div.setAttribute('data-type', card.type);
         div.style.width = 'calc(var(--cardScale) * 178px)';
-        console.log('Adding tooltip for item', card);
         TooltipManager.getInstance().addTextTooltip({ nodeId: card.id, text: card.text, title: card.name });
     };
     ItemManager.prototype.setupBackDiv = function (card, div) {
@@ -6254,8 +6227,8 @@ var Hand = (function () {
 var tplHand = function () {
     return "<div id=\"hand\"></div\n  ";
 };
-var LOCAL_STORAGE_HELP_ACTIONS_FOLDED_KEY = 'MollyHouse-help-actions-folded';
-var LOCAL_STORAGE_HELP_TURN_FOLDED_KEY = 'MollyHouse-help-turn-folded';
+var LOCAL_STORAGE_HELP_FESTIVITY_FOLDED_KEY = 'MollyHouse-help-festivity-folded';
+var LOCAL_STORAGE_HELP_REVEALED_INFORMER_FOLDED_KEY = 'MollyHouse-help-revealed-informer-folded';
 var MollyHouseHelpManager = (function () {
     function MollyHouseHelpManager(game) {
         this.game = game;
@@ -6274,15 +6247,26 @@ var MollyHouseHelpManager = (function () {
                     expandedWidth: '419px',
                     expandedHeight: '300px',
                     defaultFolded: true,
-                    localStorageFoldedKey: LOCAL_STORAGE_HELP_ACTIONS_FOLDED_KEY,
+                    localStorageFoldedKey: LOCAL_STORAGE_HELP_FESTIVITY_FOLDED_KEY,
                     buttonExtraClasses: "moho-festivity-help-actions",
                     unfoldedHtml: this.getFestivityAidHtml(),
+                }),
+                new BgaHelpExpandableButton({
+                    expandedWidth: '300px',
+                    expandedHeight: '419px',
+                    defaultFolded: true,
+                    localStorageFoldedKey: LOCAL_STORAGE_HELP_REVEALED_INFORMER_FOLDED_KEY,
+                    buttonExtraClasses: "moho-revealed-informer-help-actions",
+                    unfoldedHtml: this.getRevealedInformerAidHtml(),
                 }),
             ],
         });
     };
+    MollyHouseHelpManager.prototype.getRevealedInformerAidHtml = function () {
+        return "\n      <div class=\"moho-revealed-informer-aid moho-player-aid\">\n        <span class=\"moho-title center\">".concat(_('Revealed Informer Aid'), "</span>\n        <span class=\"center\" style=\"margin-top: 20px;\">").concat(_('You may be revealed by other players at your site.'), "</span>\n        <div class=\"moho-if-revealed\" style=\"margin: 8px; padding: 4px;\">\n          <span>").concat(_('If you are revealed, add any matching cards in your reputation to the safe pile (do not use the Pride Rule).'), "</span>\n        </div>\n        <span>").concat(_('Revealed informers are:'), "</span>\n        <div class=\"moho-revealed-informer-rule\">\n          <span class=\"moho-bold\">").concat(_('A Social Pariah.'), "</span> <span>").concat(_('Excess hand cards are added to the safe pile.'), "</span>\n        </div>\n        <div class=\"moho-revealed-informer-rule\">\n          <span class=\"moho-bold\">").concat(_('A Known Threat.'), "</span> <span>").concat(_('After scoring at festivities, add any matching cards in your reputation to the safe pile.'), "</span>\n        </div>\n        <span style=\"margin-top: 8px;\">").concat(_('At the end of the week, do not reveal matching threats in your hand.'), "</span>\n        <div class=\"moho-revealed-informer-rule\">\n          <span class=\"moho-bold\">").concat(_('Unwelcome.'), "</span> <span>").concat(_('You cannot take site actions at the matching molly house or the adjacent sites. If a festivity is thrown at the matching house, you may not play items, and, on your turn you must draw and reveal a card for the community instead of playing a card.'), "</span>\n        </div>\n      </div>\n    ");
+    };
     MollyHouseHelpManager.prototype.getFestivityAidHtml = function () {
-        return "\n      <div class=\"moho-festivity-aid\">\n        <div class=\"moho-festivity-aid-header\">\n          <span class=\"moho-title\">".concat(_('Festivity Ranking'), "</span><span class=\"moho-title\">").concat(_('Bonus'), "</span>\n        </div>\n        <div id=\"moho-surprise-ball\" class=\"moho-rank-container\">\n          <span class=\"moho-rank-order\">").concat(_('First'), ",</span>\n          <span class=\"moho-rank\">").concat(_('Surprise Ball'), "</span>\n        </div>\n        <div id=\"moho-christening\" class=\"moho-rank-container\">\n          <span class=\"moho-rank-order\">").concat(_('Second'), ",</span>\n          <span class=\"moho-rank\">").concat(_('Christening'), "</span>\n        </div>\n        <div id=\"moho-dance\" class=\"moho-rank-container\">\n          <span class=\"moho-rank-order\">").concat(_('Third'), ",</span>\n          <span class=\"moho-rank\">").concat(_('Dance'), "</span>\n        </div>\n        <div id=\"moho-quiet-gathering\" class=\"moho-rank-container\">\n          <span class=\"moho-rank-order\">").concat(_('Otherwise, form a'), "</span>\n          <span style=\"text-align: left;\">\n            <span class=\"moho-rank\">").concat(_('Quiet Gathering'), "</span> <span>").concat(_('with constables / lowest'), "</span>\n          </span>\n          <span class=\"moho-rank-order\">").concat(_('(ignore rogues)'), "</span>\n        </div>\n        <div id=\"moho-surprise-ball-bonus\" class=\"moho-bonus-container\">\n          <span>+</span><span class=\"moho-bonus-amount\">m</span>\n        </div>\n        <div id=\"moho-christening-bonus\" class=\"moho-bonus-container\">\n          <span>+</span><span class=\"moho-bonus-amount\">m</span>\n        </div>\n        <div id=\"moho-dance-bonus\" class=\"moho-bonus-container\">\n          <span>+</span><span class=\"moho-bonus-amount\">m</span>\n        </div>\n        <div id=\"moho-quiet-gathering-bonus\" class=\"moho-bonus-container\">\n          <span>-</span><span class=\"moho-bonus-amount\">m</span>\n        </div>\n        <span id=\"moho-matching-reputation\">").concat(_('m = matching reputation'), "</span>\n      </div>\n      ");
+        return "\n      <div class=\"moho-festivity-aid moho-player-aid\">\n        <div class=\"moho-festivity-aid-header\">\n          <span class=\"moho-title\">".concat(_('Festivity Ranking'), "</span><span class=\"moho-title\">").concat(_('Bonus'), "</span>\n        </div>\n        <div id=\"moho-surprise-ball\" class=\"moho-rank-container\">\n          <span class=\"moho-rank-order\">").concat(_('First'), ",</span>\n          <span class=\"moho-rank\">").concat(_('Surprise Ball'), "</span>\n        </div>\n        <div id=\"moho-christening\" class=\"moho-rank-container\">\n          <span class=\"moho-rank-order\">").concat(_('Second'), ",</span>\n          <span class=\"moho-rank\">").concat(_('Christening'), "</span>\n        </div>\n        <div id=\"moho-dance\" class=\"moho-rank-container\">\n          <span class=\"moho-rank-order\">").concat(_('Third'), ",</span>\n          <span class=\"moho-rank\">").concat(_('Dance'), "</span>\n        </div>\n        <div id=\"moho-quiet-gathering\" class=\"moho-rank-container\">\n          <span class=\"moho-rank-order\">").concat(_('Otherwise, form a'), "</span>\n          <span style=\"text-align: left;\">\n            <span class=\"moho-rank\">").concat(_('Quiet Gathering'), "</span> <span>").concat(_('with constables / lowest'), "</span>\n          </span>\n          <span class=\"moho-rank-order\">").concat(_('(ignore rogues)'), "</span>\n        </div>\n        <div id=\"moho-surprise-ball-bonus\" class=\"moho-bonus-container\">\n          <span>+</span><span class=\"moho-bonus-amount\">m</span>\n        </div>\n        <div id=\"moho-christening-bonus\" class=\"moho-bonus-container\">\n          <span>+</span><span class=\"moho-bonus-amount\">m</span>\n        </div>\n        <div id=\"moho-dance-bonus\" class=\"moho-bonus-container\">\n          <span>+</span><span class=\"moho-bonus-amount\">m</span>\n        </div>\n        <div id=\"moho-quiet-gathering-bonus\" class=\"moho-bonus-container\">\n          <span>-</span><span class=\"moho-bonus-amount\">m</span>\n        </div>\n        <span id=\"moho-matching-reputation\">").concat(_('m = matching reputation'), "</span>\n      </div>\n      ");
     };
     return MollyHouseHelpManager;
 }());

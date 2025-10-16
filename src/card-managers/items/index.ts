@@ -26,7 +26,6 @@ class ItemManager extends CardManager<MohoItem> {
     div.setAttribute('data-type', card.type);
     div.style.width = 'calc(var(--cardScale) * 178px)';
 
-    console.log('Adding tooltip for item', card);
     TooltipManager.getInstance().addTextTooltip({ nodeId: card.id, text: card.text, title: card.name });
   }
 
