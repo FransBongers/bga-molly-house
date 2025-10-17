@@ -340,6 +340,10 @@ class Board {
     this.ui.diceStock.dataset.festivity = active ? 'true' : 'false';
   }
 
+  setGatherEvidenceActive(active: boolean) {
+    this.ui.diceStock.dataset.festivity = active ? 'true' : 'false';
+  }
+
   async moveToken(
     type: keyof typeof this.ui.containers.tokens,
     value: string | number

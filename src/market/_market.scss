@@ -14,6 +14,12 @@
 
   #moho-deck {
     box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);
+
+    .moho-vice-card-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
   }
 
   #moho-deck.moho-empty {
@@ -27,6 +33,12 @@
     position: relative;
     box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);
     cursor: pointer;
+
+    .moho-vice-card-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
 
     #moho-safe-pile-counter {
       z-index: 1;

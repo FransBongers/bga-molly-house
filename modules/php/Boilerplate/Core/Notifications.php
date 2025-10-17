@@ -196,7 +196,7 @@ class Notifications
     }
   }
 
-  private static function cardsLog($cards)
+  private static function cardsLog($cards, $addSuit = true)
   {
     $cardsLog = [];
     $cardsLogArgs = [];
@@ -210,10 +210,14 @@ class Notifications
       $log = $log . '${' . $key . '}';
       $cardsLogArgs[$key] = self::viceCardValueText($card->getDisplayValue());
 
-      // Suit
-      $keySuit = 'tkn_suit_' . $index;
-      $log = $log . '${' . $keySuit . '}';
-      $cardsLogArgs[$keySuit] = $card->getSuit();
+      if ($addSuit) {
+        // Suit
+        $keySuit = 'tkn_suit_' . $index;
+        $log = `$log` . '${' . $keySuit . '}';
+        $cardsLogArgs[$keySuit] = $card->getSuit();
+      } else if ($index !== count($cards) - 1) {
+        $log = $log . ',';
+      }
       $cardsLog[] = $log;
     }
 
@@ -518,6 +522,28 @@ class Notifications
       'tkn_boldText_mollyHouse' => $site->getName(),
       'tkn_cube' => self::tknCube($site->getSuit()),
       'i18n' => ['tkn_boldText_number', 'tkn_boldText_mollyHouse'],
+    ]);
+  }
+
+  public static function endOfWeekRevealEvidence()
+  {
+
+    self::notifyAll('endOfWeekRevealEvidence', '', []);
+  }
+
+  public static function endOfWeekRevealEvidenceForSuit($suit, $threats, $cards)
+  {
+    $text = clienttranslate('Revealed cards of ${tkn_suit}: ${cardsLog}');
+
+    self::notifyAll('endOfWeekRevealEvidenceForSuit', $text, [
+      'tkn_suit' => $suit,
+      'threats' => array_map(function ($card) {
+        return $card->jsonSerialize();
+      }, $threats),
+      'cards' => array_map(function ($card) {
+        return $card->jsonSerialize();
+      }, $cards),
+      'cardsLog' => self::cardsLog(array_merge($threats, $cards), false),
     ]);
   }
 

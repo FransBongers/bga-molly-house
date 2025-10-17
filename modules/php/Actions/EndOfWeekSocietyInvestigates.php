@@ -74,24 +74,39 @@ class EndOfWeekSocietyInvestigates extends \Bga\Games\MollyHouse\Models\AtomicAc
 
     foreach ($cardsInGossip as $card) {
       if ($card->isThreat()) {
+        $card->setLocation(Locations::evidence('threats', $card->getSuit()));
         $evidence[$card->getSuit()]['threats'][] = $card;
       } else {
+        $card->setLocation(Locations::evidence('cards', $card->getSuit()));
         $evidence[$card->getSuit()]['cards'][] = $card;
       }
     }
 
+    Notifications::endOfWeekRevealEvidence($evidence);
+
     $mollyHouses = Sites::getMany(MOLLY_HOUSES);
 
-    foreach($mollyHouses as $id => $mollyHouse) {
+
+
+    foreach (MOLLY_HOUSES as $id) {
+      $mollyHouse = $mollyHouses[$id];
       $threatCount = count($evidence[$mollyHouse->getSuit()]['threats']);
       $cardCount = count($evidence[$mollyHouse->getSuit()]['cards']);
+
+      if ($threatCount + $cardCount > 0) {
+        Notifications::endOfWeekRevealEvidenceForSuit(
+          $mollyHouse->getSuit(),
+          $evidence[$mollyHouse->getSuit()]['threats'],
+          $evidence[$mollyHouse->getSuit()]['cards'],
+        );
+      }
+
       if ($threatCount === 0 || $cardCount === 0) {
         continue;
       }
       $numberOfCubes = $threatCount * $cardCount;
 
       $mollyHouse->generateEvidence($numberOfCubes);
-
     }
 
 

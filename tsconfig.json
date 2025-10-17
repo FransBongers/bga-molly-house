@@ -71,6 +71,7 @@
     "src/card-modal/index.ts",
     "src/festivity/config.ts",
     "src/festivity/index.ts",
+    "src/gather-evidence/index.ts",
     "src/hand/index.ts",
     "src/hand/templates.ts",
     "src/help-manager/index.ts",

@@ -83,6 +83,8 @@ class NotificationManager {
       'endOfWeekDiscardToSafePile',
       'endOfWeekGenerateEvidence',
       'endOfWeekMollyHouseRaided',
+      'endOfWeekRevealEvidence',
+      'endOfWeekRevealEvidenceForSuit',
       'gainIndictment',
       'gainIndictmentPrivate',
       'festivityEnd',
@@ -506,6 +508,7 @@ class NotificationManager {
     });
 
     await Promise.all(promises);
+    GatherEvidence.getInstance().setGatherEvidenceActive(false);
   }
 
   async notif_endOfWeekDiscardToSafePile(
@@ -535,6 +538,32 @@ class NotificationManager {
     });
 
     board.evidenceCounters[mollyHouse.id].incValue(-7);
+  }
+
+  async notif_endOfWeekRevealEvidence(
+    notif: Notif<NotifEndOfWeekRevealEvidence>
+  ) {
+    const gatherEvidence = GatherEvidence.getInstance();
+    gatherEvidence.setGatherEvidenceActive(true);
+  }
+
+  async notif_endOfWeekRevealEvidenceForSuit(
+    notif: Notif<NotifEndOfWeekRevealEvidenceForSuit>
+  ) {
+    const { threats, cards } = notif.args;
+    const gatherEvidence = GatherEvidence.getInstance();
+    const promises = [];
+    let counter = 0;
+    threats.forEach((card: ViceCardBase) => {
+      promises.push(gatherEvidence.addCard(card, counter));
+      counter++;
+    });
+    cards.forEach((card: ViceCardBase) => {
+      promises.push(gatherEvidence.addCard(card, counter));
+      counter++;
+    });
+
+    await Promise.all(promises);
   }
 
   async notif_festivityEnd(notif: Notif<NotifFestivityEnd>) {

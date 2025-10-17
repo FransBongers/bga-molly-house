@@ -65,6 +65,7 @@ var COLOR_SUIT_MAP = (_b = {},
     _b[GREEN] = FANS,
     _b[RED] = HEARTS,
     _b);
+var SUITS = [PENTACLES, FANS, HEARTS, CUPS];
 var MARKET_0 = 'market_0';
 var MARKET_1 = 'market_1';
 var MARKET_2 = 'market_2';
@@ -2904,6 +2905,8 @@ var NotificationManager = (function () {
             'endOfWeekDiscardToSafePile',
             'endOfWeekGenerateEvidence',
             'endOfWeekMollyHouseRaided',
+            'endOfWeekRevealEvidence',
+            'endOfWeekRevealEvidenceForSuit',
             'gainIndictment',
             'gainIndictmentPrivate',
             'festivityEnd',
@@ -3466,6 +3469,7 @@ var NotificationManager = (function () {
                         return [4, Promise.all(promises)];
                     case 1:
                         _a.sent();
+                        GatherEvidence.getInstance().setGatherEvidenceActive(false);
                         return [2];
                 }
             });
@@ -3504,6 +3508,42 @@ var NotificationManager = (function () {
                 });
                 board.evidenceCounters[mollyHouse.id].incValue(-7);
                 return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_endOfWeekRevealEvidence = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var gatherEvidence;
+            return __generator(this, function (_a) {
+                gatherEvidence = GatherEvidence.getInstance();
+                gatherEvidence.setGatherEvidenceActive(true);
+                return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_endOfWeekRevealEvidenceForSuit = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, threats, cards, gatherEvidence, promises, counter;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = notif.args, threats = _a.threats, cards = _a.cards;
+                        gatherEvidence = GatherEvidence.getInstance();
+                        promises = [];
+                        counter = 0;
+                        threats.forEach(function (card) {
+                            promises.push(gatherEvidence.addCard(card, counter));
+                            counter++;
+                        });
+                        cards.forEach(function (card) {
+                            promises.push(gatherEvidence.addCard(card, counter));
+                            counter++;
+                        });
+                        return [4, Promise.all(promises)];
+                    case 1:
+                        _b.sent();
+                        return [2];
+                }
             });
         });
     };
@@ -4862,6 +4902,7 @@ var MollyHouse = (function () {
         NotificationManager.create(this);
         Board.create(this);
         Festivity.create(this);
+        GatherEvidence.create(this);
         Market.create(this);
         if (this.playerOrder.includes(this.getPlayerId())) {
             Hand.create(this);
@@ -5501,6 +5542,9 @@ var Board = (function () {
     Board.prototype.setFestivityActive = function (active) {
         this.ui.diceStock.dataset.festivity = active ? 'true' : 'false';
     };
+    Board.prototype.setGatherEvidenceActive = function (active) {
+        this.ui.diceStock.dataset.festivity = active ? 'true' : 'false';
+    };
     Board.prototype.moveToken = function (type, value) {
         return __awaiter(this, void 0, void 0, function () {
             var fromRect;
@@ -5671,7 +5715,7 @@ var Board = (function () {
     };
     return Board;
 }());
-var tplBoard = function (gamedatas) { return "<div id=\"moho-board\">\n\n\n  <div id=\"moho-dangerous-cruising-markers\"></div>\n  <div id=\"house-raided-markers\"></div>\n\n  <div id=\"moho-encounter-tokens\"></div>\n  \n  <div id=\"moho-evidence-counters\"></div>\n  <div id=\"moho-gossip-pile\" class=\"moho-vice-card\" data-card-id=\"back\">\n    <span id=\"moho-gossip-pile-counter\" class=\"moho-deck-counter\">10</span>\n  </div>\n  <div id=\"moho-markers\"></div>\n    <div id=\"moho-select-boxes\"></div>\n  <div id=\"moho-playmat\">\n    <div id=\"moho-festivity\"></div>\n    <div id=\"moho-dice-stock\"></div>\n  </div>\n    <div id=\"moho-shops\">\n    <div id=\"CannonStreet\" class=\"moho-shop\"></div>\n    <div id=\"DukeStreet\" class=\"moho-shop\"></div>\n    <div id=\"LeadenhallStreet\" class=\"moho-shop\"></div>\n    <div id=\"NobleStreet\" class=\"moho-shop\"></div>\n  </div>\n  <div id=\"moho-pawns\"></div>\n</div>"; };
+var tplBoard = function (gamedatas) { return "<div id=\"moho-board\">\n\n\n  <div id=\"moho-dangerous-cruising-markers\"></div>\n  <div id=\"house-raided-markers\"></div>\n\n  <div id=\"moho-encounter-tokens\"></div>\n  \n  <div id=\"moho-evidence-counters\"></div>\n  <div id=\"moho-gossip-pile\" class=\"moho-vice-card\" data-card-id=\"back\">\n    <span id=\"moho-gossip-pile-counter\" class=\"moho-deck-counter\">10</span>\n  </div>\n  <div id=\"moho-markers\"></div>\n    <div id=\"moho-select-boxes\"></div>\n  <div id=\"moho-playmat\">\n    <div id=\"moho-festivity\"></div>\n    <div id=\"moho-gather-evidence\">\n      <div class=\"moho-gather-evidence-row\">\n        <div id=\"moho-gather-evidence-pentacles-threats\" class=\"moho-evidence moho-threats\"></div>\n        <div id=\"moho-gather-evidence-pentacles-cards\" class=\"moho-evidence\"></div>\n      </div>\n      <div class=\"moho-gather-evidence-row\">\n        <div id=\"moho-gather-evidence-fans-threats\" class=\"moho-evidence moho-threats\"></div>\n        <div id=\"moho-gather-evidence-fans-cards\" class=\"moho-evidence\"></div>\n      </div>\n      <div class=\"moho-gather-evidence-row\">\n        <div id=\"moho-gather-evidence-hearts-threats\" class=\"moho-evidence moho-threats\"></div>\n        <div id=\"moho-gather-evidence-hearts-cards\" class=\"moho-evidence\"></div>\n      </div>\n      <div class=\"moho-gather-evidence-row\">\n        <div id=\"moho-gather-evidence-cups-threats\" class=\"moho-evidence moho-threats\"></div>\n        <div id=\"moho-gather-evidence-cups-cards\" class=\"moho-evidence\"></div>\n      </div>\n    </div>\n    <div id=\"moho-dice-stock\"></div>\n  </div>\n    <div id=\"moho-shops\">\n    <div id=\"CannonStreet\" class=\"moho-shop\"></div>\n    <div id=\"DukeStreet\" class=\"moho-shop\"></div>\n    <div id=\"LeadenhallStreet\" class=\"moho-shop\"></div>\n    <div id=\"NobleStreet\" class=\"moho-shop\"></div>\n  </div>\n  <div id=\"moho-pawns\"></div>\n</div>"; };
 var createJoyMarker = function (color) {
     var elt = document.createElement('div');
     elt.classList.add('moho-joy-marker');
@@ -6142,6 +6186,68 @@ var Festivity = (function () {
         });
     };
     return Festivity;
+}());
+var GatherEvidence = (function () {
+    function GatherEvidence(game) {
+        this.stocks = {};
+        this.game = game;
+        this.setupGatherEvidence(game.gamedatas);
+        this.setGatherEvidenceActive(false);
+    }
+    GatherEvidence.create = function (game) {
+        GatherEvidence.instance = new GatherEvidence(game);
+    };
+    GatherEvidence.getInstance = function () {
+        return GatherEvidence.instance;
+    };
+    GatherEvidence.prototype.setupGatherEvidence = function (gamedatas) {
+        var _this = this;
+        this.containerElt = document.getElementById('moho-gather-evidence');
+        SUITS.forEach(function (suit) {
+            _this.stocks[suit] = {
+                threats: new LineStock(_this.game.viceCardManager, document.getElementById("moho-gather-evidence-".concat(suit, "-threats")), {
+                    gap: '0px',
+                    wrap: 'nowrap',
+                }),
+                cards: new LineStock(_this.game.viceCardManager, document.getElementById("moho-gather-evidence-".concat(suit, "-cards")), {
+                    gap: '0px',
+                    wrap: 'nowrap',
+                }),
+            };
+        });
+    };
+    GatherEvidence.prototype.setGatherEvidenceActive = function (active) {
+        this.containerElt.dataset.active = active ? 'true' : 'false';
+        Board.getInstance().setGatherEvidenceActive(active);
+    };
+    GatherEvidence.prototype.addCard = function (card, counter) {
+        return __awaiter(this, void 0, void 0, function () {
+            var board, viceCard, location, _a, _prefix, cardOrThreat, suit;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        board = Board.getInstance();
+                        viceCard = getViceCard(card);
+                        return [4, Interaction.use().wait(counter * 150)];
+                    case 1:
+                        _b.sent();
+                        location = viceCard.location;
+                        viceCard.location = GOSSIP_PILE;
+                        return [4, board.gossipPile.addCard(viceCard)];
+                    case 2:
+                        _b.sent();
+                        viceCard.location = location;
+                        _a = viceCard.location.split('_'), _prefix = _a[0], cardOrThreat = _a[1], suit = _a[2];
+                        board.counters[GOSSIP_PILE].incValue(-1);
+                        return [4, this.stocks[suit][cardOrThreat].addCard(viceCard)];
+                    case 3:
+                        _b.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    return GatherEvidence;
 }());
 var Hand = (function () {
     function Hand(game) {

@@ -40,4 +40,9 @@ class Locations
   {
     return 'encounterTokens_' . $playerId;
   }
+
+  public static function evidence($cardOrThreat, $suit)
+  {
+    return 'evidence_' . $cardOrThreat . '_' . $suit;
+  }
 }

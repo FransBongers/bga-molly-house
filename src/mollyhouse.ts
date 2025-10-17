@@ -151,6 +151,7 @@ class MollyHouse implements Game {
 
     Board.create(this);
     Festivity.create(this);
+    GatherEvidence.create(this);
     Market.create(this);
     if (this.playerOrder.includes(this.getPlayerId())) {
       Hand.create(this);

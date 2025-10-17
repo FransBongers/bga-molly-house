@@ -52,6 +52,8 @@ const COLOR_SUIT_MAP = {
   [RED]: HEARTS,
 };
 
+const SUITS = [PENTACLES, FANS, HEARTS, CUPS];
+
 /**
  * Market locations
  */

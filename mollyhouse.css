@@ -1943,6 +1943,39 @@ span[style*="color:#fcd873"] {
   pointer-events: none;
 }
 
+#moho-gather-evidence {
+  position: absolute;
+  top: calc(var(--leftColumnScale) * -84px);
+  left: calc(var(--leftColumnScale) * 40px);
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(var(--cardScale) * 8px);
+}
+#moho-gather-evidence .moho-gather-evidence-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: calc(var(--cardScale) * 16px);
+}
+#moho-gather-evidence .moho-gather-evidence-row .moho-evidence {
+  justify-content: flex-start;
+}
+#moho-gather-evidence .moho-gather-evidence-row .moho-evidence .moho-vice-card-container:not(:first-child) {
+  margin-left: calc(var(--cardScale) * -115px);
+}
+#moho-gather-evidence .moho-gather-evidence-row .moho-threats {
+  min-width: calc(var(--leftColumnScale) * 207px);
+}
+
+#moho-gather-evidence[data-active=false] {
+  display: none;
+  pointer-events: none;
+}
+
 #hand {
   position: fixed;
   bottom: 0;
@@ -2259,6 +2292,11 @@ span[style*="color:#fcd873"] {
 #moho-market #moho-deck {
   box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);
 }
+#moho-market #moho-deck .moho-vice-card-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
 #moho-market #moho-deck.moho-empty {
   background-image: none !important;
   box-shadow: none;
@@ -2269,6 +2307,11 @@ span[style*="color:#fcd873"] {
   position: relative;
   box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);
   cursor: pointer;
+}
+#moho-market #moho-safe-pile .moho-vice-card-container {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 #moho-market #moho-safe-pile #moho-safe-pile-counter {
   z-index: 1;

@@ -119,6 +119,14 @@ interface NotifEndOfWeekMollyHouseRaided {
   adjacentSites: MohoSiteBase[];
 }
 
+interface NotifEndOfWeekRevealEvidence {}
+
+interface NotifEndOfWeekRevealEvidenceForSuit {
+  suit: Suit;
+  threats: ViceCardBase[];
+  cards: ViceCardBase[];
+}
+
 interface NotifFestivityRevealTopCardViceDeck {
   card: ViceCardBase;
   cardDrawnFromGossipPile: boolean;
