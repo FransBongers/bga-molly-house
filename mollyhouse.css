@@ -649,7 +649,7 @@ body > .bga-dice_die {
   display: none;
   pointer-events: none;
 }
-#moho-board #moho-dice-stock[data-gatherEvidence=true] {
+#moho-board #moho-dice-stock[data-gather-evidence=true] {
   display: none;
   pointer-events: none;
 }
