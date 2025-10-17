@@ -649,6 +649,10 @@ body > .bga-dice_die {
   display: none;
   pointer-events: none;
 }
+#moho-board #moho-dice-stock[data-gatherEvidence=true] {
+  display: none;
+  pointer-events: none;
+}
 #moho-board #moho-evidence-counters .icon-counter-container {
   position: absolute;
 }

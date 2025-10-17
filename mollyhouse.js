@@ -5543,7 +5543,7 @@ var Board = (function () {
         this.ui.diceStock.dataset.festivity = active ? 'true' : 'false';
     };
     Board.prototype.setGatherEvidenceActive = function (active) {
-        this.ui.diceStock.dataset.festivity = active ? 'true' : 'false';
+        this.ui.diceStock.dataset.gatherEvidence = active ? 'true' : 'false';
     };
     Board.prototype.moveToken = function (type, value) {
         return __awaiter(this, void 0, void 0, function () {
@@ -5997,7 +5997,7 @@ var FESTIVITY_CONFIG_THREE_PLAYERS = (_b = {},
         left: 612,
     },
     _b[PLAYED_DRESSES] = {
-        top: 250,
+        top: 280,
         left: 305,
     },
     _b);

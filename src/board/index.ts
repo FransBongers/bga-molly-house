@@ -341,7 +341,7 @@ class Board {
   }
 
   setGatherEvidenceActive(active: boolean) {
-    this.ui.diceStock.dataset.festivity = active ? 'true' : 'false';
+    this.ui.diceStock.dataset.gatherEvidence = active ? 'true' : 'false';
   }
 
   async moveToken(

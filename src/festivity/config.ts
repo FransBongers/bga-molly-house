@@ -39,7 +39,7 @@ const FESTIVITY_CONFIG_THREE_PLAYERS: Record<
     left: 612,
   },
   [PLAYED_DRESSES]: {
-    top: 250,
+    top: 280,
     left: 305,
   },
 };

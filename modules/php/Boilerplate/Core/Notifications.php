@@ -213,7 +213,7 @@ class Notifications
       if ($addSuit) {
         // Suit
         $keySuit = 'tkn_suit_' . $index;
-        $log = `$log` . '${' . $keySuit . '}';
+        $log = $log . '${' . $keySuit . '}';
         $cardsLogArgs[$keySuit] = $card->getSuit();
       } else if ($index !== count($cards) - 1) {
         $log = $log . ',';

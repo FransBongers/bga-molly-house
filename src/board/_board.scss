@@ -99,6 +99,11 @@
     pointer-events: none;
   }
 
+    #moho-dice-stock[data-gatherEvidence='true'] {
+    display: none;
+    pointer-events: none;
+  }
+
   #moho-evidence-counters {
     .icon-counter-container {
       position: absolute;
