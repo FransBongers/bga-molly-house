@@ -713,8 +713,15 @@ class NotificationManager {
     const market = Market.getInstance();
 
     const promises = movedCards.concat(addedCards).map(async (card, index) => {
-      await Interaction.use().wait(index * 200);
       const viceCard = getViceCard(card);
+      // console.group('Refill market card');
+      // console.log('card', card);
+      // console.log('index', index);
+      // console.log('viceCard', viceCard);
+      // console.groupEnd();
+      
+      await Interaction.use().wait(index * 200);
+
       if (movedCards.some((movedCard) => movedCard.id === card.id)) {
         await market.stock.addCard(viceCard);
       } else {

@@ -105,8 +105,8 @@ $machinestates = [
 
     ST_CONFIRM_PARTIAL_TURN => GameStateBuilder::create()
         ->name(CONFIRM_PARTIAL_TURN)
-        ->description(clienttranslate('${actplayer} must confirm the switch of player'))
-        ->descriptionmyturn(clienttranslate('${you} must confirm the switch of player. You will not be able to restart turn'))
+        ->description(clienttranslate('${actplayer} must confirm their moves'))
+        ->descriptionmyturn(clienttranslate('${you} must confirm your moves. You will not be able to undo'))
         ->type(StateType::ACTIVE_PLAYER)
         ->args('argsConfirmTurn')
         ->action('stConfirmTurn')
@@ -387,6 +387,13 @@ $machinestates = [
             'actFestivityGenerateGossip',
             'actPass',
         ])
+        ->build(),
+
+    ST_FESTIVITY_CHECK_GENERATE_GOSSIP => GameStateBuilder::create()
+        ->name(FESTIVITY_CHECK_GENERATE_GOSSIP)
+        ->description('')
+        ->type(StateType::GAME)
+        ->action('stAtomicAction')
         ->build(),
 
     ST_FESTIVITY_SELECT_WINNING_SET => GameStateBuilder::create()

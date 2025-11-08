@@ -23,7 +23,7 @@ class ConfirmPartialTurn implements State {
 
   setDescription(activePlayerId: number) {
     // this.game.clientUpdatePageTitle({
-    //   text: _("${player_name} must confirm the switch of player"),
+    //   text: _("${player_name} must confirm their moves"),
     //   args: {
     //     player_name: this.game.playerManager.getPlayer({playerId: activePlayerId}).getName()
     //   },
@@ -51,7 +51,7 @@ class ConfirmPartialTurn implements State {
     this.game.clearPossible();
     this.game.clientUpdatePageTitle({
       text: _(
-        '${you} must confirm the switch of player. You will not be able to restart your turn'
+        '${you} must confirm your moves. You will not be able to undo'
       ),
       args: {
         you: '${you}',

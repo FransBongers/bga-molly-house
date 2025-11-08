@@ -83,6 +83,7 @@ const ST_FINAL_SCORING = 46;
 const ST_PLACE_ENCOUNTER_TOKEN = 39;
 const ST_FESTIVITY_KNOWN_THREAT_CHECK = 47;
 const ST_FESTIVITY_PASS_AND_PLAY_COMMUNITY_CARD = 48;
+const ST_FESTIVITY_CHECK_GENERATE_GOSSIP = 49;
 
 /**
  * Game state names
@@ -109,6 +110,7 @@ const FESTIVITY_DETERMINE_WINNING_SET = 'FestivityDetermineWinningSet';
 const FESTIVITY_SCORE_JOY = 'FestivityScoreJoy';
 const FESTIVITY_SCORE_BONUS = 'FestivityScoreBonus';
 const FESTIVITY_GENERATE_GOSSIP = 'FestivityGenerateGossip';
+const FESTIVITY_CHECK_GENERATE_GOSSIP = 'FestivityCheckGenerateGossip';
 const FESTIVITY_SELECT_WINNING_SET = 'FestivitySelectWinningSet';
 const LOG_PHASE = 'LogPhase';
 const FESTIVITY_CHOOSE_NEXT_FOILED_THREAT = 'FestivityChooseNextFoiledThreat';

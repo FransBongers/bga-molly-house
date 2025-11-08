@@ -130,11 +130,7 @@ class ThrowFestivity extends \Bga\Games\MollyHouse\Models\AtomicAction
         'action' => FESTIVITY_KNOWN_THREAT_CHECK,
       ],
       [
-        'action' => LOG_PHASE,
-        'phase' => FESTIVITY_GENERATE_GOSSIP,
-      ],
-      [
-        'action' => FESTIVITY_GENERATE_GOSSIP,
+        'action' => FESTIVITY_CHECK_GENERATE_GOSSIP,
         'playerId' => $player->getId(),
       ],
       [

@@ -2394,7 +2394,8 @@ span[style*="color:#fcd873"] {
   position: relative;
   background-size: 100% 100%;
   width: calc(var(--playerBoardScale) * 600px);
-  aspect-ratio: 137/60;
+  min-width: calc(var(--playerBoardScale) * 600px);
+  height: calc(var(--playerBoardScale) * 263px);
   outline: 1px solid black;
 }
 .moho-player-board .moho-item-spot {
@@ -2434,6 +2435,9 @@ span[style*="color:#fcd873"] {
 }
 .moho-reputation .moho-vice-card-container:not(:first-child) {
   margin-left: calc(var(--rightColumnScale) * -115px);
+}
+.moho-reputation .moho-vice-card-container:nth-child(7) {
+  margin-left: 0;
 }
 
 .moho-player-board[data-color=blue] {

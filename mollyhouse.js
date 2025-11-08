@@ -3811,10 +3811,11 @@ var NotificationManager = (function () {
                             var viceCard, location_1;
                             return __generator(this, function (_a) {
                                 switch (_a.label) {
-                                    case 0: return [4, Interaction.use().wait(index * 200)];
+                                    case 0:
+                                        viceCard = getViceCard(card);
+                                        return [4, Interaction.use().wait(index * 200)];
                                     case 1:
                                         _a.sent();
-                                        viceCard = getViceCard(card);
                                         if (!movedCards.some(function (movedCard) { return movedCard.id === card.id; })) return [3, 3];
                                         return [4, market.stock.addCard(viceCard)];
                                     case 2:
@@ -4507,7 +4508,7 @@ var ConfirmPartialTurn = (function () {
         var _this = this;
         this.game.clearPossible();
         this.game.clientUpdatePageTitle({
-            text: _('${you} must confirm the switch of player. You will not be able to restart your turn'),
+            text: _('${you} must confirm your moves. You will not be able to undo'),
             args: {
                 you: '${you}',
             },
