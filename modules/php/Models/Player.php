@@ -342,7 +342,7 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
 
   public function hang()
   {
-    $this->setScore(1);
+    $this->setScore(0);
     $joyMarker = JoyMarkers::getForPlayer($this);
     $joyMarker->setHanged(1);
     Notifications::hang($this, $joyMarker);

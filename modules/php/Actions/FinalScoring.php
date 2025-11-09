@@ -77,7 +77,7 @@ class FinalScoring extends \Bga\Games\MollyHouse\Models\AtomicAction
     $players = Players::getAll();
 
     foreach ($players as $player) {
-      $player->setScore(-1);
+      $player->setScore(0);
     }
 
     Notifications::communityAtrophy();

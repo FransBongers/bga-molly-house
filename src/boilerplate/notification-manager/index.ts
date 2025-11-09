@@ -237,6 +237,7 @@ class NotificationManager {
     Board.getInstance().updateInterface(updatedGamedatas);
     PlayerManager.getInstance().updateInterface(updatedGamedatas);
     Market.getInstance().updateInterface(updatedGamedatas);
+    Festivity.getInstance().updateInterface(updatedGamedatas);
   }
 
   async notif_refreshUIPrivate(notif: Notif<NotifRefreshUIPrivate>) {
@@ -401,7 +402,7 @@ class NotificationManager {
     PlayerManager.getInstance()
       .getPlayerIds()
       .forEach((playerId) => {
-        setScore(playerId, -1);
+        setScore(playerId, 0);
       });
   }
 
@@ -649,7 +650,7 @@ class NotificationManager {
 
   async notif_hang(notif: Notif<NotifHang>) {
     const { playerId, joyMarker } = notif.args;
-    setScore(playerId, -1);
+    setScore(playerId, 0);
     this.game.joyMarkerManager.updateCardInformations(joyMarker);
   }
 

@@ -29,6 +29,39 @@ class Festivity {
     return Festivity.instance;
   }
 
+  // .##.....##.##....##.########...#######.
+  // .##.....##.###...##.##.....##.##.....##
+  // .##.....##.####..##.##.....##.##.....##
+  // .##.....##.##.##.##.##.....##.##.....##
+  // .##.....##.##..####.##.....##.##.....##
+  // .##.....##.##...###.##.....##.##.....##
+  // ..#######..##....##.########...#######.
+
+  public clearInterface() {
+    if (!this.isFestivityActive()) {
+      return;
+    }
+    Object.values(this.stocks).forEach((stock) => {
+      stock.removeAll();
+    });
+    this.playedDresses.removeAll();
+  }
+
+  public updateInterface(gamedatas: GamedatasAlias) {
+    if (!this.isFestivityActive()) {
+      return;
+    }
+    this.updateFestivity(gamedatas);
+  }
+
+  // .##.....##.########..########.....###....########.########....##.....##.####
+  // .##.....##.##.....##.##.....##...##.##......##....##..........##.....##..##.
+  // .##.....##.##.....##.##.....##..##...##.....##....##..........##.....##..##.
+  // .##.....##.########..##.....##.##.....##....##....######......##.....##..##.
+  // .##.....##.##........##.....##.#########....##....##..........##.....##..##.
+  // .##.....##.##........##.....##.##.....##....##....##..........##.....##..##.
+  // ..#######..##........########..##.....##....##....########.....#######..####
+
   updateFestivity(gamedatas: GamedatasAlias) {
     gamedatas.festivity.communityCards.map(getViceCard).forEach((card) => {
       this.stocks[COMMUNITY].addCard(card);
@@ -71,6 +104,14 @@ class Festivity {
       rogueValueElt.remove();
     }
   }
+
+  // ..######..########.########.##.....##.########.
+  // .##....##.##..........##....##.....##.##.....##
+  // .##.......##..........##....##.....##.##.....##
+  // ..######..######......##....##.....##.########.
+  // .......##.##..........##....##.....##.##.......
+  // .##....##.##..........##....##.....##.##.......
+  // ..######..########....##.....#######..##.......
 
   public setupFestivity(gamedatas: GamedatasAlias) {
     this.festivityContainer = document.getElementById('moho-festivity');
@@ -134,7 +175,10 @@ class Festivity {
     const nameDiv = document.createElement('div');
     nameDiv.innerHTML = playerName;
     nameDiv.classList.add('moho-festivity-player-name');
-    nameDiv.insertAdjacentHTML('beforeend', '<div class="moho-candelabra"></div>');
+    nameDiv.insertAdjacentHTML(
+      'beforeend',
+      '<div class="moho-candelabra"></div>'
+    );
 
     const playerStockElt = document.createElement('div');
     playerStockElt.classList.add('moho-festivity-stock');
@@ -153,6 +197,10 @@ class Festivity {
     );
 
     return containerElt;
+  }
+
+  isFestivityActive() {
+    return this.festivityContainer.dataset.active === 'true';
   }
 
   setFestivityActive(active: boolean) {

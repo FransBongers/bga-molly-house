@@ -551,6 +551,7 @@ class MollyHouse implements Game {
     Board.getInstance().clearInterface();
     PlayerManager.getInstance().clearInterface();
     Market.getInstance().clearInterface();
+    Festivity.getInstance().clearInterface();
   }
 
   clearPossible() {

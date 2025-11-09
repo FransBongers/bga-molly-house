@@ -3018,6 +3018,7 @@ var NotificationManager = (function () {
                 Board.getInstance().updateInterface(updatedGamedatas);
                 PlayerManager.getInstance().updateInterface(updatedGamedatas);
                 Market.getInstance().updateInterface(updatedGamedatas);
+                Festivity.getInstance().updateInterface(updatedGamedatas);
                 return [2];
             });
         });
@@ -3274,7 +3275,7 @@ var NotificationManager = (function () {
                 PlayerManager.getInstance()
                     .getPlayerIds()
                     .forEach(function (playerId) {
-                    setScore(playerId, -1);
+                    setScore(playerId, 0);
                 });
                 return [2];
             });
@@ -3690,7 +3691,7 @@ var NotificationManager = (function () {
             var _a, playerId, joyMarker;
             return __generator(this, function (_b) {
                 _a = notif.args, playerId = _a.playerId, joyMarker = _a.joyMarker;
-                setScore(playerId, -1);
+                setScore(playerId, 0);
                 this.game.joyMarkerManager.updateCardInformations(joyMarker);
                 return [2];
             });
@@ -4998,6 +4999,7 @@ var MollyHouse = (function () {
         Board.getInstance().clearInterface();
         PlayerManager.getInstance().clearInterface();
         Market.getInstance().clearInterface();
+        Festivity.getInstance().clearInterface();
     };
     MollyHouse.prototype.clearPossible = function () {
         this.framework().removeActionButtons();
@@ -6089,6 +6091,21 @@ var Festivity = (function () {
     Festivity.getInstance = function () {
         return Festivity.instance;
     };
+    Festivity.prototype.clearInterface = function () {
+        if (!this.isFestivityActive()) {
+            return;
+        }
+        Object.values(this.stocks).forEach(function (stock) {
+            stock.removeAll();
+        });
+        this.playedDresses.removeAll();
+    };
+    Festivity.prototype.updateInterface = function (gamedatas) {
+        if (!this.isFestivityActive()) {
+            return;
+        }
+        this.updateFestivity(gamedatas);
+    };
     Festivity.prototype.updateFestivity = function (gamedatas) {
         var _this = this;
         gamedatas.festivity.communityCards.map(getViceCard).forEach(function (card) {
@@ -6169,6 +6186,9 @@ var Festivity = (function () {
             wrap: 'nowrap',
         });
         return containerElt;
+    };
+    Festivity.prototype.isFestivityActive = function () {
+        return this.festivityContainer.dataset.active === 'true';
     };
     Festivity.prototype.setFestivityActive = function (active) {
         this.festivityContainer.dataset.active = active ? 'true' : 'false';
