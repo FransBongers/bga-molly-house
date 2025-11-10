@@ -78,9 +78,7 @@ trait EngineTrait
   }
 
 
-  public function stResolveStack()
-  {
-  }
+  public function stResolveStack() {}
 
 
   /*******************************
@@ -135,9 +133,11 @@ trait EngineTrait
     Engine::restart();
   }
 
-  public function actUndoToStep(int $stepId)
+  public function actUndoToStep(int $stepId, $skipCheck = false)
   {
-    self::checkAction('actRestart');
+    if (!$skipCheck) {
+      self::checkAction('actRestart');
+    }
     Engine::undoToStep($stepId);
   }
 }

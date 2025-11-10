@@ -62,6 +62,12 @@ trait DebugTrait
 
   }
 
+  function debug_undoToStep(int $stepId)
+  {
+    
+    $this->actUndoToStep($stepId, true);
+  }
+
   function debug_engineDisplay()
   {
     Notifications::log('engine', Globals::getEngine());

@@ -5478,8 +5478,10 @@ var Board = (function () {
         for (var i = 0; i <= 39; i++) {
             var elt = document.createElement('div');
             elt.classList.add('moho-joy-marker-stock');
-            if (i === gamedatas.gameEndThreshold) {
-                elt.classList.add('moho-game-end-threshold');
+            var isGameEndThreshold = i === gamedatas.gameEndThreshold;
+            if (isGameEndThreshold) {
+                var nodeId = 'moho-game-end-threshold';
+                elt.id = nodeId;
             }
             setAbsolutePosition(elt, BOARD_SCALE, JOY_MARKER_POSITIONS[i]);
             this.ui.containers.markers.appendChild(elt);
@@ -5487,6 +5489,12 @@ var Board = (function () {
                 gap: '0',
                 direction: 'row',
             });
+            if (isGameEndThreshold) {
+                TooltipManager.getInstance().addTextTooltip({
+                    nodeId: 'moho-game-end-threshold',
+                    text: _('Game End Threshold'),
+                });
+            }
         }
         this.updateJoyMarkers(gamedatas);
     };
@@ -7995,6 +8003,7 @@ var EndOfWeekEncounterSociety = (function () {
             siteName: getSite(this.args._private.site).name,
         });
         setSelected(Board.getInstance().ui.selectBoxes[this.args._private.site.id]);
+        setSelected(token.id);
         addConfirmButton(function () {
             performAction('actEndOfWeekEncounterSociety', {
                 encounterTokenId: token.id,

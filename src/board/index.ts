@@ -234,8 +234,10 @@ class Board {
     for (let i = 0; i <= 39; i++) {
       const elt = document.createElement('div');
       elt.classList.add('moho-joy-marker-stock');
-      if (i === gamedatas.gameEndThreshold) {
-        elt.classList.add('moho-game-end-threshold');
+      const isGameEndThreshold = i === gamedatas.gameEndThreshold;
+      if (isGameEndThreshold) {
+        const nodeId = 'moho-game-end-threshold';
+        elt.id = nodeId;
       }
       setAbsolutePosition(elt, BOARD_SCALE, JOY_MARKER_POSITIONS[i]);
       this.ui.containers.markers.appendChild(elt);
@@ -247,6 +249,12 @@ class Board {
           direction: 'row',
         }
       );
+      if (isGameEndThreshold) {
+        TooltipManager.getInstance().addTextTooltip({
+          nodeId: 'moho-game-end-threshold',
+          text: _('Game End Threshold'),
+        });
+      }
     }
     this.updateJoyMarkers(gamedatas);
   }

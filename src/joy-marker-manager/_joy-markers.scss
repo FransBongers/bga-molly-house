@@ -34,12 +34,13 @@
   }
 }
 
-.moho-joy-marker-stock.moho-game-end-threshold {
+#moho-game-end-threshold {
   outline: calc(var(--tokenScale) * 5px) solid rgb(223, 176, 103);
   // outline: calc(var(--tokenScale) * 5px) solid rgb(91, 39, 36);
   width: calc(var(--tokenScale) * 42px);
   aspect-ratio: 1 / 1;
   border-radius: 50%;
+  background-color: rgba(223, 176, 103, 0.3);
 }
 
 .moho-joy-marker-container {

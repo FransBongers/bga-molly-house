@@ -75,6 +75,7 @@ class EndOfWeekEncounterSociety implements State {
       siteName: getSite(this.args._private.site).name,
     });
     setSelected(Board.getInstance().ui.selectBoxes[this.args._private.site.id]);
+    setSelected(token.id);
 
     addConfirmButton(() => {
       performAction('actEndOfWeekEncounterSociety', {
