@@ -64,13 +64,11 @@ class TakeAction implements State {
     }
 
     if (this.args._private.ThrowFestivity) {
-      addPrimaryActionButton({
-        id: 'throw_festivity_btn',
-        text: _('Throw a Festivity'),
-        callback: () => {
-          this.updateInterfaceConfirm(THROW_FESTIVITY, '');
-        },
-      });
+      const board = Board.getInstance();
+
+      onClick(board.ui.selectBoxes[this.args.site.id], () =>
+        this.updateInterfaceConfirm(THROW_FESTIVITY, '')
+      );
     }
 
     Object.values(this.args._private.Accuse).forEach((encounterToken) => {
@@ -161,6 +159,8 @@ class TakeAction implements State {
       case LIE_LOW:
         setSelected(document.getElementById('moho-deck'));
         break;
+      case THROW_FESTIVITY:
+        setSelected(Board.getInstance().ui.selectBoxes[this.args.site.id]);
       default:
         break;
     }

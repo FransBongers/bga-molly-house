@@ -232,6 +232,16 @@ class NotificationManager {
       ...this.game.gamedatas,
       ...otherData,
     };
+
+    Object.entries(players).forEach(([playerId, playerData]) => {
+      if (updatedGamedatas.players[playerId]) {
+        updatedGamedatas.players[playerId].cubes = playerData.cubes;
+        updatedGamedatas.players[playerId].items = playerData.items;
+        updatedGamedatas.players[playerId].reputation = playerData.reputation;
+
+      }
+    })
+
     this.game.gamedatas = updatedGamedatas;
     this.game.clearInterface();
     Board.getInstance().updateInterface(updatedGamedatas);

@@ -3013,6 +3013,14 @@ var NotificationManager = (function () {
                 gamedatas = notif.args.data;
                 players = gamedatas.players, otherData = __rest(gamedatas, ["players"]);
                 updatedGamedatas = __assign(__assign({}, this.game.gamedatas), otherData);
+                Object.entries(players).forEach(function (_a) {
+                    var playerId = _a[0], playerData = _a[1];
+                    if (updatedGamedatas.players[playerId]) {
+                        updatedGamedatas.players[playerId].cubes = playerData.cubes;
+                        updatedGamedatas.players[playerId].items = playerData.items;
+                        updatedGamedatas.players[playerId].reputation = playerData.reputation;
+                    }
+                });
                 this.game.gamedatas = updatedGamedatas;
                 this.game.clearInterface();
                 Board.getInstance().updateInterface(updatedGamedatas);
@@ -6887,12 +6895,9 @@ var TakeAction = (function () {
             onClick('moho-deck', function () { return _this.updateInterfaceConfirm(LIE_LOW, 'deck'); });
         }
         if (this.args._private.ThrowFestivity) {
-            addPrimaryActionButton({
-                id: 'throw_festivity_btn',
-                text: _('Throw a Festivity'),
-                callback: function () {
-                    _this.updateInterfaceConfirm(THROW_FESTIVITY, '');
-                },
+            var board = Board.getInstance();
+            onClick(board.ui.selectBoxes[this.args.site.id], function () {
+                return _this.updateInterfaceConfirm(THROW_FESTIVITY, '');
             });
         }
         Object.values(this.args._private.Accuse).forEach(function (encounterToken) {
@@ -6947,6 +6952,8 @@ var TakeAction = (function () {
             case LIE_LOW:
                 setSelected(document.getElementById('moho-deck'));
                 break;
+            case THROW_FESTIVITY:
+                setSelected(Board.getInstance().ui.selectBoxes[this.args.site.id]);
             default:
                 break;
         }
