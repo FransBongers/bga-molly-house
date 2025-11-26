@@ -5,6 +5,7 @@ namespace Bga\Games\MollyHouse;
 use Bga\Games\MollyHouse\Boilerplate\Core\Globals;
 use Bga\Games\MollyHouse\Boilerplate\Core\Engine;
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
+use Bga\Games\MollyHouse\Boilerplate\Core\Stats;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 
@@ -28,6 +29,8 @@ trait DebugTrait
 {
   function debug_test()
   {
+    EncounterTokens::get('encounterToken_2371052_1')->placeOnSite(Players::get(2371052), Sites::get(MISS_MUFFS));
+
     // Globals::setCandelabra(2371052);
 
     // Sites::get(MISS_MUFFS)->setRaided(1);
@@ -64,7 +67,7 @@ trait DebugTrait
 
   function debug_undoToStep(int $stepId)
   {
-    
+
     $this->actUndoToStep($stepId, true);
   }
 

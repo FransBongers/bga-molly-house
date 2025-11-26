@@ -103,7 +103,7 @@ class FinalScoring extends \Bga\Games\MollyHouse\Models\AtomicAction
       }
     }
 
-    // TODO: if players are tied for score they lose
+    // TODO: if players are tied for score they lose as soon as BGA supports this
   }
 
   private function getInformerReputationScore($players, $informerId, $suit)
