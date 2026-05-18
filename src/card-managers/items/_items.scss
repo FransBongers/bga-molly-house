@@ -6,8 +6,8 @@
   aspect-ratio: 402 / 265;
 
   box-sizing: border-box;
-  background-image: url('img/items.jpg');
-  background-size: 500% 200%;
+  background-image: url('img/items_updated.jpg');
+  background-size: 400% 300%;
   background-repeat: no-repeat;
   border: calc(var(--cardScale) * 1px) black solid;
   border-radius: calc(var(--cardScale) * 5px);
@@ -24,19 +24,41 @@
 $items: (
   1: 'BottleOfGin',
   2: 'Bribe',
-  3: 'Domino',
-  4: 'DressOfFans',
-  5: 'DressOfCups',
-  6: 'DressOfHearts',
-  7: 'DressOfPentacles',
-  8: 'NewspaperNotice',
-  9: 'Violin',
-  10: 'Back',
+  3: 'Doll',
+  4: 'DominoV2',
+  5: 'DressOfFans',
+  6: 'DressOfCups',
+  7: 'DressOfHearts',
+  8: 'DressOfPentacles',
+  9: 'NewspaperNoticeV2',
+  10: 'Violin',
+  11: 'Back',
 );
 
-@for $i from 1 through 10 {
+$cols: 4;
+$rows: 3;
+
+@for $i from 1 through 41 {
+  $index: $i - 1;
+  $col: $index % $cols;
+  $row: math.floor(math.div($index, $cols));
+
   .moho-item[data-type='#{map.get($items,$i)}'] {
-    background-position-x: math.div((($i - 1) % 5 * 100%), 4);
-    background-position-y: math.div(math.floor(calc(($i - 1) / 5)) * 100%, 1);
+    background-position-x: math.div($col * 100%, $cols - 1);
+    background-position-y: math.div($row * 100%, $rows - 1);
   }
+}
+
+.moho-item[data-type='Domino'] {
+  background-image: url('img/items.jpg');
+  background-size: 500% 200%;
+  background-position-x: 50%;
+  background-position-y: 0%;
+}
+
+.moho-item[data-type='NewspaperNotice'] {
+  background-image: url('img/items.jpg');
+  background-size: 500% 200%;
+  background-position-x: 50%;
+  background-position-y: 100%;
 }

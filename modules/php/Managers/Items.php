@@ -62,7 +62,9 @@ class Items extends \Bga\Games\MollyHouse\Boilerplate\Helpers\Pieces
     $cards = [];
     $index = 1;
 
-    foreach (ITEM_DISTRIBUTIION as $type => $count) {
+    $usedItemDistribution = Globals::getGameOptionUseUpdatedItems() ? ITEM_DISTRIBUTIION_UPDATED : ITEM_DISTRIBUTIION;
+
+    foreach ($usedItemDistribution as $type => $count) {
       for ($i = 0; $i < $count; $i++) {
         $cardId = 'item_' . $index;
         $cards[$cardId] = [

@@ -71,6 +71,7 @@ var MARKET_1 = 'market_1';
 var MARKET_2 = 'market_2';
 var MARKET_3 = 'market_3';
 var MARKET_SPOTS = [MARKET_0, MARKET_1, MARKET_2, MARKET_3];
+var REPUTATION = 'reputation';
 var GOSSIP_PILE = 'gossipPile';
 var SAFE_PILE = 'safePile';
 var DECK = 'deck';
@@ -4869,6 +4870,7 @@ var MollyHouse = (function () {
             FestivityTakeMatchingCubes: FestivityTakeMatchingCubes,
             EndOfWeekEncounterSociety: EndOfWeekEncounterSociety,
             DiscardItem: DiscardItem,
+            NewspaperNotice: NewspaperNotice,
             ExamineGossipPile: ExamineGossipPile,
             PlaceEncounterToken: PlaceEncounterToken,
             FestivityUseBottleOfGin: FestivityUseBottleOfGin,
@@ -5367,6 +5369,7 @@ var Board = (function () {
     Board.prototype.updateInterface = function (gamedatas) {
         this.updateShops(gamedatas);
         this.updatePawns(Object.values(gamedatas.pawns));
+        this.updateGossipPile(gamedatas);
     };
     Board.prototype.setup = function (gamedatas) {
         document
@@ -7397,22 +7400,25 @@ var MovePawn = (function () {
     };
     MovePawn.prototype.setDescription = function (activePlayerIds, args) { };
     MovePawn.prototype.updateInterfaceInitialStep = function () {
-        var _this = this;
         this.game.clearPossible();
         updatePageTitle(_('${you} must select a site to move ${tkn_pawn} to'), {
-            tkn_pawn: tknPawn(this.args.pawn)
+            tkn_pawn: tknPawn(this.args.pawn),
         });
         var board = Board.getInstance();
         Object.entries(this.args.sites).forEach(function (_a) {
             var siteId = _a[0], site = _a[1];
-            onClick(board.ui.selectBoxes[siteId], function () { return _this.updateInterfaceConfirm(site); });
+            onClick(board.ui.selectBoxes[siteId], function () {
+                return performAction('actMovePawn', {
+                    siteId: site.id,
+                });
+            });
         });
     };
     MovePawn.prototype.updateInterfaceConfirm = function (site) {
         clearPossible();
         updatePageTitle(_('Move ${tkn_pawn} to ${site}?'), {
             site: StaticData.get().site(site.id).name,
-            tkn_pawn: tknPawn(this.args.pawn)
+            tkn_pawn: tknPawn(this.args.pawn),
         });
         var board = Board.getInstance();
         setSelected(board.ui.selectBoxes[site.id]);
@@ -8324,4 +8330,52 @@ var FestivityPlayDress = (function () {
         });
     };
     return FestivityPlayDress;
+}());
+var NewspaperNotice = (function () {
+    function NewspaperNotice(game) {
+        this.game = game;
+    }
+    NewspaperNotice.create = function (game) {
+        NewspaperNotice.instance = new NewspaperNotice(game);
+    };
+    NewspaperNotice.getInstance = function () {
+        return NewspaperNotice.instance;
+    };
+    NewspaperNotice.prototype.onEnteringState = function (args) {
+        debug('Entering NewspaperNotice state');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    NewspaperNotice.prototype.onLeavingState = function () {
+        debug('Leaving NewspaperNotice state');
+    };
+    NewspaperNotice.prototype.setDescription = function (activePlayerIds, args) { };
+    NewspaperNotice.prototype.updateInterfaceInitialStep = function () {
+        this.game.clearPossible();
+        updatePageTitle(_('${you} may add all desires in the market to the gossip pile or to your reputation'), {});
+        addPrimaryActionButton({
+            id: 'gossip_pipe_btn',
+            text: _('Add to gossip pile'),
+            callback: function () {
+                performAction('actNewspaperNotice', { addTo: GOSSIP_PILE });
+            },
+        });
+        addPrimaryActionButton({
+            id: 'reputation_btn',
+            text: _('Add to reputation'),
+            callback: function () {
+                performAction('actNewspaperNotice', { addTo: REPUTATION });
+            },
+        });
+        this.args.desires.forEach(function (desire) { return setSelected(desire.id); });
+        addUndoButtons(this.args);
+    };
+    NewspaperNotice.prototype.updateInterfaceConfirm = function () {
+        clearPossible();
+        updatePageTitle(_('Confirm action'));
+        addConfirmButton(function () {
+            performAction('actNewspaperNotice', {});
+        });
+    };
+    return NewspaperNotice;
 }());

@@ -82,6 +82,7 @@ class MollyHouse implements Game {
     FestivityTakeMatchingCubes,
     EndOfWeekEncounterSociety,
     DiscardItem,
+    NewspaperNotice,
     ExamineGossipPile,
     PlaceEncounterToken,
     FestivityUseBottleOfGin,

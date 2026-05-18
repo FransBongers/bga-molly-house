@@ -2,15 +2,14 @@
 
 namespace Bga\Games\MollyHouse\Actions;
 
-use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 use Bga\Games\MollyHouse\Managers\Items;
-use Bga\Games\MollyHouse\Managers\Sites;
+use Bga\Games\MollyHouse\Managers\ViceCards;
 
-class DiscardItem extends \Bga\Games\MollyHouse\Models\AtomicAction
+class NewspaperNotice extends \Bga\Games\MollyHouse\Models\AtomicAction
 {
   public function getState()
   {
-    return ST_DISCARD_ITEM;
+    return ST_NEWSPAPER_NOTICE;
   }
 
   // ....###....########...######....######.
@@ -22,16 +21,20 @@ class DiscardItem extends \Bga\Games\MollyHouse\Models\AtomicAction
   // .##.....##.##.....##..######....######.
 
 
-  public function argsDiscardItem()
+  public function argsNewspaperNotice()
   {
-    $info = $this->ctx->getInfo();
+    // $args = $this->ctx->getArgs();
 
-    $items = $this->getPlayer()->getItems();
-
-    $items[] = Items::get($info['takenItemId']);
+    $market = ViceCards::getMarket();
+    $desiresInMarket = array_values(array_filter($market, function ($card) {
+      return $card->isDesire();
+    }));
+    usort($desiresInMarket, function ($a, $b) {
+      return $a->getLocation() <=> $b->getLocation();
+    });
 
     $data = [
-      'items' => $items,
+      'desires' => $desiresInMarket
     ];
 
     return $data;
@@ -53,33 +56,36 @@ class DiscardItem extends \Bga\Games\MollyHouse\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  public function actPassDiscardItem()
+  public function actPassNewspaperNotice()
   {
     $player = self::getPlayer();
     $this->resolveAction(PASS);
   }
 
-  public function actDiscardItem($args)
+  public function actNewspaperNotice($args)
   {
-    self::checkAction('actDiscardItem');
-    $itemId = $args->itemId;
+    self::checkAction('actNewspaperNotice');
 
-    $stateArgs = $this->argsDiscardItem();
-    $item = Utils::array_find($stateArgs['items'], fn($i) => $i->getId() == $itemId);
-
-    if ($item === null) {
-      throw new \Bga\GameFramework\VisibleSystemException("ERROR_021");
+    $addTo = $args->addTo;
+    if (!in_array($addTo, [GOSSIP_PILE, REPUTATION])) {
+      throw new \Bga\GameFramework\VisibleSystemException("ERROR_033");
     }
 
-    $item->discard($this->getPlayer());
+    $stateArgs = $this->argsNewspaperNotice();
 
-    $takenItemId = $this->ctx->getInfo()['takenItemId'];
+    $player = self::getPlayer();
 
-    if ($item->getId() !== $takenItemId) {
-      $takenItem = Utils::array_find($stateArgs['items'], fn($i) => $i->getId() == $takenItemId);
-      $site = Sites::get($takenItem->getLocation());
-      $this->getPlayer()->takeItem($takenItem, $site);
+    foreach ($stateArgs['desires'] as $desire) {
+      if ($addTo === GOSSIP_PILE) {
+        $desire->addToGossip($player);
+      } else if ($addTo === REPUTATION) {
+        $desire->addToReputation($player);
+      }
     }
+
+    $item = Items::get($this->ctx->getInfo()['itemId']);
+    $item->discard($player);
+
 
     $this->resolveAction([]);
   }

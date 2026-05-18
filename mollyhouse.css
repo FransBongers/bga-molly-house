@@ -1420,8 +1420,8 @@ span[style*="color:#fcd873"] {
   width: calc(var(--cardScale) * 178px);
   aspect-ratio: 402/265;
   box-sizing: border-box;
-  background-image: url("img/items.jpg");
-  background-size: 500% 200%;
+  background-image: url("img/items_updated.jpg");
+  background-size: 400% 300%;
   background-repeat: no-repeat;
   border: calc(var(--cardScale) * 1px) black solid;
   border-radius: calc(var(--cardScale) * 5px);
@@ -1441,47 +1441,216 @@ span[style*="color:#fcd873"] {
 }
 
 .moho-item[data-type=Bribe] {
-  background-position-x: 25%;
+  background-position-x: 33.3333333333%;
   background-position-y: 0%;
 }
 
-.moho-item[data-type=Domino] {
-  background-position-x: 50%;
+.moho-item[data-type=Doll] {
+  background-position-x: 66.6666666667%;
+  background-position-y: 0%;
+}
+
+.moho-item[data-type=DominoV2] {
+  background-position-x: 100%;
   background-position-y: 0%;
 }
 
 .moho-item[data-type=DressOfFans] {
-  background-position-x: 75%;
-  background-position-y: 0%;
+  background-position-x: 0%;
+  background-position-y: 50%;
 }
 
 .moho-item[data-type=DressOfCups] {
-  background-position-x: 100%;
-  background-position-y: 0%;
+  background-position-x: 33.3333333333%;
+  background-position-y: 50%;
 }
 
 .moho-item[data-type=DressOfHearts] {
+  background-position-x: 66.6666666667%;
+  background-position-y: 50%;
+}
+
+.moho-item[data-type=DressOfPentacles] {
+  background-position-x: 100%;
+  background-position-y: 50%;
+}
+
+.moho-item[data-type=NewspaperNoticeV2] {
   background-position-x: 0%;
   background-position-y: 100%;
 }
 
-.moho-item[data-type=DressOfPentacles] {
-  background-position-x: 25%;
-  background-position-y: 100%;
-}
-
-.moho-item[data-type=NewspaperNotice] {
-  background-position-x: 50%;
-  background-position-y: 100%;
-}
-
 .moho-item[data-type=Violin] {
-  background-position-x: 75%;
+  background-position-x: 33.3333333333%;
   background-position-y: 100%;
 }
 
 .moho-item[data-type=Back] {
+  background-position-x: 66.6666666667%;
+  background-position-y: 100%;
+}
+
+.moho-item[data-type=""] {
   background-position-x: 100%;
+  background-position-y: 100%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 0%;
+  background-position-y: 150%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 33.3333333333%;
+  background-position-y: 150%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 66.6666666667%;
+  background-position-y: 150%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 100%;
+  background-position-y: 150%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 0%;
+  background-position-y: 200%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 33.3333333333%;
+  background-position-y: 200%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 66.6666666667%;
+  background-position-y: 200%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 100%;
+  background-position-y: 200%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 0%;
+  background-position-y: 250%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 33.3333333333%;
+  background-position-y: 250%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 66.6666666667%;
+  background-position-y: 250%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 100%;
+  background-position-y: 250%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 0%;
+  background-position-y: 300%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 33.3333333333%;
+  background-position-y: 300%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 66.6666666667%;
+  background-position-y: 300%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 100%;
+  background-position-y: 300%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 0%;
+  background-position-y: 350%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 33.3333333333%;
+  background-position-y: 350%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 66.6666666667%;
+  background-position-y: 350%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 100%;
+  background-position-y: 350%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 0%;
+  background-position-y: 400%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 33.3333333333%;
+  background-position-y: 400%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 66.6666666667%;
+  background-position-y: 400%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 100%;
+  background-position-y: 400%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 0%;
+  background-position-y: 450%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 33.3333333333%;
+  background-position-y: 450%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 66.6666666667%;
+  background-position-y: 450%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 100%;
+  background-position-y: 450%;
+}
+
+.moho-item[data-type=""] {
+  background-position-x: 0%;
+  background-position-y: 500%;
+}
+
+.moho-item[data-type=Domino] {
+  background-image: url("img/items.jpg");
+  background-size: 500% 200%;
+  background-position-x: 50%;
+  background-position-y: 0%;
+}
+
+.moho-item[data-type=NewspaperNotice] {
+  background-image: url("img/items.jpg");
+  background-size: 500% 200%;
+  background-position-x: 50%;
   background-position-y: 100%;
 }
 

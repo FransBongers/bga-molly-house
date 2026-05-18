@@ -1,1 +1,15 @@
-{}
+{
+  "100": {
+    "name": "Items used",
+    "values": {
+      "0": {
+        "name": "Updated items",
+        "tmdisplay": "Updated items"
+      },
+      "1": {
+        "name": "Original items",
+        "tmdisplay": "Original items"
+      }
+    }
+  }
+}

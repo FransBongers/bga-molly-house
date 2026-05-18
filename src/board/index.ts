@@ -2,16 +2,16 @@ class Board {
   private static instance: Board;
   private game: GameAlias;
 
-  public diceStock: LineDiceStock;
-  public gossipPile: LineStock<ViceCard>;
+  public diceStock!: LineDiceStock;
+  public gossipPile!: LineStock<ViceCard>;
   public counters: Record<string, Counter> = {};
   public evidenceCounters: Record<string, CubeCounter> = {};
-  public itemDiscard: VoidStock<MohoItem>;
-  public indictmentDiscard: VoidStock<MohoIndictment>;
+  public itemDiscard!: VoidStock<MohoItem>;
+  public indictmentDiscard!: VoidStock<MohoIndictment>;
   public encounterTokens: Record<string, LineStock<MohoEncounterToken>> = {};
-  public encounterTokenDiscard: VoidStock<MohoEncounterToken>;
+  public encounterTokenDiscard!: VoidStock<MohoEncounterToken>;
 
-  public ui: {
+  public ui!: {
     containers: {
       board: HTMLElement;
       dangerousCruisingMarkers: HTMLElement;
@@ -68,6 +68,7 @@ class Board {
   public updateInterface(gamedatas: GamedatasAlias) {
     this.updateShops(gamedatas);
     this.updatePawns(Object.values(gamedatas.pawns));
+    this.updateGossipPile(gamedatas);
   }
 
   // ..######..########.########.##.....##.########.

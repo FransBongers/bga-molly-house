@@ -64,10 +64,12 @@ const MARKET_3 = 'market_3';
 
 const MARKET_SPOTS = [MARKET_0, MARKET_1, MARKET_2, MARKET_3];
 
+const REPUTATION = 'reputation';
 const GOSSIP_PILE = 'gossipPile';
 const SAFE_PILE = 'safePile';
 const DECK = 'deck';
 const DISCARD = 'discard';
+
 
 /**
  * Sites

@@ -534,6 +534,21 @@ $machinestates = [
         ])
         ->build(),
 
+    ST_NEWSPAPER_NOTICE => GameStateBuilder::create()
+        ->name(NEWSPAPER_NOTICE)
+        ->description(clienttranslate('${actplayer} may add all desires in the market to the gossip pile or their reputation'))
+        ->descriptionmyturn(clienttranslate('${you}'))
+        ->type(StateType::ACTIVE_PLAYER)
+        ->args('argsAtomicAction')
+        ->possibleactions([
+            'act' . NEWSPAPER_NOTICE,
+            'actPass',
+            'actPassOptionalAction',
+            'actTakeAtomicAction',
+            'actUndoToStep',
+        ])
+        ->build(),
+
     ST_PLACE_ENCOUNTER_TOKEN => GameStateBuilder::create()
         ->name(PLACE_ENCOUNTER_TOKEN)
         ->description(clienttranslate('${actplayer} must place an encounter token'))

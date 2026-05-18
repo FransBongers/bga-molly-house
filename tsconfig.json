@@ -111,7 +111,8 @@
     "src/states/ExamineGossipPile.ts",
     "src/states/PlaceEncounterToken.ts",
     "src/states/FestivityUseBottleOfGin.ts",
-  "src/states/EndOfWeekUseDomino.ts",
-  "src/states/FestivityPlayDress.ts"
+    "src/states/EndOfWeekUseDomino.ts",
+    "src/states/FestivityPlayDress.ts",
+    "src/states/NewspaperNotice.ts"
   ]
 }

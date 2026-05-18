@@ -5,7 +5,7 @@ interface OnEnteringMovePawnArgs extends CommonStateArgs {
 
 class MovePawn implements State {
   private static instance: MovePawn;
-  private args: OnEnteringMovePawnArgs;
+  private args!: OnEnteringMovePawnArgs;
 
   constructor(private game: GameAlias) {}
 
@@ -34,12 +34,17 @@ class MovePawn implements State {
     this.game.clearPossible();
 
     updatePageTitle(_('${you} must select a site to move ${tkn_pawn} to'), {
-      tkn_pawn: tknPawn(this.args.pawn)
+      tkn_pawn: tknPawn(this.args.pawn),
     });
 
     const board = Board.getInstance();
     Object.entries(this.args.sites).forEach(([siteId, site]) => {
-      onClick(board.ui.selectBoxes[siteId], () => this.updateInterfaceConfirm(site));
+      onClick(board.ui.selectBoxes[siteId], () =>
+        performAction('actMovePawn', {
+          siteId: site.id,
+        }),
+      );
+      // onClick(board.ui.selectBoxes[siteId], () => this.updateInterfaceConfirm(site));
     });
   }
 
@@ -48,10 +53,10 @@ class MovePawn implements State {
 
     updatePageTitle(_('Move ${tkn_pawn} to ${site}?'), {
       site: StaticData.get().site(site.id).name,
-      tkn_pawn: tknPawn(this.args.pawn)
+      tkn_pawn: tknPawn(this.args.pawn),
     });
     const board = Board.getInstance();
-    setSelected(board.ui.selectBoxes[site.id])
+    setSelected(board.ui.selectBoxes[site.id]);
 
     addConfirmButton(() => {
       performAction('actMovePawn', {

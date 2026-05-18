@@ -17,6 +17,13 @@ const DRAW_TOKEN = 'drawToken';
 const ADDITIONAL_ROUND = 'additionalRound';
 
 /**
+ * Game options
+ */
+const GAME_OPTION_USE_UPDATED_ITEMS = '100';
+const GAME_OPTION_USE_UPDATED_ITEMS_ENABLED = '0';
+const GAME_OPTION_USE_UPDATED_ITEMS_ORIGINAL = '1';
+
+/**
  * Dice
  */
 const SINGLE_BOOT = 'singleBoot';
@@ -84,6 +91,7 @@ const ST_PLACE_ENCOUNTER_TOKEN = 39;
 const ST_FESTIVITY_KNOWN_THREAT_CHECK = 47;
 const ST_FESTIVITY_PASS_AND_PLAY_COMMUNITY_CARD = 48;
 const ST_FESTIVITY_CHECK_GENERATE_GOSSIP = 49;
+const ST_NEWSPAPER_NOTICE = 50;
 
 /**
  * Game state names
@@ -184,6 +192,7 @@ const MARKET_SPOTS = [
   MARKET_3,
 ];
 
+const REPUTATION = 'reputation';
 const GOSSIP_PILE = 'gossipPile';
 const SAFE_PILE = 'safePile';
 
@@ -252,14 +261,17 @@ const SHOP_SITES = [
  * Items
  */
 const NEWSPAPER_NOTICE = 'NewspaperNotice';
+const NEWSPAPER_NOTICE_V2 = 'NewspaperNoticeV2';
 const BRIBE = 'Bribe';
 const VIOLIN = 'Violin';
 const DOMINO = 'Domino';
+const DOMINO_V2 = 'DominoV2';
 const BOTTLE_OF_GIN = 'BottleOfGin';
 const DRESS_OF_CUPS = 'DressOfCups';
 const DRESS_OF_PENTACLES = 'DressOfPentacles';
 const DRESS_OF_FANS = 'DressOfFans';
 const DRESS_OF_HEARTS = 'DressOfHearts';
+const DOLL = 'Doll';
 
 const ITEM_DISTRIBUTIION = [
   NEWSPAPER_NOTICE => 3,
@@ -271,6 +283,19 @@ const ITEM_DISTRIBUTIION = [
   DRESS_OF_PENTACLES => 1,
   DRESS_OF_FANS => 1,
   DRESS_OF_HEARTS => 1,
+];
+
+const ITEM_DISTRIBUTIION_UPDATED = [
+  NEWSPAPER_NOTICE_V2 => 3,
+  BRIBE => 3,
+  VIOLIN => 3,
+  DOMINO_V2 => 4,
+  BOTTLE_OF_GIN => 4,
+  DRESS_OF_CUPS => 1,
+  DRESS_OF_PENTACLES => 1,
+  DRESS_OF_FANS => 1,
+  DRESS_OF_HEARTS => 1,
+  DOLL => 3,
 ];
 
 const SURPRISE_BALL = 'SurpriseBall';

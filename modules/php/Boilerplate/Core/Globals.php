@@ -33,6 +33,7 @@ class Globals extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Manager
     'playersWhoGainedIndictment' => 'obj',
     'playersWhoPlayedDomino' => 'obj',
     'deckCountStartOfWeek' => 'int',
+    'gameOptionUseUpdatedItems' => 'bool',
   ];
 
   protected static $table = 'global_variables';
@@ -162,6 +163,7 @@ class Globals extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Manager
     self::setCurrentWeek(1);
     self::setPlayersWhoPlayedDomino([]);
     self::setPlayersWhoGainedIndictment([]);
+    self::setGameOptionUseUpdatedItems($options[GAME_OPTION_USE_UPDATED_ITEMS] == GAME_OPTION_USE_UPDATED_ITEMS_ENABLED);
   }
 
 

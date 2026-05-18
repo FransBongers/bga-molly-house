@@ -12,7 +12,7 @@ class Bribe extends \Bga\Games\MollyHouse\Models\Item
     parent::__construct($row);
     $this->name = clienttranslate('Bribe');
     $this->text = clienttranslate(
-      'As your action, examine the gossip pile and take one card of your choice.'
+      'As your action, you may spend this to examine the gossip pile and draw one card of your choice.'
     );
   }
 
