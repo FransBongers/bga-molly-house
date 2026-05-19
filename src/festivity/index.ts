@@ -10,8 +10,8 @@ class Festivity {
   private static instance: Festivity;
   private game: GameAlias;
   public stocks: Record<string | number, LineStock<ViceCard>> = {};
-  private festivityContainer: HTMLElement;
-  public playedDresses: LineStock<MohoItem>;
+  private festivityContainer!: HTMLElement;
+  public playedItems!: LineStock<MohoItem>;
 
   constructor(game: GameAlias) {
     this.game = game;
@@ -44,7 +44,7 @@ class Festivity {
     Object.values(this.stocks).forEach((stock) => {
       stock.removeAll();
     });
-    this.playedDresses.removeAll();
+    this.playedItems.removeAll();
   }
 
   public updateInterface(gamedatas: GamedatasAlias) {
@@ -78,7 +78,7 @@ class Festivity {
         }
       });
     });
-    this.playedDresses.addCards(gamedatas.festivity.playedDresses.map(getItem));
+    this.playedItems.addCards(gamedatas.festivity.playedItems.map(getItem));
 
     if (gamedatas.festivity.runner) {
       this.setRunner(gamedatas.festivity.runner);
@@ -114,7 +114,7 @@ class Festivity {
   // ..######..########....##.....#######..##.......
 
   public setupFestivity(gamedatas: GamedatasAlias) {
-    this.festivityContainer = document.getElementById('moho-festivity');
+    this.festivityContainer = document.getElementById('moho-festivity')!;
     const players = PlayerManager.getInstance().getPlayers();
     const playerCount = players.length;
 
@@ -155,9 +155,9 @@ class Festivity {
     setAbsolutePosition(
       dressesContainerElt,
       CARD_SCALE,
-      getFestivityPosition(playerCount, PLAYED_DRESSES)
+      getFestivityPosition(playerCount, PLAYED_ITEMS_FESTIVITY)
     );
-    this.playedDresses = new LineStock<MohoItem>(
+    this.playedItems = new LineStock<MohoItem>(
       this.game.itemManager,
       dressesContainerElt,
       {
@@ -211,7 +211,7 @@ class Festivity {
     PlayerManager.getInstance()
       .getPlayerIds()
       .forEach((playerId) => {
-        const elt = document.getElementById(`moho-festivity-${playerId}`);
+        const elt = document.getElementById(`moho-festivity-${playerId}`)!;
         if (playerId === runnerPlayerId) {
           elt.classList.add('moho-festivity-runner');
         } else {

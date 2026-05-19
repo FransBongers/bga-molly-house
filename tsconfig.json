@@ -52,6 +52,7 @@
     "src/boilerplate/settings/types.d.ts",
     "src/boilerplate/states/ConfirmPartialTurn.ts",
     "src/boilerplate/states/ConfirmTurn.ts",
+    "src/boilerplate/states/ResolveChoice.ts",
     "src/boilerplate/states/types.d.ts",
     "src/boilerplate/tooltip-manager/index.ts",
     "src/boilerplate/tooltip-manager/templates.ts",
@@ -113,6 +114,8 @@
     "src/states/FestivityUseBottleOfGin.ts",
     "src/states/EndOfWeekUseDomino.ts",
     "src/states/FestivityPlayDress.ts",
-    "src/states/NewspaperNotice.ts"
+    "src/states/NewspaperNotice.ts",
+    "src/states/UseDoll.ts",
+    "src/states/UseDomino.ts"
   ]
 }

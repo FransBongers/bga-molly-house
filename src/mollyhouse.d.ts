@@ -49,7 +49,7 @@ interface MollyHouseGamedatas extends Gamedatas {
     runner: number;
     active: boolean;
     communityCards: ViceCardBase[];
-    playedDresses: MohoItemBase[];
+    playedItems: MohoItemBase[];
   };
   gossipPileCount: number;
   itemsOnShops: MohoItemBase[];

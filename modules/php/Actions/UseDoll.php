@@ -2,23 +2,16 @@
 
 namespace Bga\Games\MollyHouse\Actions;
 
-use Bga\Games\MollyHouse\Boilerplate\Core\Engine;
-use Bga\Games\MollyHouse\Boilerplate\Core\Engine\LeafNode;
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
 use Bga\Games\MollyHouse\Boilerplate\Core\Stats;
-use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
-use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
-use Bga\Games\MollyHouse\Managers\Festivity;
 use Bga\Games\MollyHouse\Managers\Items;
-use Bga\Games\MollyHouse\Managers\Players;
-use Bga\Games\MollyHouse\Managers\ViceCards;
+use Bga\Games\MollyHouse\Models\Player;
 
-
-class FestivityCleanup extends \Bga\Games\MollyHouse\Models\AtomicAction
+class UseDoll extends \Bga\Games\MollyHouse\Models\AtomicAction
 {
   public function getState()
   {
-    return ST_FESTIVITY_CLEANUP;
+    return ST_USE_DOLL;
   }
 
   // ..######..########....###....########.########
@@ -38,39 +31,19 @@ class FestivityCleanup extends \Bga\Games\MollyHouse\Models\AtomicAction
   // .##.....##..######.....##....####..#######..##....##
 
 
-  public function stFestivityCleanup()
+  public function stUseDoll()
   {
-    $playedItems = array_merge(Items::getInLocation(PLAYED_DRESSES)->toArray(), Items::getInLocation(PLAYED_ITEMS_FESTIVITY)->toArray());
-    foreach ($playedItems as $item) {
-      $item->discard();
-    }
+    $itemId = $this->ctx->getArgs()['itemId'];
+    $item = Items::get($itemId);
 
-    Festivity::end();
+    $player = $this->getPlayer();
 
-    Notifications::festivityEnd();
+    $item->setLocation(PLAYED_ITEMS_FESTIVITY);
+    Stats::incItemsUsed($player->getId(), 1);
+    Notifications::playItemToFestivity($player, $item);
 
-    $ranking = Festivity::get()['winningSet']['ranking'];
-
-    switch ($ranking) {
-      case SURPRISE_BALL:
-      case SURPRISE_BALL_WITH_DRESS:
-        Stats::incSurpriseBalls(1);
-        break;
-      case CHRISTENING:
-        Stats::incChristenings(1);
-        break;
-      case DANCE:
-        Stats::incDances(1);
-        break;
-      case QUIET_GATHERING:
-        Stats::incQuietGatherings(1);
-        break;
-      default:
-        break;
-    };
     $this->resolveAction(['automatic' => true]);
   }
-
 
   //  .##.....##.########.####.##.......####.########.##....##
   //  .##.....##....##.....##..##........##.....##.....##..##.
@@ -80,5 +53,29 @@ class FestivityCleanup extends \Bga\Games\MollyHouse\Models\AtomicAction
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
 
+  // .########.##....##..######...####.##....##.########
+  // .##.......###...##.##....##...##..###...##.##......
+  // .##.......####..##.##.........##..####..##.##......
+  // .######...##.##.##.##...####..##..##.##.##.######..
+  // .##.......##..####.##....##...##..##..####.##......
+  // .##.......##...###.##....##...##..##...###.##......
+  // .########.##....##..######...####.##....##.########
 
+  public function getDescription(): string|array
+  {
+    return clienttranslate('Spend Doll');
+  }
+
+  public function isDoable(Player $player): bool
+  {
+    $args = $this->ctx->getArgs();
+
+
+    return true;
+  }
+
+  public function isAutomatic(?Player $player = null): bool
+  {
+    return true;
+  }
 }

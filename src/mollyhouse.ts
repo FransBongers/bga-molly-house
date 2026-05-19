@@ -62,6 +62,8 @@ class MollyHouse implements Game {
   public itemManager: ItemManager;
   public viceCardManager: ViceCardManager;
   public joyMarkerManager: JoyMarkerManager;
+  // TODO: properly import
+  public bga: any;
 
   private states = {
     ConfirmPartialTurn,
@@ -83,15 +85,18 @@ class MollyHouse implements Game {
     EndOfWeekEncounterSociety,
     DiscardItem,
     NewspaperNotice,
+    UseDomino,
     ExamineGossipPile,
     PlaceEncounterToken,
     FestivityUseBottleOfGin,
     EndOfWeekUseDomino,
     FestivityPlayDress,
+    ResolveChoice,
   };
 
   constructor() {
     console.log('MollyHouse constructor');
+    // this.bga = bga;
   }
 
   // ..######..########.########.##.....##.########.
@@ -109,7 +114,7 @@ class MollyHouse implements Game {
     dojo.place(
       "<div id='customActions' style='display:inline-block'></div>",
       $('generalactions'),
-      'after'
+      'after',
     );
 
     document
@@ -164,7 +169,7 @@ class MollyHouse implements Game {
       .getPlayers()
       .forEach((player) => {
         player.updateEncounterTokens(
-          this.gamedatas.players[player.getPlayerId()]
+          this.gamedatas.players[player.getPlayerId()],
         );
       });
 
@@ -225,7 +230,7 @@ class MollyHouse implements Game {
         .getInstance()
         .setDescription(
           activePlayerIds || Number(args.active_player),
-          args.args
+          args.args,
         );
     }
 
@@ -246,14 +251,14 @@ class MollyHouse implements Game {
     if (args.args && args.args.previousSteps) {
       args.args.previousSteps.forEach((stepId: number) => {
         let logEntry = $('logs').querySelector(
-          `.log.notif_newUndoableStep[data-step="${stepId}"]`
+          `.log.notif_newUndoableStep[data-step="${stepId}"]`,
         );
         if (logEntry) {
           this.onClick(logEntry, () => this.undoToStep({ stepId }));
         }
 
         logEntry = document.querySelector(
-          `.chatwindowlogs_zone .log.notif_newUndoableStep[data-step="${stepId}"]`
+          `.chatwindowlogs_zone .log.notif_newUndoableStep[data-step="${stepId}"]`,
         );
         if (logEntry) {
           this.onClick(logEntry, () => this.undoToStep({ stepId }));
@@ -368,7 +373,7 @@ class MollyHouse implements Game {
       callback,
       'customActions',
       false,
-      color
+      color,
     );
     if (extraClasses) {
       dojo.addClass(id, extraClasses);
@@ -679,7 +684,7 @@ class MollyHouse implements Game {
 
     $('play-area-container').setAttribute(
       'data-two-columns',
-      settings.get(PREF_TWO_COLUMN_LAYOUT)
+      settings.get(PREF_TWO_COLUMN_LAYOUT),
     );
 
     const ROOT = document.documentElement;
@@ -699,9 +704,8 @@ class MollyHouse implements Game {
       const rightColumnScale = RIGHT_SIZE / RIGHT_COLUMN;
       ROOT.style.setProperty('--rightColumnScale', `${rightColumnScale}`);
 
-      $(
-        'play-area-container'
-      ).style.gridTemplateColumns = `${LEFT_SIZE}px ${RIGHT_SIZE}px`;
+      $('play-area-container').style.gridTemplateColumns =
+        `${LEFT_SIZE}px ${RIGHT_SIZE}px`;
     } else {
       const LEFT_SIZE = WIDTH;
       const leftColumnScale = LEFT_SIZE / LEFT_COLUMN;
@@ -762,7 +766,7 @@ class MollyHouse implements Game {
       this.onClick($(`log_${notif.logId}`), () => this.undoToStep({ stepId }));
       if ($(`dockedlog_${notif.mobileLogId}`))
         this.onClick($(`dockedlog_${notif.mobileLogId}`), () =>
-          this.undoToStep({ stepId })
+          this.undoToStep({ stepId }),
         );
     }
   }

@@ -140,4 +140,10 @@ trait EngineTrait
     }
     Engine::undoToStep($stepId);
   }
+
+  function actChooseAction(int $choiceId)
+  {
+    $player = Players::getActive();
+    Engine::chooseNode($player, $choiceId);
+  }
 }

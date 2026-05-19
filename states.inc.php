@@ -88,6 +88,19 @@ $machinestates = [
         ->action('stResolveStack')
         ->build(),
 
+    ST_RESOLVE_CHOICE => GameStateBuilder::create()
+        ->name(RESOLVE_CHOICE)
+        ->description(clienttranslate('${actplayer} must choose which effect to resolve'))
+        ->descriptionmyturn(clienttranslate('${you} must choose which effect to resolve'))
+        // ->descriptionxor(clienttranslate('${actplayer} must choose exactly one effect'))
+        // ->descriptionmyturnxor(clienttranslate('${you} must choose exactly one effect'))
+        ->type(StateType::ACTIVE_PLAYER)
+        ->args('argsAtomicAction')
+        ->action('stAtomicAction')
+        ->possibleactions(['actChooseAction', 'actRestart', 'actUndoToStep',])
+        ->transitions([])
+        ->build(),
+
     ST_CONFIRM_TURN => GameStateBuilder::create()
         ->name(CONFIRM_TURN)
         ->description(clienttranslate('${actplayer} must confirm or restart their turn'))
@@ -545,6 +558,34 @@ $machinestates = [
             'actPass',
             'actPassOptionalAction',
             'actTakeAtomicAction',
+            'actUndoToStep',
+        ])
+        ->build(),
+
+    ST_USE_DRESS => GameStateBuilder::create()
+        ->name(USE_DRESS)
+        ->type(StateType::GAME)
+        ->action('stAtomicAction')
+        ->build(),
+
+    ST_USE_DOLL => GameStateBuilder::create()
+        ->name(USE_DOLL)
+        ->type(StateType::GAME)
+        ->action('stAtomicAction')
+        ->build(),
+
+    ST_USE_DOMINO => GameStateBuilder::create()
+        ->name(USE_DOMINO)
+        ->description(clienttranslate('${actplayer} may use a Domino'))
+        ->descriptionmyturn(clienttranslate('${you}'))
+        ->type(StateType::ACTIVE_PLAYER)
+        ->args('argsAtomicAction')
+        ->possibleactions([
+            'act' . USE_DOMINO,
+            'actPass',
+            'actPassOptionalAction',
+            'actTakeAtomicAction',
+            'actRestart',
             'actUndoToStep',
         ])
         ->build(),

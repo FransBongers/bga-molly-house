@@ -30,6 +30,7 @@ const ST_END_GAME_NAME = 'gameEnd';
 const ST_CLEANUP = 88; // TODO: replace
 
 const RESOLVE_STACK = 'resolveStack';
+const RESOLVE_CHOICE = 'ResolveChoice';
 const START_GAME_ENGINE = 'StartGameEngine';
 const CONFIRM_TURN = 'ConfirmTurn';
 const CONFIRM_PARTIAL_TURN = 'ConfirmPartialTurn';
@@ -45,3 +46,6 @@ const PURPLE = 'purple';
 const YELLOW = 'yellow';
 
 const BLACK = 'black';
+
+const PRIMARY = 'primary';
+const SECONDARY = 'secondary';

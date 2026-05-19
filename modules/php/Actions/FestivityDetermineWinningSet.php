@@ -115,6 +115,10 @@ class FestivityDetermineWinningSet extends \Bga\Games\MollyHouse\Models\AtomicAc
    */
   public function getBestSetOfCards($cards)
   {
+    if (Festivity::dollWasPlayed()) {
+      return $this->getQuietGatheringSets($cards);
+    }
+
     foreach (FESTIVITIES as $rank) {
       $sets = $this->getSetsForRank($rank, $cards);
       if (count($sets) > 0) {
@@ -134,7 +138,6 @@ class FestivityDetermineWinningSet extends \Bga\Games\MollyHouse\Models\AtomicAc
         return $this->getDanceSets($cards);
       case QUIET_GATHERING:
         return $this->getQuietGatheringSets($cards);
-        break;
       default:
         return [];
     }
@@ -145,7 +148,7 @@ class FestivityDetermineWinningSet extends \Bga\Games\MollyHouse\Models\AtomicAc
   {
     $playedDresses = array_map(function ($item) {
       return $item->getSuit();
-    }, Items::getInLocation(PLAYED_DRESSES)->toArray());
+    }, array_merge(Items::getInLocation(PLAYED_ITEMS_FESTIVITY)->toArray(), Items::getInLocation(PLAYED_DRESSES)->toArray()));
     $dressPlayed = count($playedDresses) > 0;
 
     $cardsSortedBySuit = [

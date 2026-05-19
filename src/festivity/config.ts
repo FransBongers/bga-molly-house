@@ -12,7 +12,7 @@ const FESTIVITY_CONFIG_TWO_PLAYERS: Record<string | number, AbsolutePosition> =
       top: 10,
       left: 530,
     },
-    [PLAYED_DRESSES]: {
+    [PLAYED_ITEMS_FESTIVITY]: {
       top: 250,
       left: 305,
     },
@@ -38,7 +38,7 @@ const FESTIVITY_CONFIG_THREE_PLAYERS: Record<
     top: 250,
     left: 612,
   },
-  [PLAYED_DRESSES]: {
+  [PLAYED_ITEMS_FESTIVITY]: {
     top: 280,
     left: 305,
   },
@@ -66,7 +66,7 @@ const FESTIVITY_CONFIG_FOUR_PLAYERS: Record<string | number, AbsolutePosition> =
       top: 10,
       left: 612,
     },
-    [PLAYED_DRESSES]: {
+    [PLAYED_ITEMS_FESTIVITY]: {
       top: 250,
       left: 605,
     },
@@ -98,7 +98,7 @@ const FESTIVITY_CONFIG_FIVE_PLAYERS: Record<string | number, AbsolutePosition> =
       top: 10,
       left: 612,
     },
-    [PLAYED_DRESSES]: {
+    [PLAYED_ITEMS_FESTIVITY]: {
       top: 250,
       left: 605,
     },
@@ -106,7 +106,7 @@ const FESTIVITY_CONFIG_FIVE_PLAYERS: Record<string | number, AbsolutePosition> =
 
 const getFestivityPosition = (
   playerCount: number,
-  position: 'playedDresses' | 'community' | number
+  position: 'playedItemsFestivity' | 'community' | number
 ) => {
   switch (playerCount) {
     case 2:

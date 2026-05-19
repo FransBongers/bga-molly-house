@@ -14,6 +14,7 @@ const THROW_FESTIVITY = 'ThrowFestivity';
 const USE_ITEM = 'UseItem';
 
 const PLAYED_DRESSES = 'playedDresses';
+const PLAYED_ITEMS_FESTIVITY = 'playedItemsFestivity';
 /**
  * Colors
  */

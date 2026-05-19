@@ -92,6 +92,9 @@ const ST_FESTIVITY_KNOWN_THREAT_CHECK = 47;
 const ST_FESTIVITY_PASS_AND_PLAY_COMMUNITY_CARD = 48;
 const ST_FESTIVITY_CHECK_GENERATE_GOSSIP = 49;
 const ST_NEWSPAPER_NOTICE = 50;
+const ST_USE_DOLL = 51;
+const ST_USE_DOMINO = 52;
+const ST_USE_DRESS = 53;
 
 /**
  * Game state names
@@ -147,6 +150,9 @@ const FESTIVITY_KNOWN_THREAT_CHECK = 'FestivityKnownThreatCheck';
 const FESTIVITY_PASS_AND_PLAY_COMMUNITY_CARD = 'FestivityPassAndPlayCommunityCard';
 
 const USE_ITEM = 'UseItem';
+const USE_DOLL = 'UseDoll';
+const USE_DOMINO = 'UseDomino';
+const USE_DRESS = 'UseDress';
 /**
  * Card types
  */
@@ -175,6 +181,7 @@ const SUITS = [
 ];
 
 const PLAYED_DRESSES = 'playedDresses';
+const PLAYED_ITEMS_FESTIVITY = 'playedItemsFestivity';
 
 
 /**

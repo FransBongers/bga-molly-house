@@ -67,7 +67,7 @@ const updatePageTitle = (
 ) =>
   Interaction.use().clientUpdatePageTitle(
     text,
-    Object.assign(args, { you: '${you}' }),
+    Object.assign(args, { you: '${you}', actplayer: '${actplayer}' }),
     nonActivePlayers
   );
 

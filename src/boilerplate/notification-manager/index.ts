@@ -104,6 +104,7 @@ class NotificationManager {
       'placeEncounterTokenPrivate',
       'placePawn',
       'playDress',
+      'playItemToFestivity',
       'refillMarket',
       'revealEncounterToken',
       'revealIndictment',
@@ -119,6 +120,7 @@ class NotificationManager {
       'takeCandelabra',
       'takeItem',
       'throwFestivity',
+      'useDomino',
     ];
 
     // example: https://github.com/thoun/knarr/blob/main/src/knarr.ts
@@ -134,7 +136,7 @@ class NotificationManager {
           // Show log messags in page title
           let msg = this.game.format_string_recursive(
             notifDetails.log,
-            notifDetails.args as Record<string, unknown>
+            notifDetails.args as Record<string, unknown>,
           );
           // TODO: check if this clearPossible causes any issues?
           // this.game.clearPossible();
@@ -153,13 +155,13 @@ class NotificationManager {
           // tell the UI notification ends, if the function returned a promise.
           if (this.game.animationManager.animationsActive()) {
             Promise.all([...promises, sleep(minDuration)]).then(() =>
-              this.game.framework().notifqueue.onSynchronousNotificationEnd()
+              this.game.framework().notifqueue.onSynchronousNotificationEnd(),
             );
           } else {
             // TODO: check what this does
             this.game.framework().notifqueue.setSynchronousDuration(0);
           }
-        })
+        }),
       );
       this.game.framework().notifqueue.setSynchronous(notifName, undefined);
 
@@ -177,7 +179,7 @@ class NotificationManager {
           .notifqueue.setIgnoreNotificationCheck(
             notifId,
             (notif: Notif<{ playerId: number }>) =>
-              notif.args.playerId == this.game.getPlayerId()
+              notif.args.playerId == this.game.getPlayerId(),
           );
       });
     });
@@ -202,7 +204,7 @@ class NotificationManager {
   private gainCubes(player: PlayerAlias, suit: Suit, numberOfCubes) {
     player.counters[SUIT_COLOR_MAP[suit]].incValue(numberOfCubes);
     player.counters[`playerBoard_${SUIT_COLOR_MAP[suit]}`].incValue(
-      numberOfCubes
+      numberOfCubes,
     );
   }
 
@@ -233,14 +235,15 @@ class NotificationManager {
       ...otherData,
     };
 
-    Object.entries(players).forEach(([playerId, playerData]) => {
+    Object.entries(players).forEach(([playerIdKey, playerData]) => {
+      const playerId = Number(playerIdKey);
       if (updatedGamedatas.players[playerId]) {
         updatedGamedatas.players[playerId].cubes = playerData.cubes;
         updatedGamedatas.players[playerId].items = playerData.items;
         updatedGamedatas.players[playerId].reputation = playerData.reputation;
-
+        updatedGamedatas.players[playerId].festivity = playerData.festivity;
       }
-    })
+    });
 
     this.game.gamedatas = updatedGamedatas;
     this.game.clearInterface();
@@ -284,7 +287,7 @@ class NotificationManager {
   }
 
   async notif_addCardFromGossipPilePrivate(
-    notif: Notif<NotifAddCardFromGossipPilePrivate>
+    notif: Notif<NotifAddCardFromGossipPilePrivate>,
   ) {
     const { playerId, card } = notif.args;
     const player = this.getPlayer(playerId);
@@ -363,7 +366,7 @@ class NotificationManager {
   }
 
   async notif_addExcessCardsToGossip(
-    notif: Notif<NotifAddExcessCardsToGossip>
+    notif: Notif<NotifAddExcessCardsToGossip>,
   ) {
     const { number, playerId, cardsAddedToSafePile, cards } = notif.args;
     const player = this.getPlayer(playerId);
@@ -383,7 +386,7 @@ class NotificationManager {
   }
 
   async notif_addExcessCardsToGossipPrivate(
-    notif: Notif<NotifAddExcessCardsToGossipPrivate>
+    notif: Notif<NotifAddExcessCardsToGossipPrivate>,
   ) {
     const { cards, playerId } = notif.args;
 
@@ -490,7 +493,7 @@ class NotificationManager {
   }
 
   async notif_endOfWeekCreateViceDeck(
-    notif: Notif<NotifEndOfWeekCreateViceDeck>
+    notif: Notif<NotifEndOfWeekCreateViceDeck>,
   ) {
     const { cards } = notif.args;
 
@@ -523,7 +526,7 @@ class NotificationManager {
   }
 
   async notif_endOfWeekDiscardToSafePile(
-    notif: Notif<NotifEndOfWeekDiscardToSafePile>
+    notif: Notif<NotifEndOfWeekDiscardToSafePile>,
   ) {
     const { number, cards } = notif.args;
     Board.getInstance().counters[GOSSIP_PILE].incValue(-number);
@@ -531,7 +534,7 @@ class NotificationManager {
   }
 
   async notif_endOfWeekGenerateEvidence(
-    notif: Notif<NotifEndOfWeekGenerateEvidence>
+    notif: Notif<NotifEndOfWeekGenerateEvidence>,
   ) {
     const { site, number } = notif.args;
 
@@ -539,7 +542,7 @@ class NotificationManager {
   }
 
   async notif_endOfWeekMollyHouseRaided(
-    notif: Notif<NotifEndOfWeekMollyHouseRaided>
+    notif: Notif<NotifEndOfWeekMollyHouseRaided>,
   ) {
     const { mollyHouse, adjacentSites } = notif.args;
     const board = Board.getInstance();
@@ -552,14 +555,14 @@ class NotificationManager {
   }
 
   async notif_endOfWeekRevealEvidence(
-    notif: Notif<NotifEndOfWeekRevealEvidence>
+    notif: Notif<NotifEndOfWeekRevealEvidence>,
   ) {
     const gatherEvidence = GatherEvidence.getInstance();
     gatherEvidence.setGatherEvidenceActive(true);
   }
 
   async notif_endOfWeekRevealEvidenceForSuit(
-    notif: Notif<NotifEndOfWeekRevealEvidenceForSuit>
+    notif: Notif<NotifEndOfWeekRevealEvidenceForSuit>,
   ) {
     const { threats, cards } = notif.args;
     const gatherEvidence = GatherEvidence.getInstance();
@@ -610,7 +613,7 @@ class NotificationManager {
   }
 
   async notif_festivityRevealTopCardViceDeck(
-    notif: Notif<NotifFestivityRevealTopCardViceDeck>
+    notif: Notif<NotifFestivityRevealTopCardViceDeck>,
   ) {
     const { card, cardDrawnFromGossipPile } = notif.args;
     const viceCard = getViceCard(card);
@@ -638,7 +641,7 @@ class NotificationManager {
   async notif_festivityPhase(notif: Notif<NotifFestivityPhase>) {}
 
   async notif_festivitySetRogueValue(
-    notif: Notif<NotifFestivitySetRogueValue>
+    notif: Notif<NotifFestivitySetRogueValue>,
   ) {
     const { card, value } = notif.args;
     Festivity.getInstance().addRogueValue(card.id, value);
@@ -690,7 +693,13 @@ class NotificationManager {
   async notif_playDress(notif: Notif<NotifPlayDress>) {
     const { item } = notif.args;
 
-    await Festivity.getInstance().playedDresses.addCard(getItem(item));
+    await Festivity.getInstance().playedItems.addCard(getItem(item));
+  }
+
+  async notif_playItemToFestivity(notif: Notif<NotifPlayItemToFestivity>) {
+    const { item } = notif.args;
+
+    await Festivity.getInstance().playedItems.addCard(getItem(item));
   }
 
   async notif_placeEncounterToken(notif: Notif<NotifPlaceEncounterToken>) {
@@ -699,7 +708,7 @@ class NotificationManager {
   }
 
   async notif_placeEncounterTokenPrivate(
-    notif: Notif<NotifPlaceEncounterTokenPrivate>
+    notif: Notif<NotifPlaceEncounterTokenPrivate>,
   ) {
     const { siteId, token } = notif.args;
     await Board.getInstance().encounterTokens[siteId].addCard(token);
@@ -714,7 +723,7 @@ class NotificationManager {
 
     await board.placePawn(
       pawn,
-      document.getElementById(`player_board_${playerId}`)
+      document.getElementById(`player_board_${playerId}`)!,
     );
   }
 
@@ -730,7 +739,7 @@ class NotificationManager {
       // console.log('index', index);
       // console.log('viceCard', viceCard);
       // console.groupEnd();
-      
+
       await Interaction.use().wait(index * 200);
 
       if (movedCards.some((movedCard) => movedCard.id === card.id)) {
@@ -805,7 +814,7 @@ class NotificationManager {
   }
 
   async notif_setupChooseCardPrivate(
-    notif: Notif<NotifSetupChooseCardPrivate>
+    notif: Notif<NotifSetupChooseCardPrivate>,
   ) {
     const { playerId, card } = notif.args;
     this.getPlayer(playerId).counters[HAND].incValue(-1);
@@ -838,5 +847,21 @@ class NotificationManager {
     Board.getInstance().setFestivityActive(true);
     Festivity.getInstance().setRunner(playerId);
     Festivity.getInstance().setFestivityActive(true);
+  }
+
+  async notif_useDomino(notif: Notif<NotifUseDomino>) {
+    const { playerId, playedCard, communityCard } = notif.args;
+    const festivity = Festivity.getInstance();
+    await Promise.all(
+      [playedCard, communityCard].map(async (card, index) => {
+        Interaction.use().wait(200 * index);
+        const viceCard = getViceCard(card);
+        if (index === 0) {
+          await festivity.stocks[COMMUNITY].addCard(viceCard);
+        } else {
+          await festivity.stocks[playerId].addCard(viceCard);
+        }
+      }),
+    );
   }
 }

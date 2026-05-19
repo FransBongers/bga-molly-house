@@ -4,7 +4,7 @@ interface OnEnteringFestivityGenerateGossipArgs extends CommonStateArgs {
 
 class FestivityGenerateGossip implements State {
   private static instance: FestivityGenerateGossip;
-  private args: OnEnteringFestivityGenerateGossipArgs;
+  private args!: OnEnteringFestivityGenerateGossipArgs;
 
   constructor(private game: GameAlias) {}
 
@@ -28,7 +28,7 @@ class FestivityGenerateGossip implements State {
 
   setDescription(
     activePlayerIds: number,
-    args: OnEnteringFestivityGenerateGossipArgs
+    args: OnEnteringFestivityGenerateGossipArgs,
   ) {}
 
   //  .####.##....##.########.########.########..########....###.....######..########
@@ -49,33 +49,48 @@ class FestivityGenerateGossip implements State {
 
   private updateInterfaceInitialStep() {
     this.game.clearPossible();
-    updatePageTitle(_('${you} must add cards to the gossip pile, one at a time'));
+    updatePageTitle(
+      _('${you} must add cards to the gossip pile, one at a time'),
+    );
 
     this.args.cards.forEach((card) => {
       onClick(card.id, () => {
-        this.updateInterfaceConfirm(card);
-      });
-    });
-  }
-
-  private updateInterfaceConfirm(card: ViceCardBase) {
-    clearPossible();
-
-    const viceCard = getViceCard(card);
-    updatePageTitle(_('Add ${value} of ${tkn_suit} to the gossip pile?'), {
-      value: getViceCardValueText(viceCard.displayValue),
-      tkn_suit: viceCard.suit,
-    });
-    setSelected(card.id);
-
-    addConfirmButton(() => {
-      performAction('actFestivityGenerateGossip', {
-        cardId: card.id,
+        performAction('actFestivityGenerateGossip', {
+          cardId: card.id,
+          addAllCardsRandomly: false,
+        });
       });
     });
 
-    addCancelButton();
+    addSecondaryActionButton({
+      id: 'random-btn',
+      text: _('Whatever'),
+      callback: () =>
+        performAction('actFestivityGenerateGossip', {
+          cardId: null,
+          addAllCardsRandomly: true,
+        })
+    });
   }
+
+  // private updateInterfaceConfirm(card: ViceCardBase) {
+  //   clearPossible();
+
+  //   const viceCard = getViceCard(card);
+  //   updatePageTitle(_('Add ${value} of ${tkn_suit} to the gossip pile?'), {
+  //     value: getViceCardValueText(viceCard.displayValue),
+  //     tkn_suit: viceCard.suit,
+  //   });
+  //   setSelected(card.id);
+
+  //   addConfirmButton(() => {
+  //     performAction('actFestivityGenerateGossip', {
+  //       cardId: card.id,
+  //     });
+  //   });
+
+  //   addCancelButton();
+  // }
 
   //  .##.....##.########.####.##.......####.########.##....##
   //  .##.....##....##.....##..##........##.....##.....##..##.

@@ -783,6 +783,16 @@ class Notifications
     ]);
   }
 
+  public static function playItemToFestivity($player, $item)
+  {
+    self::notifyAll('playItemToFestivity', clienttranslate('${player_name} plays their ${tkn_boldText_item}'), [
+      'player' => $player,
+      'item' => $item,
+      'tkn_boldText_item' => $item->getName(),
+      'i18n' => ['tkn_boldText_item'],
+    ]);
+  }
+
   public static function refillMarket($player, $movedCards, $addedCards)
   {
     $args = [
@@ -959,6 +969,21 @@ class Notifications
       'player' => $player,
       'tkn_boldText_itemName' => $item->getName(),
       'i18n' => ['tkn_boldText_itemName'],
+    ]);
+  }
+
+  public static function useDomino($player, $item, $playedCard, $communityCard)
+  {
+    self::notifyAll('useDomino', clienttranslate('${player_name} spends ${tkn_boldText_domino} to swap ${tkn_boldText_playedCardValue} of ${tkn_suit_playedCard} with ${tkn_boldText_communityCardValue} of ${tkn_suit_communityCard}'), [
+      'player' => $player,
+      'playedCard' => $playedCard,
+      'communityCard' => $communityCard,
+      'tkn_boldText_domino' => $item->getName(),
+      'tkn_boldText_playedCardValue' => self::viceCardValueText($playedCard->getDisplayValue()),
+      'tkn_suit_playedCard' => $playedCard->getSuit(),
+      'tkn_boldText_communityCardValue' => self::viceCardValueText($communityCard->getDisplayValue()),
+      'tkn_suit_communityCard' => $communityCard->getSuit(),
+      'i18n' => ['tkn_boldText_domino'],
     ]);
   }
 }

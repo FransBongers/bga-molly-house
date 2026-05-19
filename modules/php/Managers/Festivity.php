@@ -65,10 +65,15 @@ class Festivity
       'passed' => $festivity['passed'],
       // 'round' => $festivity['round'],
       'communityCards' => ViceCards::getInLocationOrdered(Locations::festivity(COMMUNITY))->toArray(),
-      'playedDresses' => Items::getInLocation(PLAYED_DRESSES)->toArray(),
+      'playedItems' => array_merge(Items::getInLocation(PLAYED_DRESSES)->toArray(), Items::getInLocation(PLAYED_ITEMS_FESTIVITY)->toArray()),
     ];
 
     return $gamedatas;
+  }
+
+  public static function dollWasPlayed()
+  {
+    return Utils::array_some(Items::getInLocation(PLAYED_ITEMS_FESTIVITY)->toArray(), fn($item) => $item->getType() === DOLL);
   }
 
   private static function getFestivityObject()
@@ -80,6 +85,12 @@ class Festivity
       'round' => 0,
       'siteId' => null
     ];
+  }
+
+  public static function getRunnerId()
+  {
+    $festivity = self::get();
+    return $festivity['runner'];
   }
 
   public static function getSite()
@@ -169,6 +180,9 @@ class Festivity
           'action' => FESTIVITY_PLAY_CARD,
           'playerId' => $playerId,
           'optional' => $round === ADDITIONAL_ROUND || $playerId !== $runnerPlayerId,
+          'args' => [
+            'round' => $round,
+          ]
         ];
       }
     }

@@ -32,7 +32,7 @@ class FestivityPlayCard extends \Bga\Games\MollyHouse\Models\AtomicAction
   // .##.....##.##....##....##.....##..##.....##.##...###
   // .##.....##..######.....##....####..#######..##....##
 
-  
+
   public function stFestivityPlayCard()
   {
     $options = $this->getOptions();
@@ -165,15 +165,62 @@ class FestivityPlayCard extends \Bga\Games\MollyHouse\Models\AtomicAction
 
     Notifications::festivityPlayCard($player, $card);
 
+
+
+    $playableItemNodes = [];
+
     $dress = $player->getDressOfSuit($card->getSuit());
     if ($dress !== null) {
-      $action = [
-        'action' => FESTIVITY_PLAY_DRESS,
+      $playableItemNodes[] = [
+        'action' => USE_DRESS,
         'playerId' => $playerId,
-        'itemId' => $dress->getId()
+        'args' => [
+          'itemId' => $dress->getId()
+        ]
       ];
-      $this->ctx->insertAsBrother(Engine::buildTree($action));
     }
+
+    $nodeArgs = $this->ctx->getArgs();
+    $round = $nodeArgs === null ?  null : $nodeArgs['round'] ?? null;
+
+    if ($round === 1 && $player->hasItem(DOLL) && $player->getId() === Festivity::getRunnerId()) {
+      $playableItemNodes[] = [
+        'action' => USE_DOLL,
+        'playerId' => $playerId,
+        'args' => [
+          'itemId' => $player->getItemOfType(DOLL)->getId()
+        ]
+      ];
+    }
+    if ($player->hasItem(DOMINO_V2) && count(AtomicActions::get(USE_DOMINO)->getOptions($cardId)) > 0) {
+      $playableItemNodes[] = [
+        'action' => USE_DOMINO,
+        'playerId' => $playerId,
+        'args' => [
+          'cardId' => $cardId,
+          'itemId' => $player->getItemOfType(DOMINO_V2)->getId()
+        ]
+      ];
+    }
+
+    if (count($playableItemNodes) > 0) {
+      $this->ctx->insertAsBrother(Engine::buildTree([
+        'type' => NODE_OR,
+        'children' => $playableItemNodes,
+        'playerId' => $playerId,
+        'optional' => true,
+        // 'description' => clienttranslate('${actplayer} may use an item'),
+        'stateDescription' => [
+          'description' => clienttranslate('${actplayer} may use an item'),
+          'descriptionmyturn' => clienttranslate('${you} may use an item'),
+        ],
+        'args' => [
+          'passButtonText' => clienttranslate('Do not use item'),
+        ]
+      ]));
+    }
+
+
 
     $this->resolveAction([]);
   }

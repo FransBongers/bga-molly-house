@@ -192,7 +192,12 @@ interface NotifPlacePawn extends NotifWithPlayerArgs {
   pawn: MohoPawn;
 }
 
+// TODO: remove
 interface NotifPlayDress extends NotifWithPlayerArgs {
+  item: MohoItemBase;
+}
+
+interface NotifPlayItemToFestivity extends NotifWithPlayerArgs {
   item: MohoItemBase;
 }
 
@@ -262,3 +267,8 @@ interface NotifTakeItem extends NotifWithPlayerArgs {
 }
 
 interface NotifThrowFestivity extends NotifWithPlayerArgs {}
+
+interface NotifUseDomino extends NotifWithPlayerArgs {
+  playedCard: ViceCardBase;
+  communityCard: ViceCardBase;
+}

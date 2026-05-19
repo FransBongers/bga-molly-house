@@ -10,6 +10,9 @@ const HAND = 'hand';
 const DRAW_TOKEN = 'drawToken';
 const ADDITIONAL_ROUND = 'additionalRound';
 
+const PRIMARY = 'primary';
+const SECONDARY = 'secondary';
+
 /**
  * Setting ids
  */

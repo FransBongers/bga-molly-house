@@ -2,12 +2,14 @@
 
 namespace Bga\Games\MollyHouse\Models;
 
+use Bga\Games\MollyHouse\Boilerplate\Core\Engine\AbstractNode;
 use Bga\Games\MollyHouse\Boilerplate\Core\Globals;
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
 use Bga\Games\MollyHouse\Boilerplate\Core\Preferences;
 use Bga\Games\MollyHouse\Boilerplate\Core\Stats;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
+use Bga\Games\MollyHouse\Managers\AtomicActions;
 use Bga\Games\MollyHouse\Managers\EncounterTokens;
 use Bga\Games\MollyHouse\Managers\Indictments;
 use Bga\Games\MollyHouse\Managers\Items;
@@ -98,6 +100,11 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
   public function getId()
   {
     return (int) parent::getId();
+  }
+
+  public function canTakeAction(string $action, null|array|AbstractNode $ctx): bool
+  {
+    return AtomicActions::isDoable($action, $ctx, $this);
   }
 
   public function getHand()
@@ -239,6 +246,9 @@ class Player extends \Bga\Games\MollyHouse\Boilerplate\Helpers\DB_Model
     $amount = $amount > $currentScore ? $currentScore : $amount;
 
     $total = $this->incScore(-$amount);
+    if ($total === null) {
+      $total = $this->getScore();
+    }
 
     $joyMarker = JoyMarkers::getForPlayer($this);
 

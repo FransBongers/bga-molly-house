@@ -52,6 +52,8 @@ class FestivityScoreBonus extends \Bga\Games\MollyHouse\Models\AtomicAction
 
     $ranking = $festivity['winningSet']['ranking'];
 
+    $dollWasPlayed = Festivity::dollWasPlayed();
+
     if ($reputationForSuit > 0) {
       switch ($ranking) {
         case SURPRISE_BALL:
@@ -61,7 +63,7 @@ class FestivityScoreBonus extends \Bga\Games\MollyHouse\Models\AtomicAction
           $player->scoreJoy($reputationForSuit);
           break;
         case QUIET_GATHERING:
-          $player->loseJoy($reputationForSuit);
+          $player->loseJoy($dollWasPlayed ? 0 : $reputationForSuit);
           break;
       }
     } else {
@@ -83,7 +85,7 @@ class FestivityScoreBonus extends \Bga\Games\MollyHouse\Models\AtomicAction
         Community::scoreJoy(1);
         break;
       case QUIET_GATHERING:
-        Community::loseJoy(1);
+        Community::loseJoy($dollWasPlayed ? 0 : 1);
         break;
     }
 

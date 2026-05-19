@@ -4,6 +4,8 @@ var SELECTED = 'selected';
 var HAND = 'hand';
 var DRAW_TOKEN = 'drawToken';
 var ADDITIONAL_ROUND = 'additionalRound';
+var PRIMARY = 'primary';
+var SECONDARY = 'secondary';
 var PREF_CONFIRM_END_OF_TURN_AND_PLAYER_SWITCH_ONLY = 'confirmEndOfTurnPlayerSwitchOnly';
 var PREF_SHOW_ANIMATIONS = 'showAnimations';
 var PREF_ANIMATION_SPEED = 'animationSpeed';
@@ -42,6 +44,7 @@ var SHOP = 'Shop';
 var THROW_FESTIVITY = 'ThrowFestivity';
 var USE_ITEM = 'UseItem';
 var PLAYED_DRESSES = 'playedDresses';
+var PLAYED_ITEMS_FESTIVITY = 'playedItemsFestivity';
 var RED = 'red';
 var DESIRE = 'desire';
 var THREAT = 'threat';
@@ -2927,6 +2930,7 @@ var NotificationManager = (function () {
             'placeEncounterTokenPrivate',
             'placePawn',
             'playDress',
+            'playItemToFestivity',
             'refillMarket',
             'revealEncounterToken',
             'revealIndictment',
@@ -2942,6 +2946,7 @@ var NotificationManager = (function () {
             'takeCandelabra',
             'takeItem',
             'throwFestivity',
+            'useDomino',
         ];
         notifs.forEach(function (notifName) {
             _this.subscriptions.push(dojo.subscribe(notifName, _this, function (notifDetails) {
@@ -3015,11 +3020,13 @@ var NotificationManager = (function () {
                 players = gamedatas.players, otherData = __rest(gamedatas, ["players"]);
                 updatedGamedatas = __assign(__assign({}, this.game.gamedatas), otherData);
                 Object.entries(players).forEach(function (_a) {
-                    var playerId = _a[0], playerData = _a[1];
+                    var playerIdKey = _a[0], playerData = _a[1];
+                    var playerId = Number(playerIdKey);
                     if (updatedGamedatas.players[playerId]) {
                         updatedGamedatas.players[playerId].cubes = playerData.cubes;
                         updatedGamedatas.players[playerId].items = playerData.items;
                         updatedGamedatas.players[playerId].reputation = playerData.reputation;
+                        updatedGamedatas.players[playerId].festivity = playerData.festivity;
                     }
                 });
                 this.game.gamedatas = updatedGamedatas;
@@ -3753,7 +3760,22 @@ var NotificationManager = (function () {
                 switch (_a.label) {
                     case 0:
                         item = notif.args.item;
-                        return [4, Festivity.getInstance().playedDresses.addCard(getItem(item))];
+                        return [4, Festivity.getInstance().playedItems.addCard(getItem(item))];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_playItemToFestivity = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var item;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        item = notif.args.item;
+                        return [4, Festivity.getInstance().playedItems.addCard(getItem(item))];
                     case 1:
                         _a.sent();
                         return [2];
@@ -4046,6 +4068,42 @@ var NotificationManager = (function () {
                 Festivity.getInstance().setRunner(playerId);
                 Festivity.getInstance().setFestivityActive(true);
                 return [2];
+            });
+        });
+    };
+    NotificationManager.prototype.notif_useDomino = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, playerId, playedCard, communityCard, festivity;
+            var _this = this;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = notif.args, playerId = _a.playerId, playedCard = _a.playedCard, communityCard = _a.communityCard;
+                        festivity = Festivity.getInstance();
+                        return [4, Promise.all([playedCard, communityCard].map(function (card, index) { return __awaiter(_this, void 0, void 0, function () {
+                                var viceCard;
+                                return __generator(this, function (_a) {
+                                    switch (_a.label) {
+                                        case 0:
+                                            Interaction.use().wait(200 * index);
+                                            viceCard = getViceCard(card);
+                                            if (!(index === 0)) return [3, 2];
+                                            return [4, festivity.stocks[COMMUNITY].addCard(viceCard)];
+                                        case 1:
+                                            _a.sent();
+                                            return [3, 4];
+                                        case 2: return [4, festivity.stocks[playerId].addCard(viceCard)];
+                                        case 3:
+                                            _a.sent();
+                                            _a.label = 4;
+                                        case 4: return [2];
+                                    }
+                                });
+                            }); }))];
+                    case 1:
+                        _b.sent();
+                        return [2];
+                }
             });
         });
     };
@@ -4565,6 +4623,85 @@ var ConfirmTurn = (function () {
     };
     return ConfirmTurn;
 }());
+var ResolveChoice = (function () {
+    function ResolveChoice(game) {
+        this.game = game;
+    }
+    ResolveChoice.create = function (game) {
+        ResolveChoice.instance = new ResolveChoice(game);
+    };
+    ResolveChoice.getInstance = function () {
+        return ResolveChoice.instance;
+    };
+    ResolveChoice.prototype.onEnteringState = function (args) {
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    ResolveChoice.prototype.onLeavingState = function () {
+        debug('Leaving ResolveChoiceState');
+    };
+    ResolveChoice.prototype.setDescription = function (activePlayerId, args) {
+        this.args = args;
+        if (!this.args.description) {
+            return;
+        }
+        if (typeof this.args.description === 'string') {
+            updatePageTitle(_(this.args.description), {}, true);
+        }
+        else if (typeof this.args.description === 'object') {
+            updatePageTitle(_(this.args.description.log), this.args.description.args, true);
+        }
+    };
+    ResolveChoice.prototype.updateInterfaceInitialStep = function () {
+        var _this = this;
+        this.game.clearPossible();
+        if (this.args.descriptionmyturn &&
+            typeof this.args.descriptionmyturn === 'string') {
+            updatePageTitle(_(this.args.descriptionmyturn));
+        }
+        else if (this.args.descriptionmyturn &&
+            typeof this.args.descriptionmyturn === 'object') {
+            updatePageTitle(_(this.args.descriptionmyturn.log), this.args.descriptionmyturn.args);
+        }
+        else {
+            updatePageTitle(this.args.optionalAction
+                ? _('${you} may choose')
+                : _('${you} must choose'));
+        }
+        Object.values(this.args.choices).forEach(function (choice) {
+            _this.addChoiceActionButton(choice);
+        });
+        Object.values(this.args.allChoices).forEach(function (choice) {
+            _this.addChoiceActionButton(choice, true);
+        });
+        addUndoButtons(this.args);
+    };
+    ResolveChoice.prototype.addChoiceActionButton = function (choice, disabled) {
+        var _this = this;
+        if (disabled === void 0) { disabled = false; }
+        var eltId = "choice_btn_".concat(choice.id);
+        if (document.getElementById(eltId)) {
+            return;
+        }
+        var button = this.args.buttonType === SECONDARY || choice.id === 99
+            ? addSecondaryActionButton
+            : addPrimaryActionButton;
+        button({
+            id: eltId,
+            text: typeof choice.description === 'string'
+                ? choice.description
+                : Interaction.use().formatStringRecursive(choice.description.log, choice.description.args),
+            extraClasses: disabled ? 'disabled' : '',
+            callback: function () {
+                var choiceId = choice.id;
+                _this.game.framework().bgaPerformAction('actChooseAction', {
+                    choiceId: choiceId,
+                });
+            },
+        });
+    };
+    return ResolveChoice;
+}());
 var TooltipManager = (function () {
     function TooltipManager(game) {
         this._customTooltipIdCounter = 0;
@@ -4774,7 +4911,7 @@ var clearPossible = function () {
 var updatePageTitle = function (text, args, nonActivePlayers) {
     if (args === void 0) { args = {}; }
     if (nonActivePlayers === void 0) { nonActivePlayers = false; }
-    return Interaction.use().clientUpdatePageTitle(text, Object.assign(args, { you: '${you}' }), nonActivePlayers);
+    return Interaction.use().clientUpdatePageTitle(text, Object.assign(args, { you: '${you}', actplayer: '${actplayer}' }), nonActivePlayers);
 };
 var incScore = function (playerId, value) {
     Interaction.use().game.framework().scoreCtrl[playerId].incValue(value);
@@ -4871,11 +5008,13 @@ var MollyHouse = (function () {
             EndOfWeekEncounterSociety: EndOfWeekEncounterSociety,
             DiscardItem: DiscardItem,
             NewspaperNotice: NewspaperNotice,
+            UseDomino: UseDomino,
             ExamineGossipPile: ExamineGossipPile,
             PlaceEncounterToken: PlaceEncounterToken,
             FestivityUseBottleOfGin: FestivityUseBottleOfGin,
             EndOfWeekUseDomino: EndOfWeekUseDomino,
             FestivityPlayDress: FestivityPlayDress,
+            ResolveChoice: ResolveChoice,
         };
         console.log('MollyHouse constructor');
     }
@@ -5096,7 +5235,8 @@ var MollyHouse = (function () {
             var RIGHT_SIZE = (proportions[1] * WIDTH) / 100;
             var rightColumnScale = RIGHT_SIZE / RIGHT_COLUMN;
             ROOT.style.setProperty('--rightColumnScale', "".concat(rightColumnScale));
-            $('play-area-container').style.gridTemplateColumns = "".concat(LEFT_SIZE, "px ").concat(RIGHT_SIZE, "px");
+            $('play-area-container').style.gridTemplateColumns =
+                "".concat(LEFT_SIZE, "px ").concat(RIGHT_SIZE, "px");
         }
         else {
             var LEFT_SIZE = WIDTH;
@@ -5996,7 +6136,7 @@ var FESTIVITY_CONFIG_TWO_PLAYERS = (_a = {},
         top: 10,
         left: 530,
     },
-    _a[PLAYED_DRESSES] = {
+    _a[PLAYED_ITEMS_FESTIVITY] = {
         top: 250,
         left: 305,
     },
@@ -6018,7 +6158,7 @@ var FESTIVITY_CONFIG_THREE_PLAYERS = (_b = {},
         top: 250,
         left: 612,
     },
-    _b[PLAYED_DRESSES] = {
+    _b[PLAYED_ITEMS_FESTIVITY] = {
         top: 280,
         left: 305,
     },
@@ -6044,7 +6184,7 @@ var FESTIVITY_CONFIG_FOUR_PLAYERS = (_c = {},
         top: 10,
         left: 612,
     },
-    _c[PLAYED_DRESSES] = {
+    _c[PLAYED_ITEMS_FESTIVITY] = {
         top: 250,
         left: 605,
     },
@@ -6074,7 +6214,7 @@ var FESTIVITY_CONFIG_FIVE_PLAYERS = (_d = {},
         top: 10,
         left: 612,
     },
-    _d[PLAYED_DRESSES] = {
+    _d[PLAYED_ITEMS_FESTIVITY] = {
         top: 250,
         left: 605,
     },
@@ -6117,7 +6257,7 @@ var Festivity = (function () {
         Object.values(this.stocks).forEach(function (stock) {
             stock.removeAll();
         });
-        this.playedDresses.removeAll();
+        this.playedItems.removeAll();
     };
     Festivity.prototype.updateInterface = function (gamedatas) {
         if (!this.isFestivityActive()) {
@@ -6142,7 +6282,7 @@ var Festivity = (function () {
                 }
             });
         });
-        this.playedDresses.addCards(gamedatas.festivity.playedDresses.map(getItem));
+        this.playedItems.addCards(gamedatas.festivity.playedItems.map(getItem));
         if (gamedatas.festivity.runner) {
             this.setRunner(gamedatas.festivity.runner);
         }
@@ -6181,8 +6321,8 @@ var Festivity = (function () {
         var dressesContainerElt = document.createElement('div');
         dressesContainerElt.id = 'moho-festivity-played-dresses';
         this.festivityContainer.appendChild(dressesContainerElt);
-        setAbsolutePosition(dressesContainerElt, CARD_SCALE, getFestivityPosition(playerCount, PLAYED_DRESSES));
-        this.playedDresses = new LineStock(this.game.itemManager, dressesContainerElt, {
+        setAbsolutePosition(dressesContainerElt, CARD_SCALE, getFestivityPosition(playerCount, PLAYED_ITEMS_FESTIVITY));
+        this.playedItems = new LineStock(this.game.itemManager, dressesContainerElt, {
             gap: '0px',
             wrap: 'nowrap',
         });
@@ -6910,7 +7050,10 @@ var TakeAction = (function () {
         });
         Object.values(this.args._private.Indulge || {}).forEach(function (card) {
             onClick(document.getElementById(card.id), function () {
-                return _this.updateInterfaceConfirm(INDULGE, card.id);
+                return performAction('actTakeAction', {
+                    takenAction: INDULGE,
+                    target: card.id,
+                });
             });
         });
         Object.values(this.args._private.Cruise || {}).forEach(function (card) {
@@ -6920,7 +7063,10 @@ var TakeAction = (function () {
         });
         if (this.args._private.Shop) {
             onClick(document.getElementById(this.args._private.Shop.id), function () {
-                return _this.updateInterfaceConfirm(SHOP, _this.args._private.Shop.id);
+                return performAction('actTakeAction', {
+                    takenAction: SHOP,
+                    target: _this.args._private.Shop.id,
+                });
             });
         }
         Object.entries(this.args._private.items).forEach(function (_a) {
@@ -6992,12 +7138,6 @@ var TakeAction = (function () {
             case LIE_LOW:
                 updatePageTitle(_('Lie Low at ${site} and draw a card from the vice deck?'), {
                     site: StaticData.get().site(this.args.site.id).name,
-                });
-                break;
-            case SHOP:
-                updatePageTitle(_('Take ${itemName} at ${site}?'), {
-                    site: site,
-                    itemName: _(getItem(this.args._private.Shop).name),
                 });
                 break;
             case THROW_FESTIVITY:
@@ -7722,29 +7862,26 @@ var FestivityGenerateGossip = (function () {
     };
     FestivityGenerateGossip.prototype.setDescription = function (activePlayerIds, args) { };
     FestivityGenerateGossip.prototype.updateInterfaceInitialStep = function () {
-        var _this = this;
         this.game.clearPossible();
         updatePageTitle(_('${you} must add cards to the gossip pile, one at a time'));
         this.args.cards.forEach(function (card) {
             onClick(card.id, function () {
-                _this.updateInterfaceConfirm(card);
+                performAction('actFestivityGenerateGossip', {
+                    cardId: card.id,
+                    addAllCardsRandomly: false,
+                });
             });
         });
-    };
-    FestivityGenerateGossip.prototype.updateInterfaceConfirm = function (card) {
-        clearPossible();
-        var viceCard = getViceCard(card);
-        updatePageTitle(_('Add ${value} of ${tkn_suit} to the gossip pile?'), {
-            value: getViceCardValueText(viceCard.displayValue),
-            tkn_suit: viceCard.suit,
+        addSecondaryActionButton({
+            id: 'random-btn',
+            text: _('Whatever'),
+            callback: function () {
+                return performAction('actFestivityGenerateGossip', {
+                    cardId: null,
+                    addAllCardsRandomly: true,
+                });
+            }
         });
-        setSelected(card.id);
-        addConfirmButton(function () {
-            performAction('actFestivityGenerateGossip', {
-                cardId: card.id,
-            });
-        });
-        addCancelButton();
     };
     return FestivityGenerateGossip;
 }());
@@ -8378,4 +8515,41 @@ var NewspaperNotice = (function () {
         });
     };
     return NewspaperNotice;
+}());
+var UseDomino = (function () {
+    function UseDomino(game) {
+        this.game = game;
+    }
+    UseDomino.create = function (game) {
+        UseDomino.instance = new UseDomino(game);
+    };
+    UseDomino.getInstance = function () {
+        return UseDomino.instance;
+    };
+    UseDomino.prototype.onEnteringState = function (args) {
+        debug('Entering UseDomino state');
+        this.args = args;
+        this.updateInterfaceInitialStep();
+    };
+    UseDomino.prototype.onLeavingState = function () {
+        debug('Leaving UseDomino state');
+    };
+    UseDomino.prototype.setDescription = function (activePlayerIds, args) { };
+    UseDomino.prototype.updateInterfaceInitialStep = function () {
+        this.game.clearPossible();
+        var card = StaticData.get().viceCard(this.args.cardId);
+        updatePageTitle(_('${you} must select a card to swap with ${cardValue} of ${tkn_suit}'), {
+            cardValue: card.displayValue,
+            tkn_suit: card.suit,
+        });
+        setSelected(this.args.cardId);
+        this.args.options.forEach(function (option) {
+            return onClick(option.id, function () {
+                return performAction('actUseDomino', { cardId: option.id });
+            });
+        });
+        addPassButton(this.args.optionalAction);
+        addUndoButtons(this.args);
+    };
+    return UseDomino;
 }());

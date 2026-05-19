@@ -13,7 +13,7 @@ interface OnEnteringTakeActionArgs extends CommonStateArgs {
 
 class TakeAction implements State {
   private static instance: TakeAction;
-  private args: OnEnteringTakeActionArgs;
+  private args!: OnEnteringTakeActionArgs;
 
   constructor(private game: GameAlias) {}
 
@@ -67,36 +67,48 @@ class TakeAction implements State {
       const board = Board.getInstance();
 
       onClick(board.ui.selectBoxes[this.args.site.id], () =>
-        this.updateInterfaceConfirm(THROW_FESTIVITY, '')
+        this.updateInterfaceConfirm(THROW_FESTIVITY, ''),
       );
     }
 
     Object.values(this.args._private.Accuse).forEach((encounterToken) => {
-      onClick(document.getElementById(encounterToken.id), () =>
-        this.updateInterfaceConfirm(ACCUSE, encounterToken.id)
+      onClick(document.getElementById(encounterToken.id)!, () =>
+        this.updateInterfaceConfirm(ACCUSE, encounterToken.id),
       );
     });
 
     Object.values(this.args._private.Indulge || {}).forEach((card) => {
-      onClick(document.getElementById(card.id), () =>
-        this.updateInterfaceConfirm(INDULGE, card.id)
+      onClick(
+        document.getElementById(card.id)!,
+        () =>
+          performAction('actTakeAction', {
+            takenAction: INDULGE,
+            target: card.id,
+          }),
+        // this.updateInterfaceConfirm(INDULGE, card.id),
       );
     });
 
     Object.values(this.args._private.Cruise || {}).forEach((card) => {
-      onClick(document.getElementById(card.id), () =>
-        this.updateInterfaceConfirm(CRUISE, card.id)
+      onClick(document.getElementById(card.id)!, () =>
+        this.updateInterfaceConfirm(CRUISE, card.id),
       );
     });
     if (this.args._private.Shop) {
-      onClick(document.getElementById(this.args._private.Shop.id), () =>
-        this.updateInterfaceConfirm(SHOP, this.args._private.Shop.id)
+      onClick(
+        document.getElementById(this.args._private.Shop.id)!,
+        () =>
+          performAction('actTakeAction', {
+            takenAction: SHOP,
+            target: this.args._private.Shop!.id,
+          }),
+        // this.updateInterfaceConfirm(SHOP, this.args._private.Shop.id)
       );
     }
 
     Object.entries(this.args._private.items).forEach(([itemId, item]) => {
-      onClick(document.getElementById(item.id), () =>
-        this.updateInterfaceConfirm(USE_ITEM, itemId)
+      onClick(document.getElementById(item.id)!, () =>
+        this.updateInterfaceConfirm(USE_ITEM, itemId),
       );
     });
 
@@ -154,10 +166,10 @@ class TakeAction implements State {
       case CRUISE:
       case INDULGE:
       case USE_ITEM:
-        setSelected(document.getElementById(target));
+        setSelected(document.getElementById(target)!);
         break;
       case LIE_LOW:
-        setSelected(document.getElementById('moho-deck'));
+        setSelected(document.getElementById('moho-deck')!);
         break;
       case THROW_FESTIVITY:
         setSelected(Board.getInstance().ui.selectBoxes[this.args.site.id]);
@@ -180,19 +192,19 @@ class TakeAction implements State {
               this.args._private.Accuse[target].color,
               null,
             ].join(':'),
-          }
+          },
         );
         break;
       case CRUISE:
         updatePageTitle(
           _(
-            'Cruise at ${site} and add ${value} of ${tkn_suit} to your reputation'
+            'Cruise at ${site} and add ${value} of ${tkn_suit} to your reputation',
           ),
           {
             site,
             value: StaticData.get().viceCard(target).displayValue,
             tkn_suit: StaticData.get().viceCard(target).suit,
-          }
+          },
         );
         break;
       case INDULGE:
@@ -202,7 +214,7 @@ class TakeAction implements State {
             site,
             value: StaticData.get().viceCard(target).displayValue,
             tkn_suit: StaticData.get().viceCard(target).suit,
-          }
+          },
         );
         break;
       case LIE_LOW:
@@ -210,14 +222,8 @@ class TakeAction implements State {
           _('Lie Low at ${site} and draw a card from the vice deck?'),
           {
             site: StaticData.get().site(this.args.site.id).name,
-          }
+          },
         );
-        break;
-      case SHOP:
-        updatePageTitle(_('Take ${itemName} at ${site}?'), {
-          site,
-          itemName: _(getItem(this.args._private.Shop).name),
-        });
         break;
       case THROW_FESTIVITY:
         updatePageTitle(_('Throw a Festivity at ${site}?'), {
