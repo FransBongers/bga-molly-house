@@ -92,7 +92,7 @@ class EndOfWeekEncounterSociety extends \Bga\Games\MollyHouse\Models\AtomicActio
 
     $encounterToken->placeOnSite($player, $playerArgs['site']);
     $game = Game::get();
-    $game->gamestate->setPlayerNonMultiactive($player->getId(), 'next');
+    $game->gamestate->setPlayerNonMultiactive($player->getId(), '');
 
     if (count($game->gamestate->getActivePlayerList()) > 0) {
       return;

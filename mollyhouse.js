@@ -5998,7 +5998,7 @@ var ItemManager = (function (_super) {
         div.classList.add('moho-item');
         div.setAttribute('data-type', card.type);
         div.style.width = 'calc(var(--cardScale) * 178px)';
-        TooltipManager.getInstance().addTextTooltip({ nodeId: card.id, text: card.text, title: card.name });
+        TooltipManager.getInstance().addTextTooltip({ nodeId: card.id, text: _(card.text), title: _(card.name) });
     };
     ItemManager.prototype.setupBackDiv = function (card, div) {
         div.classList.add('moho-item');
@@ -6267,6 +6267,7 @@ var Festivity = (function () {
     };
     Festivity.prototype.updateFestivity = function (gamedatas) {
         var _this = this;
+        var _a;
         gamedatas.festivity.communityCards.map(getViceCard).forEach(function (card) {
             _this.stocks[COMMUNITY].addCard(card);
             if (card.displayValue === 'R') {
@@ -6282,7 +6283,7 @@ var Festivity = (function () {
                 }
             });
         });
-        this.playedItems.addCards(gamedatas.festivity.playedItems.map(getItem));
+        this.playedItems.addCards(((_a = gamedatas.festivity.playedItems) !== null && _a !== void 0 ? _a : []).map(getItem));
         if (gamedatas.festivity.runner) {
             this.setRunner(gamedatas.festivity.runner);
         }

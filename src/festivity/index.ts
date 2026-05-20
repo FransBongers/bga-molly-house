@@ -78,7 +78,7 @@ class Festivity {
         }
       });
     });
-    this.playedItems.addCards(gamedatas.festivity.playedItems.map(getItem));
+    this.playedItems.addCards((gamedatas.festivity.playedItems ?? []).map(getItem));
 
     if (gamedatas.festivity.runner) {
       this.setRunner(gamedatas.festivity.runner);

@@ -90,7 +90,7 @@ class PlayerSetupChooseCard extends \Bga\Games\MollyHouse\Models\AtomicAction
 
     // Make the player inactive
     $game = Game::get();
-    $game->gamestate->setPlayerNonMultiactive($playerId, 'next');
+    $game->gamestate->setPlayerNonMultiactive($playerId, '');
     if (count($game->gamestate->getActivePlayerList()) > 0) {
       return;
     }

@@ -100,7 +100,7 @@ class FestivityUseBottleOfGin extends \Bga\Games\MollyHouse\Models\AtomicAction
         'i18n' => ['tkn_boldText_bottleOfGin']
       ]
     );
-    $game->gamestate->setPlayerNonMultiactive($player->getId(), 'next');
+    $game->gamestate->setPlayerNonMultiactive($player->getId(), '');
   }
 
   public function useBottleOfGin($game, $player)
@@ -121,7 +121,7 @@ class FestivityUseBottleOfGin extends \Bga\Games\MollyHouse\Models\AtomicAction
       ]
     );
 
-    $game->gamestate->setAllPlayersNonMultiactive('next');
+    $game->gamestate->setAllPlayersNonMultiactive('');
 
     $bottleOfGin->discard($player);
 

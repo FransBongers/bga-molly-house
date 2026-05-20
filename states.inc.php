@@ -558,6 +558,7 @@ $machinestates = [
             'actPass',
             'actPassOptionalAction',
             'actTakeAtomicAction',
+            'actRestart',
             'actUndoToStep',
         ])
         ->build(),

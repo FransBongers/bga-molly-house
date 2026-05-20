@@ -123,7 +123,7 @@ class Engine
     if ($playerId == 'some') {
       Game::get()->gamestate->jumpToState(ST_RESOLVE_STACK);
       $activePlayerIds = $node->getInfo()['activePlayerIds'];
-      Game::get()->gamestate->setPlayersMultiactive($activePlayerIds, 'next', false);
+      Game::get()->gamestate->setPlayersMultiactive($activePlayerIds, '', false);
 
       // Ensure no undo
       Log::checkpoint();

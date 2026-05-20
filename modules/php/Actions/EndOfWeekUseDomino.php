@@ -70,7 +70,7 @@ class EndOfWeekUseDomino extends \Bga\Games\MollyHouse\Models\AtomicAction
     } else {
       $this->handleSkip($player);
     }
-    $game->gamestate->setPlayerNonMultiactive($player->getId(), 'next');
+    $game->gamestate->setPlayerNonMultiactive($player->getId(), '');
 
     if (count($game->gamestate->getActivePlayerList()) > 0) {
       return;
