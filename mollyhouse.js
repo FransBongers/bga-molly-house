@@ -4055,7 +4055,7 @@ var getSettingsConfig = function () {
                     onChangeInSetup: true,
                     label: _('Size of hand'),
                     defaultValue: {
-                        mobile: 100,
+                        mobile: 60,
                         desktop: 100,
                         wideScreen: 100,
                     },

@@ -12,6 +12,7 @@ use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 
 
 use Bga\Games\MollyHouse\Managers\AtomicActions;
+use Bga\Games\MollyHouse\Managers\Community;
 use Bga\Games\MollyHouse\Managers\DieManager;
 use Bga\Games\MollyHouse\Managers\EncounterTokens;
 use Bga\Games\MollyHouse\Managers\Festivity;
@@ -29,7 +30,11 @@ trait DebugTrait
 {
   function debug_test()
   {
-    
+    Notifications::log('community survival', AtomicActions::get(END_OF_WEEK_CHECK_GAME_END)->communitySurvival());
+
+    // AtomicActions::get(END_OF_WEEK_CHECK_GAME_END)->stEndOfWeekCheckGameEnd();  
+
+
     // Notifications::log('test', Globals::getGameOptionUseUpdatedItems());
     // EncounterTokens::get('encounterToken_2371052_1')->placeOnSite(Players::get(2371052), Sites::get(MISS_MUFFS));
 
@@ -78,6 +83,11 @@ trait DebugTrait
     Notifications::log('engine', Globals::getEngine());
   }
 
+  function debug_scoreCommunityJoy(int $amount)
+  {
+    Community::scoreJoy($amount);
+  }
+
   function debug_placeEncounterTokens()
   {
     $mollyHouses = Sites::getMany(MOLLY_HOUSES)->toArray();
@@ -88,6 +98,25 @@ trait DebugTrait
       shuffle($encounterTokens);
       $encounterTokens[0]->placeOnSite($player, $mollyHouses[0]);
     }
+  }
+
+  function debug_endOfGame()
+  {
+    $nodes = [
+      [
+        'action' => END_OF_WEEK_CHECK_GAME_END,
+      ],
+    ];
+
+
+
+
+    $node = [
+      'children' => $nodes,
+    ];
+
+    Engine::setup($node, ['method' => 'stSetupRefillMarket']);
+    Engine::proceed();
   }
 
 

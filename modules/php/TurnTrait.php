@@ -57,7 +57,7 @@ trait TurnTrait
         [
           'action' => END_OF_WEEK_CHECK_FOR_RAIDS,
         ],
-    [
+        [
           'action' => END_OF_WEEK_CHECK_GAME_END,
         ],
       ];

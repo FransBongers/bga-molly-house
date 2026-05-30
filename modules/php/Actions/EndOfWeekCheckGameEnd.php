@@ -41,23 +41,23 @@ class EndOfWeekCheckGameEnd extends \Bga\Games\MollyHouse\Models\AtomicAction
   public function stEndOfWeekCheckGameEnd()
   {
     if ($this->communityInfiltration()) {
+      Stats::setGameEnd(0);
+      Stats::setGameEndPercentageCommunityInfiltration(100);
       $this->triggerGameEnd(COMMUNITY_INFILTRATION);
-      Stats::incGameEnd(0);
-      Stats::incGameEndPercentageCommunityInfiltration(100);
       return;
     }
 
     if ($this->communitySurvival()) {
+      Stats::setGameEnd(1);
+      Stats::setGameEndPercentageCommunitySurvival(100);
       $this->triggerGameEnd(COMMUNITY_SURVIVAL);
-      Stats::incGameEnd(1);
-      Stats::incGameEndPercentageCommunitySurvival(100);
       return;
     }
 
     if ($this->communityAtrophy()) {
+      Stats::setGameEnd(2);
+      Stats::setGameEndPercentageCommunityAtrophy(100);
       $this->triggerGameEnd(COMMUNITY_ATROPHY);
-      Stats::incGameEnd(2);
-      Stats::incGameEndPercentageCommunityAtrophy(100);
       return;
     }
 
