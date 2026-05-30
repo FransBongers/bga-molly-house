@@ -1188,6 +1188,21 @@ body > .bga-dice_die {
   font-size: 1.1em;
 }
 
+.vice-card-tooltip-container {
+  --iconScale: 0.5;
+  max-width: 250px;
+  display: flex;
+  flex-direction: column;
+}
+.vice-card-tooltip-container .title {
+  font-weight: bold;
+  font-size: 1.3em;
+  margin-bottom: 4px;
+}
+.vice-card-tooltip-container .text {
+  --iconScale: 0.4;
+}
+
 /* make space between buttons on touch devices */
 @media (hover: none) {
   #page-title .action-button.bgabutton,

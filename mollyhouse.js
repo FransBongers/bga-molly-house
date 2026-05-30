@@ -4604,6 +4604,14 @@ var TooltipManager = (function () {
             }), 400);
         }
     };
+    TooltipManager.prototype.addViceCardTooltip = function (nodeId, viceCard) {
+        switch (viceCard.type) {
+            case 'threat':
+            case 'molly':
+                this.addCustomTooltip(nodeId, tplViceCardTooltip(viceCard));
+                break;
+        }
+    };
     TooltipManager.prototype.removeTooltip = function (nodeId) {
         this.game.bga.gameui.removeTooltip(nodeId);
     };
@@ -4684,6 +4692,35 @@ var TooltipManager = (function () {
 var tplTextTooltip = function (_a) {
     var text = _a.text, title = _a.title;
     return "\n  <div class=\"text-tooltip-container\">\n    ".concat(title ? "<span class=\"title\">".concat(title, "</span>") : '', "\n    <span class=\"text\">").concat(text, "</span>\n  </div>\n");
+};
+var tplViceCardTooltip = function (viceCard) {
+    return "\n    <div class=\"vice-card-tooltip-container\">\n      <span class=\"title\">".concat(formatStringRecursive(_('${tkn_suit} ${value} (${type})'), {
+        tkn_suit: viceCard.suit,
+        value: viceCardValueText(viceCard.displayValue),
+        type: viceCardTypeText(viceCard.type),
+    }), "</span>\n      ").concat(viceCard.type === 'molly'
+        ? "<span class=\"text\">".concat(formatStringRecursive(_('${tkn_boldText_mollyBonus} score ${tkn_boldText_amount} joy whenever you add a ${tkn_suit} desire to your reputation.'), {
+            tkn_boldText_amount: viceCard.displayValue === 'Q' ? 3 : 2,
+            tkn_boldText_mollyBonus: _('Molly bonus:'),
+            tkn_suit: viceCard.suit,
+        }), "</span>")
+        : '', "\n      ").concat(viceCard.type === 'molly'
+        ? "<span class=\"text\">".concat(formatStringRecursive(_('${tkn_boldText_ifDiscarded} place in gossip pile.'), {
+            tkn_boldText_ifDiscarded: _('If discarded from market:'),
+        }), "</span>")
+        : '', "\n      ").concat(viceCard.type === 'threat' && viceCard.displayValue === 'C'
+        ? "<span class=\"text\">".concat(formatStringRecursive(_('${tkn_boldText_playedInFestivity} during Quiet Gatherings, treat constables as zero-value desires.'), {
+            tkn_boldText_playedInFestivity: _('When played in festivity:'),
+        }), "</span>")
+        : '', "\n            ").concat(viceCard.type === 'threat' && viceCard.displayValue === 'R'
+        ? "<span class=\"text\">".concat(formatStringRecursive(_('${tkn_boldText_playedInFestivity} set value to any number from zero to nine. This card will act as a desire of that value when determining the festivity rank.'), {
+            tkn_boldText_playedInFestivity: _('When played in festivity:'),
+        }), "</span>")
+        : '', "\n      ").concat(viceCard.type === 'threat'
+        ? "<span class=\"text\">".concat(formatStringRecursive(_('${tkn_boldText_ifDiscarded} place in gossip pile and expose the most infamous player.'), {
+            tkn_boldText_ifDiscarded: _('If discarded from market:'),
+        }), "</span>")
+        : '', "\n    </div>\n  ");
 };
 var IconCounter = (function () {
     function IconCounter(config) {
@@ -5903,6 +5940,7 @@ var ViceCardManager = (function (_super) {
         div.setAttribute('data-card-id', card.id);
         div.style.height = 'calc(var(--cardScale) * 225px)';
         div.style.width = 'calc(var(--cardScale) * 161px)';
+        TooltipManager.getInstance().addViceCardTooltip(card.id, card);
     };
     ViceCardManager.prototype.setupBackDiv = function (card, div) {
         div.classList.add('moho-vice-card');
@@ -7234,6 +7272,18 @@ var getFestivityRankingName = function (ranking) {
             return _('Dance');
         case QUIET_GATHERING:
             return _('Quiet Gathering');
+        default:
+            return '';
+    }
+};
+var viceCardTypeText = function (type) {
+    switch (type) {
+        case 'desire':
+            return _('desire');
+        case 'threat':
+            return _('threat');
+        case 'molly':
+            return _('molly');
         default:
             return '';
     }

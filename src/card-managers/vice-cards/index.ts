@@ -31,7 +31,7 @@ class ViceCardManager extends CardManager<ViceCard> {
     div.style.height = 'calc(var(--cardScale) * 225px)';
     div.style.width = 'calc(var(--cardScale) * 161px)';
 
-    // this.game.tooltipManager.addCardTooltip({ nodeId: card.id, cardId: card.id });
+    TooltipManager.getInstance().addViceCardTooltip(card.id, card);
   }
 
   setupBackDiv(card: ViceCard, div: HTMLElement) {

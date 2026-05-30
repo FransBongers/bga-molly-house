@@ -53,7 +53,7 @@ class TooltipManager {
         tplTextTooltip({
           text,
           title,
-        })
+        }),
       );
     } else {
       this.game.bga.gameui.addTooltipHtml(
@@ -62,8 +62,17 @@ class TooltipManager {
           text,
           title,
         }),
-        400
+        400,
       );
+    }
+  }
+
+  public addViceCardTooltip(nodeId: string, viceCard: ViceCard) {
+    switch (viceCard.type) {
+      case 'threat':
+      case 'molly':
+        this.addCustomTooltip(nodeId, tplViceCardTooltip(viceCard));
+        break;
     }
   }
 
@@ -135,7 +144,7 @@ class TooltipManager {
   public addCustomTooltip(
     id: string,
     html: string | Function,
-    config: { delay?: number; midSize?: boolean; forceRecreate?: boolean } = {}
+    config: { delay?: number; midSize?: boolean; forceRecreate?: boolean } = {},
   ) {
     if (!document.getElementById(id)) {
       return;
@@ -146,7 +155,7 @@ class TooltipManager {
         midSize: true,
         forceRecreate: false,
       },
-      config
+      config,
     ) as { delay: 400; midSize: boolean; forceRecreate: boolean };
 
     // Handle dynamic content out of the box
@@ -179,7 +188,7 @@ class TooltipManager {
       `<div class='help-marker'>
             <svg><use href="#help-marker-svg" /></svg>
           </div>`,
-      id
+      id,
     );
 
     dojo.connect($(id), 'click', (evt: PointerEvent) => {

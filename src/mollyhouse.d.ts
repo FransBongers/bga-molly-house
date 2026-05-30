@@ -126,7 +126,7 @@ interface MohoSiteStaticData {
 
 type MohoSite = MohoSiteBase & MohoSiteStaticData;
 
-type ViceCardType = 'desire' | 'treat' | 'molly';
+type ViceCardType = 'desire' | 'threat' | 'molly';
 type Suit = 'hearts' | 'cups' | 'fans' | 'pentacles';
 
 interface ViceCardBase extends GamePiece {

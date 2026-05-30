@@ -76,6 +76,19 @@ const getFestivityRankingName = (ranking: string): string => {
   }
 };
 
+const viceCardTypeText = (type: ViceCardType): string => {
+  switch (type) {
+    case 'desire':
+      return _('desire');
+    case 'threat':
+      return _('threat');
+    case 'molly':
+      return _('molly');
+    default:
+      return '';
+  }
+}
+
 const viceCardValueText = (value: string | number): string => {
   switch (value) {
     case 'Q':

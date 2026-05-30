@@ -47,3 +47,20 @@
     font-size: 1.1em;
   }
 }
+
+.vice-card-tooltip-container {
+  --iconScale: 0.5;
+  max-width: 250px;
+  display: flex;
+  flex-direction: column;
+
+  .title {
+    font-weight: bold;
+    font-size: 1.3em;
+    margin-bottom: 4px;
+  }
+
+  .text {
+    --iconScale: 0.4;
+  }
+}
