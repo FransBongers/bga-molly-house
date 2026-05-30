@@ -170,6 +170,7 @@ class Engine
         count($choices) == 1 &&
         count($allChoices) == 1 &&
         array_keys($allChoices) == array_keys($choices) &&
+        !$node->isOptional() &&
         !($choices[$id]['irreversibleAction'] ?? false)
       ) {
         self::chooseNode($player, $id, true);
