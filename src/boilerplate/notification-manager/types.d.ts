@@ -28,10 +28,12 @@ interface NotifRefreshUIPrivate extends NotifWithPlayerArgs {
   encounterTokens: MohoEncounterToken[];
 }
 
-interface NotifAddCardFromGossipPile extends NotifWithPlayerArgs {}
+interface NotifRestoreGameState extends NotifWithPlayerArgs {}
 
-interface NotifAddCardFromGossipPilePrivate extends NotifWithPlayerArgs {
-  card: ViceCardBase;
+interface NotifAddCardFromGossipPile extends NotifWithPlayerArgs {
+  _private?: {
+    card: ViceCardBase;
+  };
 }
 
 interface NotifAddCardToHand extends NotifWithPlayerArgs {
@@ -59,10 +61,9 @@ interface NotifAddExcessCardsToGossip extends NotifWithPlayerArgs {
   number: number;
   cardsAddedToSafePile: boolean;
   cards: ViceCardBase[];
-}
-
-interface NotifAddExcessCardsToGossipPrivate extends NotifWithPlayerArgs {
-  cards: ViceCardBase[];
+  _private?: {
+    cards: ViceCardBase[];
+  };
 }
 
 interface NotifCommunityAtrophy {}
@@ -86,13 +87,16 @@ interface NotifDiscardItem {
 interface NotifDrawCards extends NotifWithPlayerArgs {
   number: number;
   numberOfDrawTokenToReturn: number;
+  _private?: {
+    cards: ViceCardBase[];
+  };
 }
 
-interface NotifDrawCardsPrivate extends NotifWithPlayerArgs {
-  number: number;
-  numberOfDrawTokenToReturn: number;
-  cards: ViceCardBase[];
-}
+// interface NotifDrawCardsPrivate extends NotifWithPlayerArgs {
+//   number: number;
+//   numberOfDrawTokenToReturn: number;
+//   cards: ViceCardBase[];
+// }
 
 interface NotifFestivityEnd {}
 
@@ -154,10 +158,9 @@ interface NotifGainDrawTokens extends NotifWithPlayerArgs {
 
 interface NotifGainIndictment extends NotifWithPlayerArgs {
   indictment: MohoIndictment;
-}
-
-interface NotifGainIndictmentPrivate extends NotifWithPlayerArgs {
-  indictment: MohoIndictment;
+  _private?: {
+    indictment: MohoIndictment;
+  };
 }
 
 interface NotifHang extends NotifWithPlayerArgs {
@@ -184,9 +187,11 @@ interface NotifMovePawn extends NotifWithPlayerArgs {
 interface NotifPlaceEncounterToken extends NotifWithPlayerArgs {
   siteId: string;
   token: MohoEncounterToken;
+  _private?: {
+    siteId: string;
+    token: MohoEncounterToken;
+  };
 }
-
-type NotifPlaceEncounterTokenPrivate = NotifPlaceEncounterToken;
 
 interface NotifPlacePawn extends NotifWithPlayerArgs {
   pawn: MohoPawn;
@@ -250,10 +255,9 @@ interface NotifSetupChooseCard extends NotifWithPlayerArgs {
     id: string;
     hidden: boolean;
   };
-}
-
-interface NotifSetupChooseCardPrivate extends NotifWithPlayerArgs {
-  card: ViceCardBase;
+  _private?: {
+    card: ViceCardBase;
+  };
 }
 
 interface NotifSetupRevealCard extends NotifWithPlayerArgs {
@@ -271,4 +275,14 @@ interface NotifThrowFestivity extends NotifWithPlayerArgs {}
 interface NotifUseDomino extends NotifWithPlayerArgs {
   playedCard: ViceCardBase;
   communityCard: ViceCardBase;
+}
+
+interface NotifUndoPlayerSetupChooseCard extends NotifWithPlayerArgs {
+  card: {
+    id: string;
+    hidden: boolean;
+  };
+  _private?: {
+    card: ViceCardBase;
+  };
 }

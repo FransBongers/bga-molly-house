@@ -19,8 +19,8 @@ interface OnEnteringFestivitySelectWinningSetArgs extends CommonStateArgs {
 
 class FestivitySelectWinningSet implements State {
   private static instance: FestivitySelectWinningSet;
-  private args: OnEnteringFestivitySelectWinningSetArgs;
-  private selectedSet: number;
+  private args!: OnEnteringFestivitySelectWinningSetArgs;
+  private selectedSet!: number | null;
   private selectedCards: Record<string | number, Record<string, ViceCardBase>> =
     {};
 
@@ -48,7 +48,7 @@ class FestivitySelectWinningSet implements State {
 
   setDescription(
     activePlayerIds: number,
-    args: OnEnteringFestivitySelectWinningSetArgs
+    args: OnEnteringFestivitySelectWinningSetArgs,
   ) {}
 
   //  .####.##....##.########.########.########..########....###.....######..########
@@ -99,6 +99,9 @@ class FestivitySelectWinningSet implements State {
 
   private updateInterfaceSelectCardsInSet() {
     this.game.clearPossible();
+    if (this.selectedSet === null) {
+      throw new Error('FE_SELECT_WINNING_SET_001');
+    }
     const set = this.args.options[this.selectedSet];
 
     let remaining = 0;
@@ -109,7 +112,7 @@ class FestivitySelectWinningSet implements State {
       if (numberSelected < numberToSelect) {
         remaining += numberToSelect - numberSelected;
         cards.forEach((card) => {
-          onClick(document.getElementById(card.id), () => {
+          onClick(document.getElementById(card.id)!, () => {
             this.onClickCard(card, value);
           });
         });
@@ -125,12 +128,12 @@ class FestivitySelectWinningSet implements State {
 
     updatePageTitle(
       _(
-        '${you} must select cards for the winning ${festivityName} (${number} remaining)'
+        '${you} must select cards for the winning ${festivityName} (${number} remaining)',
       ),
       {
         festivityName: getFestivityRankingName(this.args.ranking),
         number: remaining,
-      }
+      },
     );
 
     if (cardsAlreadySelected > 0) {
@@ -142,7 +145,7 @@ class FestivitySelectWinningSet implements State {
 
   private updateInterfaceConfirm() {
     clearPossible();
-    const set = this.args.options[this.selectedSet];
+    const set = this.args.options[this.selectedSet as number];
 
     const winningSet = set.selected
       .concat(this.getSelectedCardsFromOptions())
@@ -158,7 +161,7 @@ class FestivitySelectWinningSet implements State {
     this.setSelected(winningSet);
 
     addConfirmButton(() => {
-      const selectedCards = {};
+      const selectedCards: Record<string, string[]> = {};
       Object.entries(this.selectedCards).forEach(([value, cards]) => {
         selectedCards[value] = Object.keys(cards);
       });
@@ -181,7 +184,7 @@ class FestivitySelectWinningSet implements State {
 
   private setSelected(cards: ViceCardBase[] = []) {
     cards.forEach(({ id }) => {
-      const cardElt = document.getElementById(id);
+      const cardElt = document.getElementById(id)!;
       setSelected(cardElt);
     });
   }

@@ -2,7 +2,7 @@ interface OnEnteringShopArgs extends CommonStateArgs {}
 
 class Shop implements State {
   private static instance: Shop;
-  private args: OnEnteringShopArgs;
+  private args!: OnEnteringShopArgs;
 
   constructor(private game: GameAlias) {}
 

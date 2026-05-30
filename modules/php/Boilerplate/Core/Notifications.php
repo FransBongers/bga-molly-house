@@ -2,13 +2,38 @@
 
 namespace Bga\Games\MollyHouse\Boilerplate\Core;
 
+use Bga\GameFramework\NotificationMessage;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 use Bga\Games\MollyHouse\Game;
 use Bga\Games\MollyHouse\Managers\Players;
 use Bga\Games\MollyHouse\Managers\Sites;
+use Bga\Games\MollyHouse\Models\Player;
+use Bga\Games\MollyHouse\Models\ViceCard;
 
 class Notifications
 {
+
+
+  // .########..########..######...#######..########.....###....########..#######..########...######.
+  // .##.....##.##.......##....##.##.....##.##.....##...##.##......##....##.....##.##.....##.##....##
+  // .##.....##.##.......##.......##.....##.##.....##..##...##.....##....##.....##.##.....##.##......
+  // .##.....##.######...##.......##.....##.########..##.....##....##....##.....##.########...######.
+  // .##.....##.##.......##.......##.....##.##...##...#########....##....##.....##.##...##.........##
+  // .##.....##.##.......##....##.##.....##.##....##..##.....##....##....##.....##.##....##..##....##
+  // .########..########..######...#######..##.....##.##.....##....##.....#######..##.....##..######.
+
+  // with the Utils functions
+  public static function decoratePlayerNameNotifArg(string $message, array $args): array
+  {
+    if (isset($args['player'])) {
+      $args['player_name'] = $args['player']->getName();
+      $args['playerId'] = $args['player']->getId();
+      unset($args['player']);
+    }
+    return $args;
+  }
+
+
   // .########...#######..####.##.......########.########.
   // .##.....##.##.....##..##..##.......##.......##.....##
   // .##.....##.##.....##..##..##.......##.......##.....##
@@ -26,15 +51,15 @@ class Notifications
   // .##........########.##.....##....##....########
   protected static function notifyAll($name, $msg, $data)
   {
-    self::updateArgs($data);
-    Game::get()->notifyAllPlayers($name, $msg, $data);
+    // self::updateArgs($data);
+    Game::get()->notify->all($name, $msg, $data);
   }
 
   protected static function notify($player, $name, $msg, $data)
   {
     $playerId = is_int($player) ? $player : $player->getId();
-    self::updateArgs($data);
-    Game::get()->notifyPlayer($playerId, $name, $msg, $data);
+    // self::updateArgs($data);
+    Game::get()->notify->player($playerId, $name, $msg, $data);
   }
 
   public static function message($txt, $args = [])
@@ -99,6 +124,11 @@ class Notifications
       'message' => $message,
       'data' => $data,
     ]);
+  }
+
+  public static function restoreGameState(Player $player)
+  {
+    Notifications::notify($player, 'restoreGameState', '', []);
   }
 
   // .##.....##.########..########.....###....########.########
@@ -243,20 +273,24 @@ class Notifications
   // .##...###.##.....##....##.....##..##.......##....##
   // .##....##..#######.....##....####.##........######.
 
-  public static function addCardFromGossipPile($player, $card)
+  public static function addCardFromGossipPile(Player $player, ViceCard $card)
   {
-    self::notify($player, 'addCardFromGossipPilePrivate', clienttranslate('${player_name} takes ${tkn_boldText_cardValue} of ${tkn_suit} from the gossip pile'), [
-      'player' => $player,
-      'card' => $card,
-      'tkn_boldText_cardValue' => self::viceCardValueText($card->getDisplayValue()),
-      'tkn_suit' => $card->getSuit(),
-      'i18n' => ['tkn_boldText_cardValue'],
-    ]);
-
+    $playerId = $player->getId();
 
     self::notifyAll('addCardFromGossipPile', clienttranslate('${player_name} takes a card from the gossip pile'), [
       'player' => $player,
-      'preserve' => ['playerId'],
+      '_private' => [
+        $playerId => new NotificationMessage(
+          clienttranslate('${player_name} takes ${_private.tkn_boldText_cardValue} of ${_private.tkn_suit} from the gossip pile'),
+          [
+            'player' => $player,
+            'card' => $card,
+            'tkn_boldText_cardValue' => self::viceCardValueText($card->getDisplayValue()),
+            'tkn_suit' => $card->getSuit(),
+            'i18n' => ['_private.tkn_boldText_cardValue'],
+          ]
+        )
+      ]
     ]);
   }
 
@@ -369,11 +403,7 @@ class Notifications
         : clienttranslate('${player_name} adds ${tkn_boldText_number} cards from their hand to the safe pile');
     }
 
-    self::notify($player, 'addExcessCardsToGossipPrivate', $text, [
-      'player' => $player,
-      'tkn_boldText_number' => $number,
-      'cards' => $cards,
-    ]);
+    $playerId = $player->getId();
 
     self::notifyAll('addExcessCardsToGossip', $text, [
       'player' => $player,
@@ -381,7 +411,17 @@ class Notifications
       'number' => $number,
       'cardsAddedToSafePile' => $playerIsRevealedInformer,
       'cards' => $playerIsRevealedInformer ? $cards : [],
-      'preserve' => ['playerId'],
+      '_private' => [
+        $playerId => new NotificationMessage(
+          $text,
+          [
+            'player' => $player,
+            'tkn_boldText_number' => $number,
+            'cards' => $cards,
+          ]
+        )
+      ]
+
     ]);
   }
 
@@ -440,7 +480,8 @@ class Notifications
     self::notifyAll('discardItem', $text, $args);
   }
 
-  public static function drawCards($player, $cards, $numberOfDrawTokenToReturn)
+
+  public static function drawCards(Player $player, $cards, int $numberOfDrawTokenToReturn)
   {
     // TODO: cardsLog ?
     $text = count($cards) === 1
@@ -449,20 +490,33 @@ class Notifications
 
     $number = count($cards);
 
-    self::notify($player, 'drawCardsPrivate', $text, [
-      'player' => $player,
-      'cards' => $cards,
-      'number' => $number,
-      'numberOfDrawTokenToReturn' => $numberOfDrawTokenToReturn,
-      'tkn_boldText_number' => $number,
-    ]);
+    // self::notify($player, 'drawCardsPrivate', $text, [
+    //   'player' => $player,
+    //   'cards' => $cards,
+    //   'number' => $number,
+    //   'numberOfDrawTokenToReturn' => $numberOfDrawTokenToReturn,
+    //   'tkn_boldText_number' => $number,
+    // ]);
+    $playerId = $player->getId();
 
-    self::notifyAll('drawCards', $text, [
+    Game::get()->notify->all('drawCards', $text, [
       'player' => $player,
       'number' => $number,
       'tkn_boldText_number' => $number,
       'numberOfDrawTokenToReturn' => $numberOfDrawTokenToReturn,
-      'preserve' => ['playerId'],
+      '_private' => [
+        $playerId =>
+        new NotificationMessage(
+          $text,
+          [
+            'player' => $player,
+            'cards' => $cards,
+            'number' => $number,
+            'numberOfDrawTokenToReturn' => $numberOfDrawTokenToReturn,
+            'tkn_boldText_number' => $number,
+          ]
+        )
+      ]
     ]);
   }
 
@@ -665,15 +719,23 @@ class Notifications
       ? clienttranslate('${player_name} gains a major indictment')
       : clienttranslate('${player_name} gains a minor indictment');
 
-    self::notify($player, 'gainIndictmentPrivate', $text, [
-      'player' => $player,
-      'indictment' => $indictment,
-    ]);
+    // self::notify($player, 'gainIndictmentPrivate', $text, [
+    //   'player' => $player,
+    //   'indictment' => $indictment,
+    // ]);
 
     self::notifyAll('gainIndictment', $text, [
       'player' => $player,
       'indictment' => $indictment->jsonSerializeAnonymous(),
-      'preserve' => ['playerId'],
+      '_private' => [
+        $player->getId() => new NotificationMessage(
+          $text,
+          [
+            'player' => $player,
+            'indictment' => $indictment,
+          ]
+        )
+      ]
     ]);
   }
 
@@ -730,30 +792,31 @@ class Notifications
 
   public static function placeEncounterToken($player, $site, $token)
   {
-    $text = clienttranslate('${player_name} places ${tkn_encounterToken} on ${tkn_boldText_site}');
-
     $publicToken = $token->jsonSerialize();
     if ($token->isHidden()) {
       $publicToken['type'] = null;
     }
 
-    self::notify($player, 'placeEncounterTokenPrivate', $text, [
-      'player' => $player,
-      'siteId' => $site->getId(),
-      'token' => $token,
-      'tkn_encounterToken' => implode(':', [$player->getColor(), $token->getType()]),
-      'tkn_boldText_site' => $site->getName(),
-      'i18n' => ['tkn_boldText_site'],
-    ]);
-
-    self::notifyAll('placeEncounterToken', $text, [
+    self::notifyAll('placeEncounterToken', clienttranslate('${player_name} places ${tkn_encounterToken} on ${tkn_boldText_site}'), [
       'player' => $player,
       'siteId' => $site->getId(),
       'token' => $publicToken,
       'tkn_encounterToken' => implode(':', [$player->getColor(), $publicToken['type']]),
       'tkn_boldText_site' => $site->getName(),
       'i18n' => ['tkn_boldText_site'],
-      'preserve' => ['playerId'],
+      '_private' => [
+        $player->getId() => new NotificationMessage(
+          clienttranslate('${player_name} places ${_private.tkn_encounterToken} on ${_private.tkn_boldText_site}'),
+          [
+            'player' => $player,
+            'siteId' => $site->getId(),
+            'token' => $token,
+            'tkn_encounterToken' => implode(':', [$player->getColor(), $token->getType()]),
+            'tkn_boldText_site' => $site->getName(),
+            'i18n' => ['tkn_boldText_site'],
+          ]
+        )
+      ]
     ]);
   }
 
@@ -911,22 +974,26 @@ class Notifications
 
   public static function setupChooseCard($player, $selectedCard)
   {
-    self::notify($player, 'setupChooseCardPrivate', clienttranslate('${player_name} selects ${tkn_boldText_cardValue} of ${tkn_suit}${tkn_viceCard}'), [
-      'player' => $player,
-      'card' => $selectedCard,
-      'tkn_viceCard' => self::tknViceCard($selectedCard),
-      'tkn_boldText_cardValue' => self::viceCardValueText($selectedCard->getDisplayValue()),
-      'tkn_suit' => $selectedCard->getSuit(),
-      'i18n' => ['tkn_boldText_cardValue'],
-    ]);
-
     self::notifyAll('setupChooseCard', clienttranslate('${player_name} selects a card to put in their reputation'), [
       'player' => $player,
       'card' => [
         'id' => $selectedCard->getId(),
         'hidden' => $selectedCard->isHidden(),
       ],
-      'preserve' => ['playerId'],
+      '_private' => [
+        $player->getId() => new NotificationMessage(
+          clienttranslate('${player_name} selects ${_private.tkn_boldText_cardValue} of ${_private.tkn_suit}${_private.tkn_viceCard}'),
+          [
+            'player' => $player,
+            'card' => $selectedCard,
+            'tkn_viceCard' => self::tknViceCard($selectedCard),
+            'tkn_boldText_cardValue' => self::viceCardValueText($selectedCard->getDisplayValue()),
+            'tkn_suit' => $selectedCard->getSuit(),
+            'i18n' => ['tkn_boldText_cardValue'],
+          ]
+        )
+      ]
+
     ]);
   }
 
@@ -984,6 +1051,27 @@ class Notifications
       'tkn_boldText_communityCardValue' => self::viceCardValueText($communityCard->getDisplayValue()),
       'tkn_suit_communityCard' => $communityCard->getSuit(),
       'i18n' => ['tkn_boldText_domino'],
+    ]);
+  }
+
+  public static function undoPlayerSetupChooseCard(Player $player, ViceCard $card)
+  {
+    $text = clienttranslate('${player_name} returns their selected card ');
+
+    self::notifyAll('undoPlayerSetupChooseCard', $text, [
+      'player' => $player,
+      'card' => [
+        'id' => $card->getId(),
+        'hidden' => true,
+      ],
+      '_private' => [
+        $player->getId() => new NotificationMessage(
+          $text,
+          [
+            'card' => $card,
+          ]
+        )
+      ]
     ]);
   }
 }

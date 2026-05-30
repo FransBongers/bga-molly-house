@@ -7,7 +7,7 @@ interface OnEnteringFestivityUseBottleOfGinArgs extends CommonStateArgs {
 
 class FestivityUseBottleOfGin implements State {
   private static instance: FestivityUseBottleOfGin;
-  private args: OnEnteringFestivityUseBottleOfGinArgs;
+  private args!: OnEnteringFestivityUseBottleOfGinArgs;
 
   constructor(private game: GameAlias) {}
 

@@ -48,21 +48,21 @@ class Settings {
   private addTabs() {
     const config = getSettingsConfig();
 
-    const tabsNode = document.getElementById('preference-tabs');
-    const contentNode = document.getElementById('preference-content');
+    const tabsNode = document.getElementById('preference-tabs')!;
+    const contentNode = document.getElementById('preference-content')!;
 
     Object.entries(config).forEach(([tabId, { name }]) => {
       tabsNode.insertAdjacentHTML('beforeend', tplSettingsTab(tabId, name));
       contentNode.insertAdjacentHTML('beforeend', tplSettingsTabContent(tabId));
       document
-        .getElementById(`preference-tab-${tabId}`)
+        .getElementById(`preference-tab-${tabId}`)!
         .addEventListener('click', (event: MouseEvent) => {
           event.preventDefault();
           event.stopPropagation();
           this.changeTab(tabId as SettingsTabId);
         });
 
-      document.getElementById(`preference-content-${tabId}`).style.display =
+      document.getElementById(`preference-content-${tabId}`)!.style.display =
         'none';
     });
   }
@@ -70,7 +70,7 @@ class Settings {
   private moveExisitingPreferences() {
     const contentNode = document.getElementById(
       'preference-content-baseSettings'
-    );
+    )!;
 
     document
       .querySelectorAll('#ingame_menu_content > .preference_choice')
@@ -91,7 +91,7 @@ class Settings {
 
     const tabContentNode = document.getElementById(
       `preference-content-${tabId}`
-    );
+    )!;
 
     tabContentNode.insertAdjacentHTML(
       'beforeend',
@@ -104,6 +104,7 @@ class Settings {
     1;
     const controlId = `setting_${id}`;
     $(controlId).addEventListener('change', () => {
+      // @ts-expect-error
       const value = $(controlId).value;
       this.onChangePreferenceValue(id, value);
     });
@@ -120,7 +121,7 @@ class Settings {
 
     const tabContentNode = document.getElementById(
       `preference-content-${tabId}`
-    );
+    )!;
 
     tabContentNode.insertAdjacentHTML(
       'beforeend',
@@ -146,6 +147,7 @@ class Settings {
 
     this.updateSliderLabelValue(id, this.preferenceValues[id] as string);
 
+    // @ts-expect-error
     $('setting_' + id).noUiSlider.on('slide', (arg) => {
       this.onChangePreferenceValue(id, arg[0] as string);
       this.updateSliderLabelValue(id, arg[0] as string);
@@ -171,8 +173,8 @@ class Settings {
 
         // Call change method to update interface based on current value
         const methodName = this.getMethodName(id);
-        if (onChangeInSetup && value && this[methodName]) {
-          this[methodName](value);
+        if (onChangeInSetup && value && this[methodName as keyof typeof this]) {
+          (this[methodName as keyof typeof this] as Function)(value);
         }
       });
     });
@@ -186,7 +188,7 @@ class Settings {
 
     // Add event listener to prevent menu from closing when sliding a slider
     document
-      .getElementById(`preference-content`)
+      .getElementById(`preference-content`)!
       .addEventListener('click', (event: MouseEvent) => {
         event.preventDefault();
         event.stopPropagation();
@@ -206,11 +208,11 @@ class Settings {
   private changeTab(id: SettingsTabId) {
     const currentTab = document.getElementById(
       `preference-tab-${this.selectedTab}`
-    );
+    )!;
 
     const currentTabContent = document.getElementById(
       `preference-content-${this.selectedTab}`
-    );
+    )!;
 
     currentTab.removeAttribute('data-state');
     if (currentTabContent) {
@@ -218,7 +220,7 @@ class Settings {
     }
 
     this.selectedTab = id;
-    const tab = document.getElementById(`preference-tab-${id}`);
+    const tab = document.getElementById(`preference-tab-${id}`)!;
     const tabContent = document.getElementById(
       `preference-content-${this.selectedTab}`
     );
@@ -244,7 +246,7 @@ class Settings {
     const sliderNode = document.getElementById('setting_row_columnSizes');
     const mapSizeSliderNode = document.getElementById(
       'setting_row_singleColumnMapSize'
-    );
+    )!;
 
     if (!sliderNode) {
       return;
@@ -262,12 +264,16 @@ class Settings {
     }
   }
 
-  public get(id: string): string | number | null {
-    return this.preferenceValues[id] || null;
+  public get(id: string): string | number {
+    if (!(id in this.preferenceValues)) {
+      throw new Error('SETTINGS_ERROR_001')
+    }
+    return this.preferenceValues[id];
   }
 
   private getLocalStorageKey(id: string) {
-    return `${this.game.framework().game_name}-${this.getSuffix(id)}`;
+    // @ts-expect-error
+    return `${this.game.game_name}-${this.getSuffix(id)}`;
   }
 
   private getMethodName(id: string) {
@@ -291,9 +297,9 @@ class Settings {
     return localValue || defaultValue;
   }
 
-  private isMobileVersion() {
+  private isMobileVersion(): boolean {
     const body = document.getElementById('ebd-body');
-    const mobileVersion = body && body.classList.contains('mobile_version');
+    const mobileVersion = !!body && body.classList.contains('mobile_version');
     return mobileVersion;
   }
 
@@ -311,8 +317,10 @@ class Settings {
     localStorage.setItem(this.getLocalStorageKey(id), value);
     const methodName = this.getMethodName(id);
 
-    if (this[methodName]) {
-      this[methodName](value);
+    if (this[methodName as keyof typeof this]) {
+
+      (this[methodName as keyof typeof this] as (...args: any[]) => void)(value);
+      // this[methodName](value);
     }
   }
 
@@ -362,16 +370,16 @@ class Settings {
   public onChangeAnimationSpeed(value: number) {
     const duration = 2100 - value;
     debug('onChangeAnimationSpeedSetting', duration);
-    this.game.animationManager.getSettings().duration = duration;
+    this.game.animationManager.getSettings()!.duration = duration;
   }
 
   public onChangeShowAnimations(value: string) {
     if (value === PREF_ENABLED) {
-      this.game.animationManager.getSettings().duration = Number(
+      this.game.animationManager.getSettings()!.duration = Number(
         this.settings[PREF_ANIMATION_SPEED]
       );
     } else {
-      this.game.animationManager.getSettings().duration = 0;
+      this.game.animationManager.getSettings()!.duration = 0;
     }
     this.checkAnmimationSpeedVisisble();
   }

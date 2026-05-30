@@ -1,6 +1,6 @@
 class ConfirmTurn implements State {
   private static instance: ConfirmTurn;
-  private args: OnEnteringConfirmTurnArgs;
+  private args!: OnEnteringConfirmTurnArgs;
 
   constructor(private game: GameAlias) {}
 
@@ -21,15 +21,7 @@ class ConfirmTurn implements State {
     debug('Leaving ConfirmTurnState');
   }
 
-  setDescription(activePlayerId: number) {
-    // this.game.clientUpdatePageTitle({
-    //   text: _("${player_name} must confirm or restart their turn"),
-    //   args: {
-    //     player_name: this.game.playerManager.getPlayer({playerId: activePlayerId}).getName()
-    //   },
-    //   nonActivePlayers: true,
-    // });
-  }
+  setDescription(activePlayerId: number) {}
 
   //  .####.##....##.########.########.########..########....###.....######..########
   //  ..##..###...##....##....##.......##.....##.##.........##.##...##....##.##......
@@ -49,15 +41,12 @@ class ConfirmTurn implements State {
 
   private updateInterfaceInitialStep() {
     this.game.clearPossible();
-    this.game.clientUpdatePageTitle({
-      text: _('${you} must confirm or restart your turn'),
-      args: {
-        you: '${you}',
-      },
+    updatePageTitle(_('${you} must confirm or restart your turn'));
+
+    addConfirmButton(async () => {
+      await this.game.bga.actions.performAction('actConfirmTurn');
     });
-    addConfirmButton(() =>
-      this.game.framework().bgaPerformAction('actConfirmTurn')
-    );
+
     addUndoButtons(this.args);
   }
 

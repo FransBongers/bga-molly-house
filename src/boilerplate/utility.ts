@@ -9,7 +9,7 @@ const isDebug =
 const debug = isDebug ? console.info.bind(window.console) : () => {};
 
 const addCancelButton = (
-  props: { callback?: Function; extraClasses?: string } = {}
+  props: { callback?: Function; extraClasses?: string } = {},
 ) => {
   Interaction.use().addCancelButton(props);
 };
@@ -21,7 +21,7 @@ const addConfirmButton = (callback: Function) => {
 const addDangerActionButton = (props: {
   id: string;
   text: string;
-  callback: Function | string;
+  callback: Function;
   extraClasses?: string;
 }) => {
   Interaction.use().addDangerActionButton(props);
@@ -34,21 +34,21 @@ const addPlayerButton = (props: {
   id: string;
   text: string;
   playerId: number;
-  callback: Function | string;
+  callback: Function;
   extraClasses?: string;
 }) => Interaction.use().addPlayerButton(props);
 
 const addPrimaryActionButton = (props: {
   id: string;
   text: string;
-  callback: Function | string;
+  callback: Function;
   extraClasses?: string;
 }) => Interaction.use().addPrimaryActionButton(props);
 
 const addSecondaryActionButton = (props: {
   id: string;
   text: string;
-  callback: Function | string;
+  callback: Function;
   extraClasses?: string;
 }) => Interaction.use().addSecondaryActionButton(props);
 
@@ -63,25 +63,23 @@ const clearPossible = () => {
 const updatePageTitle = (
   text: string,
   args: Record<string, string | number | unknown> = {},
-  nonActivePlayers: boolean = false
-) =>
-  Interaction.use().clientUpdatePageTitle(
-    text,
-    Object.assign(args, { you: '${you}', actplayer: '${actplayer}' }),
-    nonActivePlayers
-  );
+) => Interaction.use().clientUpdatePageTitle(text, args);
 
 const incScore = (playerId: number, value: number) => {
-  Interaction.use().game.framework().scoreCtrl[playerId].incValue(value);
+  Interaction.use()
+    .game.bga.playerPanels.getScoreCounter(playerId)
+    .incValue(value);
 };
 
 const setScore = (playerId: number, value: number) => {
-  Interaction.use().game.framework().scoreCtrl[playerId].setValue(value);
+  Interaction.use()
+    .game.bga.playerPanels.getScoreCounter(playerId)
+    .setValue(value);
 };
 
 const formatStringRecursive = (
   log: string,
-  args: Record<string, unknown>
+  args: Record<string, unknown>,
 ): string => {
   return Interaction.use().formatStringRecursive(log, args);
 };
@@ -89,7 +87,7 @@ const formatStringRecursive = (
 const setAbsolutePosition = (
   elt: HTMLElement,
   scaleVarName: string,
-  { top, left }: AbsolutePosition
+  { top, left }: AbsolutePosition,
 ) => {
   // console.log('setAbsolutePosition', elt, top, left);
   if (!elt) {
@@ -119,14 +117,16 @@ const setCalculatedValue = ({
 const onClick = (
   node: HTMLElement | string,
   callback: Function,
-  temporary = true
+  temporary = true,
 ) => {
-  let element = typeof node === 'string' ? document.getElementById(node) : node;
+  let element =
+    typeof node === 'string' ? document.getElementById(node)! : node;
   Interaction.use().onClick(element, callback, temporary);
 };
 
 const setSelected = (node: HTMLElement | string) => {
-  let element = typeof node === 'string' ? document.getElementById(node) : node;
+  let element =
+    typeof node === 'string' ? document.getElementById(node)! : node;
   Interaction.use().setSelected(element);
 };
 

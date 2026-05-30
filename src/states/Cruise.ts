@@ -2,7 +2,7 @@ interface OnEnteringCruiseArgs extends CommonStateArgs {}
 
 class Cruise implements State {
   private static instance: Cruise;
-  private args: OnEnteringCruiseArgs;
+  private args!: OnEnteringCruiseArgs;
 
   constructor(private game: GameAlias) {}
 

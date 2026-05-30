@@ -169,6 +169,7 @@ $machinestates = [
             // these actions are called from the front with bgaPerformAction, and matched to the function on the game.php file
             'act' . PLAYER_SETUP_CHOOSE_CARD,
             'actTakeAtomicAction',
+            'actUndoMultiActiveState'
         ])
         ->transitions([
             'next' => ST_RESOLVE_STACK

@@ -59,7 +59,7 @@ class FestivityTakeMatchingCubes extends \Bga\Games\MollyHouse\Models\AtomicActi
     self::checkAction('actFestivityTakeMatchingCubes');
 
     $takeCubes = $args->takeCubes;
-    Notifications::log('takeCubes', $takeCubes);
+    // Notifications::log('takeCubes', $takeCubes);
     $player = $this->getPlayer();
 
     $stateArgs = $this->argsFestivityTakeMatchingCubes();

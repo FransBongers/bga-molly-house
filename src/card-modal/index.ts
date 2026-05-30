@@ -2,8 +2,8 @@ class CardModal {
   protected game: GameAlias;
   protected pile: 'gossipPile' | 'safePile';
 
-  private modal: Modal;
-  private stock: LineStock<ViceCard>;
+  private modal!: Modal;
+  private stock!: LineStock<ViceCard>;
 
   constructor(game: GameAlias, pile: 'gossipPile' | 'safePile') {
     this.game = game;
@@ -52,7 +52,7 @@ class CardModal {
     this.setupModal(gamedatas);
     this.stock = new LineStock<ViceCard>(
       this.game.viceCardManager,
-      document.getElementById(`moho-card-modal-content-${this.pile}`),
+      document.getElementById(`moho-card-modal-content-${this.pile}`)!,
       { gap: '10px' }
     );
   }

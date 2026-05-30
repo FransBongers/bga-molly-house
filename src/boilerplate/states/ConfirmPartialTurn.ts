@@ -1,6 +1,6 @@
 class ConfirmPartialTurn implements State {
   private static instance: ConfirmPartialTurn;
-  private args: OnEnteringConfirmTurnArgs;
+  private args!: OnEnteringConfirmTurnArgs;
 
   constructor(private game: GameAlias) {}
 
@@ -21,15 +21,7 @@ class ConfirmPartialTurn implements State {
     debug('Leaving ConfirmTurnState');
   }
 
-  setDescription(activePlayerId: number) {
-    // this.game.clientUpdatePageTitle({
-    //   text: _("${player_name} must confirm their moves"),
-    //   args: {
-    //     player_name: this.game.playerManager.getPlayer({playerId: activePlayerId}).getName()
-    //   },
-    //   nonActivePlayers: true,
-    // });
-  }
+  setDescription(activePlayerId: number) {}
 
   //  .####.##....##.########.########.########..########....###.....######..########
   //  ..##..###...##....##....##.......##.....##.##.........##.##...##....##.##......
@@ -49,17 +41,13 @@ class ConfirmPartialTurn implements State {
 
   private updateInterfaceInitialStep() {
     this.game.clearPossible();
-    this.game.clientUpdatePageTitle({
-      text: _(
-        '${you} must confirm your moves. You will not be able to undo'
-      ),
-      args: {
-        you: '${you}',
-      },
-    });
-    addConfirmButton(() =>
-      this.game.framework().bgaPerformAction('actConfirmPartialTurn')
+    updatePageTitle(
+      _('${you} must confirm your moves. You will not be able to undo'),
     );
+
+    addConfirmButton(async () => {
+      await this.game.bga.actions.performAction('actConfirmPartialTurn');
+    });
     addUndoButtons(this.args);
   }
 

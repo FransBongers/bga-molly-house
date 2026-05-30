@@ -9,7 +9,7 @@ use Bga\Games\MollyHouse\Boilerplate\Helpers\Locations;
 use Bga\Games\MollyHouse\Boilerplate\Helpers\Utils;
 use Bga\Games\MollyHouse\Game;
 use Bga\Games\MollyHouse\Managers\Players;
-
+use Bga\Games\MollyHouse\Managers\ViceCards;
 
 class PlayerSetupChooseCard extends \Bga\Games\MollyHouse\Models\AtomicAction
 {
@@ -33,7 +33,8 @@ class PlayerSetupChooseCard extends \Bga\Games\MollyHouse\Models\AtomicAction
     $data['_private'] = [];
     $players = Players::getAll();
     foreach ($players as $player) {
-      $data['_private'][$player->getId()] = $player->getHand();
+      // Add reputation so all cards are available when player clicks undo
+      $data['_private'][$player->getId()] = array_merge($player->getCardsInReputation(), $player->getHand());
     }
 
     return $data;
@@ -92,6 +93,8 @@ class PlayerSetupChooseCard extends \Bga\Games\MollyHouse\Models\AtomicAction
     $game = Game::get();
     $game->gamestate->setPlayerNonMultiactive($playerId, '');
     if (count($game->gamestate->getActivePlayerList()) > 0) {
+      // Restore so player sees undo button
+      Notifications::restoreGameState($player);
       return;
     }
 
@@ -102,6 +105,20 @@ class PlayerSetupChooseCard extends \Bga\Games\MollyHouse\Models\AtomicAction
     }
 
     $this->resolveAction([], true);
+  }
+
+  public function actUndoMultiActiveState(int $currentPlayerId)
+  {
+    $card = ViceCards::getTopOf(Locations::reputation($currentPlayerId));
+
+    if ($card === null) {
+      throw new \Bga\GameFramework\VisibleSystemException("ERROR_035");
+    }
+
+    $card->setLocation(Locations::hand($currentPlayerId));
+    $card->setHidden(0);
+
+    Notifications::undoPlayerSetupChooseCard(Players::get($currentPlayerId), $card);
   }
 
   //  .##.....##.########.####.##.......####.########.##....##

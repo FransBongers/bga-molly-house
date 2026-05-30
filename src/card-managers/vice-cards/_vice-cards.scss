@@ -21,10 +21,15 @@
   background-size: 100% 100%;
 }
 
-.moho-vice-card:hover {
-  transform: scale(1.1);
-  transition: transform 0.1s ease-in-out;
-}
+// #hand,
+// .moho-reputation,
+// #moho-gossip-pile,
+// #moho-market {
+  .moho-vice-card:hover {
+    transform: scale(1.1);
+    transition: transform 0.1s ease-in-out;
+  }
+// }
 
 $viceCards: (
   1: 'Cups1',
@@ -82,7 +87,7 @@ $viceCards: (
 );
 
 @for $i from 1 through 52 {
-  .moho-vice-card[data-card-id="#{map.get($viceCards,$i)}"] {
+  .moho-vice-card[data-card-id='#{map.get($viceCards,$i)}'] {
     background-position-x: math.div((($i - 1) % 13 * 100%), 12);
     background-position-y: math.div(math.floor(calc(($i - 1) / 13)) * 100%, 3);
   }

@@ -4,12 +4,12 @@ interface OnEnteringFestivityPlayCardArgs extends CommonStateArgs {
   currentWinningCards: {
     ranking: string;
     cards: ViceCardBase[];
-  }
+  };
 }
 
 class FestivityPlayCard implements State {
   private static instance: FestivityPlayCard;
-  private args: OnEnteringFestivityPlayCardArgs;
+  private args!: OnEnteringFestivityPlayCardArgs;
 
   constructor(private game: GameAlias) {}
 
@@ -34,18 +34,14 @@ class FestivityPlayCard implements State {
 
   setDescription(
     activePlayerId: number,
-    args: OnEnteringFestivityPlayCardArgs
+    args: OnEnteringFestivityPlayCardArgs,
   ) {
     this.args = args;
     if (args.optionalAction) {
-      this.game.clientUpdatePageTitle({
-        text: _('${tkn_playerName} may play a card'),
-        args: {
-          tkn_playerName: PlayerManager.getInstance()
-            .getPlayer(activePlayerId)
-            .getName(),
-        },
-        nonActivePlayers: true,
+      updatePageTitle(_('${tkn_playerName} may play a card'), {
+        tkn_playerName: PlayerManager.getInstance()
+          .getPlayer(activePlayerId)
+          .getName(),
       });
     }
     this.highlightWinningCards();
@@ -112,7 +108,7 @@ class FestivityPlayCard implements State {
       {
         value: getViceCardValueText(displayValue),
         tkn_suit: suit,
-      }
+      },
     );
     for (let i = 0; i <= 9; i++) {
       addPrimaryActionButton({
@@ -129,13 +125,13 @@ class FestivityPlayCard implements State {
 
   private updateInterfaceConfirm(
     card: ViceCardBase,
-    valueForRogue: number = 0
+    valueForRogue: number = 0,
   ) {
     clearPossible();
 
     setSelected(card.id);
     this.highlightWinningCards();
-    
+
     const { displayValue, suit } = getViceCard(card);
 
     const text =

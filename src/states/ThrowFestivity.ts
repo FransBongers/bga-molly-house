@@ -2,7 +2,7 @@ interface OnEnteringThrowFestivityArgs extends CommonStateArgs {}
 
 class ThrowFestivity implements State {
   private static instance: ThrowFestivity;
-  private args: OnEnteringThrowFestivityArgs;
+  private args!: OnEnteringThrowFestivityArgs;
 
   constructor(private game: GameAlias) {}
 

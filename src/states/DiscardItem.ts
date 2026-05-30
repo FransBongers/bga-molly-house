@@ -4,7 +4,7 @@ interface OnEnteringDiscardItemArgs extends CommonStateArgs {
 
 class DiscardItem implements State {
   private static instance: DiscardItem;
-  private args: OnEnteringDiscardItemArgs;
+  private args!: OnEnteringDiscardItemArgs;
 
   constructor(private game: GameAlias) {}
 

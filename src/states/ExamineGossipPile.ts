@@ -4,7 +4,7 @@ interface OnEnteringExamineGossipPileArgs extends CommonStateArgs {
 
 class ExamineGossipPile implements State {
   private static instance: ExamineGossipPile;
-  private args: OnEnteringExamineGossipPileArgs;
+  private args!: OnEnteringExamineGossipPileArgs;
   private modal: CardModal;
 
   constructor(private game: GameAlias) {

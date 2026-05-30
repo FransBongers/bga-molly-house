@@ -4,7 +4,7 @@ interface OnEnteringFestivityPlayDressArgs extends CommonStateArgs {
 
 class FestivityPlayDress implements State {
   private static instance: FestivityPlayDress;
-  private args: OnEnteringFestivityPlayDressArgs;
+  private args!: OnEnteringFestivityPlayDressArgs;
 
   constructor(private game: GameAlias) {}
 

@@ -9,6 +9,7 @@
     "removeComments": true
   },
   "files": [
+    "bga-framework.d.ts",
     "src/boilerplate/constants.ts",
     "src/constants.ts",
     "node_modules/bga-animations/src/animations.ts",
@@ -115,7 +116,6 @@
     "src/states/EndOfWeekUseDomino.ts",
     "src/states/FestivityPlayDress.ts",
     "src/states/NewspaperNotice.ts",
-    "src/states/UseDoll.ts",
     "src/states/UseDomino.ts"
   ]
 }

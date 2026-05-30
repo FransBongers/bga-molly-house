@@ -8,8 +8,8 @@ interface OnEnteringAddExcessCardsToGossipArgs extends CommonStateArgs {
 
 class AddExcessCardsToGossip implements State {
   private static instance: AddExcessCardsToGossip;
-  private args: OnEnteringAddExcessCardsToGossipArgs;
-  private selectedCards: Record<string, ViceCardBase>;
+  private args!: OnEnteringAddExcessCardsToGossipArgs;
+  private selectedCards!: Record<string, ViceCardBase>;
 
   constructor(private game: GameAlias) {}
 
@@ -37,15 +37,15 @@ class AddExcessCardsToGossip implements State {
     args: OnEnteringAddExcessCardsToGossipArgs
   ) {
     if (args.isRevealedInformer) {
-      this.game.clientUpdatePageTitle({
-        text: _('${tkn_playerName}  must add excess cards to the safe pile'),
-        args: {
+      updatePageTitle(
+        _('${tkn_playerName}  must add excess cards to the safe pile'),
+        {
           tkn_playerName: PlayerManager.getInstance()
             .getPlayer(activePlayerId)
             .getName(),
         },
-        nonActivePlayers: true,
-      });
+        
+      );
     }
   }
 
@@ -131,7 +131,7 @@ class AddExcessCardsToGossip implements State {
 
   private setSelected() {
     Object.keys(this.selectedCards).forEach((cardId) => {
-      const cardElt = document.getElementById(cardId);
+      const cardElt = document.getElementById(cardId)!;
       setSelected(cardElt);
     });
   }

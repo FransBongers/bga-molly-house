@@ -10,6 +10,7 @@ use Bga\Games\MollyHouse\Boilerplate\Helpers\Log;
 use \Bga\GameFramework\Actions\Types\JsonParam;
 use Bga\GameFramework\Notify;
 use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
+use Bga\GameFramework\Actions\CheckAction;
 
 trait EngineTrait
 {
@@ -145,5 +146,24 @@ trait EngineTrait
   {
     $player = Players::getActive();
     Engine::chooseNode($player, $choiceId);
+  }
+
+  // #[CheckAction(false)] // do not do checkAction - its on purpose - do not need to add undo as possible action to every state
+  #[CheckAction(false)]
+  public function actUndoMultiActiveState()
+  {
+    if (!$this->gamestate->isMutiactiveState()) {
+      throw new \Bga\GameFramework\VisibleSystemException("ENGINE_001");
+    }
+    $actionId = $this->getCurrentAtomicAction();
+    $action = AtomicActions::get($actionId, Engine::getNextUnresolved());
+
+    $currentPlayerId = Players::getCurrentId();
+
+    $action->actUndoMultiActiveState($currentPlayerId);
+
+    $this->gamestate->setPlayersMultiactive([$currentPlayerId], 'next', false);
+
+    Notifications::restoreGameState(Players::get($currentPlayerId));
   }
 }

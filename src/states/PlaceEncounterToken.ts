@@ -5,7 +5,7 @@ interface OnEnteringPlaceEncounterTokenArgs extends CommonStateArgs {
 
 class PlaceEncounterToken implements State {
   private static instance: PlaceEncounterToken;
-  private args: OnEnteringPlaceEncounterTokenArgs;
+  private args!: OnEnteringPlaceEncounterTokenArgs;
 
   constructor(private game: GameAlias) {}
 

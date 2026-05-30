@@ -7,7 +7,7 @@ interface OnEnteringEndOfWeekEncounterSocietyArgs extends CommonStateArgs {
 
 class EndOfWeekEncounterSociety implements State {
   private static instance: EndOfWeekEncounterSociety;
-  private args: OnEnteringEndOfWeekEncounterSocietyArgs;
+  private args!: OnEnteringEndOfWeekEncounterSocietyArgs;
 
   constructor(private game: GameAlias) {}
 

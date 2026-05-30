@@ -63,22 +63,13 @@ class ResolveChoice implements State {
       return;
     }
     if (typeof this.args.description === 'string') {
-      updatePageTitle(_(this.args.description), {}, true);
+      updatePageTitle(_(this.args.description), {});
     } else if (typeof this.args.description === 'object') {
       updatePageTitle(
         _(this.args.description.log),
         this.args.description.args,
-        true,
       );
     }
-
-    // this.game.clientUpdatePageTitle({
-    //   text: _("${player_name} must confirm or restart their turn"),
-    //   args: {
-    //     player_name: this.game.playerManager.getPlayer({playerId: activePlayerId}).getName()
-    //   },
-    //   nonActivePlayers: true,
-    // });
   }
 
   //  .####.##....##.########.########.########..########....###.....######..########
@@ -127,9 +118,6 @@ class ResolveChoice implements State {
     Object.values(this.args.allChoices).forEach((choice) => {
       this.addChoiceActionButton(choice, true);
     });
-    // addConfirmButton(() =>
-    //   this.game.framework().bgaPerformAction('actResolveChoice')
-    // );
     addUndoButtons(this.args);
   }
 
@@ -165,19 +153,9 @@ class ResolveChoice implements State {
       extraClasses: disabled ? 'disabled' : '',
       callback: () => {
         const choiceId = choice.id;
-        this.game.framework().bgaPerformAction(
-          'actChooseAction',
-          {
-            choiceId,
-          },
-          //  {lock: true, checkAction: false}
-        );
-        // performAction('actChooseAction', {
-        //   choiceId,
-        // });
-        // this.game.bga.actions.performAction('actChooseAction', {
-        //   choiceId: choice.id,
-        // });
+        this.game.bga.actions.performAction('actChooseAction', {
+          choiceId: choice.id,
+        });
       },
     });
   }

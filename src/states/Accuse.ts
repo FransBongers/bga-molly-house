@@ -2,7 +2,7 @@ interface OnEnteringAccuseArgs extends CommonStateArgs {}
 
 class Accuse implements State {
   private static instance: Accuse;
-  private args: OnEnteringAccuseArgs;
+  private args!: OnEnteringAccuseArgs;
 
   constructor(private game: GameAlias) {}
 

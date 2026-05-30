@@ -2,7 +2,7 @@ interface OnEnteringEndOfWeekUseDominoArgs extends CommonStateArgs {}
 
 class EndOfWeekUseDomino implements State {
   private static instance: EndOfWeekUseDomino;
-  private args: OnEnteringEndOfWeekUseDominoArgs;
+  private args!: OnEnteringEndOfWeekUseDominoArgs;
 
   constructor(private game: GameAlias) {}
 

@@ -5,7 +5,7 @@ interface OnEnteringFestivityTakeMatchingCubesArgs extends CommonStateArgs {
 
 class FestivityTakeMatchingCubes implements State {
   private static instance: FestivityTakeMatchingCubes;
-  private args: OnEnteringFestivityTakeMatchingCubesArgs;
+  private args!: OnEnteringFestivityTakeMatchingCubesArgs;
 
   constructor(private game: GameAlias) {}
 

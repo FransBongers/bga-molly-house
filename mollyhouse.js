@@ -2403,7 +2403,6 @@ define([
 var Interaction = (function () {
     function Interaction(game) {
         this.game = game;
-        this.subscriptions = [];
     }
     Interaction.create = function (game) {
         Interaction.instance = new Interaction(game);
@@ -2430,24 +2429,24 @@ var Interaction = (function () {
         if ($(id)) {
             return;
         }
-        this.game
-            .framework()
-            .addActionButton(id, text, callback, 'customActions', false, 'blue');
-        if (extraClasses) {
-            dojo.addClass(id, extraClasses);
-        }
+        this.game.bga.statusBar.addActionButton(text, callback, {
+            id: id,
+            color: 'primary',
+            destination: document.getElementById('customActions'),
+            classes: extraClasses !== null && extraClasses !== void 0 ? extraClasses : '',
+        });
     };
     Interaction.prototype.addSecondaryActionButton = function (_a) {
         var id = _a.id, text = _a.text, callback = _a.callback, extraClasses = _a.extraClasses;
         if ($(id)) {
             return;
         }
-        this.game
-            .framework()
-            .addActionButton(id, text, callback, 'customActions', false, 'gray');
-        if (extraClasses) {
-            dojo.addClass(id, extraClasses);
-        }
+        this.game.bga.statusBar.addActionButton(text, callback, {
+            id: id,
+            color: 'secondary',
+            destination: document.getElementById('customActions'),
+            classes: extraClasses !== null && extraClasses !== void 0 ? extraClasses : '',
+        });
     };
     Interaction.prototype.addCancelButton = function (_a) {
         var _this = this;
@@ -2476,12 +2475,12 @@ var Interaction = (function () {
         if ($(id)) {
             return;
         }
-        this.game
-            .framework()
-            .addActionButton(id, text, callback, 'customActions', false, 'red');
-        if (extraClasses) {
-            dojo.addClass(id, extraClasses);
-        }
+        this.game.bga.statusBar.addActionButton(text, callback, {
+            id: id,
+            color: 'alert',
+            destination: document.getElementById('customActions'),
+            classes: extraClasses !== null && extraClasses !== void 0 ? extraClasses : '',
+        });
     };
     Interaction.prototype.addPassButton = function (optionalAction, text) {
         var _this = this;
@@ -2490,7 +2489,7 @@ var Interaction = (function () {
                 id: 'pass_btn',
                 text: text ? _(text) : _('Pass'),
                 callback: function () {
-                    return _this.game.framework().bgaPerformAction('actPassOptionalAction');
+                    return _this.game.bga.actions.performAction('actPassOptionalAction');
                 },
             });
         }
@@ -2504,7 +2503,7 @@ var Interaction = (function () {
                 id: 'undo_last_step_btn',
                 text: _('Undo last step'),
                 callback: function () {
-                    _this.game.framework().bgaPerformAction('actUndoToStep', {
+                    _this.game.bga.actions.performAction('actUndoToStep', {
                         stepId: lastStep,
                     });
                 },
@@ -2513,9 +2512,9 @@ var Interaction = (function () {
         if (previousEngineChoices > 0) {
             this.addDangerActionButton({
                 id: 'restart_btn',
-                text: _('Restart turn'),
+                text: _('Undo all'),
                 callback: function () {
-                    _this.game.framework().bgaPerformAction('actRestart');
+                    _this.game.bga.actions.performAction('actRestart');
                 },
             });
         }
@@ -2523,17 +2522,11 @@ var Interaction = (function () {
     Interaction.prototype.clearPossible = function () {
         this.game.clearPossible();
     };
-    Interaction.prototype.clientUpdatePageTitle = function (text, args, nonActivePlayers) {
-        if (nonActivePlayers === void 0) { nonActivePlayers = false; }
-        var title = this.game.format_string_recursive(_(text), args);
-        this.game.gamedatas.gamestate.descriptionmyturn = title;
-        if (nonActivePlayers) {
-            this.game.gamedatas.gamestate.description = title;
-        }
-        this.game.framework().updatePageTitle();
+    Interaction.prototype.clientUpdatePageTitle = function (text, args) {
+        this.game.bga.statusBar.setTitle(text, args);
     };
     Interaction.prototype.formatStringRecursive = function (log, args) {
-        return this.game.format_string_recursive(log, args);
+        return this.game.bga.gameui.format_string_recursive(log, args);
     };
     Interaction.prototype.onClick = function (node, callback, temporary) {
         if (temporary === void 0) { temporary = true; }
@@ -2546,7 +2539,7 @@ var Interaction = (function () {
         node.classList.add(SELECTED);
     };
     Interaction.prototype.performAction = function (actionName, args) {
-        this.game.framework().bgaPerformAction('actTakeAtomicAction', {
+        this.game.bga.actions.performAction('actTakeAtomicAction', {
             actionName: actionName,
             args: JSON.stringify(args),
         });
@@ -2555,7 +2548,7 @@ var Interaction = (function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4, this.game.framework().wait(ms)];
+                    case 0: return [4, this.game.bga.gameui.wait(ms)];
                     case 1: return [2, _a.sent()];
                 }
             });
@@ -2872,123 +2865,22 @@ var NotificationManager = (function () {
         this.game = game;
         this.subscriptions = [];
     }
-    NotificationManager.create = function (game) {
-        NotificationManager.instance = new NotificationManager(game);
-    };
-    NotificationManager.getInstance = function () {
-        return NotificationManager.instance;
-    };
     NotificationManager.prototype.setupNotifications = function () {
-        var _this = this;
         console.log('notifications subscriptions setup');
-        dojo.connect(this.game.framework().notifqueue, 'addToLog', function () {
-            _this.game.addLogClass();
-        });
-        var notifs = [
-            'log',
-            'message',
-            'refreshUI',
-            'refreshUIPrivate',
-            'addCardFromGossipPile',
-            'addCardFromGossipPilePrivate',
-            'addCardToHand',
-            'addCardToGossipPile',
-            'addCardToReputation',
-            'addCardToSafePile',
-            'addExcessCardsToGossip',
-            'addExcessCardsToGossipPrivate',
-            'communityAtrophy',
-            'dealItemToShop',
-            'discardEncounterToken',
-            'discardIndictment',
-            'discardItem',
-            'drawCards',
-            'drawCardsPrivate',
-            'endOfWeekAddCardToGossipPile',
-            'endOfWeekCreateViceDeck',
-            'endOfWeekDiscardToSafePile',
-            'endOfWeekGenerateEvidence',
-            'endOfWeekMollyHouseRaided',
-            'endOfWeekRevealEvidence',
-            'endOfWeekRevealEvidenceForSuit',
-            'gainIndictment',
-            'gainIndictmentPrivate',
-            'festivityEnd',
-            'festivityPlayCard',
-            'festivityRevealTopCardViceDeck',
-            'festivityPhase',
-            'festivitySetRogueValue',
-            'festivityWinningSet',
-            'hang',
-            'gainCubes',
-            'gainDrawTokens',
-            'loseJoy',
-            'loseJoyCommunity',
-            'movePawn',
-            'phase',
-            'placeEncounterToken',
-            'placeEncounterTokenPrivate',
-            'placePawn',
-            'playDress',
-            'playItemToFestivity',
-            'refillMarket',
-            'revealEncounterToken',
-            'revealIndictment',
-            'rollDice',
-            'rollTenSidedDie',
-            'scoreBonusJoy',
-            'scoreJoy',
-            'scoreJoyCommunity',
-            'scoreVictoryPoints',
-            'setupChooseCardPrivate',
-            'setupChooseCard',
-            'setupRevealCard',
-            'takeCandelabra',
-            'takeItem',
-            'throwFestivity',
-            'useDomino',
-        ];
-        notifs.forEach(function (notifName) {
-            _this.subscriptions.push(dojo.subscribe(notifName, _this, function (notifDetails) {
-                debug("notif_".concat(notifName), notifDetails);
-                var promise = _this["notif_".concat(notifName)](notifDetails);
-                var promises = promise ? [promise] : [];
-                var minDuration = 1;
-                var msg = _this.game.format_string_recursive(notifDetails.log, notifDetails.args);
+        this.game.bga.notifications.setupPromiseNotifications({
+            prefix: 'notif_',
+            minDuration: 1200,
+            minDurationNoText: 1,
+            handlers: [this.game.notificationManager],
+            logger: debug,
+            onStart: function (notifName, msg, args) {
                 if (msg != '') {
                     $('gameaction_status').innerHTML = msg;
                     $('pagemaintitletext').innerHTML = msg;
                     $('generalactions').innerHTML = '';
-                    minDuration = MIN_NOTIFICATION_MS;
                 }
-                if (_this.game.animationManager.animationsActive()) {
-                    Promise.all(__spreadArray(__spreadArray([], promises, true), [sleep(minDuration)], false)).then(function () {
-                        return _this.game.framework().notifqueue.onSynchronousNotificationEnd();
-                    });
-                }
-                else {
-                    _this.game.framework().notifqueue.setSynchronousDuration(0);
-                }
-            }));
-            _this.game.framework().notifqueue.setSynchronous(notifName, undefined);
-            [
-                'addCardFromGossipPile',
-                'addExcessCardsToGossip',
-                'drawCards',
-                'gainIndictment',
-                'setupChooseCard',
-                'placeEncounterToken',
-            ].forEach(function (notifId) {
-                _this.game
-                    .framework()
-                    .notifqueue.setIgnoreNotificationCheck(notifId, function (notif) {
-                    return notif.args.playerId == _this.game.getPlayerId();
-                });
-            });
+            },
         });
-    };
-    NotificationManager.prototype.destroy = function () {
-        dojo.forEach(this.subscriptions, dojo.unsubscribe);
     };
     NotificationManager.prototype.getPlayer = function (playerId) {
         return PlayerManager.getInstance().getPlayer(playerId);
@@ -3000,7 +2892,7 @@ var NotificationManager = (function () {
     NotificationManager.prototype.notif_log = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                debug('notif_log', notif.args);
+                debug('notif_log', notif);
                 return [2];
             });
         });
@@ -3012,11 +2904,19 @@ var NotificationManager = (function () {
             });
         });
     };
+    NotificationManager.prototype.notif_restoreGameState = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                this.game.onCancel();
+                return [2];
+            });
+        });
+    };
     NotificationManager.prototype.notif_refreshUI = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
             var gamedatas, players, otherData, updatedGamedatas;
             return __generator(this, function (_a) {
-                gamedatas = notif.args.data;
+                gamedatas = notif.data;
                 players = gamedatas.players, otherData = __rest(gamedatas, ["players"]);
                 updatedGamedatas = __assign(__assign({}, this.game.gamedatas), otherData);
                 Object.entries(players).forEach(function (_a) {
@@ -3041,9 +2941,9 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_refreshUIPrivate = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, handCards, encounterTokens, indictments, player, hand;
-            return __generator(this, function (_b) {
-                _a = notif.args, playerId = _a.playerId, handCards = _a.hand, encounterTokens = _a.encounterTokens, indictments = _a.indictments;
+            var playerId, handCards, encounterTokens, indictments, player, hand;
+            return __generator(this, function (_a) {
+                playerId = notif.playerId, handCards = notif.hand, encounterTokens = notif.encounterTokens, indictments = notif.indictments;
                 player = this.getPlayer(playerId);
                 player.indictments.removeAll();
                 player.encounterTokens.removeAll();
@@ -3060,16 +2960,16 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_phase = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, phase, week;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var phase, week;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _a = notif.args, phase = _a.phase, week = _a.week;
+                        phase = notif.phase, week = notif.week;
                         if (!(phase === MOVE_WEEK_MARKER && week)) return [3, 2];
                         return [4, Board.getInstance().moveWeekMarker(week)];
                     case 1:
-                        _b.sent();
-                        _b.label = 2;
+                        _a.sent();
+                        _a.label = 2;
                     case 2: return [2];
                 }
             });
@@ -3077,47 +2977,47 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_addCardFromGossipPile = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var playerId;
+            var playerId, _private, player, board, card, hand;
             return __generator(this, function (_a) {
-                playerId = notif.args.playerId;
-                Board.getInstance().counters[GOSSIP_PILE].incValue(-1);
-                this.getPlayer(playerId).counters[HAND].incValue(1);
-                return [2];
-            });
-        });
-    };
-    NotificationManager.prototype.notif_addCardFromGossipPilePrivate = function (notif) {
-        return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, card, player, hand;
-            return __generator(this, function (_b) {
-                _a = notif.args, playerId = _a.playerId, card = _a.card;
-                player = this.getPlayer(playerId);
-                Board.getInstance().counters[GOSSIP_PILE].incValue(-1);
-                hand = Hand.getInstance();
-                hand.addCard(getViceCard(card));
-                player.counters[HAND].incValue(1);
-                return [2];
+                switch (_a.label) {
+                    case 0:
+                        playerId = notif.playerId, _private = notif._private;
+                        player = this.getPlayer(playerId);
+                        board = Board.getInstance();
+                        board.counters[GOSSIP_PILE].incValue(-1);
+                        if (!_private) {
+                            player.counters[HAND].incValue(1);
+                            return [2];
+                        }
+                        card = _private.card;
+                        hand = Hand.getInstance();
+                        return [4, hand.addCard(getViceCard(card))];
+                    case 1:
+                        _a.sent();
+                        player.counters[HAND].incValue(1);
+                        return [2];
+                }
             });
         });
     };
     NotificationManager.prototype.notif_addCardToHand = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, card, viceCard, hand;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var playerId, card, viceCard, hand;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _a = notif.args, playerId = _a.playerId, card = _a.card;
+                        playerId = notif.playerId, card = notif.card;
                         viceCard = getViceCard(card);
                         this.getPlayer(playerId).counters[HAND].incValue(1);
                         if (!(playerId === this.game.getPlayerId())) return [3, 2];
                         hand = Hand.getInstance();
                         return [4, hand.addCard(viceCard)];
                     case 1:
-                        _b.sent();
+                        _a.sent();
                         return [3, 3];
                     case 2:
                         Market.getInstance().stock.removeCard(viceCard);
-                        _b.label = 3;
+                        _a.label = 3;
                     case 3: return [2];
                 }
             });
@@ -3125,11 +3025,11 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_addCardToGossipPile = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, card, fromLocation, viceCard, board, playerId, playerId;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var card, fromLocation, viceCard, board, playerId, playerId;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _a = notif.args, card = _a.card, fromLocation = _a.fromLocation;
+                        card = notif.card, fromLocation = notif.fromLocation;
                         viceCard = getViceCard(card);
                         board = Board.getInstance();
                         if (fromLocation.startsWith('reputation')) {
@@ -3142,11 +3042,11 @@ var NotificationManager = (function () {
                         }
                         return [4, board.gossipPile.addCard(viceCard)];
                     case 1:
-                        _b.sent();
+                        _a.sent();
                         board.counters[GOSSIP_PILE].incValue(1);
                         return [4, this.game.viceCardManager.removeCard(viceCard)];
                     case 2:
-                        _b.sent();
+                        _a.sent();
                         return [2];
                 }
             });
@@ -3154,11 +3054,11 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_addCardToReputation = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, card, from, player, viceCard, fromElement;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var playerId, card, from, player, viceCard, fromElement;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _a = notif.args, playerId = _a.playerId, card = _a.card, from = _a.from;
+                        playerId = notif.playerId, card = notif.card, from = notif.from;
                         player = this.getPlayer(playerId);
                         viceCard = getViceCard(card);
                         fromElement = this.game.getPlayerId() !== playerId
@@ -3171,7 +3071,7 @@ var NotificationManager = (function () {
                                 fromElement: fromElement,
                             })];
                     case 1:
-                        _b.sent();
+                        _a.sent();
                         player.counters[viceCard.suit].incValue(1);
                         return [2];
                 }
@@ -3180,11 +3080,11 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_addCardToSafePile = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, card, playerId, community, from, viceCard, playerId_1, market;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var card, playerId, community, from, viceCard, playerId_1, market;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _a = notif.args, card = _a.card, playerId = _a.playerId, community = _a.community, from = _a.from;
+                        card = notif.card, playerId = notif.playerId, community = notif.community, from = notif.from;
                         viceCard = getViceCard(card);
                         if (from.startsWith('reputation_') && !community && playerId) {
                             this.getPlayer(playerId).counters[viceCard.suit].incValue(-1);
@@ -3196,7 +3096,7 @@ var NotificationManager = (function () {
                         market = Market.getInstance();
                         return [4, market.addCardToSafePile(viceCard)];
                     case 1:
-                        _b.sent();
+                        _a.sent();
                         return [2];
                 }
             });
@@ -3204,17 +3104,19 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_addExcessCardsToGossip = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, number, playerId, cardsAddedToSafePile, cards, player, market, promises;
+            var number, playerId, cardsAddedToSafePile, cards, _private, player, board, market, promises_1, privateCards, promises;
             var _this = this;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _a = notif.args, number = _a.number, playerId = _a.playerId, cardsAddedToSafePile = _a.cardsAddedToSafePile, cards = _a.cards;
+                        number = notif.number, playerId = notif.playerId, cardsAddedToSafePile = notif.cardsAddedToSafePile, cards = notif.cards, _private = notif._private;
                         player = this.getPlayer(playerId);
+                        board = Board.getInstance();
                         market = Market.getInstance();
                         player.counters[HAND].incValue(-number);
+                        if (!!_private) return [3, 4];
                         if (!cardsAddedToSafePile) return [3, 2];
-                        promises = cards.map(function (card, index) { return __awaiter(_this, void 0, void 0, function () {
+                        promises_1 = cards.map(function (card, index) { return __awaiter(_this, void 0, void 0, function () {
                             return __generator(this, function (_a) {
                                 switch (_a.label) {
                                     case 0: return [4, Interaction.use().wait(index * 150)];
@@ -3227,30 +3129,17 @@ var NotificationManager = (function () {
                                 }
                             });
                         }); });
-                        return [4, Promise.all(promises)];
+                        return [4, Promise.all(promises_1)];
                     case 1:
-                        _b.sent();
+                        _a.sent();
                         return [3, 3];
                     case 2:
                         Board.getInstance().counters[GOSSIP_PILE].incValue(number);
-                        _b.label = 3;
+                        _a.label = 3;
                     case 3: return [2];
-                }
-            });
-        });
-    };
-    NotificationManager.prototype.notif_addExcessCardsToGossipPrivate = function (notif) {
-        return __awaiter(this, void 0, void 0, function () {
-            var _a, cards, playerId, board, market, promises;
-            var _this = this;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        _a = notif.args, cards = _a.cards, playerId = _a.playerId;
-                        board = Board.getInstance();
-                        market = Market.getInstance();
-                        this.getPlayer(playerId).counters[HAND].incValue(-cards.length);
-                        promises = cards.map(function (card, index) { return __awaiter(_this, void 0, void 0, function () {
+                    case 4:
+                        privateCards = _private.cards;
+                        promises = privateCards.map(function (card, index) { return __awaiter(_this, void 0, void 0, function () {
                             var viceCard;
                             return __generator(this, function (_a) {
                                 switch (_a.label) {
@@ -3278,8 +3167,8 @@ var NotificationManager = (function () {
                             });
                         }); });
                         return [4, Promise.all(promises)];
-                    case 1:
-                        _b.sent();
+                    case 5:
+                        _a.sent();
                         return [2];
                 }
             });
@@ -3303,7 +3192,7 @@ var NotificationManager = (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        item = notif.args.item;
+                        item = notif.item;
                         return [4, Board.getInstance().shops[item.location].addCard(getItem(item))];
                     case 1:
                         _a.sent();
@@ -3318,7 +3207,7 @@ var NotificationManager = (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        token = notif.args.token;
+                        token = notif.token;
                         return [4, Board.getInstance().encounterTokenDiscard.addCard(token)];
                     case 1:
                         _a.sent();
@@ -3329,14 +3218,14 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_discardIndictment = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, indictment;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var playerId, indictment;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _a = notif.args, playerId = _a.playerId, indictment = _a.indictment;
+                        playerId = notif.playerId, indictment = notif.indictment;
                         return [4, Board.getInstance().indictmentDiscard.addCard(indictment)];
                     case 1:
-                        _b.sent();
+                        _a.sent();
                         return [2];
                 }
             });
@@ -3348,7 +3237,7 @@ var NotificationManager = (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        item = notif.args.item;
+                        item = notif.item;
                         return [4, Board.getInstance().itemDiscard.addCard(getItem(item))];
                     case 1:
                         _a.sent();
@@ -3359,45 +3248,40 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_drawCards = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, number, numberOfDrawTokenToReturn, player;
-            return __generator(this, function (_b) {
-                _a = notif.args, playerId = _a.playerId, number = _a.number, numberOfDrawTokenToReturn = _a.numberOfDrawTokenToReturn;
-                Market.getInstance().incDeckCounter(-number);
-                player = this.getPlayer(playerId);
-                player.counters[DRAW_TOKEN].incValue(-numberOfDrawTokenToReturn);
-                player.counters[HAND].incValue(number);
-                return [2];
-            });
-        });
-    };
-    NotificationManager.prototype.notif_drawCardsPrivate = function (notif) {
-        return __awaiter(this, void 0, void 0, function () {
-            var _a, cards, playerId, numberOfDrawTokenToReturn, viceCards, hand, market, player, promises;
+            var playerId, number, numberOfDrawTokenToReturn, _private, market, player, cards, viceCards, hand, promises;
             var _this = this;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _a = notif.args, cards = _a.cards, playerId = _a.playerId, numberOfDrawTokenToReturn = _a.numberOfDrawTokenToReturn;
-                        viceCards = cards.map(function (card) { return getViceCard(card); });
-                        hand = Hand.getInstance();
+                        playerId = notif.playerId, number = notif.number, numberOfDrawTokenToReturn = notif.numberOfDrawTokenToReturn, _private = notif._private;
                         market = Market.getInstance();
                         player = this.getPlayer(playerId);
+                        if (!_private) {
+                            market.incDeckCounter(-number);
+                            player.counters[DRAW_TOKEN].incValue(-numberOfDrawTokenToReturn);
+                            player.counters[HAND].incValue(number);
+                            return [2];
+                        }
+                        cards = _private.cards;
+                        viceCards = cards.map(function (card) { return getViceCard(card); });
+                        hand = Hand.getInstance();
                         player.counters[DRAW_TOKEN].incValue(-numberOfDrawTokenToReturn);
                         promises = viceCards.map(function (card, index) { return __awaiter(_this, void 0, void 0, function () {
                             var location;
                             return __generator(this, function (_a) {
                                 switch (_a.label) {
-                                    case 0:
-                                        Interaction.use().wait(index * 150);
+                                    case 0: return [4, Interaction.use().wait(index * 150)];
+                                    case 1:
+                                        _a.sent();
                                         location = card.location;
                                         card.location = DECK;
                                         return [4, market.deck.addCard(card)];
-                                    case 1:
+                                    case 2:
                                         _a.sent();
                                         card.location = location;
                                         market.incDeckCounter(-1);
                                         return [4, hand.addCard(card)];
-                                    case 2:
+                                    case 3:
                                         _a.sent();
                                         player.counters[HAND].incValue(1);
                                         return [2];
@@ -3406,7 +3290,7 @@ var NotificationManager = (function () {
                         }); });
                         return [4, Promise.all(promises)];
                     case 1:
-                        _b.sent();
+                        _a.sent();
                         return [2];
                 }
             });
@@ -3448,7 +3332,7 @@ var NotificationManager = (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        cards = notif.args.cards;
+                        cards = notif.cards;
                         market = Market.getInstance();
                         board = Board.getInstance();
                         promises = cards.map(function (card, index) { return __awaiter(_this, void 0, void 0, function () {
@@ -3494,9 +3378,9 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_endOfWeekDiscardToSafePile = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, number, cards;
-            return __generator(this, function (_b) {
-                _a = notif.args, number = _a.number, cards = _a.cards;
+            var number, cards;
+            return __generator(this, function (_a) {
+                number = notif.number, cards = notif.cards;
                 Board.getInstance().counters[GOSSIP_PILE].incValue(-number);
                 Market.getInstance().incSafePileCounter(number);
                 return [2];
@@ -3505,9 +3389,9 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_endOfWeekGenerateEvidence = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, site, number;
-            return __generator(this, function (_b) {
-                _a = notif.args, site = _a.site, number = _a.number;
+            var site, number;
+            return __generator(this, function (_a) {
+                site = notif.site, number = notif.number;
                 Board.getInstance().evidenceCounters[site.id].incValue(number);
                 return [2];
             });
@@ -3515,9 +3399,9 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_endOfWeekMollyHouseRaided = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, mollyHouse, adjacentSites, board;
-            return __generator(this, function (_b) {
-                _a = notif.args, mollyHouse = _a.mollyHouse, adjacentSites = _a.adjacentSites;
+            var mollyHouse, adjacentSites, board;
+            return __generator(this, function (_a) {
+                mollyHouse = notif.mollyHouse, adjacentSites = notif.adjacentSites;
                 board = Board.getInstance();
                 board.setMollyHouseRaided(mollyHouse.id);
                 Object.keys(adjacentSites).forEach(function (siteId) {
@@ -3540,11 +3424,11 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_endOfWeekRevealEvidenceForSuit = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, threats, cards, gatherEvidence, promises, counter;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var threats, cards, gatherEvidence, promises, counter;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _a = notif.args, threats = _a.threats, cards = _a.cards;
+                        threats = notif.threats, cards = notif.cards;
                         gatherEvidence = GatherEvidence.getInstance();
                         promises = [];
                         counter = 0;
@@ -3558,7 +3442,7 @@ var NotificationManager = (function () {
                         });
                         return [4, Promise.all(promises)];
                     case 1:
-                        _b.sent();
+                        _a.sent();
                         return [2];
                 }
             });
@@ -3575,15 +3459,15 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_festivityPlayCard = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, card;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var playerId, card;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _a = notif.args, playerId = _a.playerId, card = _a.card;
+                        playerId = notif.playerId, card = notif.card;
                         this.getPlayer(playerId).counters[HAND].incValue(-1);
                         return [4, Festivity.getInstance().stocks[playerId].addCard(getViceCard(card))];
                     case 1:
-                        _b.sent();
+                        _a.sent();
                         if (getViceCard(card).displayValue === 'R') {
                             Festivity.getInstance().addRogueValue(card.id, card.festivityValue);
                         }
@@ -3594,9 +3478,9 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_gainDrawTokens = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, number, player;
-            return __generator(this, function (_b) {
-                _a = notif.args, playerId = _a.playerId, number = _a.number;
+            var playerId, number, player;
+            return __generator(this, function (_a) {
+                playerId = notif.playerId, number = notif.number;
                 player = this.getPlayer(playerId);
                 player.counters[DRAW_TOKEN].incValue(number);
                 return [2];
@@ -3605,29 +3489,15 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_gainIndictment = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, indictment;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var playerId, _private, indictment;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _a = notif.args, playerId = _a.playerId, indictment = _a.indictment;
+                        playerId = notif.playerId, _private = notif._private;
+                        indictment = _private ? _private.indictment : notif.indictment;
                         return [4, this.getPlayer(playerId).indictments.addCard(indictment)];
                     case 1:
-                        _b.sent();
-                        return [2];
-                }
-            });
-        });
-    };
-    NotificationManager.prototype.notif_gainIndictmentPrivate = function (notif) {
-        return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, indictment;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        _a = notif.args, playerId = _a.playerId, indictment = _a.indictment;
-                        return [4, this.getPlayer(playerId).indictments.addCard(indictment)];
-                    case 1:
-                        _b.sent();
+                        _a.sent();
                         return [2];
                 }
             });
@@ -3635,11 +3505,11 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_festivityRevealTopCardViceDeck = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, card, cardDrawnFromGossipPile, viceCard, location, market;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var card, cardDrawnFromGossipPile, viceCard, location, market;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _a = notif.args, card = _a.card, cardDrawnFromGossipPile = _a.cardDrawnFromGossipPile;
+                        card = notif.card, cardDrawnFromGossipPile = notif.cardDrawnFromGossipPile;
                         viceCard = getViceCard(card);
                         location = viceCard.location;
                         viceCard.location = cardDrawnFromGossipPile ? GOSSIP_PILE : DECK;
@@ -3649,8 +3519,8 @@ var NotificationManager = (function () {
                         return [3, 3];
                     case 1: return [4, market.deck.addCard(viceCard)];
                     case 2:
-                        _b.sent();
-                        _b.label = 3;
+                        _a.sent();
+                        _a.label = 3;
                     case 3:
                         viceCard.location = location;
                         if (cardDrawnFromGossipPile) {
@@ -3661,7 +3531,7 @@ var NotificationManager = (function () {
                         }
                         return [4, Festivity.getInstance().stocks[COMMUNITY].addCard(viceCard)];
                     case 4:
-                        _b.sent();
+                        _a.sent();
                         return [2];
                 }
             });
@@ -3674,9 +3544,9 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_festivitySetRogueValue = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, card, value;
-            return __generator(this, function (_b) {
-                _a = notif.args, card = _a.card, value = _a.value;
+            var card, value;
+            return __generator(this, function (_a) {
+                card = notif.card, value = notif.value;
                 Festivity.getInstance().addRogueValue(card.id, value);
                 return [2];
             });
@@ -3686,16 +3556,16 @@ var NotificationManager = (function () {
         return __awaiter(this, void 0, void 0, function () {
             var cards;
             return __generator(this, function (_a) {
-                cards = notif.args.cards;
+                cards = notif.cards;
                 return [2];
             });
         });
     };
     NotificationManager.prototype.notif_gainCubes = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, numberOfCubes, suit, player;
-            return __generator(this, function (_b) {
-                _a = notif.args, playerId = _a.playerId, numberOfCubes = _a.numberOfCubes, suit = _a.suit;
+            var playerId, numberOfCubes, suit, player;
+            return __generator(this, function (_a) {
+                playerId = notif.playerId, numberOfCubes = notif.numberOfCubes, suit = notif.suit;
                 player = this.getPlayer(playerId);
                 this.gainCubes(player, suit, numberOfCubes);
                 return [2];
@@ -3704,9 +3574,9 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_hang = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, joyMarker;
-            return __generator(this, function (_b) {
-                _a = notif.args, playerId = _a.playerId, joyMarker = _a.joyMarker;
+            var playerId, joyMarker;
+            return __generator(this, function (_a) {
+                playerId = notif.playerId, joyMarker = notif.joyMarker;
                 setScore(playerId, 0);
                 this.game.joyMarkerManager.updateCardInformations(joyMarker);
                 return [2];
@@ -3715,9 +3585,9 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_loseJoy = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, amount, total, joyMarker;
-            return __generator(this, function (_b) {
-                _a = notif.args, playerId = _a.playerId, amount = _a.amount, total = _a.total, joyMarker = _a.joyMarker;
+            var playerId, amount, total, joyMarker;
+            return __generator(this, function (_a) {
+                playerId = notif.playerId, amount = notif.amount, total = notif.total, joyMarker = notif.joyMarker;
                 incScore(playerId, -amount);
                 Board.getInstance().joyMarkerStocks[total % 40].addCard(joyMarker);
                 return [2];
@@ -3726,9 +3596,9 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_loseJoyCommunity = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, joyTotal, joyMarker;
-            return __generator(this, function (_b) {
-                _a = notif.args, joyTotal = _a.joyTotal, joyMarker = _a.joyMarker;
+            var joyTotal, joyMarker;
+            return __generator(this, function (_a) {
+                joyTotal = notif.joyTotal, joyMarker = notif.joyMarker;
                 Board.getInstance().joyMarkerStocks[joyTotal % 40].addCard(joyMarker);
                 return [2];
             });
@@ -3736,18 +3606,18 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_movePawn = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, from, pawn, board;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var from, pawn, board;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _a = notif.args, from = _a.from, pawn = _a.pawn;
+                        from = notif.from, pawn = notif.pawn;
                         board = Board.getInstance();
                         return [4, board.movePawn({
                                 pawn: pawn,
                                 from: from,
                             })];
                     case 1:
-                        _b.sent();
+                        _a.sent();
                         return [2];
                 }
             });
@@ -3759,7 +3629,7 @@ var NotificationManager = (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        item = notif.args.item;
+                        item = notif.item;
                         return [4, Festivity.getInstance().playedItems.addCard(getItem(item))];
                     case 1:
                         _a.sent();
@@ -3774,7 +3644,7 @@ var NotificationManager = (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        item = notif.args.item;
+                        item = notif.item;
                         return [4, Festivity.getInstance().playedItems.addCard(getItem(item))];
                     case 1:
                         _a.sent();
@@ -3785,29 +3655,16 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_placeEncounterToken = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, siteId, token;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var _private, siteId, token;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _a = notif.args, siteId = _a.siteId, token = _a.token;
+                        _private = notif._private;
+                        siteId = _private ? _private.siteId : notif.siteId;
+                        token = _private ? _private.token : notif.token;
                         return [4, Board.getInstance().encounterTokens[siteId].addCard(token)];
                     case 1:
-                        _b.sent();
-                        return [2];
-                }
-            });
-        });
-    };
-    NotificationManager.prototype.notif_placeEncounterTokenPrivate = function (notif) {
-        return __awaiter(this, void 0, void 0, function () {
-            var _a, siteId, token;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        _a = notif.args, siteId = _a.siteId, token = _a.token;
-                        return [4, Board.getInstance().encounterTokens[siteId].addCard(token)];
-                    case 1:
-                        _b.sent();
+                        _a.sent();
                         return [2];
                 }
             });
@@ -3815,16 +3672,16 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_placePawn = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, pawn, board, player;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var playerId, pawn, board, player;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _a = notif.args, playerId = _a.playerId, pawn = _a.pawn;
+                        playerId = notif.playerId, pawn = notif.pawn;
                         board = Board.getInstance();
                         player = this.getPlayer(playerId);
                         return [4, board.placePawn(pawn, document.getElementById("player_board_".concat(playerId)))];
                     case 1:
-                        _b.sent();
+                        _a.sent();
                         return [2];
                 }
             });
@@ -3832,12 +3689,12 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_refillMarket = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, movedCards, addedCards, market, promises;
+            var movedCards, addedCards, market, promises;
             var _this = this;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _a = notif.args, movedCards = _a.movedCards, addedCards = _a.addedCards;
+                        movedCards = notif.movedCards, addedCards = notif.addedCards;
                         market = Market.getInstance();
                         promises = movedCards.concat(addedCards).map(function (card, index) { return __awaiter(_this, void 0, void 0, function () {
                             var viceCard, location_1;
@@ -3871,7 +3728,7 @@ var NotificationManager = (function () {
                         }); });
                         return [4, Promise.all(promises)];
                     case 1:
-                        _b.sent();
+                        _a.sent();
                         return [2];
                 }
             });
@@ -3879,9 +3736,9 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_revealEncounterToken = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, siteId, token;
-            return __generator(this, function (_b) {
-                _a = notif.args, siteId = _a.siteId, token = _a.token;
+            var siteId, token;
+            return __generator(this, function (_a) {
+                siteId = notif.siteId, token = notif.token;
                 this.game.encounterTokenManager.updateCardInformations(token);
                 return [2];
             });
@@ -3889,9 +3746,9 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_revealIndictment = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, indictment;
-            return __generator(this, function (_b) {
-                _a = notif.args, playerId = _a.playerId, indictment = _a.indictment;
+            var playerId, indictment;
+            return __generator(this, function (_a) {
+                playerId = notif.playerId, indictment = notif.indictment;
                 this.game.indictmentManager.updateCardInformations(indictment);
                 return [2];
             });
@@ -3903,7 +3760,7 @@ var NotificationManager = (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        diceResults = notif.args.diceResults;
+                        diceResults = notif.diceResults;
                         Board.getInstance().diceStock.rollDice(getDice(diceResults), {
                             effect: 'rollIn',
                             duration: [800, 1200],
@@ -3920,22 +3777,22 @@ var NotificationManager = (function () {
         return __awaiter(this, void 0, void 0, function () {
             var dieResult;
             return __generator(this, function (_a) {
-                dieResult = notif.args.dieResult;
+                dieResult = notif.dieResult;
                 return [2];
             });
         });
     };
     NotificationManager.prototype.notif_scoreBonusJoy = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, amount, total, joyMarker;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var playerId, amount, total, joyMarker;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _a = notif.args, playerId = _a.playerId, amount = _a.amount, total = _a.total, joyMarker = _a.joyMarker;
+                        playerId = notif.playerId, amount = notif.amount, total = notif.total, joyMarker = notif.joyMarker;
                         incScore(playerId, amount);
                         return [4, Board.getInstance().joyMarkerStocks[total % 40].addCard(joyMarker)];
                     case 1:
-                        _b.sent();
+                        _a.sent();
                         return [2];
                 }
             });
@@ -3943,15 +3800,15 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_scoreJoy = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, amount, total, joyMarker;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var playerId, amount, total, joyMarker;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _a = notif.args, playerId = _a.playerId, amount = _a.amount, total = _a.total, joyMarker = _a.joyMarker;
+                        playerId = notif.playerId, amount = notif.amount, total = notif.total, joyMarker = notif.joyMarker;
                         incScore(playerId, amount);
                         return [4, Board.getInstance().joyMarkerStocks[total % 40].addCard(joyMarker)];
                     case 1:
-                        _b.sent();
+                        _a.sent();
                         return [2];
                 }
             });
@@ -3959,14 +3816,14 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_scoreJoyCommunity = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, joyTotal, joyMarker;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var joyTotal, joyMarker;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _a = notif.args, joyTotal = _a.joyTotal, joyMarker = _a.joyMarker;
+                        joyTotal = notif.joyTotal, joyMarker = notif.joyMarker;
                         return [4, Board.getInstance().joyMarkerStocks[joyTotal % 40].addCard(joyMarker)];
                     case 1:
-                        _b.sent();
+                        _a.sent();
                         return [2];
                 }
             });
@@ -3974,9 +3831,9 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_scoreVictoryPoints = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, amount;
-            return __generator(this, function (_b) {
-                _a = notif.args, playerId = _a.playerId, amount = _a.amount;
+            var playerId, amount;
+            return __generator(this, function (_a) {
+                playerId = notif.playerId, amount = notif.amount;
                 incScore(playerId, amount);
                 return [2];
             });
@@ -3984,43 +3841,33 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_setupChooseCard = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, card;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var playerId, card, _private;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _a = notif.args, playerId = _a.playerId, card = _a.card;
+                        playerId = notif.playerId, card = notif.card, _private = notif._private;
                         this.getPlayer(playerId).counters[HAND].incValue(-1);
-                        return [4, this.getPlayer(playerId).reputation.addCard(card, {
-                                fromElement: document.getElementById("player_board_".concat(playerId)),
-                            })];
+                        if (!_private) return [3, 2];
+                        return [4, this.getPlayer(playerId).reputation.addCard(getViceCard(_private.card))];
                     case 1:
-                        _b.sent();
-                        return [2];
-                }
-            });
-        });
-    };
-    NotificationManager.prototype.notif_setupChooseCardPrivate = function (notif) {
-        return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, card;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        _a = notif.args, playerId = _a.playerId, card = _a.card;
-                        this.getPlayer(playerId).counters[HAND].incValue(-1);
-                        return [4, this.getPlayer(playerId).reputation.addCard(getViceCard(card))];
-                    case 1:
-                        _b.sent();
-                        return [2];
+                        _a.sent();
+                        return [3, 4];
+                    case 2: return [4, this.getPlayer(playerId).reputation.addCard(card, {
+                            fromElement: document.getElementById("player_board_".concat(playerId)),
+                        })];
+                    case 3:
+                        _a.sent();
+                        _a.label = 4;
+                    case 4: return [2];
                 }
             });
         });
     };
     NotificationManager.prototype.notif_setupRevealCard = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, card, viceCard;
-            return __generator(this, function (_b) {
-                _a = notif.args, playerId = _a.playerId, card = _a.card;
+            var playerId, card, viceCard;
+            return __generator(this, function (_a) {
+                playerId = notif.playerId, card = notif.card;
                 viceCard = getViceCard(card);
                 this.game.viceCardManager.updateCardInformations(viceCard);
                 this.getPlayer(playerId).counters[viceCard.suit].incValue(1);
@@ -4034,7 +3881,7 @@ var NotificationManager = (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        playerId = notif.args.playerId;
+                        playerId = notif.playerId;
                         return [4, PlayerManager.getInstance().moveCandelabraTo(playerId)];
                     case 1:
                         _a.sent();
@@ -4045,15 +3892,15 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_takeItem = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, item, player;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var playerId, item, player;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _a = notif.args, playerId = _a.playerId, item = _a.item;
+                        playerId = notif.playerId, item = notif.item;
                         player = this.getPlayer(playerId);
                         return [4, player.items[item.location].addCard(getItem(item))];
                     case 1:
-                        _b.sent();
+                        _a.sent();
                         return [2];
                 }
             });
@@ -4063,7 +3910,7 @@ var NotificationManager = (function () {
         return __awaiter(this, void 0, void 0, function () {
             var playerId;
             return __generator(this, function (_a) {
-                playerId = notif.args.playerId;
+                playerId = notif.playerId;
                 Board.getInstance().setFestivityActive(true);
                 Festivity.getInstance().setRunner(playerId);
                 Festivity.getInstance().setFestivityActive(true);
@@ -4073,12 +3920,12 @@ var NotificationManager = (function () {
     };
     NotificationManager.prototype.notif_useDomino = function (notif) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, playerId, playedCard, communityCard, festivity;
+            var playerId, playedCard, communityCard, festivity;
             var _this = this;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        _a = notif.args, playerId = _a.playerId, playedCard = _a.playedCard, communityCard = _a.communityCard;
+                        playerId = notif.playerId, playedCard = notif.playedCard, communityCard = notif.communityCard;
                         festivity = Festivity.getInstance();
                         return [4, Promise.all([playedCard, communityCard].map(function (card, index) { return __awaiter(_this, void 0, void 0, function () {
                                 var viceCard;
@@ -4101,7 +3948,30 @@ var NotificationManager = (function () {
                                 });
                             }); }))];
                     case 1:
-                        _b.sent();
+                        _a.sent();
+                        return [2];
+                }
+            });
+        });
+    };
+    NotificationManager.prototype.notif_undoPlayerSetupChooseCard = function (notif) {
+        return __awaiter(this, void 0, void 0, function () {
+            var playerId, _private, card, player;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        playerId = notif.playerId, _private = notif._private, card = notif.card;
+                        player = this.getPlayer(playerId);
+                        if (!_private) return [3, 2];
+                        return [4, Hand.getInstance().addCard(getViceCard(_private.card))];
+                    case 1:
+                        _a.sent();
+                        return [3, 3];
+                    case 2:
+                        this.game.viceCardManager.removeCard(card);
+                        _a.label = 3;
+                    case 3:
+                        player.counters[HAND].incValue(1);
                         return [2];
                 }
             });
@@ -4450,10 +4320,13 @@ var Settings = (function () {
         }
     };
     Settings.prototype.get = function (id) {
-        return this.preferenceValues[id] || null;
+        if (!(id in this.preferenceValues)) {
+            throw new Error('SETTINGS_ERROR_001');
+        }
+        return this.preferenceValues[id];
     };
     Settings.prototype.getLocalStorageKey = function (id) {
-        return "".concat(this.game.framework().game_name, "-").concat(this.getSuffix(id));
+        return "".concat(this.game.game_name, "-").concat(this.getSuffix(id));
     };
     Settings.prototype.getMethodName = function (id) {
         return "onChange".concat(this.getSuffix(id));
@@ -4470,7 +4343,7 @@ var Settings = (function () {
     };
     Settings.prototype.isMobileVersion = function () {
         var body = document.getElementById('ebd-body');
-        var mobileVersion = body && body.classList.contains('mobile_version');
+        var mobileVersion = !!body && body.classList.contains('mobile_version');
         return mobileVersion;
     };
     Settings.prototype.onChangePreferenceValue = function (id, value) {
@@ -4570,20 +4443,21 @@ var ConfirmPartialTurn = (function () {
     ConfirmPartialTurn.prototype.onLeavingState = function () {
         debug('Leaving ConfirmTurnState');
     };
-    ConfirmPartialTurn.prototype.setDescription = function (activePlayerId) {
-    };
+    ConfirmPartialTurn.prototype.setDescription = function (activePlayerId) { };
     ConfirmPartialTurn.prototype.updateInterfaceInitialStep = function () {
         var _this = this;
         this.game.clearPossible();
-        this.game.clientUpdatePageTitle({
-            text: _('${you} must confirm your moves. You will not be able to undo'),
-            args: {
-                you: '${you}',
-            },
-        });
-        addConfirmButton(function () {
-            return _this.game.framework().bgaPerformAction('actConfirmPartialTurn');
-        });
+        updatePageTitle(_('${you} must confirm your moves. You will not be able to undo'));
+        addConfirmButton(function () { return __awaiter(_this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, this.game.bga.actions.performAction('actConfirmPartialTurn')];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        }); });
         addUndoButtons(this.args);
     };
     return ConfirmPartialTurn;
@@ -4605,20 +4479,21 @@ var ConfirmTurn = (function () {
     ConfirmTurn.prototype.onLeavingState = function () {
         debug('Leaving ConfirmTurnState');
     };
-    ConfirmTurn.prototype.setDescription = function (activePlayerId) {
-    };
+    ConfirmTurn.prototype.setDescription = function (activePlayerId) { };
     ConfirmTurn.prototype.updateInterfaceInitialStep = function () {
         var _this = this;
         this.game.clearPossible();
-        this.game.clientUpdatePageTitle({
-            text: _('${you} must confirm or restart your turn'),
-            args: {
-                you: '${you}',
-            },
-        });
-        addConfirmButton(function () {
-            return _this.game.framework().bgaPerformAction('actConfirmTurn');
-        });
+        updatePageTitle(_('${you} must confirm or restart your turn'));
+        addConfirmButton(function () { return __awaiter(_this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, this.game.bga.actions.performAction('actConfirmTurn')];
+                    case 1:
+                        _a.sent();
+                        return [2];
+                }
+            });
+        }); });
         addUndoButtons(this.args);
     };
     return ConfirmTurn;
@@ -4646,10 +4521,10 @@ var ResolveChoice = (function () {
             return;
         }
         if (typeof this.args.description === 'string') {
-            updatePageTitle(_(this.args.description), {}, true);
+            updatePageTitle(_(this.args.description), {});
         }
         else if (typeof this.args.description === 'object') {
-            updatePageTitle(_(this.args.description.log), this.args.description.args, true);
+            updatePageTitle(_(this.args.description.log), this.args.description.args);
         }
     };
     ResolveChoice.prototype.updateInterfaceInitialStep = function () {
@@ -4694,8 +4569,8 @@ var ResolveChoice = (function () {
             extraClasses: disabled ? 'disabled' : '',
             callback: function () {
                 var choiceId = choice.id;
-                _this.game.framework().bgaPerformAction('actChooseAction', {
-                    choiceId: choiceId,
+                _this.game.bga.actions.performAction('actChooseAction', {
+                    choiceId: choice.id,
                 });
             },
         });
@@ -4723,41 +4598,20 @@ var TooltipManager = (function () {
             }));
         }
         else {
-            this.game.framework().addTooltipHtml(nodeId, tplTextTooltip({
+            this.game.bga.gameui.addTooltipHtml(nodeId, tplTextTooltip({
                 text: text,
                 title: title,
             }), 400);
         }
     };
     TooltipManager.prototype.removeTooltip = function (nodeId) {
-        this.game.framework().removeTooltip(nodeId);
+        this.game.bga.gameui.removeTooltip(nodeId);
     };
     TooltipManager.prototype.setupTooltips = function () { };
     TooltipManager.prototype.addCardTooltip = function (_a) {
         var nodeId = _a.nodeId, cardId = _a.cardId;
     };
     TooltipManager.prototype.addBoardTooltips = function () { };
-    TooltipManager.prototype.registerCustomTooltip = function (html, id) {
-        if (id === void 0) { id = null; }
-        id =
-            id ||
-                this.game.framework().game_name +
-                    '-tooltipable-' +
-                    this._customTooltipIdCounter++;
-        this._registeredCustomTooltips[id] = html;
-        return id;
-    };
-    TooltipManager.prototype.attachRegisteredTooltips = function () {
-        var _this = this;
-        Object.keys(this._registeredCustomTooltips).forEach(function (id) {
-            if ($(id)) {
-                _this.addCustomTooltip(id, _this._registeredCustomTooltips[id], {
-                    forceRecreate: true,
-                });
-            }
-        });
-        this._registeredCustomTooltips = {};
-    };
     TooltipManager.prototype.addCustomTooltip = function (id, html, config) {
         var _this = this;
         if (config === void 0) { config = {}; }
@@ -4776,16 +4630,16 @@ var TooltipManager = (function () {
             }
             return content;
         };
-        if (this.game.framework().tooltips[id] && !config.forceRecreate) {
-            this.game.framework().tooltips[id].getContent = getContent;
+        if (this.game.tooltips[id] && !config.forceRecreate) {
+            this.game.tooltips[id].getContent = getContent;
             return;
         }
         var tooltip = new dijit.Tooltip({
             getContent: getContent,
-            position: this.game.framework().defaultTooltipPosition,
+            position: this.game.defaultTooltipPosition,
             showDelay: config.delay,
         });
-        this.game.framework().tooltips[id] = tooltip;
+        this.game.tooltips[id] = tooltip;
         dojo.addClass(id, 'tooltipable');
         dojo.place("<div class='help-marker'>\n            <svg><use href=\"#help-marker-svg\" /></svg>\n          </div>", id);
         dojo.connect($(id), 'click', function (evt) {
@@ -4908,16 +4762,19 @@ var addUndoButtons = function (props) {
 var clearPossible = function () {
     Interaction.use().clearPossible();
 };
-var updatePageTitle = function (text, args, nonActivePlayers) {
+var updatePageTitle = function (text, args) {
     if (args === void 0) { args = {}; }
-    if (nonActivePlayers === void 0) { nonActivePlayers = false; }
-    return Interaction.use().clientUpdatePageTitle(text, Object.assign(args, { you: '${you}', actplayer: '${actplayer}' }), nonActivePlayers);
+    return Interaction.use().clientUpdatePageTitle(text, args);
 };
 var incScore = function (playerId, value) {
-    Interaction.use().game.framework().scoreCtrl[playerId].incValue(value);
+    Interaction.use()
+        .game.bga.playerPanels.getScoreCounter(playerId)
+        .incValue(value);
 };
 var setScore = function (playerId, value) {
-    Interaction.use().game.framework().scoreCtrl[playerId].setValue(value);
+    Interaction.use()
+        .game.bga.playerPanels.getScoreCounter(playerId)
+        .setValue(value);
 };
 var formatStringRecursive = function (log, args) {
     return Interaction.use().formatStringRecursive(log, args);
@@ -4987,7 +4844,7 @@ var MollyHouse = (function () {
         this._notif_uid_to_mobile_log_id = {};
         this._selectableNodes = [];
         this.mobileVersion = false;
-        this.loadingComplete = false;
+        this.isLoadingComplete = false;
         this.states = {
             ConfirmPartialTurn: ConfirmPartialTurn,
             ConfirmTurn: ConfirmTurn,
@@ -5018,15 +4875,67 @@ var MollyHouse = (function () {
         };
         console.log('MollyHouse constructor');
     }
+    MollyHouse.prototype.overrideAddToLog = function () {
+        var _this = this;
+        var originalAddToLog = this.bga.notifications.game.notifqueue.addToLog.bind(this.bga.notifications.game.notifqueue);
+        this.bga.notifications.game.notifqueue.addToLog = function (input) {
+            var res = originalAddToLog(input);
+            _this.addLogClass();
+            return res;
+        };
+    };
+    MollyHouse.prototype.overrideOnPlaceLogOnChannel = function () {
+        var _this = this;
+        var originalOnPlaceLogOnChannel = this.bga.gameui.onPlaceLogOnChannel.bind(this.bga.gameui);
+        this.bga.gameui.onPlaceLogOnChannel = function (msg) {
+            var currentLogId = _this.bga.gameui.notifqueue.next_log_id;
+            var currentMobileLogId = _this.bga.gameui.next_log_id;
+            var res = originalOnPlaceLogOnChannel(msg);
+            _this._notif_uid_to_log_id[msg.uid] = currentLogId;
+            _this._notif_uid_to_mobile_log_id[msg.uid] = currentMobileLogId;
+            _this._last_notif = {
+                logId: currentLogId,
+                mobileLogId: currentMobileLogId,
+                msg: msg,
+            };
+            return res;
+        };
+    };
+    MollyHouse.prototype.overrideSetLoader = function () {
+        var _this = this;
+        var originalSetLoader = this.bga.gameui.setLoader.bind(this.bga.gameui);
+        this.bga.gameui.setLoader = function (value, max) {
+            originalSetLoader(value, max);
+            if (!_this.isLoadingComplete && value >= 100) {
+                _this.isLoadingComplete = true;
+                _this.onLoadingComplete();
+            }
+        };
+    };
+    MollyHouse.prototype.onLoadingComplete = function () {
+        this.updateLayout();
+    };
+    MollyHouse.prototype.overrideUpdatePlayerOrdering = function () {
+        var original = this.bga.gameui.updatePlayerOrdering.bind(this.bga.gameui);
+        this.bga.gameui.updatePlayerOrdering = function () {
+            original();
+        };
+    };
     MollyHouse.prototype.setup = function (gamedatas) {
         var _this = this;
+        this.overrideAddToLog();
+        this.overrideOnPlaceLogOnChannel();
+        this.overrideSetLoader();
+        this.overrideUpdatePlayerOrdering();
+        console.log('bga', this.bga);
         var body = document.getElementById('ebd-body');
-        this.mobileVersion = body && body.classList.contains('mobile_version');
-        dojo.place("<div id='customActions' style='display:inline-block'></div>", $('generalactions'), 'after');
+        this.mobileVersion = !!body && body.classList.contains('mobile_version');
+        document
+            .getElementById('generalactions')
+            .insertAdjacentHTML('afterend', "<div id='customActions' style='display:inline-block'></div>");
         document
             .getElementById('game_play_area')
             .insertAdjacentHTML('afterbegin', tplPlayArea());
-        this.setupDontPreloadImages();
         this.gamedatas = gamedatas;
         this.gameOptions = gamedatas.gameOptions;
         debug('gamedatas', gamedatas);
@@ -5050,7 +4959,7 @@ var MollyHouse = (function () {
         this.joyMarkerManager = new JoyMarkerManager(this);
         Interaction.create(this);
         PlayerManager.create(this);
-        NotificationManager.create(this);
+        this.notificationManager = new NotificationManager(this);
         Board.create(this);
         Festivity.create(this);
         GatherEvidence.create(this);
@@ -5064,7 +4973,7 @@ var MollyHouse = (function () {
             .forEach(function (player) {
             player.updateEncounterTokens(_this.gamedatas.players[player.getPlayerId()]);
         });
-        NotificationManager.getInstance().setupNotifications();
+        this.notificationManager.setupNotifications();
         MollyHouseHelpManager.create(this);
         debug('Ending game setup');
     };
@@ -5079,22 +4988,24 @@ var MollyHouse = (function () {
         }
         this.playerOrder = playerOrder;
     };
-    MollyHouse.prototype.setupDontPreloadImages = function () { };
     MollyHouse.prototype.onEnteringState = function (stateName, args) {
         var _this = this;
         var _a;
         console.log('Entering state: ' + stateName, args);
         var activePlayerIds = (_a = args.args) === null || _a === void 0 ? void 0 : _a.activePlayerIds;
-        var playerIsActiveAndStateExists = this.framework().isCurrentPlayerActive() && this.states[stateName];
+        var playerIsActiveAndStateExists = this.bga.players.isCurrentPlayerActive() &&
+            this.states[stateName];
         var currentPlayerId = this.getPlayerId();
         if (playerIsActiveAndStateExists &&
             (!activePlayerIds || activePlayerIds.includes(currentPlayerId))) {
-            this.states[stateName].getInstance().onEnteringState(args.args);
+            this.states[stateName]
+                .getInstance()
+                .onEnteringState(args.args);
         }
         else if (this.states[stateName]) {
             this.states[stateName]
                 .getInstance()
-                .setDescription(activePlayerIds || Number(args.active_player), args.args);
+                .setDescription((activePlayerIds || Number(args.active_player)), args.args);
         }
         if (args.args && args.args.previousSteps) {
             args.args.previousSteps.forEach(function (stepId) {
@@ -5111,7 +5022,9 @@ var MollyHouse = (function () {
     };
     MollyHouse.prototype.onLeavingState = function (stateName) {
         if (this.states[stateName]) {
-            this.states[stateName].getInstance().onLeavingState();
+            this.states[stateName]
+                .getInstance()
+                .onLeavingState();
         }
         this.clearPossible();
     };
@@ -5127,23 +5040,6 @@ var MollyHouse = (function () {
             this._displayedTooltip = null;
         }
     };
-    MollyHouse.prototype.destroy = function (elem) {
-        if (this.framework().tooltips[elem.id]) {
-            this.framework().tooltips[elem.id].destroy();
-            delete this.framework().tooltips[elem.id];
-        }
-        elem.remove();
-    };
-    MollyHouse.prototype.addActionButtonClient = function (_a) {
-        var id = _a.id, text = _a.text, callback = _a.callback, extraClasses = _a.extraClasses, _b = _a.color, color = _b === void 0 ? 'none' : _b;
-        if ($(id)) {
-            return;
-        }
-        this.framework().addActionButton(id, text, callback, 'customActions', false, color);
-        if (extraClasses) {
-            dojo.addClass(id, extraClasses);
-        }
-    };
     MollyHouse.prototype.clearInterface = function () {
         Board.getInstance().clearInterface();
         PlayerManager.getInstance().clearInterface();
@@ -5151,14 +5047,14 @@ var MollyHouse = (function () {
         Festivity.getInstance().clearInterface();
     };
     MollyHouse.prototype.clearPossible = function () {
-        this.framework().removeActionButtons();
+        this.bga.statusBar.removeActionButtons();
         dojo.empty('customActions');
         dojo.forEach(this._connections, dojo.disconnect);
         this._connections = [];
         this._selectableNodes.forEach(function (node) {
             if ($(node)) {
-                dojo.removeClass(node, SELECTABLE);
-                dojo.removeClass(node, SELECTED);
+                node.classList.remove(SELECTABLE);
+                node.classList.remove(SELECTED);
             }
         });
         this._selectableNodes = [];
@@ -5166,25 +5062,11 @@ var MollyHouse = (function () {
         dojo.query(".".concat(SELECTED)).removeClass(SELECTED);
     };
     MollyHouse.prototype.getPlayerId = function () {
-        return Number(this.framework().player_id);
-    };
-    MollyHouse.prototype.framework = function () {
-        return this;
+        return this.bga.players.getCurrentPlayerId();
     };
     MollyHouse.prototype.onCancel = function () {
         this.clearPossible();
-        this.framework().restoreServerGameState();
-    };
-    MollyHouse.prototype.clientUpdatePageTitle = function (_a) {
-        var text = _a.text, args = _a.args, _b = _a.nonActivePlayers, nonActivePlayers = _b === void 0 ? false : _b;
-        var title = this.format_string_recursive(_(text), args);
-        if (nonActivePlayers) {
-            this.gamedatas.gamestate.description = title;
-        }
-        else {
-            this.gamedatas.gamestate.descriptionmyturn = title;
-        }
-        this.framework().updatePageTitle();
+        this.bga.states.restoreServerGameState();
     };
     MollyHouse.prototype.connect = function (node, action, callback) {
         this._connections.push(dojo.connect($(node), action, callback));
@@ -5194,7 +5076,7 @@ var MollyHouse = (function () {
         if (temporary === void 0) { temporary = true; }
         var safeCallback = function (evt) {
             evt.stopPropagation();
-            if (_this.framework().isInterfaceLocked()) {
+            if (_this.bga.actions.game.isInterfaceLocked()) {
                 return false;
             }
             if (_this._helpMode) {
@@ -5213,13 +5095,16 @@ var MollyHouse = (function () {
     };
     MollyHouse.prototype.undoToStep = function (_a) {
         var stepId = _a.stepId;
+        this.bga.actions.performAction('actUndoToStep', {
+            stepId: stepId,
+        });
     };
     MollyHouse.prototype.updateLayout = function () {
         var settings = Settings.getInstance();
         if (!Settings.getInstance()) {
             return;
         }
-        $('play-area-container').setAttribute('data-two-columns', settings.get(PREF_TWO_COLUMN_LAYOUT));
+        $('play-area-container').setAttribute('data-two-columns', settings.get(PREF_TWO_COLUMN_LAYOUT) + "");
         var ROOT = document.documentElement;
         var WIDTH = $('play-area-container').getBoundingClientRect()['width'] - 8;
         var LEFT_COLUMN = 1500;
@@ -5267,7 +5152,7 @@ var MollyHouse = (function () {
     MollyHouse.prototype.onScreenWidthChange = function () {
         this.updateLayout();
     };
-    MollyHouse.prototype.format_string_recursive = function (log, args) {
+    MollyHouse.prototype.bgaFormatText = function (log, args) {
         var _this = this;
         try {
             if (log && args && !args.processed) {
@@ -5281,26 +5166,23 @@ var MollyHouse = (function () {
                             game: _this,
                         });
                     }
+                    else if (key.startsWith('_private')) {
+                        Object.entries(args[key]).forEach(function (_a) {
+                            var privateKey = _a[0], privateValue = _a[1];
+                            args[key][privateKey] = getTokenDiv({
+                                key: privateKey,
+                                value: privateValue,
+                                game: _this,
+                            });
+                        });
+                    }
                 });
             }
         }
         catch (e) {
             console.error(log, args, 'Exception thrown', e.stack);
         }
-        return this.inherited(arguments);
-    };
-    MollyHouse.prototype.onPlaceLogOnChannel = function (msg) {
-        var currentLogId = this.framework().notifqueue.next_log_id;
-        var currentMobileLogId = this.framework().next_log_id;
-        var res = this.framework().inherited(arguments);
-        this._notif_uid_to_log_id[msg.uid] = currentLogId;
-        this._notif_uid_to_mobile_log_id[msg.uid] = currentMobileLogId;
-        this._last_notif = {
-            logId: currentLogId,
-            mobileLogId: currentMobileLogId,
-            msg: msg,
-        };
-        return res;
+        return { log: log, args: args };
     };
     MollyHouse.prototype.checkLogCancel = function (notifId) {
         if (this.gamedatas.canceledNotifIds != null &&
@@ -5323,7 +5205,7 @@ var MollyHouse = (function () {
         });
     };
     MollyHouse.prototype.addLogClass = function () {
-        var _a;
+        var _a, _b;
         if (this._last_notif == null) {
             return;
         }
@@ -5335,7 +5217,7 @@ var MollyHouse = (function () {
         if ($('log_' + notif.logId)) {
             dojo.addClass('log_' + notif.logId, 'notif_' + type);
             var methodName = 'onAdding' + type.charAt(0).toUpperCase() + type.slice(1) + 'ToLog';
-            (_a = this[methodName]) === null || _a === void 0 ? void 0 : _a.call(this, notif);
+            (_b = (_a = this)[methodName]) === null || _b === void 0 ? void 0 : _b.call(_a, notif);
         }
         if ($('dockedlog_' + notif.mobileLogId)) {
             dojo.addClass('dockedlog_' + notif.mobileLogId, 'notif_' + type);
@@ -5345,27 +5227,6 @@ var MollyHouse = (function () {
         var tooltipId = _a.tooltipId, cardId = _a.cardId;
     };
     MollyHouse.prototype.updateLogTooltips = function () {
-    };
-    MollyHouse.prototype.setLoader = function (value, max) {
-        this.framework().inherited(arguments);
-        if (!this.framework().isLoadingComplete && value >= 100) {
-            this.framework().isLoadingComplete = true;
-            this.onLoadingComplete();
-        }
-    };
-    MollyHouse.prototype.onLoadingComplete = function () {
-        this.loadingComplete = true;
-        this.updateLayout();
-    };
-    MollyHouse.prototype.updatePlayerOrdering = function () {
-        this.framework().inherited(arguments);
-        var container = document.getElementById('player_boards');
-        if (!container) {
-            return;
-        }
-    };
-    MollyHouse.prototype.actionError = function (actionName) {
-        this.framework().showMessage("cannot take ".concat(actionName, " action"), 'error');
     };
     return MollyHouse;
 }());
@@ -7176,13 +7037,30 @@ var PlayerSetupChooseCard = (function () {
     PlayerSetupChooseCard.prototype.onLeavingState = function () {
         debug('Leaving PlayerSetupChooseCard state');
     };
-    PlayerSetupChooseCard.prototype.setDescription = function (activePlayerIds, args) { };
+    PlayerSetupChooseCard.prototype.setDescription = function (activePlayerIds, args) {
+        var _this = this;
+        if (this.game.bga.players.isCurrentPlayerSpectator()) {
+            return;
+        }
+        addDangerActionButton({
+            id: 'customUndoButton',
+            text: _('Undo'),
+            callback: function () {
+                _this.game.bga.actions.performAction('actUndoMultiActiveState', undefined, {
+                    checkAction: false,
+                    checkPossibleActions: false,
+                });
+            },
+        });
+    };
     PlayerSetupChooseCard.prototype.updateInterfaceInitialStep = function () {
         var _this = this;
         this.game.clearPossible();
         updatePageTitle(_('${you} must select a card to place in your reputation'), {});
         this.args._private.forEach(function (card) {
-            onClick(document.getElementById(card.id), function () { return _this.updateInterfaceConfirm(card); });
+            onClick(document.getElementById(card.id), function () {
+                return _this.updateInterfaceConfirm(card);
+            });
         });
     };
     PlayerSetupChooseCard.prototype.updateInterfaceConfirm = function (card) {
@@ -7593,14 +7471,10 @@ var AddExcessCardsToGossip = (function () {
     };
     AddExcessCardsToGossip.prototype.setDescription = function (activePlayerId, args) {
         if (args.isRevealedInformer) {
-            this.game.clientUpdatePageTitle({
-                text: _('${tkn_playerName}  must add excess cards to the safe pile'),
-                args: {
-                    tkn_playerName: PlayerManager.getInstance()
-                        .getPlayer(activePlayerId)
-                        .getName(),
-                },
-                nonActivePlayers: true,
+            updatePageTitle(_('${tkn_playerName}  must add excess cards to the safe pile'), {
+                tkn_playerName: PlayerManager.getInstance()
+                    .getPlayer(activePlayerId)
+                    .getName(),
             });
         }
     };
@@ -7735,14 +7609,10 @@ var FestivityPlayCard = (function () {
     FestivityPlayCard.prototype.setDescription = function (activePlayerId, args) {
         this.args = args;
         if (args.optionalAction) {
-            this.game.clientUpdatePageTitle({
-                text: _('${tkn_playerName} may play a card'),
-                args: {
-                    tkn_playerName: PlayerManager.getInstance()
-                        .getPlayer(activePlayerId)
-                        .getName(),
-                },
-                nonActivePlayers: true,
+            updatePageTitle(_('${tkn_playerName} may play a card'), {
+                tkn_playerName: PlayerManager.getInstance()
+                    .getPlayer(activePlayerId)
+                    .getName(),
             });
         }
         this.highlightWinningCards();
@@ -7939,6 +7809,9 @@ var FestivitySelectWinningSet = (function () {
     FestivitySelectWinningSet.prototype.updateInterfaceSelectCardsInSet = function () {
         var _this = this;
         this.game.clearPossible();
+        if (this.selectedSet === null) {
+            throw new Error('FE_SELECT_WINNING_SET_001');
+        }
         var set = this.args.options[this.selectedSet];
         var remaining = 0;
         var cardsAlreadySelected = 0;

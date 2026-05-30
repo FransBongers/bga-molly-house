@@ -5,7 +5,7 @@ interface OnEnteringFestivityChooseNextFoiledThreatArgs
 
 class FestivityChooseNextFoiledThreat implements State {
   private static instance: FestivityChooseNextFoiledThreat;
-  private args: OnEnteringFestivityChooseNextFoiledThreatArgs;
+  private args!: OnEnteringFestivityChooseNextFoiledThreatArgs;
 
   constructor(private game: GameAlias) {}
 

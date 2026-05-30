@@ -29,7 +29,8 @@ trait DebugTrait
 {
   function debug_test()
   {
-    Notifications::log('test', Globals::getGameOptionUseUpdatedItems());
+    
+    // Notifications::log('test', Globals::getGameOptionUseUpdatedItems());
     // EncounterTokens::get('encounterToken_2371052_1')->placeOnSite(Players::get(2371052), Sites::get(MISS_MUFFS));
 
     // Globals::setCandelabra(2371052);

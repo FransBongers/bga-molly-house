@@ -8,12 +8,12 @@
  */
 
 class Modal {
-  private id: string;
-  private isClosing: boolean;
-  private isOpening: boolean;
+  private id: string | null;
+  private isClosing!: boolean;
+  private isOpening!: boolean;
   private open: boolean = false;
   private resizeListener: unknown; // listener: return value of dojo.connect
-  private runningAnimation: DojoAnimation;
+  private runningAnimation!: DojoAnimation;
   // config
   private container: string = 'ebd-body';
   private class: string = 'custom_popin';
@@ -61,8 +61,8 @@ class Modal {
   private openAnimation: boolean = false;
   private openAnimationTarget: string | null = null;
   private openAnimationDelta: number = 200;
-  private onShow: () => void | null = null;
-  private onHide: () => void | null = null;
+  private onShow: (() => void) | null = null;
+  private onHide: (() => void) | null = null;
   private statusElt: string | null = null;
   private scale: number = 1;
   private breakpoint: number | null = null;
@@ -77,7 +77,7 @@ class Modal {
     // Load other parameters
     Object.entries(config).forEach(([key, value]) => {
       if (value !== undefined) {
-        this[key] = value;
+        (this[key as keyof this] as any) = value;
       }
     });
 
@@ -153,7 +153,7 @@ class Modal {
     });
 
     this.adjustSize();
-    this.resizeListener = dojo.connect(window, 'resize', () => this.adjustSize());
+    this.resizeListener = dojo.connect(window as unknown as HTMLElement, 'resize', () => this.adjustSize());
 
     // Connect events
     if (this.closeIcon != null && $('popin_' + this.id + '_close')) {
@@ -162,7 +162,7 @@ class Modal {
     if (this.closeWhenClickOnUnderlay) {
       dojo.connect($('popin_' + this.id + '_underlay'), 'click', () => this[this.closeAction]());
       dojo.connect($('popin_' + this.id + '_wrapper'), 'click', () => this[this.closeAction]());
-      dojo.connect($('popin_' + this.id), 'click', (evt) => evt.stopPropagation());
+      dojo.connect($('popin_' + this.id), 'click', (evt: PointerEvent) => evt.stopPropagation());
     }
   }
 
@@ -215,6 +215,7 @@ class Modal {
       let containerId = 'popin_' + this.id + '_container';
       if (!$(containerId)) reject();
 
+      // @ts-expect-error
       if (this.runningAnimation) this.runningAnimation.stop();
       let duration = this.fadeIn ? this.animationDuration : 0;
       var animations = [];
@@ -228,6 +229,7 @@ class Modal {
       );
       // Underlay fade in background
       animations.push(
+        // @ts-expect-error
         dojo.animateProperty({
           node: 'popin_' + this.id + '_underlay',
           duration: duration,
@@ -239,6 +241,7 @@ class Modal {
       if (this.openAnimation) {
         var pos = this.getOpeningTargetCenter();
         animations.push(
+          // @ts-expect-error
           dojo.animateProperty({
             node: 'popin_' + this.id + '_wrapper',
             properties: {
@@ -253,6 +256,7 @@ class Modal {
 
       // Create the overall animation
       this.runningAnimation = dojo.fx.combine(animations);
+      // @ts-expect-error
       dojo.connect(this.runningAnimation, 'onEnd', () => resolve());
       this.runningAnimation.play();
       setTimeout(() => {
@@ -289,6 +293,7 @@ class Modal {
     return new Promise<void>((resolve, reject) => {
       let containerId = 'popin_' + this.id + '_container';
       if (!$(containerId)) reject();
+      // @ts-expect-error
       if (this.runningAnimation) this.runningAnimation.stop();
 
       let duration = this.fadeOut ? this.animationDuration + (this.openAnimation ? this.openAnimationDelta : 0) : 0;
@@ -296,6 +301,7 @@ class Modal {
 
       // Modals fade out
       animations.push(
+        // @ts-expect-error
         dojo.fadeOut({
           node: 'popin_' + this.id + '_wrapper',
           duration: duration,
@@ -303,6 +309,7 @@ class Modal {
       );
       // Underlay fade out background
       animations.push(
+        // @ts-expect-error
         dojo.animateProperty({
           node: 'popin_' + this.id + '_underlay',
           duration: duration,
@@ -314,6 +321,7 @@ class Modal {
       if (this.openAnimation) {
         var pos = this.getOpeningTargetCenter();
         animations.push(
+          // @ts-expect-error
           dojo.animateProperty({
             node: 'popin_' + this.id + '_wrapper',
             properties: {
@@ -328,6 +336,7 @@ class Modal {
 
       // Create the overall animation
       this.runningAnimation = dojo.fx.combine(animations);
+      // @ts-expect-error
       dojo.connect(this.runningAnimation, 'onEnd', () => resolve());
       this.runningAnimation.play();
     });
@@ -379,11 +388,13 @@ class Modal {
    * Kill : destroy the object and all DOM elements
    */
   kill() {
+    // @ts-expect-error
     if (this.runningAnimation) this.runningAnimation.stop();
     let underlayId = 'popin_' + this.id + '_container';
     dojo.destroy(underlayId);
 
     dojo.disconnect(this.resizeListener);
+
     this.id = null;
 
     if (this.statusElt !== null) {

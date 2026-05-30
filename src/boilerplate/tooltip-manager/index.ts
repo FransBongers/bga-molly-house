@@ -56,7 +56,7 @@ class TooltipManager {
         })
       );
     } else {
-      this.game.framework().addTooltipHtml(
+      this.game.bga.gameui.addTooltipHtml(
         nodeId,
         tplTextTooltip({
           text,
@@ -68,7 +68,7 @@ class TooltipManager {
   }
 
   public removeTooltip(nodeId: string) {
-    this.game.framework().removeTooltip(nodeId);
+    this.game.bga.gameui.removeTooltip(nodeId);
   }
 
   public setupTooltips() {}
@@ -108,28 +108,30 @@ class TooltipManager {
   // .##.....##.##.......##.......##...........##.....##.##.....##.##.....##.##......
   // .##.....##.########.########.##...........##.....##..#######..########..########
 
-  /**
-   * Tooltip to work with help mode
-   */
-  registerCustomTooltip(html, id = null) {
-    id =
-      id ||
-      this.game.framework().game_name +
-        '-tooltipable-' +
-        this._customTooltipIdCounter++;
-    this._registeredCustomTooltips[id] = html;
-    return id;
-  }
-  public attachRegisteredTooltips() {
-    Object.keys(this._registeredCustomTooltips).forEach((id) => {
-      if ($(id)) {
-        this.addCustomTooltip(id, this._registeredCustomTooltips[id], {
-          forceRecreate: true,
-        });
-      }
-    });
-    this._registeredCustomTooltips = {};
-  }
+  // /**
+  //  * Tooltip to work with help mode
+  //  */
+  // registerCustomTooltip(html, id: string | null = null) {
+  //   id =
+  //     id ||
+  //     // @ts-expect-error
+  //     this.game.game_name +
+  //       '-tooltipable-' +
+  //       this._customTooltipIdCounter++;
+  //   this._registeredCustomTooltips[id] = html;
+  //   return id;
+  // }
+  // public attachRegisteredTooltips() {
+  //   Object.keys(this._registeredCustomTooltips).forEach((id) => {
+  //     if ($(id)) {
+  //       this.addCustomTooltip(id, this._registeredCustomTooltips[id], {
+  //         forceRecreate: true,
+  //       });
+  //     }
+  //   });
+  //   this._registeredCustomTooltips = {};
+  // }
+
   public addCustomTooltip(
     id: string,
     html: string | Function,
@@ -156,18 +158,22 @@ class TooltipManager {
       return content;
     };
 
-    if (this.game.framework().tooltips[id] && !config.forceRecreate) {
-      this.game.framework().tooltips[id].getContent = getContent;
+    // @ts-expect-error
+    if (this.game.tooltips[id] && !config.forceRecreate) {
+      // @ts-expect-error
+      this.game.tooltips[id].getContent = getContent;
       return;
     }
 
     let tooltip = new dijit.Tooltip({
       //        connectId: [id],
       getContent,
-      position: this.game.framework().defaultTooltipPosition,
+      // @ts-expect-error
+      position: this.game.defaultTooltipPosition,
       showDelay: config.delay,
     });
-    this.game.framework().tooltips[id] = tooltip;
+    // @ts-expect-error
+    this.game.tooltips[id] = tooltip;
     dojo.addClass(id, 'tooltipable');
     dojo.place(
       `<div class='help-marker'>
@@ -176,7 +182,7 @@ class TooltipManager {
       id
     );
 
-    dojo.connect($(id), 'click', (evt) => {
+    dojo.connect($(id), 'click', (evt: PointerEvent) => {
       if (!this.game._helpMode) {
         tooltip.close();
       } else {
@@ -193,7 +199,7 @@ class TooltipManager {
     });
 
     tooltip.showTimeout = null;
-    dojo.connect($(id), 'mouseenter', (evt) => {
+    dojo.connect($(id), 'mouseenter', (evt: PointerEvent) => {
       evt.stopPropagation();
       if (!this.game._helpMode && !this.game._dragndropMode) {
         if (tooltip.showTimeout != null) clearTimeout(tooltip.showTimeout);
@@ -204,7 +210,7 @@ class TooltipManager {
       }
     });
 
-    dojo.connect($(id), 'mouseleave', (evt) => {
+    dojo.connect($(id), 'mouseleave', (evt: PointerEvent) => {
       evt.stopPropagation();
       if (!this.game._helpMode && !this.game._dragndropMode) {
         tooltip.close();

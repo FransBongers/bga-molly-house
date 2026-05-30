@@ -87,11 +87,11 @@ class ResolveChoice extends \Bga\Games\MollyHouse\Models\AtomicAction
       $args['descSuffix'] = 'xor';
     }
 
-    Notifications::log('argsResolveChoice', [
-      'stateDescription' => $node->getStateDescription(),
-      'ctxStateDescription' => $this->ctx->getStateDescription(),
-      'args' => $args,
-    ]);
+    // Notifications::log('argsResolveChoice', [
+    //   'stateDescription' => $node->getStateDescription(),
+    //   'ctxStateDescription' => $this->ctx->getStateDescription(),
+    //   'args' => $args,
+    // ]);
     // $args['skipOnEnteringState'] = $numberOfChoices === 0 || ($numberOfChoices === 1 && isset($choices[PASS]));
     // $sourceId = $node->getSourceId() ?? null;
     // if (!isset($args['source']) && !is_null($sourceId)) {

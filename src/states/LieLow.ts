@@ -2,7 +2,7 @@ interface OnEnteringLieLowArgs extends CommonStateArgs {}
 
 class LieLow implements State {
   private static instance: LieLow;
-  private args: OnEnteringLieLowArgs;
+  private args!: OnEnteringLieLowArgs;
 
   constructor(private game: GameAlias) {}
 

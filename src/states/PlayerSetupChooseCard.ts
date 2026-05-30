@@ -1,10 +1,10 @@
 interface OnEnteringPlayerSetupChooseCardArgs extends CommonStateArgs {
-  _private: ViceCardBase[]
+  _private: ViceCardBase[];
 }
 
 class PlayerSetupChooseCard implements State {
   private static instance: PlayerSetupChooseCard;
-  private args: OnEnteringPlayerSetupChooseCardArgs;
+  private args!: OnEnteringPlayerSetupChooseCardArgs;
 
   constructor(private game: GameAlias) {}
 
@@ -27,7 +27,28 @@ class PlayerSetupChooseCard implements State {
     debug('Leaving PlayerSetupChooseCard state');
   }
 
-  setDescription(activePlayerIds: number, args: OnEnteringPlayerSetupChooseCardArgs) {}
+  setDescription(
+    activePlayerIds: number,
+    args: OnEnteringPlayerSetupChooseCardArgs,
+  ) {
+    if (this.game.bga.players.isCurrentPlayerSpectator()) {
+      return;
+    }
+    addDangerActionButton({
+      id: 'customUndoButton',
+      text: _('Undo'),
+      callback: () => {
+        this.game.bga.actions.performAction(
+          'actUndoMultiActiveState',
+          undefined,
+          {
+            checkAction: false,
+            checkPossibleActions: false,
+          },
+        );
+      },
+    });
+  }
 
   //  .####.##....##.########.########.########..########....###.....######..########
   //  ..##..###...##....##....##.......##.....##.##.........##.##...##....##.##......
@@ -48,20 +69,25 @@ class PlayerSetupChooseCard implements State {
   private updateInterfaceInitialStep() {
     this.game.clearPossible();
 
-    updatePageTitle(_('${you} must select a card to place in your reputation'), {});
+    updatePageTitle(
+      _('${you} must select a card to place in your reputation'),
+      {},
+    );
 
     this.args._private.forEach((card) => {
-      onClick(document.getElementById(card.id),() => this.updateInterfaceConfirm(card))
-    })
+      onClick(document.getElementById(card.id)!, () =>
+        this.updateInterfaceConfirm(card),
+      );
+    });
   }
 
   private updateInterfaceConfirm(card: ViceCardBase) {
     clearPossible();
     setSelected(card.id);
 
-    const {displayValue, suit} = getViceCard(card)
+    const { displayValue, suit } = getViceCard(card);
 
-    updatePageTitle(_('Place ${value} of ${tkn_suit} in your reputation?'),{
+    updatePageTitle(_('Place ${value} of ${tkn_suit} in your reputation?'), {
       value: getViceCardValueText(displayValue),
       tkn_suit: suit,
     });

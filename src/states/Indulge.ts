@@ -2,7 +2,7 @@ interface OnEnteringIndulgeArgs extends CommonStateArgs {}
 
 class Indulge implements State {
   private static instance: Indulge;
-  private args: OnEnteringIndulgeArgs;
+  private args!: OnEnteringIndulgeArgs;
 
   constructor(private game: GameAlias) {}
 

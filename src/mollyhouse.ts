@@ -14,56 +14,59 @@
  * In this file, you are describing the logic of your user interface, in Javascript language.
  *
  */
-declare const define; // TODO: check if we comment here or in bga-animations module?
-declare const ebg;
-declare const $;
-declare const dijit;
-declare const dojo: Dojo;
-declare const _: (stringToTranslate: string) => string;
-declare const g_gamethemeurl;
-declare const playSound;
-declare var noUiSlider;
+// declare const define; // TODO: check if we comment here or in bga-animations module?
+// declare const ebg;
+// declare const $;
+declare const dijit: any;
+// declare const dojo: Dojo;
+// declare const _: (stringToTranslate: string) => string;
+// declare const g_gamethemeurl;
+declare const playSound: any;
+declare var noUiSlider: any;
 
 function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
 class MollyHouse implements Game {
-  public gamedatas: MollyHouseGamedatas;
+  public gamedatas!: MollyHouseGamedatas;
 
   // Default
-  public animationManager: AnimationManager;
+  public animationManager!: AnimationManager;
   //  public settings: Settings;
-  public gameOptions: GamedatasAlias['gameOptions'];
-  public notificationManager: NotificationManager;
-  public playerOrder: number[];
+  public gameOptions!: GamedatasAlias['gameOptions'];
+  public notificationManager!: NotificationManager;
+  public playerOrder!: number[];
   //  public tooltipManager: TooltipManager;
 
   // Boiler plate
   //  private alwaysFixTopActions: boolean;
   //  private alwaysFixTopActionsMaximum: number;
   //  public tooltipsToMap: [tooltipId: number, card_id: string][] = [];
-  public _connections: unknown[];
-  public _displayedTooltip = null;
+  public _connections!: unknown[];
+  public _displayedTooltip: any = null;
   public _dragndropMode = false; // Not used but present in boiler plate code
   public _helpMode = false; // Use to implement help mode
-  private _last_notif = null;
+  private _last_notif: {
+    logId: any;
+    mobileLogId: any;
+    msg: Notif<unknown>;
+  } | null = null;
   //  public _last_tooltip_id = 0;
-  private _notif_uid_to_log_id = {};
-  private _notif_uid_to_mobile_log_id = {};
-  private _selectableNodes = []; // TODO: use to keep track of selectable classed?
+  private _notif_uid_to_log_id: Record<string, unknown> = {};
+  private _notif_uid_to_mobile_log_id: Record<string, unknown> = {};
+  private _selectableNodes: HTMLElement[] = []; // TODO: use to keep track of selectable classed?
   public mobileVersion: boolean = false;
-  public loadingComplete: boolean = false;
+  private isLoadingComplete: boolean = false;
 
   // Card managers
-  public diceManager: MollyHouseDiceManager;
-  public encounterTokenManager: EncounterTokenManager;
-  public indictmentManager: IndictmentManager;
-  public itemManager: ItemManager;
-  public viceCardManager: ViceCardManager;
-  public joyMarkerManager: JoyMarkerManager;
-  // TODO: properly import
-  public bga: any;
+  public diceManager!: MollyHouseDiceManager;
+  public encounterTokenManager!: EncounterTokenManager;
+  public indictmentManager!: IndictmentManager;
+  public itemManager!: ItemManager;
+  public viceCardManager!: ViceCardManager;
+  public joyMarkerManager!: JoyMarkerManager;
+  public bga!: Bga<any, GamedatasAlias>;
 
   private states = {
     ConfirmPartialTurn,
@@ -96,7 +99,110 @@ class MollyHouse implements Game {
 
   constructor() {
     console.log('MollyHouse constructor');
-    // this.bga = bga;
+  }
+
+  // ..#######..##.....##.########.########..########..####.########..########..######.
+  // .##.....##.##.....##.##.......##.....##.##.....##..##..##.....##.##.......##....##
+  // .##.....##.##.....##.##.......##.....##.##.....##..##..##.....##.##.......##......
+  // .##.....##.##.....##.######...########..########...##..##.....##.######....######.
+  // .##.....##..##...##..##.......##...##...##...##....##..##.....##.##.............##
+  // .##.....##...##.##...##.......##....##..##....##...##..##.....##.##.......##....##
+  // ..#######.....###....########.##.....##.##.....##.####.########..########..######.
+
+  private overrideAddToLog(): void {
+    const originalAddToLog =
+      // @ts-ignore
+      this.bga.notifications.game.notifqueue.addToLog.bind(
+        // @ts-ignore
+        this.bga.notifications.game.notifqueue,
+      );
+    // @ts-ignore
+    this.bga.notifications.game.notifqueue.addToLog = (input: unknown) => {
+      // @ts-ignore
+
+      const res = originalAddToLog(input);
+      this.addLogClass();
+
+      return res;
+    };
+  }
+
+  /**
+   * Setup undo/cancel log tracking for notifications
+   * Intercepts log placement to map notification UIDs to log IDs
+   * @private
+   */
+  private overrideOnPlaceLogOnChannel(): void {
+    const originalOnPlaceLogOnChannel =
+      // @ts-ignore
+      this.bga.gameui.onPlaceLogOnChannel.bind(this.bga.gameui);
+    // @ts-ignore
+    this.bga.gameui.onPlaceLogOnChannel = (msg: Notif<unknown>) => {
+      // @ts-ignore
+      const currentLogId = this.bga.gameui.notifqueue.next_log_id;
+      // @ts-ignore
+      const currentMobileLogId = this.bga.gameui.next_log_id;
+      const res = originalOnPlaceLogOnChannel(msg);
+
+      this._notif_uid_to_log_id[msg.uid] = currentLogId;
+      this._notif_uid_to_mobile_log_id[msg.uid] = currentMobileLogId;
+      this._last_notif = {
+        logId: currentLogId,
+        mobileLogId: currentMobileLogId,
+        msg,
+      };
+
+      return res;
+    };
+  }
+
+  private overrideSetLoader() {
+    const originalSetLoader =
+      // @ts-ignore
+      this.bga.gameui.setLoader.bind(
+        // @ts-ignore
+        this.bga.gameui,
+      );
+
+    // @ts-ignore
+    this.bga.gameui.setLoader = (value: any, max: any) => {
+      originalSetLoader(value, max);
+
+      if (!this.isLoadingComplete && value >= 100) {
+        this.isLoadingComplete = true;
+        this.onLoadingComplete();
+      }
+    };
+  }
+
+  onLoadingComplete() {
+    this.updateLayout();
+    // BgaAutofit.init({ scaleStep: 0.025, rootElement: document.body });
+  }
+
+  private overrideUpdatePlayerOrdering() {
+    const original =
+      // @ts-ignore
+      this.bga.gameui.updatePlayerOrdering.bind(
+        // @ts-ignore
+        this.bga.gameui,
+      );
+
+    // @ts-ignore
+    this.bga.gameui.updatePlayerOrdering = () => {
+      original();
+      // const container = document.getElementById('player_boards');
+      // if (!container) {
+      //   return;
+      // }
+
+      // this.playerOrder.forEach((playerId) => {
+      //   const playerBoard = document.getElementById(
+      //     `overall_player_board_${playerId}`,
+      //   )!;
+      //   container.insertAdjacentElement('beforeend', playerBoard);
+      // });
+    };
   }
 
   // ..######..########.########.##.....##.########.
@@ -107,22 +213,27 @@ class MollyHouse implements Game {
   // .##....##.##..........##....##.....##.##.......
   // ..######..########....##.....#######..##.......
   public setup(gamedatas: MollyHouseGamedatas) {
+    this.overrideAddToLog();
+    this.overrideOnPlaceLogOnChannel();
+    this.overrideSetLoader();
+    this.overrideUpdatePlayerOrdering();
+
+    console.log('bga', this.bga);
+
     const body = document.getElementById('ebd-body');
-    this.mobileVersion = body && body.classList.contains('mobile_version');
+    this.mobileVersion = !!body && body.classList.contains('mobile_version');
 
     // Create a new div for buttons to avoid BGA auto clearing it
-    dojo.place(
-      "<div id='customActions' style='display:inline-block'></div>",
-      $('generalactions'),
-      'after',
-    );
+    document
+      .getElementById('generalactions')!
+      .insertAdjacentHTML(
+        'afterend',
+        "<div id='customActions' style='display:inline-block'></div>",
+      );
 
     document
-      .getElementById('game_play_area')
+      .getElementById('game_play_area')!
       .insertAdjacentHTML('afterbegin', tplPlayArea());
-
-    //  this.setAlwaysFixTopActions();
-    this.setupDontPreloadImages();
 
     this.gamedatas = gamedatas;
     this.gameOptions = gamedatas.gameOptions;
@@ -153,7 +264,7 @@ class MollyHouse implements Game {
     this.joyMarkerManager = new JoyMarkerManager(this);
     Interaction.create(this);
     PlayerManager.create(this);
-    NotificationManager.create(this);
+    this.notificationManager = new NotificationManager(this);
 
     Board.create(this);
     Festivity.create(this);
@@ -173,7 +284,7 @@ class MollyHouse implements Game {
         );
       });
 
-    NotificationManager.getInstance().setupNotifications();
+    this.notificationManager.setupNotifications();
     MollyHouseHelpManager.create(this);
 
     //  this.tooltipManager.setupTooltips();
@@ -186,18 +297,12 @@ class MollyHouse implements Game {
     const isInGame = playerOrder.includes(currentPlayerId);
     if (isInGame) {
       while (playerOrder[0] !== currentPlayerId) {
-        const firstItem = playerOrder.shift();
+        const firstItem = playerOrder.shift()!;
         playerOrder.push(firstItem);
       }
     }
     this.playerOrder = playerOrder;
   }
-
-  /**
-   * Example:
-   * this.framework().dontPreloadImage("background_balcony.webp");
-   */
-  setupDontPreloadImages() {}
 
   //  .####.##....##.########.########.########.....###.....######..########.####..#######..##....##
   //  ..##..###...##....##....##.......##.....##...##.##...##....##....##.....##..##.....##.###...##
@@ -216,7 +321,8 @@ class MollyHouse implements Game {
     console.log('Entering state: ' + stateName, args);
     const activePlayerIds: number[] | undefined = args.args?.activePlayerIds;
     const playerIsActiveAndStateExists =
-      this.framework().isCurrentPlayerActive() && this.states[stateName];
+      this.bga.players.isCurrentPlayerActive() &&
+      this.states[stateName as keyof typeof this.states];
 
     const currentPlayerId = this.getPlayerId();
     // UI changes for active player
@@ -224,42 +330,31 @@ class MollyHouse implements Game {
       playerIsActiveAndStateExists &&
       (!activePlayerIds || activePlayerIds.includes(currentPlayerId))
     ) {
-      this.states[stateName].getInstance().onEnteringState(args.args);
-    } else if (this.states[stateName]) {
-      this.states[stateName]
+      this.states[stateName as keyof typeof this.states]
+        .getInstance()
+        .onEnteringState(args.args);
+    } else if (this.states[stateName as keyof typeof this.states]) {
+      this.states[stateName as keyof typeof this.states]
         .getInstance()
         .setDescription(
-          activePlayerIds || Number(args.active_player),
+          (activePlayerIds || Number(args.active_player)) as any,
           args.args,
         );
     }
-
-    // if (this.framework().isCurrentPlayerActive()) {
-    //   this.addPrimaryActionButton({
-    //     id: "pass_button",
-    //     text: _("Pass"),
-    //     callback: () => this.takeAction({ action: "passTurn" }),
-    //   });
-    //   this.addDangerActionButton({
-    //     id: "end_game_button",
-    //     text: _("End game"),
-    //     callback: () => this.takeAction({ action: "endGame" }),
-    //   });
-    // }
 
     // Undo last steps
     if (args.args && args.args.previousSteps) {
       args.args.previousSteps.forEach((stepId: number) => {
         let logEntry = $('logs').querySelector(
           `.log.notif_newUndoableStep[data-step="${stepId}"]`,
-        );
+        ) as HTMLElement;
         if (logEntry) {
           this.onClick(logEntry, () => this.undoToStep({ stepId }));
         }
 
         logEntry = document.querySelector(
           `.chatwindowlogs_zone .log.notif_newUndoableStep[data-step="${stepId}"]`,
-        );
+        ) as HTMLElement;
         if (logEntry) {
           this.onClick(logEntry, () => this.undoToStep({ stepId }));
         }
@@ -271,8 +366,10 @@ class MollyHouse implements Game {
   //                 You can use this method to perform some user interface changes at this moment.
   //
   public onLeavingState(stateName: string) {
-    if (this.states[stateName]) {
-      this.states[stateName].getInstance().onLeavingState();
+    if (this.states[stateName as keyof typeof this.states]) {
+      this.states[stateName as keyof typeof this.states]
+        .getInstance()
+        .onLeavingState();
     }
     this.clearPossible();
   }
@@ -293,7 +390,7 @@ class MollyHouse implements Game {
   // .##.....##.########.########.##...........##.....##..#######..########..########
 
   //  public toggleHelpMode(b: boolean) {
-  // 	 console.log('toggleHelpMode', this.framework().defaultTooltipPosition);
+  // 	 console.log('toggleHelpMode', this.bga.defaultTooltipPosition);
   // 	 if (b) this.activateHelpMode();
   // 	 else this.deactivateHelpMode();
   //  }
@@ -328,15 +425,6 @@ class MollyHouse implements Game {
     }
   }
 
-  destroy(elem: HTMLElement) {
-    if (this.framework().tooltips[elem.id]) {
-      this.framework().tooltips[elem.id].destroy();
-      delete this.framework().tooltips[elem.id];
-    }
-
-    elem.remove();
-  }
-
   //  .##.....##.########.####.##.......####.########.##....##
   //  .##.....##....##.....##..##........##.....##.....##..##.
   //  .##.....##....##.....##..##........##.....##......####..
@@ -344,214 +432,6 @@ class MollyHouse implements Game {
   //  .##.....##....##.....##..##........##.....##.......##...
   //  .##.....##....##.....##..##........##.....##.......##...
   //  ..#######.....##....####.########.####....##.......##...
-
-  ///////////////////////////////////////////////////
-  //// Utility methods - add in alphabetical order
-
-  /*
-   * Add a blue/grey button if it doesn't already exists
-   */
-  addActionButtonClient({
-    id,
-    text,
-    callback,
-    extraClasses,
-    color = 'none',
-  }: {
-    id: string;
-    text: string;
-    callback: Function | string;
-    extraClasses?: string;
-    color?: 'blue' | 'gray' | 'red' | 'none';
-  }) {
-    if ($(id)) {
-      return;
-    }
-    this.framework().addActionButton(
-      id,
-      text,
-      callback,
-      'customActions',
-      false,
-      color,
-    );
-    if (extraClasses) {
-      dojo.addClass(id, extraClasses);
-    }
-  }
-
-  // addCancelButton(callback?: Function) {
-  //   this.addDangerActionButton({
-  //     id: 'cancel_btn',
-  //     text: _('Cancel'),
-  //     callback: () => {
-  //       if (callback) {
-  //         callback();
-  //       }
-  //       this.onCancel();
-  //     },
-  //   });
-  // }
-
-  // addConfirmButton(callback: Function) {
-  //   this.addPrimaryActionButton({
-  //     id: 'confirm_btn',
-  //     text: _('Confirm'),
-  //     callback,
-  //   });
-  // }
-
-  // addPassButton({
-  //   optionalAction,
-  //   text,
-  // }: {
-  //   optionalAction: boolean;
-  //   text?: string;
-  // }) {
-  //   if (optionalAction) {
-  //     this.addSecondaryActionButton({
-  //       id: 'pass_btn',
-  //       text: text ? _(text) : _('Pass'),
-  //       callback: () => {
-  //         // this.takeAction({
-  //         //   action: 'actPassOptionalAction',
-  //         //   atomicAction: false,
-  //         // });
-  //       },
-  //     });
-  //   }
-  // }
-
-  // addPlayerButton({
-  //   player,
-  //   callback,
-  // }: {
-  //   player: BgaPlayer;
-  //   callback: Function | string;
-  // }) {
-  //   const id = `select_${player.id}`;
-
-  //   this.addPrimaryActionButton({
-  //     id,
-  //     text: player.name,
-  //     callback,
-  //   });
-
-  //   const node = document.getElementById(id);
-  //   node.style.backgroundColor = `#${player.color}`;
-  // }
-
-  // addPrimaryActionButton({
-  //   id,
-  //   text,
-  //   callback,
-  //   extraClasses,
-  // }: {
-  //   id: string;
-  //   text: string;
-  //   callback: Function | string;
-  //   extraClasses?: string;
-  // }) {
-  //   if ($(id)) {
-  //     return;
-  //   }
-  //   this.framework().addActionButton(
-  //     id,
-  //     text,
-  //     callback,
-  //     'customActions',
-  //     false,
-  //     'blue'
-  //   );
-  //   if (extraClasses) {
-  //     dojo.addClass(id, extraClasses);
-  //   }
-  // }
-
-  // addSecondaryActionButton({
-  //   id,
-  //   text,
-  //   callback,
-  //   extraClasses,
-  // }: {
-  //   id: string;
-  //   text: string;
-  //   callback: Function | string;
-  //   extraClasses?: string;
-  // }) {
-  //   if ($(id)) {
-  //     return;
-  //   }
-  //   this.framework().addActionButton(
-  //     id,
-  //     text,
-  //     callback,
-  //     'customActions',
-  //     false,
-  //     'gray'
-  //   );
-  //   if (extraClasses) {
-  //     dojo.addClass(id, extraClasses);
-  //   }
-  // }
-
-  // addDangerActionButton({
-  //   id,
-  //   text,
-  //   callback,
-  //   extraClasses,
-  // }: {
-  //   id: string;
-  //   text: string;
-  //   callback: Function | string;
-  //   extraClasses?: string;
-  // }) {
-  //   if ($(id)) {
-  //     return;
-  //   }
-  //   this.framework().addActionButton(
-  //     id,
-  //     text,
-  //     callback,
-  //     'customActions',
-  //     false,
-  //     'red'
-  //   );
-  //   if (extraClasses) {
-  //     dojo.addClass(id, extraClasses);
-  //   }
-  // }
-
-  // addUndoButtons({ previousSteps, previousEngineChoices }: CommonStateArgs) {
-  //   const lastStep = Math.max(0, ...previousSteps);
-  //   if (lastStep > 0) {
-  //     // this.addDangerActionButton('btnUndoLastStep', _('Undo last step'), () => this.undoToStep(lastStep), 'restartAction');
-  //     this.addDangerActionButton({
-  //       id: 'undo_last_step_btn',
-  //       text: _('Undo last step'),
-  //       callback: () => {
-  //         // this.takeAction({
-  //         //   action: 'actUndoToStep',
-  //         //   args: {
-  //         //     stepId: lastStep,
-  //         //   },
-  //         //   checkAction: 'actRestart',
-  //         //   atomicAction: false,
-  //         // });
-  //       },
-  //     });
-  //   }
-
-  //   if (previousEngineChoices > 0) {
-  //     this.addDangerActionButton({
-  //       id: 'restart_btn',
-  //       text: _('Restart turn'),
-  //       callback: () => {
-  //         // this.takeAction({ action: 'actRestart', atomicAction: false }),
-  //       },
-  //     });
-  //   }
-  // }
 
   public clearInterface() {
     Board.getInstance().clearInterface();
@@ -561,15 +441,15 @@ class MollyHouse implements Game {
   }
 
   clearPossible() {
-    this.framework().removeActionButtons();
+    this.bga.statusBar.removeActionButtons();
     dojo.empty('customActions');
 
     dojo.forEach(this._connections, dojo.disconnect);
     this._connections = [];
     this._selectableNodes.forEach((node) => {
       if ($(node)) {
-        dojo.removeClass(node, SELECTABLE);
-        dojo.removeClass(node, SELECTED);
+        node.classList.remove(SELECTABLE);
+        node.classList.remove(SELECTED);
       }
     });
     this._selectableNodes = [];
@@ -582,37 +462,19 @@ class MollyHouse implements Game {
   }
 
   public getPlayerId(): number {
-    return Number(this.framework().player_id);
+    return this.bga.players.getCurrentPlayerId();
   }
 
   /**
    * Typescript wrapper for framework functions
    */
-  public framework(): Framework {
-    return this as unknown as Framework;
-  }
+  // public framework(): Framework {
+  //   return this as unknown as Framework;
+  // }
 
   onCancel() {
     this.clearPossible();
-    this.framework().restoreServerGameState();
-  }
-
-  clientUpdatePageTitle({
-    text,
-    args,
-    nonActivePlayers = false,
-  }: {
-    text: string;
-    args: Record<string, string | number>;
-    nonActivePlayers?: boolean;
-  }) {
-    const title = this.format_string_recursive(_(text), args);
-    if (nonActivePlayers) {
-      this.gamedatas.gamestate.description = title;
-    } else {
-      this.gamedatas.gamestate.descriptionmyturn = title;
-    }
-    this.framework().updatePageTitle();
+    this.bga.states.restoreServerGameState();
   }
 
   // .########...#######..####.##.......########.########.
@@ -640,9 +502,10 @@ class MollyHouse implements Game {
   }
 
   onClick(node: HTMLElement, callback: Function, temporary = true) {
-    let safeCallback = (evt) => {
+    let safeCallback = (evt: PointerEvent) => {
       evt.stopPropagation();
-      if (this.framework().isInterfaceLocked()) {
+      // @ts-expect-error
+      if (this.bga.actions.game.isInterfaceLocked()) {
         return false;
       }
       if (this._helpMode) {
@@ -654,6 +517,7 @@ class MollyHouse implements Game {
     if (temporary) {
       this.connect($(node), 'click', safeCallback);
       // dojo.removeClass(node, 'unselectable'); // replace with pr_selectable / pr_selected
+      // @ts-ignore
       dojo.addClass(node, 'selectable');
       this._selectableNodes.push(node);
     } else {
@@ -663,16 +527,9 @@ class MollyHouse implements Game {
 
   undoToStep({ stepId }: { stepId: string | number }) {
     // this.stopActionTimer();
-    // this.framework().checkAction("actRestart");
-    // this.takeAction('actUndoToStep', args: { stepId });
-    // this.takeAction({
-    //   action: 'actUndoToStep',
-    //   atomicAction: false,
-    //   args: {
-    //     stepId,
-    //   },
-    //   checkAction: 'actRestart',
-    // });
+    this.bga.actions.performAction('actUndoToStep', {
+      stepId,
+    });
   }
 
   public updateLayout() {
@@ -684,7 +541,7 @@ class MollyHouse implements Game {
 
     $('play-area-container').setAttribute(
       'data-two-columns',
-      settings.get(PREF_TWO_COLUMN_LAYOUT),
+      settings.get(PREF_TWO_COLUMN_LAYOUT) + ``,
     );
 
     const ROOT = document.documentElement;
@@ -752,9 +609,9 @@ class MollyHouse implements Game {
   }) {
     if (!$(`log_${notif.logId}`)) return;
     let stepId = notif.msg.args.stepId;
-    $(`log_${notif.logId}`).dataset.step = stepId;
+    $(`log_${notif.logId}`).dataset.step = stepId as string;
     if ($(`dockedlog_${notif.mobileLogId}`))
-      $(`dockedlog_${notif.mobileLogId}`).dataset.step = stepId;
+      $(`dockedlog_${notif.mobileLogId}`).dataset.step = stepId as string;
 
     if (
       (
@@ -778,8 +635,10 @@ class MollyHouse implements Game {
     this.updateLayout();
   }
 
-  /* @Override */
-  format_string_recursive(log: string, args: Record<string, unknown>): string {
+  public bgaFormatText(
+    log: string,
+    args: Record<string, string | number | boolean | Record<string, unknown>>,
+  ): { log: string; args: any } {
     try {
       if (log && args && !args.processed) {
         args.processed = true;
@@ -792,32 +651,23 @@ class MollyHouse implements Game {
               value: value as string,
               game: this,
             });
+          } else if (key.startsWith('_private')) {
+            Object.entries(args[key] as Record<string, unknown>).forEach(
+              ([privateKey, privateValue]) => {
+                (args[key] as any)[privateKey] = getTokenDiv({
+                  key: privateKey,
+                  value: privateValue as string,
+                  game: this,
+                });
+              },
+            );
           }
         });
       }
     } catch (e) {
-      console.error(log, args, 'Exception thrown', e.stack);
+      console.error(log, args, 'Exception thrown', (e as Error).stack);
     }
-    return (this as any).inherited(arguments);
-  }
-
-  /*
-   * [Undocumented] Called by BGA framework on any notification message
-   * Handle cancelling log messages for restart turn
-   */
-  onPlaceLogOnChannel(msg: Notif<unknown>) {
-    const currentLogId = this.framework().notifqueue.next_log_id;
-    const currentMobileLogId = this.framework().next_log_id;
-    const res = this.framework().inherited(arguments);
-    this._notif_uid_to_log_id[msg.uid] = currentLogId;
-    this._notif_uid_to_mobile_log_id[msg.uid] = currentMobileLogId;
-    this._last_notif = {
-      logId: currentLogId,
-      mobileLogId: currentMobileLogId,
-      msg,
-    };
-    // console.log('_notif_uid_to_log_id', this._notif_uid_to_log_id);
-    return res;
+    return { log, args };
   }
 
   /*
@@ -852,7 +702,7 @@ class MollyHouse implements Game {
       return;
     }
 
-    let notif = this._last_notif;
+    let notif = this._last_notif as any;
     let type = notif.msg.type;
     if (type == 'history_history') {
       type = notif.msg.args.originalType;
@@ -863,7 +713,7 @@ class MollyHouse implements Game {
 
       var methodName =
         'onAdding' + type.charAt(0).toUpperCase() + type.slice(1) + 'ToLog';
-      this[methodName]?.(notif);
+      (this as any)[methodName]?.(notif);
     }
     if ($('dockedlog_' + notif.mobileLogId)) {
       dojo.addClass('dockedlog_' + notif.mobileLogId, 'notif_' + type);
@@ -893,140 +743,4 @@ class MollyHouse implements Game {
     // console.log("tooltipsToMap", this.tooltipsToMap);
     // TODO: check how to update this. For now needs refresh
   }
-
-  /*
-   * [Undocumented] Override BGA framework functions to call onLoadingComplete when loading is done
-   */
-  setLoader(value, max) {
-    this.framework().inherited(arguments);
-    if (!this.framework().isLoadingComplete && value >= 100) {
-      this.framework().isLoadingComplete = true;
-      this.onLoadingComplete();
-    }
-  }
-
-  onLoadingComplete() {
-    this.loadingComplete = true;
-    // debug('Loading complete');
-    //  this.cancelLogs(this.gamedatas.canceledNotifIds);
-    this.updateLayout();
-    // this.inherited(arguments);
-  }
-
-  /* @Override */
-  updatePlayerOrdering() {
-    this.framework().inherited(arguments);
-    // TODO: Update for mobile mode
-    const container = document.getElementById('player_boards');
-    // const infoPanel = document.getElementById('info-panel');
-
-    if (!container) {
-      return;
-    }
-    // container.insertAdjacentElement('afterbegin', infoPanel);
-  }
-
-  //  setAlwaysFixTopActions(alwaysFixed = true, maximum = 30) {
-  // 	 this.alwaysFixTopActions = alwaysFixed;
-  // 	 this.alwaysFixTopActionsMaximum = maximum;
-  // 	 this.adaptStatusBar();
-  //  }
-
-  //  adaptStatusBar() {
-  // 	 (this as any).inherited(arguments);
-
-  // 	 if (this.alwaysFixTopActions) {
-  // 		 const afterTitleElem = document.getElementById('after-page-title');
-  // 		 const titleElem = document.getElementById('page-title');
-  // 		 let zoom = (getComputedStyle(titleElem) as any).zoom;
-  // 		 if (!zoom) {
-  // 			 zoom = 1;
-  // 		 }
-
-  // 		 const titleRect = afterTitleElem.getBoundingClientRect();
-  // 		 if (
-  // 			 titleRect.top < 0 &&
-  // 			 titleElem.offsetHeight <
-  // 				 (window.innerHeight * this.alwaysFixTopActionsMaximum) / 100
-  // 		 ) {
-  // 			 const afterTitleRect = afterTitleElem.getBoundingClientRect();
-  // 			 titleElem.classList.add('fixed-page-title');
-  // 			 titleElem.style.width = (afterTitleRect.width - 10) / zoom + 'px';
-  // 			 afterTitleElem.style.height = titleRect.height + 'px';
-  // 		 } else {
-  // 			 titleElem.classList.remove('fixed-page-title');
-  // 			 titleElem.style.width = 'auto';
-  // 			 afterTitleElem.style.height = '0px';
-  // 		 }
-  // 	 }
-  //  }
-
-  // .########..#######......######..##.....##.########..######..##....##
-  // ....##....##.....##....##....##.##.....##.##.......##....##.##...##.
-  // ....##....##.....##....##.......##.....##.##.......##.......##..##..
-  // ....##....##.....##....##.......#########.######...##.......#####...
-  // ....##....##.....##....##.......##.....##.##.......##.......##..##..
-  // ....##....##.....##....##....##.##.....##.##.......##....##.##...##.
-  // ....##.....#######......######..##.....##.########..######..##....##
-
-  //....###..........##....###....##.....##
-  //...##.##.........##...##.##....##...##.
-  //..##...##........##..##...##....##.##..
-  //.##.....##.......##.##.....##....###...
-  //.#########.##....##.#########...##.##..
-  //.##.....##.##....##.##.....##..##...##.
-  //.##.....##..######..##.....##.##.....##
-
-  actionError(actionName: string) {
-    this.framework().showMessage(`cannot take ${actionName} action`, 'error');
-  }
-
-  /*
-   * Make an AJAX call with automatic lock
-   */
-  // takeAction({
-  //   action,
-  //   atomicAction = true,
-  //   args = {},
-  //   checkAction,
-  // }: {
-  //   action: string;
-  //   atomicAction?: boolean;
-  //   args?: Record<string, unknown>;
-  //   checkAction?: string; // Action used in checkAction
-  // }) {
-  //   const actionName = atomicAction ? action : undefined;
-  //   if (!this.framework().checkAction(checkAction || action)) {
-  //     this.actionError(action);
-  //     return;
-  //   }
-  //   const data = {
-  //     lock: true,
-  //     actionName,
-  //     args: JSON.stringify(args),
-  //   };
-  //   // data.
-  //   const gameName = this.framework().game_name;
-  //   this.framework().ajaxcall(
-  //     `/${gameName}/${gameName}/${
-  //       atomicAction ? 'actTakeAtomicAction' : action
-  //     }.html`,
-  //     data,
-  //     this,
-  //     () => {}
-  //   );
-  // }
-
-  // // Generic call for Atomic Action that encode args as a JSON to be decoded by backend
-  // takeAtomicAction(action, args, warning = false) {
-  //   if (!this.framework().checkAction(action)) {
-  //     this.actionError(action);
-  //     return;
-  //   }
-
-  //   this.takeAction({
-  //     action: "actTakeAtomicAction",
-  //     args: { actionName: action, actionArgs: args },
-  //   });
-  // }
 }

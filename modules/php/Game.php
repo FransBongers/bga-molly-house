@@ -27,6 +27,7 @@ require_once("constants.inc.php");
 use Bga\Games\MollyHouse\Boilerplate\Core\Engine;
 use Bga\Games\MollyHouse\Boilerplate\Core\Engine\LeafNode;
 use Bga\Games\MollyHouse\Boilerplate\Core\Globals;
+use Bga\Games\MollyHouse\Boilerplate\Core\Notifications;
 use Bga\Games\MollyHouse\Boilerplate\Core\Stats;
 use Bga\Games\MollyHouse\Managers\Community;
 use Bga\Games\MollyHouse\Managers\DieManager;
@@ -63,11 +64,18 @@ class Game extends \Bga\GameFramework\Table
         parent::__construct();
 
         self::$instance = $this;
+
+        // Setup Notification decorators
+        $this->bga->notify->addDecorator(fn(string $message, array $args) => Notifications::decoratePlayerNameNotifArg($message, $args));
+        // could also be written this (ugly) way : $this->bga->notify->addDecorator([Notifications::class, 'decoratePlayerNameNotifArg']);
+
         $this->initGameStateLabels([
             'logging' => 10,
         ]);
         Engine::boot();
         Stats::checkExistence();
+
+
 
         /* example of notification decorator.
         // automatically complete notification args when needed
@@ -277,9 +285,9 @@ class Game extends \Bga\GameFramework\Table
      * - when the game starts
      * - when a player refreshes the game page (F5)
      */
-    public function getAllDatas($playerId = null): array
+    public function getAllDatas(): array
     {
-        $playerId = $playerId ?? Players::getCurrentId();
+        $playerId = Players::getCurrentId();
 
         $playerData = Players::getUiData($playerId);
 
